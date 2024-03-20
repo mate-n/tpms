@@ -1,22 +1,27 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+const drawer = ref(false)
 </script>
 
 <template>
   <v-app>
-    <!-- Must have the app property -->
+    <v-navigation-drawer temporary v-model="drawer">
+      <v-list-item :title="$t('app.name')"></v-list-item>
+      <v-divider></v-divider>
+      <v-list-item link title="Home" to="/"></v-list-item>
+
+      <v-list-item link title="About" to="/about"></v-list-item>
+    </v-navigation-drawer>
+
     <v-app-bar app :elevation="2">
       <template v-slot:prepend>
-        <v-app-bar-nav-icon>
-          <v-icon color="green-darken-2" icon="mdi-home-heart"></v-icon>
+        <v-app-bar-nav-icon @click.stop="drawer = true">
+          <v-icon icon="mdi-home-heart"></v-icon>
         </v-app-bar-nav-icon>
       </template>
 
-      <v-app-bar-title>tpms-frontend</v-app-bar-title>
-
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
+      <v-app-bar-title>{{ $t('app.name') }}</v-app-bar-title>
     </v-app-bar>
 
     <v-main> <RouterView /></v-main>
