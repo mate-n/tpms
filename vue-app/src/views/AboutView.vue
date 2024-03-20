@@ -1,7 +1,8 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-    <v-icon icon="home-heart"></v-icon>
-    <v-icon color="green-darken-2" icon="mdi-home-heart" size="large"></v-icon>
-  </div>
+  <v-container>
+    <v-card style="padding: 1rem">
+      <h1>This is an about page</h1>
+      <p>Here begins our Story</p>
+    </v-card>
+  </v-container>
 </template>

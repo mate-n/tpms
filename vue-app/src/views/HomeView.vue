@@ -1,9 +1,19 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+import OfferList from '../components/OfferList.vue'
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+  <v-container>
+    <v-card
+      title="Welcome to our Website!"
+      style="margin-bottom: 2rem"
+      prepend-icon="mdi-home-heart"
+    >
+      <v-card-text>
+        <p>Take a look at our offers and book your next vacation!</p>
+      </v-card-text></v-card
+    >
+
+    <OfferList />
+  </v-container>
 </template>
