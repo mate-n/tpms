@@ -27,6 +27,4 @@ WORKDIR /app
 
 COPY centos-integration-entrypoint-script.sh .
 
-EXPOSE 3000
-
 ENTRYPOINT [ "sh", "centos-integration-entrypoint-script.sh" ]
