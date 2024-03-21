@@ -17,3 +17,19 @@ EXPOSE 8080
 RUN npm run build
 
 CMD ["npm", "run", "dev", "--", "--port",  "8080", "--host", "0.0.0.0"]
+
+FROM node:21-alpine as integration-stage
+
+RUN mkdir -p /vue-app-dist
+
+COPY --from=development-stage /app/dist /vue-app-dist
+
+COPY vue-app-integration-entrypoint-script.sh .
+RUN chmod +x vue-app-integration-entrypoint-script.sh
+
+RUN mkdir /shared-volume
+RUN chown node:node /shared-volume
+
+ENTRYPOINT ["sh", "vue-app-integration-entrypoint-script.sh"]
+
+
