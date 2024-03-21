@@ -25,7 +25,7 @@ services:
         UID: "${UID}"
         GID: "${GID}"
     ports:
-      - "3000:3000"
+      - "${PORT_FRONTEND_INTEGRATION}:3000"
     user: "${UID}:${GID}"
     volumes:
       - shared-volume:/shared-volume
