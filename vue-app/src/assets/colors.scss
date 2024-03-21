@@ -1,0 +1,25 @@
+@import 'variables';
+
+@mixin background-color-modifiers {
+  @each $name, $hex in $main-colors {
+    &-#{$name} {
+      background-color: $hex;
+    }
+  }
+}
+
+@mixin text-color-modifiers {
+  @each $name, $hex in $main-colors {
+    &-#{$name} {
+      color: $hex;
+    }
+  }
+}
+
+.bg {
+  @include background-color-modifiers;
+}
+
+.text {
+  @include text-color-modifiers;
+}

@@ -1,2 +1,4 @@
+@import './variables.scss';
 @import './base.css';
 @import './tables.scss';
+@import './colors.scss';
