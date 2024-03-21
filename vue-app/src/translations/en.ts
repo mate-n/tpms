@@ -4,5 +4,9 @@ export const englishTranslations = {
   },
   app: {
     name: 'tpms-frontend'
+  },
+  general: {
+    itineraryReservationEnquiry: 'Itinerary Reservation Enquiry',
+    addReservation: 'Add Reservation'
   }
 }
