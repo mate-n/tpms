@@ -112,11 +112,7 @@ function getDateString(date: Date): string {
         <v-text-field label="Rooms" type="number"></v-text-field>
       </v-col>
       <v-col>
-        <v-autocomplete
-          label="Room Type"
-          :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
-          multiple
-        ></v-autocomplete>
+        <v-autocomplete label="Room Type" :items="['Standard | King']" multiple></v-autocomplete>
       </v-col>
       <v-col>
         <v-text-field label="Guests per room" type="number"></v-text-field>
@@ -124,12 +120,44 @@ function getDateString(date: Date): string {
       <v-col>
         <v-autocomplete
           label="Guest"
+          placeholder="Last Name | First Name"
+          hint="Last Name | First Name"
           :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
         ></v-autocomplete>
       </v-col>
       <v-col class="d-flex justify-space-between">
-        <v-btn class="secondary-button">Reset</v-btn>
+        <v-btn class="secondary-button mr-3">Reset</v-btn>
         <v-btn class="primary-button">Check</v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-container fluid class="bg-lightblue">
+    <v-row>
+      <v-col cols="4">
+        <v-autocomplete
+          label=""
+          prepend-inner-icon="mdi-magnify"
+          :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+        ></v-autocomplete>
+      </v-col>
+    </v-row>
+    <v-row class="border-top">
+      <v-col cols="2" class="d-flex justify-space-between">
+        <v-icon class="text-primary">mdi-plus</v-icon>
+        Availibility (incl. OB)
+      </v-col>
+      <v-col class="bg-lightgray d-flex">
+        <div v-for="index in 12" :key="index" class="bg-white mr-3 px-5 py-2">
+          <v-icon>mdi-circle-small</v-icon>
+        </div>
+      </v-col>
+    </v-row>
+    <v-row class="border-top-bottom">
+      <v-col cols="2" class="d-flex justify-space-between"> </v-col>
+      <v-col class="bg-lightgray d-flex">
+        <div v-for="index in 12" :key="index" class="bg-white mr-3 px-5 py-2">
+          <v-icon>mdi-circle-small</v-icon>
+        </div>
       </v-col>
     </v-row>
   </v-container>
