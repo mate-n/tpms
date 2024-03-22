@@ -28,3 +28,10 @@
   background-color: map-get($main-colors, 'secondary') !important;
   color: black !important;
 }
+
+.disabled-button {
+  @extend .uppercase;
+  background-color: #cecece !important;
+  color: black !important;
+  cursor: not-allowed !important;
+}
