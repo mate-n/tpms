@@ -20,7 +20,11 @@ function getDateString(date: Date): string {
 </script>
 
 <template>
-  <v-toolbar class="bg-primary" :title="$t('general.itineraryReservationEnquiry')">
+  <v-toolbar
+    class="bg-primary d-flex justify-space-between"
+    :title="$t('general.itineraryReservationEnquiry')"
+    app
+  >
     <v-menu>
       <template v-slot:activator="{ props, isActive }">
         <v-btn class="bg-white" v-bind="props">
@@ -38,75 +42,97 @@ function getDateString(date: Date): string {
       </v-list>
     </v-menu>
   </v-toolbar>
-  <v-toolbar class="bg-white">
-    <v-select
-      label=""
-      :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
-    ></v-select>
-    <v-icon>mdi-city</v-icon>
-    <v-menu v-model="arrivalDateMenu" :close-on-content-click="false">
-      <template v-slot:activator="{ props }">
-        <v-text-field
-          v-model="arrivalDateString"
-          label="Arrival"
-          append-inner-icon="mdi-calendar"
-          v-bind="props"
-        ></v-text-field>
-      </template>
-      <v-card>
-        <v-card-title>Arrival Date</v-card-title>
-        <v-date-picker v-model="arrivalDate"> </v-date-picker>
-        <v-spacer></v-spacer>
-        <div class="d-flex justify-end">
-          <v-btn @click="arrivalDateMenu = false"> Cancel </v-btn>
-          <v-btn
-            @click="(arrivalDateString = getDateString(arrivalDate)), (arrivalDateMenu = false)"
-          >
-            OK
-          </v-btn>
-        </div>
-      </v-card>
-    </v-menu>
-    <v-text-field label="Nights" type="number"></v-text-field>
-    <v-menu v-model="departureDateMenu" :close-on-content-click="false">
-      <template v-slot:activator="{ props }">
-        <v-text-field
-          v-model="departureDateString"
-          label="Departure"
-          append-inner-icon="mdi-calendar"
-          v-bind="props"
-        ></v-text-field>
-      </template>
-      <v-card>
-        <v-date-picker
-          v-model="departureDate"
-          @update:model-value="departureDateString = getDateString(departureDate)"
-        ></v-date-picker>
-        <v-spacer></v-spacer>
-        <div class="d-flex justify-end">
-          <v-btn @click="departureDateMenu = false"> Cancel </v-btn>
-          <v-btn
-            @click="(arrivalDateString = getDateString(arrivalDate)), (departureDateMenu = false)"
-          >
-            OK
-          </v-btn>
-        </div>
-      </v-card>
-    </v-menu>
-    <v-text-field label="Rooms" type="number"></v-text-field>
-    <v-autocomplete
-      label="Autocomplete"
-      :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
-      multiple
-    ></v-autocomplete>
-    <v-text-field label="Guests per room" type="number"></v-text-field>
-    <v-autocomplete
-      label="Guest"
-      :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
-    ></v-autocomplete>
-    <v-btn class="secondary-button">Reset</v-btn>
-    <v-btn class="primary-button">Check</v-btn>
-  </v-toolbar>
+  <v-container fluid class="bg-white">
+    <v-row class="d-flex align-center">
+      <v-col class="d-flex align-center h-100">
+        <v-select
+          label=""
+          :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+        ></v-select>
+        <v-icon>mdi-city</v-icon>
+      </v-col>
+      <v-col>
+        <v-menu v-model="arrivalDateMenu" :close-on-content-click="false">
+          <template v-slot:activator="{ props }">
+            <v-text-field
+              v-model="arrivalDateString"
+              label="Arrival"
+              append-inner-icon="mdi-calendar"
+              v-bind="props"
+            ></v-text-field>
+          </template>
+          <v-card>
+            <v-card-title>Arrival Date</v-card-title>
+            <v-date-picker v-model="arrivalDate"> </v-date-picker>
+            <v-spacer></v-spacer>
+            <div class="d-flex justify-end">
+              <v-btn @click="arrivalDateMenu = false"> Cancel </v-btn>
+              <v-btn
+                @click="(arrivalDateString = getDateString(arrivalDate)), (arrivalDateMenu = false)"
+              >
+                OK
+              </v-btn>
+            </div>
+          </v-card>
+        </v-menu>
+      </v-col>
+      <v-col>
+        <v-text-field label="Nights" type="number"></v-text-field>
+      </v-col>
+      <v-col>
+        <v-menu v-model="departureDateMenu" :close-on-content-click="false">
+          <template v-slot:activator="{ props }">
+            <v-text-field
+              v-model="departureDateString"
+              label="Departure"
+              append-inner-icon="mdi-calendar"
+              v-bind="props"
+            ></v-text-field>
+          </template>
+          <v-card>
+            <v-date-picker
+              v-model="departureDate"
+              @update:model-value="departureDateString = getDateString(departureDate)"
+            ></v-date-picker>
+            <v-spacer></v-spacer>
+            <div class="d-flex justify-end">
+              <v-btn @click="departureDateMenu = false"> Cancel </v-btn>
+              <v-btn
+                @click="
+                  (arrivalDateString = getDateString(arrivalDate)), (departureDateMenu = false)
+                "
+              >
+                OK
+              </v-btn>
+            </div>
+          </v-card>
+        </v-menu>
+      </v-col>
+      <v-col>
+        <v-text-field label="Rooms" type="number"></v-text-field>
+      </v-col>
+      <v-col>
+        <v-autocomplete
+          label="Room Type"
+          :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+          multiple
+        ></v-autocomplete>
+      </v-col>
+      <v-col>
+        <v-text-field label="Guests per room" type="number"></v-text-field>
+      </v-col>
+      <v-col>
+        <v-autocomplete
+          label="Guest"
+          :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+        ></v-autocomplete>
+      </v-col>
+      <v-col class="d-flex justify-space-between">
+        <v-btn class="secondary-button">Reset</v-btn>
+        <v-btn class="primary-button">Check</v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
 
   <div class="d-flex justify-end">
     <v-btn class="secondary-button">Cancel</v-btn>
