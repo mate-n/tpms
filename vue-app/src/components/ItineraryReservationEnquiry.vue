@@ -94,8 +94,22 @@ function getDateString(date: Date): string {
       </v-card>
     </v-menu>
     <v-text-field label="Rooms" type="number"></v-text-field>
+    <v-autocomplete
+      label="Autocomplete"
+      :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+      multiple
+    ></v-autocomplete>
     <v-text-field label="Guests per room" type="number"></v-text-field>
+    <v-autocomplete
+      label="Guest"
+      :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+    ></v-autocomplete>
     <v-btn class="secondary-button">Reset</v-btn>
     <v-btn class="primary-button">Check</v-btn>
   </v-toolbar>
+
+  <div class="d-flex justify-end">
+    <v-btn class="secondary-button">Cancel</v-btn>
+    <v-btn class="ml-2 disabled-button">Book</v-btn>
+  </div>
 </template>
