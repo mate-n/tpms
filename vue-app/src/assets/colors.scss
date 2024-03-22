@@ -11,7 +11,7 @@
 @mixin text-color-modifiers {
   @each $name, $hex in $main-colors {
     &-#{$name} {
-      color: $hex;
+      color: $hex !important;
     }
   }
 }
