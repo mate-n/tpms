@@ -1,0 +1,30 @@
+@import 'variables';
+
+@mixin button-modifiers {
+  @each $name, $hex in $main-colors {
+    &-#{$name} {
+      background-color: $hex !important;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.button {
+  @include button-modifiers;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.primary-button {
+  @extend .uppercase;
+  background-color: map-get($main-colors, 'primary') !important;
+  color: white !important;
+}
+
+.secondary-button {
+  @extend .uppercase;
+  background-color: map-get($main-colors, 'secondary') !important;
+  color: black !important;
+}
