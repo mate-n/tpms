@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-
+import ProfileService from '@/services/ProfileService'
+import { inject } from 'vue'
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
 const addReservationItems = [
   { title: 'New', icon: 'mdi-playlist-check' },
   { title: 'Existing', icon: 'mdi-playlist-plus' }
 ]
+
+const profileService = new ProfileService(axios)
+profileService.getProfile().then((profile) => {
+  console.log(profile)
+})
 
 const arrivalDateString = getDateString(new Date())
 const arrivalDate = ref(new Date())
