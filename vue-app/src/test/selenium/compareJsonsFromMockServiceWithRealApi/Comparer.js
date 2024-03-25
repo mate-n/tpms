@@ -9,7 +9,6 @@ export class Comparer {
         const response2 = await fetch(this.mockServiceApiUrl + url, { method: "POST", body: body });
         const firstJson = await response1.json();
         const secondJson = await response2.json();
-        assert.equal(true, false);
         this.compareJsons(firstJson, secondJson);
     };
 
