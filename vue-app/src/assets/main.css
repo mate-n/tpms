@@ -1,2 +1,14 @@
+@import './variables.scss';
 @import './base.css';
 @import './tables.scss';
+@import './colors.scss';
+@import './buttons.scss';
+
+.border-top-bottom {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+.border-top {
+  border-top: 1px solid black;
+}

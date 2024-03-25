@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { provide, ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
+import axios, { type AxiosStatic } from 'axios'
 const drawer = ref(false)
+
+// axios
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+provide('axios', axios)
 </script>
 
 <template>
