@@ -44,9 +44,13 @@ const i18n = createI18n({
   messages
 })
 
+// AxiosInstanceProvider
+import axiosInstanceProvider from './plugins/AxiosInstanceProvider'
+
 const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)
 app.use(i18n)
+app.use(axiosInstanceProvider)
 app.mount('#app')
