@@ -12,7 +12,7 @@ pipelines:
             name: "Build and Test"
             script:
               - echo "Your build and test goes here..."
-              - cd vue-app && npm install
+              - cd vue-app && npm install && npm run api-test
         - step:
             name: "Lint"
             script:
