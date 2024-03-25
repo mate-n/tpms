@@ -1,4 +1,5 @@
 cd vue-app
+apt-get update -y
 apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 npm install
 npm install -g wait-on
