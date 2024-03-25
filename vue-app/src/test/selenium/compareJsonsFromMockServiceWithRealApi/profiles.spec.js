@@ -10,6 +10,7 @@ async function compareResponses() {
         });
     } catch (e) {
         console.log(e)
+        throw e;
     }
 }
 
