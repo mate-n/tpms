@@ -1,6 +1,6 @@
 cd vue-app
 apt-get update -y
-apt-get install libatk1.0-0 libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+apt-get install libatk-1.0.so.0 libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 npm install
 npm install -g wait-on
 #npm run serve & wait-on http://localhost:4173
