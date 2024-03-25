@@ -1,4 +1,6 @@
 import { Comparer } from "./Comparer.js";
+import process from 'process'
+
 const comparer = new Comparer();
 
 async function compareResponses() {
