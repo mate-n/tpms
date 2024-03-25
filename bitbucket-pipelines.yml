@@ -13,6 +13,7 @@ pipelines:
             script:
               - echo "Your build and test goes here..."
               - /bin/bash api-test.sh
+              - /bin/bash cypress-test.sh
         - step:
             name: "Lint"
             script:
