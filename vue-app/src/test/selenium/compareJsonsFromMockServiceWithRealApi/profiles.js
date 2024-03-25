@@ -1,4 +1,5 @@
-const comparer = require("./comparer.cjs");
+import { Comparer } from "./Comparer.js";
+const comparer = new Comparer();
 
 async function compareResponses() {
     await comparer.compareApiResponses('?lookup&email=gert@ankerdata2.co.za', {});
