@@ -1,10 +1,9 @@
-const chrome = require('selenium-webdriver/chrome');
-const { By, Builder, Browser } = require('selenium-webdriver');
-const assert = require("assert");
-const screen = {
-    width: 640,
-    height: 480
-};
+
+//const chrome = require('selenium-webdriver/chrome');
+import * as chrome from 'selenium-webdriver/chrome';
+//const { By, Builder, Browser } = require('selenium-webdriver');
+import { By, Builder, Browser } from 'selenium-webdriver';
+import * as assert from 'assert';
 
 async function firstTest() {
     let driver;
