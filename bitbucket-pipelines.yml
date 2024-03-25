@@ -16,6 +16,7 @@ pipelines:
             name: "Lint"
             script:
               - echo "Your linting goes here..."
+              - cd vue-app && npm run lint --fix
         - step:
             name: "Security scan"
             script:
