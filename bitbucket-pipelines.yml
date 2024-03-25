@@ -12,7 +12,7 @@ pipelines:
             name: "Build and Test"
             script:
               - echo "Your build and test goes here..."
-              - api-test.sh
+              - /bin/bash api-test.sh
         - step:
             name: "Lint"
             script:
