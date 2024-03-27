@@ -1,7 +1,10 @@
+import { type AxiosStatic } from 'axios'
+import { AxiosInstanceFactory } from '../factories/AxiosInstanceFactory'
+
 class ProfileService {
-  axiosInstance: any
-  constructor(axiosInstance: any) {
-    this.axiosInstance = axiosInstance
+  axiosInstance: AxiosStatic
+  constructor(axiosInstance: AxiosStatic | undefined) {
+    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
   }
 
   getProfile() {
