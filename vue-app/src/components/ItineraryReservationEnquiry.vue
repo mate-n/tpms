@@ -70,10 +70,9 @@ function getDateString(date: Date): string {
             ></v-text-field>
           </template>
           <v-card>
-            <v-card-title>Arrival Date</v-card-title>
-            <v-date-picker v-model="arrivalDate"> </v-date-picker>
+            <v-date-picker :hide-header="true" v-model="arrivalDate"> </v-date-picker>
             <v-spacer></v-spacer>
-            <div class="d-flex justify-end">
+            <div class="d-flex justify-space-between">
               <v-btn @click="arrivalDateMenu = false"> Cancel </v-btn>
               <v-btn
                 @click="(arrivalDateString = getDateString(arrivalDate)), (arrivalDateMenu = false)"
@@ -99,11 +98,12 @@ function getDateString(date: Date): string {
           </template>
           <v-card>
             <v-date-picker
+              :hide-header="true"
               v-model="departureDate"
               @update:model-value="departureDateString = getDateString(departureDate)"
             ></v-date-picker>
             <v-spacer></v-spacer>
-            <div class="d-flex justify-end">
+            <div class="d-flex justify-space-between">
               <v-btn @click="departureDateMenu = false"> Cancel </v-btn>
               <v-btn
                 @click="
@@ -130,7 +130,7 @@ function getDateString(date: Date): string {
           label="Guest"
           placeholder="Last Name | First Name"
           hint="Last Name | First Name"
-          :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+          :items="['Daniel, Oechslin']"
         ></v-autocomplete>
       </v-col>
       <v-col class="d-flex justify-space-between">
