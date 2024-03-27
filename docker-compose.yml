@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  vue:
+    build:
+      context: ./vue-app
+      dockerfile: Dockerfile
+      target: development-stage
+      args:
+        VITE_API_BASE_URL: "${API_BASE_URL}"
+    volumes:
+      - ./vue-app/src:/app/src
+    env_file:
+      - .env
+    ports:
+      - "${PORT_FRONTEND}:8080"
+  npm:
+    build: ./npm
+    volumes:
+      - ./:/app
+    profiles:
+      - development
+    user: "${UID}:${GID}"
