@@ -24,9 +24,11 @@ const reservation1 = new ReservationClass()
 reservation1.camp = 'Twee Rivieren'
 reservation1.arrivalDate = new Date()
 reservation1.departureDate = new Date()
-reservation1.roomType = 'BD2'
+reservation1.roomType = 'Standard | King'
 reservation1.rooms = 1
 reservation1.baseRateCategory = 'Base Rate | Low Season'
+reservation1.guest = 'John Doe'
+reservation1.guestsPerRoom = 2
 
 const reservation2 = new ReservationClass()
 

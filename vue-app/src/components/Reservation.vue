@@ -99,28 +99,30 @@ const availabilities: Ref<IAvailability[]> = ref([
   }
 ])
 
-const arrivalDateString = getDateString(new Date())
-const arrivalDate = ref(new Date())
 const arrivalDateMenu = ref(false)
-const departureDateString = getDateString(new Date())
-const departureDate = ref(new Date())
 const departureDateMenu = ref(false)
 
 const numberOfNights = computed(() => {
-  return dateHelper.calculateNightsBetweenDates(arrivalDate.value, departureDate.value)
+  return dateHelper.calculateNightsBetweenDates(
+    props.reservation.arrivalDate,
+    props.reservation.departureDate
+  )
 })
 
-function getDateString(date: Date): string {
-  const newDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-  return newDate.toISOString().substring(0, 10)
-}
+const arrivalDateString = computed(() => {
+  return dateHelper.getDateString(props.reservation.arrivalDate)
+})
+
+const departureDateString = computed(() => {
+  return dateHelper.getDateString(props.reservation.departureDate)
+})
 </script>
 
 <template>
   <v-container fluid class="bg-white">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100">
-        <v-select label="" :items="camps"></v-select>
+        <v-select label="" :model-value="reservation.camp" :items="camps"></v-select>
         <v-icon>mdi-city</v-icon>
       </v-col>
       <v-col>
@@ -134,12 +136,7 @@ function getDateString(date: Date): string {
             ></v-text-field>
           </template>
           <v-card>
-            <v-date-picker
-              :hide-header="true"
-              v-model="arrivalDate"
-              @update:model-value="arrivalDateString = getDateString(arrivalDate)"
-            >
-            </v-date-picker>
+            <v-date-picker :hide-header="true" v-model="reservation.arrivalDate"> </v-date-picker>
           </v-card>
         </v-menu>
       </v-col>
@@ -159,26 +156,34 @@ function getDateString(date: Date): string {
           <v-card>
             <v-date-picker
               :hide-header="true"
-              v-model="departureDate"
-              @update:model-value="departureDateString = getDateString(departureDate)"
+              v-model="props.reservation.departureDate"
             ></v-date-picker>
           </v-card>
         </v-menu>
       </v-col>
       <v-col>
-        <v-text-field label="Rooms" type="number"></v-text-field>
+        <v-text-field label="Rooms" :model-value="reservation.rooms" type="number"></v-text-field>
       </v-col>
       <v-col>
-        <v-autocomplete label="Room Type" :items="['Standard | King']" multiple></v-autocomplete>
+        <v-autocomplete
+          label="Room Type"
+          :model-value="reservation.roomType"
+          :items="['Standard | King']"
+        ></v-autocomplete>
       </v-col>
       <v-col>
-        <v-text-field label="Guests per room" type="number"></v-text-field>
+        <v-text-field
+          label="Guests per room"
+          :model-value="reservation.guestsPerRoom"
+          type="number"
+        ></v-text-field>
       </v-col>
       <v-col>
         <v-autocomplete
           label="Guest"
           placeholder="Last Name | First Name"
           hint="Last Name | First Name"
+          :model-value="reservation.guest"
           :items="['Daniel, Oechslin']"
         ></v-autocomplete>
       </v-col>
