@@ -91,7 +91,12 @@ const checkForIssues: () => void = () => {
   </v-toolbar>
 
   <template v-for="(reservation, i) of reservations" :key="reservation.id">
-    <ReservationForm v-model="reservations[i]" @check="checkForIssues()"></ReservationForm>
+    <ReservationForm
+      v-model="reservations[i]"
+      @check="checkForIssues()"
+      :previous-reservation="reservations[i - 1]"
+      :next-reservation="reservations[i + 1]"
+    ></ReservationForm>
   </template>
 
   <v-container fluid>
