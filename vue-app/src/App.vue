@@ -10,8 +10,12 @@ const drawer = ref(false)
       <v-list-item :title="$t('app.name')"></v-list-item>
       <v-divider></v-divider>
       <v-list-item link title="Home" to="/"></v-list-item>
-
       <v-list-item link title="About" to="/about"></v-list-item>
+      <v-list-item
+        link
+        title="Itinerary Reservation Enquiry"
+        to="/itinerary-reservation-enquiry"
+      ></v-list-item>
     </v-navigation-drawer>
 
     <v-app-bar app :elevation="2">
