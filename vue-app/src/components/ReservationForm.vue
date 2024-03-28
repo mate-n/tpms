@@ -8,6 +8,10 @@ const dateHelper = new DateHelper()
 const emit = defineEmits(['check'])
 
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
+const props = defineProps({
+  previousReservation: { type: Object as () => IReservation, required: false },
+  nextReservation: { type: Object as () => IReservation, required: false }
+})
 
 const camps = [
   '',
@@ -102,7 +106,25 @@ const defaultAvailabilities: IAvailability[] = [
 ]
 
 const arrivalDateMenu = ref(false)
+const arrivalDateMin = computed(() => {
+  if (props.previousReservation) {
+    return dateHelper.getDateString(props.previousReservation.departureDate)
+  }
+  return dateHelper.getDateString(new Date())
+})
+const arrivalDateMax = computed(() => {
+  return dateHelper.getDateString(reservation.value.departureDate)
+})
 const departureDateMenu = ref(false)
+const departureDateMin = computed(() => {
+  return dateHelper.getDateString(reservation.value.arrivalDate)
+})
+const departureDateMax = computed(() => {
+  if (props.nextReservation) {
+    return dateHelper.getDateString(props.nextReservation.arrivalDate)
+  }
+  return false
+})
 
 const numberOfNights = computed(() => {
   return dateHelper.calculateNightsBetweenDates(
@@ -148,7 +170,13 @@ const reset = () => {
             ></v-text-field>
           </template>
           <v-card>
-            <v-date-picker :hide-header="true" v-model="reservation.arrivalDate"> </v-date-picker>
+            <v-date-picker
+              :hide-header="true"
+              v-model="reservation.arrivalDate"
+              :min="arrivalDateMin"
+              :max="arrivalDateMax"
+            >
+            </v-date-picker>
           </v-card>
         </v-menu>
       </v-col>
@@ -166,7 +194,12 @@ const reset = () => {
             ></v-text-field>
           </template>
           <v-card>
-            <v-date-picker :hide-header="true" v-model="reservation.departureDate"></v-date-picker>
+            <v-date-picker
+              :hide-header="true"
+              v-model="reservation.departureDate"
+              :min="departureDateMin"
+              :max="departureDateMax"
+            ></v-date-picker>
           </v-card>
         </v-menu>
       </v-col>
