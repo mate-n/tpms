@@ -1,3 +1,5 @@
+import type { IAvailability } from './IAvailability'
+
 export interface IReservation {
   id: number
   camp: string
@@ -9,4 +11,5 @@ export interface IReservation {
   guest: string
   baseRateCategory: string
   orderIndex: number
+  availabilities: IAvailability[]
 }

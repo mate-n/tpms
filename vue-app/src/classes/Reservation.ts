@@ -1,3 +1,4 @@
+import type { IAvailability } from '@/interfaces/IAvailability'
 import type { IReservation } from '@/interfaces/IReservation'
 
 export class Reservation implements IReservation {
@@ -11,6 +12,7 @@ export class Reservation implements IReservation {
   guest: string
   baseRateCategory: string
   orderIndex: number
+  availabilities: IAvailability[]
 
   constructor() {
     this.id = 0
@@ -23,5 +25,6 @@ export class Reservation implements IReservation {
     this.guest = ''
     this.baseRateCategory = ''
     this.orderIndex = 0
+    this.availabilities = []
   }
 }
