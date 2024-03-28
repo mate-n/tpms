@@ -26,24 +26,21 @@ const addReservation = () => {
   newReservation.departureDate = newDepartureDate
 }
 
-const issues: Ref<string[]> = ref([])
-
 const getNewOrderIndex = () => {
   if (reservations.value.length === 0) return 0
   return reservations.value.length
 }
 
 const checkForIssues: () => void = () => {
-  issues.value = []
-
   for (let i = 0; i < reservations.value.length; i++) {
+    const issues: string[] = []
     if (i > 0) {
       const isSameDay = dateHelper.isSameDay(
         reservations.value[i].arrivalDate,
         reservations.value[i - 1].departureDate
       )
       if (!isSameDay) {
-        issues.value.push('Reservation dates do not match up')
+        issues.push('Reservation dates do not match up')
       }
 
       const isTravelDistancePossibleInOneDay =
@@ -53,9 +50,10 @@ const checkForIssues: () => void = () => {
         )
 
       if (!isTravelDistancePossibleInOneDay) {
-        issues.value.push('Travel distance is too far')
+        issues.push('Travel distance is too far')
       }
     }
+    reservations.value[i].issues = issues
   }
 }
 </script>
@@ -94,12 +92,6 @@ const checkForIssues: () => void = () => {
   </template>
 
   <v-container fluid>
-    <div class="my-3">
-      <div v-for="issue in issues" :key="issue">
-        <v-alert type="warning" elevation="2">{{ issue }}</v-alert>
-      </div>
-    </div>
-
     <div class="d-flex justify-end mt-3">
       <v-btn class="secondary-button">Cancel</v-btn>
       <v-btn class="ml-2 disabled-button">Book</v-btn>

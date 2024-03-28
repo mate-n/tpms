@@ -274,4 +274,13 @@ const reset = () => {
       </tbody>
     </v-table>
   </v-container>
+  <template v-if="reservation.issues.length > 0">
+    <v-container fluid>
+      <div class="my-3">
+        <div v-for="issue in reservation.issues" :key="issue">
+          <v-alert type="warning" elevation="2">{{ issue }}</v-alert>
+        </div>
+      </div>
+    </v-container>
+  </template>
 </template>
