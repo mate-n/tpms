@@ -5,6 +5,8 @@ import { computed, ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 const dateHelper = new DateHelper()
 
+const emit = defineEmits(['check'])
+
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 
 const camps = [
@@ -120,6 +122,7 @@ const departureDateString = computed(() => {
 const check = () => {
   reservation.value.baseRateCategory = 'Base Rate | Low Season'
   reservation.value.availabilities = defaultAvailabilities
+  emit('check')
 }
 
 const reset = () => {
