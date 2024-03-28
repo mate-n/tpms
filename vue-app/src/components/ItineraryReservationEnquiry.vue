@@ -21,8 +21,9 @@ const addReservation = () => {
   newReservation.orderIndex = getNewOrderIndex()
   if (lastReservation) {
     newReservation.arrivalDate = lastReservation.departureDate
-    newReservation.departureDate = lastReservation.departureDate
   }
+  const newDepartureDate = dateHelper.addDays(newReservation.arrivalDate, 1)
+  newReservation.departureDate = newDepartureDate
 }
 
 const issues: Ref<string[]> = ref([])
