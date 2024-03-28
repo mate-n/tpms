@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+
+// sandro.raess To-Do: Implement api with axios once api is available.
 //import { inject } from 'vue'
 //import type { AxiosStatic } from 'axios'
 import type { Ref } from 'vue'
@@ -10,6 +12,7 @@ import { DateHelper } from '@/helpers/DateHelper'
 import { TravelDistanceChecker } from '@/helpers/TravelDistanceChecker'
 const dateHelper = new DateHelper()
 const travelDistanceChecker = new TravelDistanceChecker()
+// sandro.raess To-Do: Implement api with axios once api is available.
 //const axios: AxiosStatic | undefined = inject('axios')
 
 const reservations: Ref<IReservation[]> = ref([])
