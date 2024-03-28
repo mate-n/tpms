@@ -7,8 +7,9 @@ import type { IReservation } from '@/interfaces/IReservation'
 import { Reservation as ReservationClass } from '@/classes/Reservation'
 import ReservationForm from '@/components/ReservationForm.vue'
 import { DateHelper } from '@/helpers/DateHelper'
-
+import { TravelDistanceChecker } from '@/helpers/TravelDistanceChecker'
 const dateHelper = new DateHelper()
+const travelDistanceChecker = new TravelDistanceChecker()
 //const axios: AxiosStatic | undefined = inject('axios')
 
 const reservations: Ref<IReservation[]> = ref([])
@@ -43,14 +44,18 @@ const checkForIssues: () => void = () => {
       if (!isSameDay) {
         issues.value.push('Reservation dates do not match up')
       }
+
+      const isTravelDistancePossibleInOneDay =
+        travelDistanceChecker.isDistanceIsPossibleToTravelWithinADay(
+          reservations.value[i - 1].camp,
+          reservations.value[i].camp
+        )
+
+      if (!isTravelDistancePossibleInOneDay) {
+        issues.value.push('Travel distance is too far')
+      }
     }
   }
-
-  reservations.value.forEach((reservation, i) => {
-    if (!reservation.arrivalDate || !reservation.departureDate) {
-      issues.value.push(`Reservation ${i + 1} is missing dates`)
-    }
-  })
 }
 </script>
 
