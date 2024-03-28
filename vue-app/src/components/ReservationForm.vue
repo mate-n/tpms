@@ -174,7 +174,7 @@ const reset = () => {
         <v-autocomplete
           label="Room Type"
           v-model="reservation.roomType"
-          :items="['Standard | King']"
+          :items="['Standard | King', 'Standard | Queen', 'Standard | Twin', 'Standard | Single']"
         ></v-autocomplete>
       </v-col>
       <v-col>
@@ -190,7 +190,7 @@ const reset = () => {
           placeholder="Last Name | First Name"
           hint="Last Name | First Name"
           v-model="reservation.guest"
-          :items="['Daniel, Oechslin']"
+          :items="['Daniel, Oechslin', 'Sandro Raess', 'John Doe', 'Max Mustermann']"
         ></v-autocomplete>
       </v-col>
       <v-col class="d-flex justify-space-between">
