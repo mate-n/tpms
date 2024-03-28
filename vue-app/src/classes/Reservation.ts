@@ -13,6 +13,7 @@ export class Reservation implements IReservation {
   baseRateCategory: string
   orderIndex: number
   availabilities: IAvailability[]
+  issues: string[]
 
   constructor() {
     this.id = 0
@@ -26,6 +27,7 @@ export class Reservation implements IReservation {
     this.baseRateCategory = ''
     this.orderIndex = 0
     this.availabilities = []
+    this.issues = []
   }
 
   reset() {
@@ -39,5 +41,6 @@ export class Reservation implements IReservation {
     this.baseRateCategory = ''
     this.orderIndex = 0
     this.availabilities = []
+    this.issues = []
   }
 }
