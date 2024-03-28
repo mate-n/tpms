@@ -18,4 +18,10 @@ export class DateHelper {
       d1.getDate() === d2.getDate()
     )
   }
+
+  addDays(date: Date, days: number) {
+    var result = new Date(date)
+    result.setDate(result.getDate() + days)
+    return result
+  }
 }
