@@ -4,11 +4,11 @@ import type { IReservation } from '@/interfaces/IReservation'
 import { computed, ref, type Ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 const dateHelper = new DateHelper()
-const props = defineProps<{
-  reservation: IReservation
-}>()
+
+const reservation = defineModel({ required: true, type: Object as () => IReservation })
 
 const camps = [
+  '',
   'Twee Rivieren',
   'Nossob',
   'Kalahari Tent Camp',
@@ -104,22 +104,26 @@ const departureDateMenu = ref(false)
 
 const numberOfNights = computed(() => {
   return dateHelper.calculateNightsBetweenDates(
-    props.reservation.arrivalDate,
-    props.reservation.departureDate
+    reservation.value.arrivalDate,
+    reservation.value.departureDate
   )
 })
 
 const arrivalDateString = computed(() => {
-  return dateHelper.getDateString(props.reservation.arrivalDate)
+  return dateHelper.getDateString(reservation.value.arrivalDate)
 })
 
 const departureDateString = computed(() => {
-  return dateHelper.getDateString(props.reservation.departureDate)
+  return dateHelper.getDateString(reservation.value.departureDate)
 })
 
 const check = () => {
-  props.reservation.baseRateCategory = 'Base Rate | Low Season'
-  props.reservation.availabilities = defaultAvailabilities
+  reservation.value.baseRateCategory = 'Base Rate | Low Season'
+  reservation.value.availabilities = defaultAvailabilities
+}
+
+const reset = () => {
+  reservation.value.reset()
 }
 </script>
 
@@ -127,7 +131,7 @@ const check = () => {
   <v-container fluid class="bg-white">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100">
-        <v-select label="" :model-value="reservation.camp" :items="camps"></v-select>
+        <v-select label="" v-model="reservation.camp" :items="camps"></v-select>
         <v-icon>mdi-city</v-icon>
       </v-col>
       <v-col>
@@ -159,27 +163,24 @@ const check = () => {
             ></v-text-field>
           </template>
           <v-card>
-            <v-date-picker
-              :hide-header="true"
-              v-model="props.reservation.departureDate"
-            ></v-date-picker>
+            <v-date-picker :hide-header="true" v-model="reservation.departureDate"></v-date-picker>
           </v-card>
         </v-menu>
       </v-col>
       <v-col>
-        <v-text-field label="Rooms" :model-value="reservation.rooms" type="number"></v-text-field>
+        <v-text-field label="Rooms" v-model="reservation.rooms" type="number"></v-text-field>
       </v-col>
       <v-col>
         <v-autocomplete
           label="Room Type"
-          :model-value="reservation.roomType"
+          v-model="reservation.roomType"
           :items="['Standard | King']"
         ></v-autocomplete>
       </v-col>
       <v-col>
         <v-text-field
           label="Guests per room"
-          :model-value="reservation.guestsPerRoom"
+          v-model="reservation.guestsPerRoom"
           type="number"
         ></v-text-field>
       </v-col>
@@ -188,12 +189,12 @@ const check = () => {
           label="Guest"
           placeholder="Last Name | First Name"
           hint="Last Name | First Name"
-          :model-value="reservation.guest"
+          v-model="reservation.guest"
           :items="['Daniel, Oechslin']"
         ></v-autocomplete>
       </v-col>
       <v-col class="d-flex justify-space-between">
-        <v-btn class="secondary-button mr-3">Reset</v-btn>
+        <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
         <v-btn class="primary-button" @click="check()">Check</v-btn>
       </v-col>
     </v-row>
@@ -211,9 +212,12 @@ const check = () => {
               :items="[]"
             ></v-autocomplete>
           </th>
-          <th v-for="availability of props.reservation.availabilities" class="text-center">
+          <th v-for="availability of reservation.availabilities" class="text-center">
             {{ availability.short }}
           </th>
+          <template v-if="reservation.availabilities.length === 0">
+            <th v-for="i in 12"></th>
+          </template>
         </tr>
       </thead>
       <tbody>
@@ -222,21 +226,35 @@ const check = () => {
             <v-icon class="text-primary">mdi-plus</v-icon>
             Availibility (incl. OB)
           </td>
-          <td v-for="availability of props.reservation.availabilities" class="bg-lightgray">
+          <td v-for="availability of reservation.availabilities" class="bg-lightgray">
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
               {{ availability.availableRooms }}
             </div>
           </td>
+          <template v-if="reservation.availabilities.length === 0">
+            <td v-for="i in 12" class="bg-lightgray">
+              <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
+                <v-icon>mdi-circle-small</v-icon>
+              </div>
+            </td>
+          </template>
         </tr>
         <tr>
           <td class="d-flex justify-end align-center">
-            {{ props.reservation.baseRateCategory }}
+            {{ reservation.baseRateCategory }}
           </td>
-          <td v-for="availability of props.reservation.availabilities" class="bg-lightgray">
+          <td v-for="availability of reservation.availabilities" class="bg-lightgray">
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
               {{ availability.baseRate }}
             </div>
           </td>
+          <template v-if="reservation.availabilities.length === 0">
+            <td v-for="i in 12" class="bg-lightgray">
+              <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
+                <v-icon>mdi-circle-small</v-icon>
+              </div>
+            </td>
+          </template>
         </tr>
       </tbody>
     </v-table>

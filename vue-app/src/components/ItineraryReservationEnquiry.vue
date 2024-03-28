@@ -52,11 +52,11 @@ function addReservation() {
     </v-menu>
   </v-toolbar>
 
-  <template v-for="reservation of reservations">
-    <Reservation :reservation="reservation"></Reservation>
+  <template v-for="(reservation, i) of reservations">
+    <Reservation v-model="reservations[i]"></Reservation>
   </template>
 
-  <div class="d-flex justify-end">
+  <div class="d-flex justify-end mt-3">
     <v-btn class="secondary-button">Cancel</v-btn>
     <v-btn class="ml-2 disabled-button">Book</v-btn>
   </div>
