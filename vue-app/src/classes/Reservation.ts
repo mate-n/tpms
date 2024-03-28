@@ -27,4 +27,17 @@ export class Reservation implements IReservation {
     this.orderIndex = 0
     this.availabilities = []
   }
+
+  reset() {
+    this.camp = ''
+    this.arrivalDate = new Date()
+    this.departureDate = new Date()
+    this.rooms = 0
+    this.roomType = ''
+    this.guestsPerRoom = 0
+    this.guest = ''
+    this.baseRateCategory = ''
+    this.orderIndex = 0
+    this.availabilities = []
+  }
 }

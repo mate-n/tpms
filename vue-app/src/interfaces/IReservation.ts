@@ -12,4 +12,5 @@ export interface IReservation {
   baseRateCategory: string
   orderIndex: number
   availabilities: IAvailability[]
+  reset(): void
 }
