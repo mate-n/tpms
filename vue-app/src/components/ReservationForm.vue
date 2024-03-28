@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { IAvailability } from '@/interfaces/IAvailability'
 import type { IReservation } from '@/interfaces/IReservation'
-import { computed, ref, type Ref } from 'vue'
+import { computed, ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 const dateHelper = new DateHelper()
 
@@ -212,11 +212,15 @@ const reset = () => {
               :items="[]"
             ></v-autocomplete>
           </th>
-          <th v-for="availability of reservation.availabilities" class="text-center">
+          <th
+            v-for="availability of reservation.availabilities"
+            :key="availability.short"
+            class="text-center"
+          >
             {{ availability.short }}
           </th>
           <template v-if="reservation.availabilities.length === 0">
-            <th v-for="i in 12"></th>
+            <th v-for="i in 12" :key="i"></th>
           </template>
         </tr>
       </thead>
@@ -226,13 +230,17 @@ const reset = () => {
             <v-icon class="text-primary">mdi-plus</v-icon>
             Availibility (incl. OB)
           </td>
-          <td v-for="availability of reservation.availabilities" class="bg-lightgray">
+          <td
+            v-for="availability of reservation.availabilities"
+            :key="availability.short"
+            class="bg-lightgray"
+          >
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
               {{ availability.availableRooms }}
             </div>
           </td>
           <template v-if="reservation.availabilities.length === 0">
-            <td v-for="i in 12" class="bg-lightgray">
+            <td v-for="i in 12" :key="i" class="bg-lightgray">
               <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
                 <v-icon>mdi-circle-small</v-icon>
               </div>
@@ -243,13 +251,17 @@ const reset = () => {
           <td class="d-flex justify-end align-center">
             {{ reservation.baseRateCategory }}
           </td>
-          <td v-for="availability of reservation.availabilities" class="bg-lightgray">
+          <td
+            v-for="availability of reservation.availabilities"
+            :key="availability.short"
+            class="bg-lightgray"
+          >
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
               {{ availability.baseRate }}
             </div>
           </td>
           <template v-if="reservation.availabilities.length === 0">
-            <td v-for="i in 12" class="bg-lightgray">
+            <td v-for="i in 12" :key="i" class="bg-lightgray">
               <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
                 <v-icon>mdi-circle-small</v-icon>
               </div>

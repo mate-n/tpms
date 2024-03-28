@@ -6,7 +6,7 @@ import type { AxiosStatic } from 'axios'
 import type { Ref } from 'vue'
 import type { IReservation } from '@/interfaces/IReservation'
 import { Reservation as ReservationClass } from '@/classes/Reservation'
-import Reservation from '@/components/Reservation.vue'
+import ReservationForm from '@/components/ReservationForm.vue'
 
 const axios: AxiosStatic | undefined = inject('axios')
 
@@ -52,8 +52,8 @@ function addReservation() {
     </v-menu>
   </v-toolbar>
 
-  <template v-for="(reservation, i) of reservations">
-    <Reservation v-model="reservations[i]"></Reservation>
+  <template v-for="(reservation, i) of reservations" :key="reservation.id">
+    <ReservationForm v-model="reservations[i]"></ReservationForm>
   </template>
 
   <div class="d-flex justify-end mt-3">
