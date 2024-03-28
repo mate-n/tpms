@@ -21,7 +21,7 @@ const camps = [
   'Mata-Mata'
 ]
 
-const availabilities: Ref<IAvailability[]> = ref([
+const defaultAvailabilities: IAvailability[] = [
   {
     short: 'BD2',
     availableRooms: 29,
@@ -97,7 +97,7 @@ const availabilities: Ref<IAvailability[]> = ref([
     availableRooms: 4,
     baseRate: 3.33
   }
-])
+]
 
 const arrivalDateMenu = ref(false)
 const departureDateMenu = ref(false)
@@ -116,6 +116,11 @@ const arrivalDateString = computed(() => {
 const departureDateString = computed(() => {
   return dateHelper.getDateString(props.reservation.departureDate)
 })
+
+const check = () => {
+  props.reservation.baseRateCategory = 'Base Rate | Low Season'
+  props.reservation.availabilities = defaultAvailabilities
+}
 </script>
 
 <template>
@@ -189,7 +194,7 @@ const departureDateString = computed(() => {
       </v-col>
       <v-col class="d-flex justify-space-between">
         <v-btn class="secondary-button mr-3">Reset</v-btn>
-        <v-btn class="primary-button">Check</v-btn>
+        <v-btn class="primary-button" @click="check()">Check</v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -206,7 +211,7 @@ const departureDateString = computed(() => {
               :items="[]"
             ></v-autocomplete>
           </th>
-          <th v-for="availability of availabilities" class="text-center">
+          <th v-for="availability of props.reservation.availabilities" class="text-center">
             {{ availability.short }}
           </th>
         </tr>
@@ -217,7 +222,7 @@ const departureDateString = computed(() => {
             <v-icon class="text-primary">mdi-plus</v-icon>
             Availibility (incl. OB)
           </td>
-          <td v-for="availability of availabilities" class="bg-lightgray">
+          <td v-for="availability of props.reservation.availabilities" class="bg-lightgray">
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
               {{ availability.availableRooms }}
             </div>
@@ -227,7 +232,7 @@ const departureDateString = computed(() => {
           <td class="d-flex justify-end align-center">
             {{ props.reservation.baseRateCategory }}
           </td>
-          <td v-for="availability of availabilities" class="bg-lightgray">
+          <td v-for="availability of props.reservation.availabilities" class="bg-lightgray">
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
               {{ availability.baseRate }}
             </div>
