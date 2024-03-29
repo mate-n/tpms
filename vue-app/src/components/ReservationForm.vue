@@ -5,7 +5,7 @@ import { computed, ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 const dateHelper = new DateHelper()
 
-const emit = defineEmits(['check'])
+const emit = defineEmits(['check', 'change'])
 
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 const props = defineProps({
@@ -150,13 +150,22 @@ const check = () => {
 const reset = () => {
   reservation.value.reset()
 }
+
+const emitChange = () => {
+  emit('change')
+}
 </script>
 
 <template>
   <v-container fluid class="bg-white">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100">
-        <v-select label="" v-model="reservation.camp" :items="camps"></v-select>
+        <v-select
+          label=""
+          v-model="reservation.camp"
+          :items="camps"
+          :update:modelValue="emitChange()"
+        ></v-select>
         <v-icon>mdi-city</v-icon>
       </v-col>
       <v-col>
@@ -227,6 +236,8 @@ const reset = () => {
           hint="Last Name | First Name"
           v-model="reservation.guest"
           :items="['Daniel, Oechslin', 'Sandro Raess', 'John Doe', 'Max Mustermann']"
+          :disabled="previousReservation !== undefined"
+          :update:model-value="emitChange()"
         ></v-autocomplete>
       </v-col>
       <v-col class="d-flex justify-space-between">
