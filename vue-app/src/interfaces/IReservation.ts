@@ -13,5 +13,6 @@ export interface IReservation {
   orderIndex: number
   availabilities: IAvailability[]
   issues: string[]
+  errors: Record<string, string>
   reset(): void
 }
