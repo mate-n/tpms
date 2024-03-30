@@ -3,7 +3,9 @@ import type { IAvailability } from '@/interfaces/IAvailability'
 import type { IReservation } from '@/interfaces/IReservation'
 import { computed, ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
+import { ReservationValidator } from '@/validators/ReservationValidator'
 const dateHelper = new DateHelper()
+const reservationValidator = new ReservationValidator()
 
 const emit = defineEmits(['check', 'change'])
 
@@ -152,6 +154,7 @@ const reset = () => {
 }
 
 const emitChange = () => {
+  reservationValidator.validate(reservation.value)
   emit('change')
 }
 </script>
@@ -164,7 +167,7 @@ const emitChange = () => {
           label=""
           v-model="reservation.camp"
           :items="camps"
-          :update:modelValue="emitChange()"
+          @update:model-value="emitChange()"
         ></v-select>
         <v-icon>mdi-city</v-icon>
       </v-col>
@@ -184,13 +187,19 @@ const emitChange = () => {
               v-model="reservation.arrivalDate"
               :min="arrivalDateMin"
               :max="arrivalDateMax"
+              @update:model-value="emitChange()"
             >
             </v-date-picker>
           </v-card>
         </v-menu>
       </v-col>
       <v-col>
-        <v-text-field label="Nights" :model-value="numberOfNights" type="number"></v-text-field>
+        <v-text-field
+          label="Nights"
+          :model-value="numberOfNights"
+          type="number"
+          :error-messages="reservation.errors['nights']"
+        ></v-text-field>
       </v-col>
       <v-col>
         <v-menu v-model="departureDateMenu" :close-on-content-click="false">
@@ -208,25 +217,35 @@ const emitChange = () => {
               v-model="reservation.departureDate"
               :min="departureDateMin"
               :max="departureDateMax"
+              @update:model-value="emitChange()"
             ></v-date-picker>
           </v-card>
         </v-menu>
       </v-col>
       <v-col>
-        <v-text-field label="Rooms" v-model="reservation.rooms" type="number"></v-text-field>
+        <v-text-field
+          label="Rooms"
+          v-model="reservation.rooms"
+          :error-messages="reservation.errors['rooms']"
+          type="number"
+          @change="emitChange()"
+        ></v-text-field>
       </v-col>
       <v-col>
         <v-autocomplete
           label="Room Type"
           v-model="reservation.roomType"
           :items="['Standard | King', 'Standard | Queen', 'Standard | Twin', 'Standard | Single']"
+          @change="emitChange()"
         ></v-autocomplete>
       </v-col>
       <v-col>
         <v-text-field
           label="Guests per room"
           v-model="reservation.guestsPerRoom"
+          :error-messages="reservation.errors['guestsPerRoom']"
           type="number"
+          @change="emitChange()"
         ></v-text-field>
       </v-col>
       <v-col>
@@ -237,7 +256,7 @@ const emitChange = () => {
           v-model="reservation.guest"
           :items="['Daniel, Oechslin', 'Sandro Raess', 'John Doe', 'Max Mustermann']"
           :disabled="previousReservation !== undefined"
-          :update:model-value="emitChange()"
+          @update:model-value="emitChange()"
         ></v-autocomplete>
       </v-col>
       <v-col class="d-flex justify-space-between">
@@ -246,6 +265,16 @@ const emitChange = () => {
       </v-col>
     </v-row>
   </v-container>
+
+  <template v-if="reservation.issues.length > 0">
+    <v-container fluid>
+      <div class="my-3">
+        <div v-for="issue in reservation.issues" :key="issue">
+          <v-alert type="warning" elevation="2">{{ issue }}</v-alert>
+        </div>
+      </div>
+    </v-container>
+  </template>
 
   <v-container fluid>
     <v-table>
@@ -318,13 +347,4 @@ const emitChange = () => {
       </tbody>
     </v-table>
   </v-container>
-  <template v-if="reservation.issues.length > 0">
-    <v-container fluid>
-      <div class="my-3">
-        <div v-for="issue in reservation.issues" :key="issue">
-          <v-alert type="warning" elevation="2">{{ issue }}</v-alert>
-        </div>
-      </div>
-    </v-container>
-  </template>
 </template>
