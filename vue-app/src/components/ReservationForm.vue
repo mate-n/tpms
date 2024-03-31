@@ -280,14 +280,7 @@ const emitChange = () => {
     <v-table>
       <thead>
         <tr class="bg-lightblue">
-          <th class="text-left">
-            <v-autocomplete
-              density="compact"
-              label=""
-              prepend-inner-icon="mdi-magnify"
-              :items="[]"
-            ></v-autocomplete>
-          </th>
+          <th class=""></th>
           <th
             v-for="availability of reservation.availabilities"
             :key="availability.short"
