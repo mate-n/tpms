@@ -14,33 +14,36 @@ export class Reservation implements IReservation {
   orderIndex: number
   availabilities: IAvailability[]
   issues: string[]
+  errors: Record<string, string>
 
   constructor() {
     this.id = 0
     this.camp = ''
     this.arrivalDate = new Date()
     this.departureDate = new Date()
-    this.rooms = 0
+    this.rooms = 1
     this.roomType = ''
-    this.guestsPerRoom = 0
+    this.guestsPerRoom = 1
     this.guest = ''
     this.baseRateCategory = ''
     this.orderIndex = 0
     this.availabilities = []
     this.issues = []
+    this.errors = {}
   }
 
   reset() {
     this.camp = ''
     this.arrivalDate = new Date()
     this.departureDate = new Date()
-    this.rooms = 0
+    this.rooms = 1
     this.roomType = ''
-    this.guestsPerRoom = 0
+    this.guestsPerRoom = 1
     this.guest = ''
     this.baseRateCategory = ''
     this.orderIndex = 0
     this.availabilities = []
     this.issues = []
+    this.errors = {}
   }
 }

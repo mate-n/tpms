@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 // sandro.raess To-Do: Implement api with axios once api is available.
 //import { inject } from 'vue'
@@ -24,14 +24,31 @@ const addReservation = () => {
   newReservation.orderIndex = getNewOrderIndex()
   if (lastReservation) {
     newReservation.arrivalDate = lastReservation.departureDate
+    newReservation.guest = selectedGuest.value
   }
   const newDepartureDate = dateHelper.addDays(newReservation.arrivalDate, 1)
   newReservation.departureDate = newDepartureDate
 }
 
+const onReservationChanged = () => {
+  updateAllReservations()
+  checkForIssues()
+}
+
 const getNewOrderIndex = () => {
   if (reservations.value.length === 0) return 0
   return reservations.value.length
+}
+
+const selectedGuest = computed(() => {
+  if (reservations.value.length === 0) return ''
+  return reservations.value[0].guest
+})
+
+const updateAllReservations = () => {
+  for (const reservation of reservations.value) {
+    reservation.guest = selectedGuest.value
+  }
 }
 
 const checkForIssues: () => void = () => {
@@ -94,6 +111,7 @@ const checkForIssues: () => void = () => {
     <ReservationForm
       v-model="reservations[i]"
       @check="checkForIssues()"
+      @change="onReservationChanged()"
       :previous-reservation="reservations[i - 1]"
       :next-reservation="reservations[i + 1]"
     ></ReservationForm>
