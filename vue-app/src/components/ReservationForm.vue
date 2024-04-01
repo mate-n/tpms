@@ -37,7 +37,8 @@ const defaultAvailabilities: IAvailability[] = [
   },
   {
     short: 'BD2EC',
-    availableRooms: 25,
+    //availableRooms: 25, // sandro.raess To-Do: Keep this commented out for demonstration purposes.
+    availableRooms: 0,
     baseRate: 1.934
   },
   {
