@@ -46,4 +46,19 @@ export class Reservation implements IReservation {
     this.issues = []
     this.errors = {}
   }
+
+  addIssue(issue: string) {
+    const foundIssue = this.issues.find((i) => i === issue)
+    if (foundIssue) {
+      return
+    }
+    this.issues.push(issue)
+  }
+
+  removeIssue(issue: string) {
+    const index = this.issues.indexOf(issue)
+    if (index > -1) {
+      this.issues.splice(index, 1)
+    }
+  }
 }

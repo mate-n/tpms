@@ -15,4 +15,6 @@ export interface IReservation {
   issues: string[]
   errors: Record<string, string>
   reset(): void
+  addIssue(issue: string): void
+  removeIssue(issue: string): void
 }
