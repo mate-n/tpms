@@ -9,14 +9,15 @@ export class ItineraryReservationValidator implements IValidator {
 
   validate(reservations: IReservation[]): void {
     for (let i = 0; i < reservations.length; i++) {
-      const issues: string[] = []
       if (i > 0) {
         const isSameDay = this.dateHelper.isSameDay(
           reservations[i].arrivalDate,
           reservations[i - 1].departureDate
         )
         if (!isSameDay) {
-          issues.push('Reservation dates do not match up')
+          reservations[i].addIssue('Reservation dates do not match up')
+        } else {
+          reservations[i].removeIssue('Reservation dates do not match up')
         }
 
         const isTravelDistancePossibleInOneDay =
@@ -26,10 +27,11 @@ export class ItineraryReservationValidator implements IValidator {
           )
 
         if (!isTravelDistancePossibleInOneDay) {
-          issues.push('Travel distance is too far')
+          reservations[i].addIssue('Travel distance is too far')
+        } else {
+          reservations[i].removeIssue('Travel distance is too far')
         }
       }
-      reservations[i].issues = issues
     }
   }
 }
