@@ -238,7 +238,8 @@ const emitChange = () => {
           label="Room Type"
           v-model="reservation.roomType"
           :items="['Standard | King', 'Standard | Queen', 'Standard | Twin', 'Standard | Single']"
-          @change="emitChange()"
+          :error-messages="reservation.errors['roomType']"
+          @update:model-value="emitChange()"
         ></v-autocomplete>
       </v-col>
       <v-col>
@@ -267,7 +268,6 @@ const emitChange = () => {
       </v-col>
     </v-row>
   </v-container>
-
   <template v-if="reservation.issues.length > 0">
     <v-container fluid>
       <div class="my-3">
