@@ -200,6 +200,7 @@ const emitChange = () => {
           :model-value="numberOfNights"
           type="number"
           :error-messages="reservation.errors['nights']"
+          :readonly="true"
         ></v-text-field>
       </v-col>
       <v-col>
