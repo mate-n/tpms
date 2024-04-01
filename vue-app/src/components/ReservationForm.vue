@@ -146,6 +146,7 @@ const departureDateString = computed(() => {
 const check = () => {
   reservation.value.baseRateCategory = 'Base Rate | Low Season'
   reservation.value.availabilities = defaultAvailabilities
+  reservationValidator.validate(reservation.value)
   emit('check')
 }
 
