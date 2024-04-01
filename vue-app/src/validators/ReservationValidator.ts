@@ -10,7 +10,7 @@ export class ReservationValidator implements IValidator {
     this.isGuestsPerRoomValid(reservation)
     this.isRoomsValid(reservation)
     this.isNightsValid(reservation)
-    this.isRoomTypeIsAvailable(reservation)
+    this.isRoomTypeAvailable(reservation)
   }
 
   isGuestsPerRoomValid(reservation: IReservation): void {
@@ -36,9 +36,11 @@ export class ReservationValidator implements IValidator {
     }
   }
 
-  isRoomTypeIsAvailable(reservation: IReservation): void {
+  isRoomTypeAvailable(reservation: IReservation): void {
+    if (reservation.availabilities.length === 0) return
+    if (!reservation.roomType) return
     if (reservation.roomType === 'Standard | King') {
-      reservation.errors['nights'] = 'Room Type is not available'
+      reservation.errors['roomType'] = 'Room Type is not available'
     }
   }
 }
