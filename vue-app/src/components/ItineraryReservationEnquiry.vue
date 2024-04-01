@@ -51,7 +51,7 @@ const updateAllReservations = () => {
   }
 }
 
-const checkForIssues: () => void = () => {
+const checkForIssues = () => {
   itineraryReservationValidator.validate(reservations.value)
 }
 </script>
