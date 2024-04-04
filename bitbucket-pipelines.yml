@@ -12,13 +12,17 @@ pipelines:
             name: "Build and Test"
             script:
               - echo "Your build and test goes here..."
-              - /bin/bash api-test.sh
               - /bin/bash cypress-test.sh
         - step:
             name: "Lint"
             script:
               - echo "Your linting goes here..."
               - cd vue-app && npm install && npm run lint
+        - step:
+            name: "API Selenium-Test"
+            script:
+              - echo "Your API test goes here..."
+              - cd selenium-tests && /bin/bash api-test.sh
         - step:
             name: "Security scan"
             script:
