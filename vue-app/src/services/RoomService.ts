@@ -1,17 +1,18 @@
-import { type AxiosStatic } from 'axios'
-import { AxiosInstanceFactory } from '../factories/AxiosInstanceFactory'
+import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
+import type { IRoom } from '@/interfaces/IRoom'
 import type { IService } from '@/interfaces/IService'
+import type { AxiosStatic } from 'axios'
 
-class ProfileService implements IService {
+export class RoomService implements IService {
   axiosInstance: AxiosStatic
   constructor(axiosInstance: AxiosStatic | undefined) {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
   }
 
-  getProfile() {
-    return new Promise((resolve, reject) => {
+  getRooms() {
+    return new Promise<IRoom[]>((resolve, reject) => {
       this.axiosInstance
-        .post('?lookup&email=gert@ankerdata2.co.za')
+        .get('rooms')
         .then((response: any) => {
           resolve(response.data)
         })
@@ -21,5 +22,3 @@ class ProfileService implements IService {
     })
   }
 }
-
-export default ProfileService

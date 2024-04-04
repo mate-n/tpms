@@ -1,20 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-
-// sandro.raess To-Do: Implement api with axios once api is available.
-//import { inject } from 'vue'
-//import type { AxiosStatic } from 'axios'
 import type { Ref } from 'vue'
 import type { IReservation } from '@/interfaces/IReservation'
 import { Reservation as ReservationClass } from '@/classes/Reservation'
 import ReservationForm from '@/components/ReservationForm.vue'
 import { DateHelper } from '@/helpers/DateHelper'
-import { TravelDistanceChecker } from '@/helpers/TravelDistanceChecker'
+import { ItineraryReservationValidator } from '@/validators/ItineraryReservationValidator'
 const dateHelper = new DateHelper()
-const travelDistanceChecker = new TravelDistanceChecker()
-// sandro.raess To-Do: Implement api with axios once api is available.
-//const axios: AxiosStatic | undefined = inject('axios')
-
+const itineraryReservationValidator = new ItineraryReservationValidator()
 const reservations: Ref<IReservation[]> = ref([])
 
 const addReservation = () => {
@@ -51,30 +44,8 @@ const updateAllReservations = () => {
   }
 }
 
-const checkForIssues: () => void = () => {
-  for (let i = 0; i < reservations.value.length; i++) {
-    const issues: string[] = []
-    if (i > 0) {
-      const isSameDay = dateHelper.isSameDay(
-        reservations.value[i].arrivalDate,
-        reservations.value[i - 1].departureDate
-      )
-      if (!isSameDay) {
-        issues.push('Reservation dates do not match up')
-      }
-
-      const isTravelDistancePossibleInOneDay =
-        travelDistanceChecker.isDistanceIsPossibleToTravelWithinADay(
-          reservations.value[i - 1].camp,
-          reservations.value[i].camp
-        )
-
-      if (!isTravelDistancePossibleInOneDay) {
-        issues.push('Travel distance is too far')
-      }
-    }
-    reservations.value[i].issues = issues
-  }
+const checkForIssues = () => {
+  itineraryReservationValidator.validate(reservations.value)
 }
 </script>
 
