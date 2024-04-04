@@ -1,0 +1,19 @@
+@import 'variables';
+
+@mixin color-avatar-modifiers {
+  @each $name, $hex in $main-colors {
+    &-#{$name} {
+      display: table-cell;
+      height: 3rem;
+      width: 3rem;
+      text-align: center;
+      vertical-align: middle;
+      border-radius: 50%;
+      background-color: $hex !important;
+    }
+  }
+}
+
+.color-avatar {
+  @include color-avatar-modifiers;
+}
