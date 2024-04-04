@@ -1,17 +1,19 @@
-import type { IAvailability } from './IAvailability'
+import type { IProperty } from './IProperty'
+import type { IRoom } from './IRoom'
+import type { IAvailabilityData } from './availability/IAvailabilityData'
 
 export interface IReservation {
   id: number
-  camp: string
+  property: IProperty | undefined
   arrivalDate: Date
   departureDate: Date
   rooms: number
-  roomType: string
+  room: IRoom | undefined
   guestsPerRoom: number
   guest: string
   baseRateCategory: string
   orderIndex: number
-  availabilities: IAvailability[]
+  availablityData: IAvailabilityData[]
   issues: string[]
   errors: Record<string, string>
   reset(): void
