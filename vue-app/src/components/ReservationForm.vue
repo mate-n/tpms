@@ -1,9 +1,20 @@
 <script setup lang="ts">
-import type { IAvailability } from '@/interfaces/IAvailability'
 import type { IReservation } from '@/interfaces/IReservation'
-import { computed, ref } from 'vue'
+import { computed, inject, onMounted, ref, type Ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ReservationValidator } from '@/validators/ReservationValidator'
+import AvailabilityService from '@/services/AvailabilityService'
+import type { AxiosStatic } from 'axios'
+import type { IAvailabilityPostBody } from '@/interfaces/availability/IAvailabilityPostBody'
+import type { IAvailabilityData } from '@/interfaces/availability/IAvailabilityData'
+import type { IProperty } from '@/interfaces/IProperty'
+import { PropertyService } from '@/services/PropertyService'
+import { RoomService } from '@/services/RoomService'
+import type { IRoom } from '@/interfaces/IRoom'
+const axios: AxiosStatic | undefined = inject('axios')
+const availabilityService = new AvailabilityService(axios)
+const propertyService = new PropertyService(axios)
+const roomService = new RoomService(axios)
 const dateHelper = new DateHelper()
 const reservationValidator = new ReservationValidator()
 
@@ -15,98 +26,17 @@ const props = defineProps({
   nextReservation: { type: Object as () => IReservation, required: false }
 })
 
-const camps = [
-  '',
-  'Twee Rivieren',
-  'Nossob',
-  'Kalahari Tent Camp',
-  'Grootkolk',
-  'Gharagab',
-  'Urikaruus',
-  'Kielie Krankie',
-  'Bitterpan',
-  'Unions End',
-  'Mata-Mata'
-]
+const properties: Ref<IProperty[]> = ref([])
+const rooms: Ref<IRoom[]> = ref([])
 
-const defaultAvailabilities: IAvailability[] = [
-  {
-    short: 'BD2',
-    availableRooms: 29,
-    baseRate: 1.934
-  },
-  {
-    short: 'BD2EC',
-    //availableRooms: 25, // sandro.raess To-Do: Keep this commented out for demonstration purposes.
-    availableRooms: 0,
-    baseRate: 1.934
-  },
-  {
-    short: 'BD2N',
-    availableRooms: 23,
-    baseRate: 1.934
-  },
-  {
-    short: 'BD2N2',
-    availableRooms: 2,
-    baseRate: 1.934
-  },
-  {
-    short: 'BD2V',
-    availableRooms: 19,
-    baseRate: 2.093
-  },
-  {
-    short: 'BD3B',
-    availableRooms: 22,
-    baseRate: 1.934
-  },
-  {
-    short: 'BD3E',
-    availableRooms: 4,
-    baseRate: 1.934
-  },
-  {
-    short: 'BD3ZB',
-    availableRooms: 2,
-    baseRate: 1.937
-  },
-  {
-    short: 'BG2',
-    availableRooms: 25,
-    baseRate: 1.554
-  },
-  {
-    short: 'BG2HB',
-    availableRooms: 1,
-    baseRate: 1.554
-  },
-  {
-    short: 'CK6P',
-    availableRooms: 80,
-    baseRate: 349
-  },
-  {
-    short: 'CK6',
-    availableRooms: 15,
-    baseRate: 0
-  },
-  {
-    short: 'GH6',
-    availableRooms: 1,
-    baseRate: 0
-  },
-  {
-    short: 'GCS',
-    availableRooms: 1,
-    baseRate: 3.33
-  },
-  {
-    short: 'GC6B',
-    availableRooms: 4,
-    baseRate: 3.33
-  }
-]
+onMounted(() => {
+  propertyService.getProperties().then((response: IProperty[]) => {
+    properties.value = response
+  })
+  roomService.getRooms().then((response: IRoom[]) => {
+    rooms.value = response
+  })
+})
 
 const arrivalDateMenu = ref(false)
 const arrivalDateMin = computed(() => {
@@ -145,10 +75,22 @@ const departureDateString = computed(() => {
 })
 
 const check = () => {
-  reservation.value.baseRateCategory = 'Base Rate | Low Season'
-  reservation.value.availabilities = defaultAvailabilities
-  reservationValidator.validate(reservation.value)
-  emit('check')
+  if (!reservation.value.property) return
+  if (!reservation.value.room) return
+  const availabilityPostBody: IAvailabilityPostBody = {
+    arrivaldate: dateHelper.getYYYYMMDDFromDate(reservation.value.arrivalDate),
+    departuredate: dateHelper.getYYYYMMDDFromDate(reservation.value.departureDate),
+    roomtype: reservation.value.room.roomtype,
+    propertyid: reservation.value.property.id
+  }
+
+  availabilityService.getAvailability(availabilityPostBody).then((response: any) => {
+    const availabilityData: IAvailabilityData[] = response.data.availability_data
+    reservation.value.availablityData = availabilityData
+    reservation.value.baseRateCategory = 'Base Rate | Low Season'
+    reservationValidator.validate(reservation.value)
+    emit('check')
+  })
 }
 
 const reset = () => {
@@ -167,9 +109,11 @@ const emitChange = () => {
       <v-col class="d-flex align-center h-100">
         <v-select
           label=""
-          v-model="reservation.camp"
-          :items="camps"
+          v-model="reservation.property"
+          :items="properties"
+          item-title="name"
           @update:model-value="emitChange()"
+          :return-object="true"
         ></v-select>
         <v-icon>mdi-city</v-icon>
       </v-col>
@@ -237,10 +181,12 @@ const emitChange = () => {
       <v-col>
         <v-autocomplete
           label="Room Type"
-          v-model="reservation.roomType"
-          :items="['Standard | King', 'Standard | Queen', 'Standard | Twin', 'Standard | Single']"
+          v-model="reservation.room"
+          :items="rooms"
+          item-title="name"
           :error-messages="reservation.errors['roomType']"
           @update:model-value="emitChange()"
+          :return-object="true"
         ></v-autocomplete>
       </v-col>
       <v-col>
@@ -283,35 +229,35 @@ const emitChange = () => {
     <v-table>
       <thead>
         <tr class="bg-lightblue">
-          <th class=""></th>
+          <th class="" style="width: 15rem"></th>
           <th
-            v-for="availability of reservation.availabilities"
-            :key="availability.short"
+            v-for="availabilityDatum of reservation.availablityData"
+            :key="availabilityDatum.room_type_code"
             class="text-center"
           >
-            {{ availability.short }}
+            {{ availabilityDatum.room_type_code }}
           </th>
-          <template v-if="reservation.availabilities.length === 0">
+          <template v-if="reservation.availablityData.length === 0">
             <th v-for="i in 12" :key="i"></th>
           </template>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="d-flex justify-space-between align-center" style="width: 15rem">
+          <td class="d-flex justify-space-between align-center">
             <v-icon class="text-primary">mdi-plus</v-icon>
             Availibility (incl. OB)
           </td>
           <td
-            v-for="availability of reservation.availabilities"
-            :key="availability.short"
+            v-for="availablityDatum of reservation.availablityData"
+            :key="availablityDatum.room_type_code"
             class="bg-lightgray"
           >
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
-              {{ availability.availableRooms }}
+              {{ availablityDatum.availability_count }}
             </div>
           </td>
-          <template v-if="reservation.availabilities.length === 0">
+          <template v-if="reservation.availablityData.length === 0">
             <td v-for="i in 12" :key="i" class="bg-lightgray">
               <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
                 <v-icon>mdi-circle-small</v-icon>
@@ -324,15 +270,17 @@ const emitChange = () => {
             {{ reservation.baseRateCategory }}
           </td>
           <td
-            v-for="availability of reservation.availabilities"
-            :key="availability.short"
+            v-for="availabilityDatum of reservation.availablityData"
+            :key="availabilityDatum.room_type_code"
             class="bg-lightgray"
           >
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
-              {{ availability.baseRate }}
+              <template v-if="availabilityDatum.rates_data[0]">
+                {{ availabilityDatum.rates_data[0].room_rate }}
+              </template>
             </div>
           </td>
-          <template v-if="reservation.availabilities.length === 0">
+          <template v-if="reservation.availablityData.length === 0">
             <td v-for="i in 12" :key="i" class="bg-lightgray">
               <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
                 <v-icon>mdi-circle-small</v-icon>
