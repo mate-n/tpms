@@ -1,8 +1,8 @@
 #!/bin/bash
-cd vue-app
+cd selenium-test
 npm install
 #npm run api-test
-node src/test/selenium/compareJsonsFromMockServiceWithRealApi/profiles.spec.js
+node compareJsonsFromMockServiceWithRealApi/profiles.spec.js
 exit_code=$?
 echo "Exit code: $exit_code"
 if [[ $exit_code -eq 0 ]]; then
