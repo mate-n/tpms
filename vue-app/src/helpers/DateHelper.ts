@@ -24,4 +24,9 @@ export class DateHelper {
     result.setDate(result.getDate() + days)
     return result
   }
+
+  getYYYYMMDDFromDate(date: Date): string {
+    const dateISOString = date.toISOString()
+    return dateISOString.substring(0, dateISOString.indexOf('T'))
+  }
 }
