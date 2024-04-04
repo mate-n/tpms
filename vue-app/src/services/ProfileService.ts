@@ -1,7 +1,8 @@
 import { type AxiosStatic } from 'axios'
 import { AxiosInstanceFactory } from '../factories/AxiosInstanceFactory'
+import type { IService } from '@/interfaces/IService'
 
-class ProfileService {
+class ProfileService implements IService {
   axiosInstance: AxiosStatic
   constructor(axiosInstance: AxiosStatic | undefined) {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
