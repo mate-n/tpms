@@ -104,6 +104,10 @@ const emitChange = () => {
 const openProfileDialog = () => {
   profileDialog.value = true
 }
+
+const closeProfileDialog = () => {
+  profileDialog.value = false
+}
 </script>
 
 <template>
@@ -299,9 +303,7 @@ const openProfileDialog = () => {
   </v-container>
   <v-dialog v-model="profileDialog" fullscreen>
     <v-card>
-      <ProfileSearch></ProfileSearch>
-
-      <v-btn class="ms-auto" text="Ok" @click="profileDialog = false"></v-btn>
+      <ProfileSearch @close="closeProfileDialog()"></ProfileSearch>
     </v-card>
   </v-dialog>
 </template>
