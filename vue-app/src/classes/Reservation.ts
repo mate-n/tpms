@@ -1,5 +1,7 @@
-import type { IAvailability } from '@/interfaces/IAvailability'
+import type { IAvailabilityData } from '@/interfaces/availability/IAvailabilityData'
+import type { IProperty } from '@/interfaces/IProperty'
 import type { IReservation } from '@/interfaces/IReservation'
+import type { IRoom } from '@/interfaces/IRoom'
 
 export class Reservation implements IReservation {
   id: number
@@ -7,12 +9,14 @@ export class Reservation implements IReservation {
   arrivalDate: Date
   departureDate: Date
   rooms: number
+  room: IRoom | undefined
   roomType: string
   guestsPerRoom: number
   guest: string
   baseRateCategory: string
   orderIndex: number
-  availabilities: IAvailability[]
+  property: IProperty | undefined
+  availablityData: IAvailabilityData[]
   issues: string[]
   errors: Record<string, string>
 
@@ -27,7 +31,7 @@ export class Reservation implements IReservation {
     this.guest = ''
     this.baseRateCategory = ''
     this.orderIndex = 0
-    this.availabilities = []
+    this.availablityData = []
     this.issues = []
     this.errors = {}
   }
@@ -42,7 +46,7 @@ export class Reservation implements IReservation {
     this.guest = ''
     this.baseRateCategory = ''
     this.orderIndex = 0
-    this.availabilities = []
+    this.availablityData = []
     this.issues = []
     this.errors = {}
   }
