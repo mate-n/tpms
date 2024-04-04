@@ -20,16 +20,18 @@ export class ItineraryReservationValidator implements IValidator {
           reservations[i].removeIssue('Reservation dates do not match up')
         }
 
-        const isTravelDistancePossibleInOneDay =
-          this.travelDistanceChecker.isDistanceIsPossibleToTravelWithinADay(
-            reservations[i - 1].camp,
-            reservations[i].camp
-          )
+        if (reservations[i - 1].property && reservations[i].property) {
+          const isTravelDistancePossibleInOneDay =
+            this.travelDistanceChecker.isDistanceIsPossibleToTravelWithinADay(
+              reservations[i - 1].property!.name,
+              reservations[i].property!.name
+            )
 
-        if (!isTravelDistancePossibleInOneDay) {
-          reservations[i].addIssue('Travel distance is too far')
-        } else {
-          reservations[i].removeIssue('Travel distance is too far')
+          if (!isTravelDistancePossibleInOneDay) {
+            reservations[i].addIssue('Travel distance is too far')
+          } else {
+            reservations[i].removeIssue('Travel distance is too far')
+          }
         }
       }
     }
