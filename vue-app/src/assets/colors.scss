@@ -3,7 +3,7 @@
 @mixin background-color-modifiers {
   @each $name, $hex in $main-colors {
     &-#{$name} {
-      background-color: $hex;
+      background-color: $hex !important;
     }
   }
 }
