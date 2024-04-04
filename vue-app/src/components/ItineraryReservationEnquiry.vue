@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-
-// sandro.raess To-Do: Implement api with axios once api is available.
-//import { inject } from 'vue'
-//import type { AxiosStatic } from 'axios'
 import type { Ref } from 'vue'
 import type { IReservation } from '@/interfaces/IReservation'
 import { Reservation as ReservationClass } from '@/classes/Reservation'
@@ -12,9 +8,6 @@ import { DateHelper } from '@/helpers/DateHelper'
 import { ItineraryReservationValidator } from '@/validators/ItineraryReservationValidator'
 const dateHelper = new DateHelper()
 const itineraryReservationValidator = new ItineraryReservationValidator()
-// sandro.raess To-Do: Implement api with axios once api is available.
-//const axios: AxiosStatic | undefined = inject('axios')
-
 const reservations: Ref<IReservation[]> = ref([])
 
 const addReservation = () => {
