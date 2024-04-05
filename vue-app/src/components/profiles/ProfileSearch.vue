@@ -88,7 +88,7 @@ const closeNewProfileDialog = () => {
         variant="underlined"
         class="me-3"
       ></v-text-field>
-      <v-btn class="bg-primary" @click="search()"><v-icon>mdi-magnify</v-icon>Search</v-btn>
+      <v-btn class="primary-button" @click="search()"><v-icon>mdi-magnify</v-icon>Search</v-btn>
     </div>
   </v-container>
   <v-container fluid v-if="foundProfiles.length > 0">
