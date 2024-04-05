@@ -17,17 +17,17 @@ const propertyService = new PropertyService(axios)
 const roomService = new RoomService(axios)
 const dateHelper = new DateHelper()
 const reservationValidator = new ReservationValidator()
-
 const emit = defineEmits(['check', 'change'])
-
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 const props = defineProps({
   previousReservation: { type: Object as () => IReservation, required: false },
   nextReservation: { type: Object as () => IReservation, required: false }
 })
-
 const properties: Ref<IProperty[]> = ref([])
 const rooms: Ref<IRoom[]> = ref([])
+const profileDialog = ref(false)
+import ProfileSearch from './profiles/ProfileSearch.vue'
+import type { IProfile } from '@/interfaces/profiles/IProfile'
 
 onMounted(() => {
   propertyService.getProperties().then((response: IProperty[]) => {
@@ -100,6 +100,19 @@ const reset = () => {
 const emitChange = () => {
   reservationValidator.validate(reservation.value)
   emit('change')
+}
+
+const openProfileDialog = () => {
+  profileDialog.value = true
+}
+
+const closeProfileDialog = () => {
+  profileDialog.value = false
+}
+
+const profileSelected = (profile: IProfile) => {
+  reservation.value.guest = profile.lastName + ' ' + profile.firstName
+  closeProfileDialog()
 }
 </script>
 
@@ -198,7 +211,7 @@ const emitChange = () => {
           @change="emitChange()"
         ></v-text-field>
       </v-col>
-      <v-col>
+      <v-col class="d-flex">
         <v-autocomplete
           label="Guest"
           placeholder="Last Name | First Name"
@@ -208,6 +221,9 @@ const emitChange = () => {
           :disabled="previousReservation !== undefined"
           @update:model-value="emitChange()"
         ></v-autocomplete>
+        <div class="d-flex align-center" @click="openProfileDialog()">
+          <v-icon>mdi-magnify</v-icon>
+        </div>
       </v-col>
       <v-col class="d-flex justify-space-between">
         <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
@@ -291,4 +307,12 @@ const emitChange = () => {
       </tbody>
     </v-table>
   </v-container>
+  <v-dialog v-model="profileDialog" fullscreen>
+    <v-card>
+      <ProfileSearch
+        @close="closeProfileDialog()"
+        @profile-selected="(profile) => profileSelected(profile)"
+      ></ProfileSearch>
+    </v-card>
+  </v-dialog>
 </template>

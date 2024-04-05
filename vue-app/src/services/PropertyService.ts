@@ -12,7 +12,7 @@ export class PropertyService implements IService {
   getProperties() {
     return new Promise<IProperty[]>((resolve, reject) => {
       this.axiosInstance
-        .get('?properties')
+        .get('properties')
         .then((response: any) => {
           resolve(response.data)
         })
