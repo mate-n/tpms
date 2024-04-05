@@ -6,7 +6,7 @@ import type { AxiosStatic } from 'axios'
 import { inject, ref, type Ref } from 'vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'profileSelected'])
 const close = () => emit('close')
 const profilePostBody: Ref<IProfilePostBody> = ref({
   name: '',
@@ -15,12 +15,26 @@ const profilePostBody: Ref<IProfilePostBody> = ref({
   city: ''
 })
 
+const selectProfile = (profile: IProfile) => {
+  console.log('selected profile', profile)
+  emit('profileSelected', profile)
+}
+
 const foundProfiles: Ref<IProfile[]> = ref([])
 const search = () => {
   profileService.search(profilePostBody.value).then((response) => {
     foundProfiles.value = response
   })
 }
+const tableDataHeaders = [
+  { key: 'avatar', title: '' },
+  { key: 'lastName', title: 'LAST NAME' },
+  { key: 'firstName', title: 'FIRST NAME' },
+  { key: 'company', title: 'COMPANY' },
+  { key: 'birthday', title: 'BIRTHDAY' },
+  { key: 'country', title: 'COUNTRY' },
+  { key: 'select', title: 'SELECT' }
+]
 </script>
 
 <template>
@@ -69,33 +83,28 @@ const search = () => {
     </div>
   </v-container>
   <v-container fluid v-if="foundProfiles.length > 0">
-    <v-table>
-      <thead class="text-uppercase">
+    <v-data-table :headers="tableDataHeaders" :items="foundProfiles">
+      <template v-slot:[`header.avatar`]="{ column }">
+        {{ column.title }}
+        <v-icon>mdi-sort-variant </v-icon>
+      </template>
+      <template v-slot:item="row">
         <tr>
-          <th><v-icon>mdi-sort-variant</v-icon></th>
-          <th>Last Name</th>
-          <th>First Name</th>
-          <th>Company</th>
-          <th>Birthday</th>
-          <th>Country</th>
-          <th>Select</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="profile in foundProfiles" :key="profile.lastName">
           <td>
             <div class="color-avatar-tertiary text-white">
-              {{ profile.firstName.charAt(0) }}{{ profile.lastName.charAt(0) }}
+              {{ row.item.firstName.charAt(0) }}{{ row.item.lastName.charAt(0) }}
             </div>
           </td>
-          <td>{{ profile.lastName }}</td>
-          <td>{{ profile.firstName }}</td>
-          <td>{{ profile.company }}</td>
-          <td>{{ profile.birthday }}</td>
-          <td>{{ profile.country }}</td>
-          <td><v-btn class="primary-button">Select</v-btn></td>
+          <td>{{ row.item.lastName }}</td>
+          <td>{{ row.item.firstName }}</td>
+          <td>{{ row.item.company }}</td>
+          <td>{{ row.item.birthday }}</td>
+          <td>{{ row.item.country }}</td>
+          <td>
+            <v-btn class="primary-button" @click="selectProfile(row.item)">Select</v-btn>
+          </td>
         </tr>
-      </tbody>
-    </v-table>
+      </template>
+    </v-data-table>
   </v-container>
 </template>
