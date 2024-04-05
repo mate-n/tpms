@@ -27,6 +27,7 @@ const properties: Ref<IProperty[]> = ref([])
 const rooms: Ref<IRoom[]> = ref([])
 const profileDialog = ref(false)
 import ProfileSearch from './profiles/ProfileSearch.vue'
+import type { IProfile } from '@/interfaces/profiles/IProfile'
 
 onMounted(() => {
   propertyService.getProperties().then((response: IProperty[]) => {
@@ -107,6 +108,11 @@ const openProfileDialog = () => {
 
 const closeProfileDialog = () => {
   profileDialog.value = false
+}
+
+const profileSelected = (profile: IProfile) => {
+  reservation.value.guest = profile.lastName + ' ' + profile.firstName
+  closeProfileDialog()
 }
 </script>
 
@@ -303,7 +309,10 @@ const closeProfileDialog = () => {
   </v-container>
   <v-dialog v-model="profileDialog" fullscreen>
     <v-card>
-      <ProfileSearch @close="closeProfileDialog()"></ProfileSearch>
+      <ProfileSearch
+        @close="closeProfileDialog()"
+        @profile-selected="(profile) => profileSelected(profile)"
+      ></ProfileSearch>
     </v-card>
   </v-dialog>
 </template>
