@@ -4,6 +4,7 @@ import type { IProfile } from '@/interfaces/profiles/IProfile'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import { inject, ref, type Ref } from 'vue'
+import NewProfile from './NewProfile.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const emit = defineEmits(['close', 'profileSelected'])
@@ -14,9 +15,8 @@ const profilePostBody: Ref<IProfilePostBody> = ref({
   email: '',
   city: ''
 })
-
+const newProfileDialog = ref(false)
 const selectProfile = (profile: IProfile) => {
-  console.log('selected profile', profile)
   emit('profileSelected', profile)
 }
 
@@ -36,16 +36,24 @@ const tableDataHeaders = [
   { key: 'select', title: 'SELECT' },
   { key: 'dots-vertical', title: '' }
 ]
+
+const openNewProfileDialog = () => {
+  newProfileDialog.value = true
+}
+
+const closeNewProfileDialog = () => {
+  newProfileDialog.value = false
+}
 </script>
 
 <template>
   <v-toolbar>
     <v-toolbar-title>Profile Search</v-toolbar-title>
     <div class="border-s h-100 d-flex px-3 align-center">
-      <v-button>NEW PROFILE</v-button>
+      <v-btn @click="openNewProfileDialog()">NEW PROFILE</v-btn>
     </div>
     <div class="border-s h-100 d-flex px-5 align-center" @click="close()">
-      <v-button><v-icon>mdi-close</v-icon></v-button>
+      <v-btn><v-icon>mdi-close</v-icon></v-btn>
     </div>
   </v-toolbar>
   <v-container fluid>
@@ -111,4 +119,9 @@ const tableDataHeaders = [
       </template>
     </v-data-table>
   </v-container>
+  <v-dialog v-model="newProfileDialog" fullscreen>
+    <v-card>
+      <NewProfile @close="closeNewProfileDialog()"></NewProfile>
+    </v-card>
+  </v-dialog>
 </template>
