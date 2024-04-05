@@ -33,7 +33,8 @@ const tableDataHeaders = [
   { key: 'company', title: 'COMPANY' },
   { key: 'birthday', title: 'BIRTHDAY' },
   { key: 'country', title: 'COUNTRY' },
-  { key: 'select', title: 'SELECT' }
+  { key: 'select', title: 'SELECT' },
+  { key: 'dots-vertical', title: '' }
 ]
 </script>
 
@@ -102,6 +103,9 @@ const tableDataHeaders = [
           <td>{{ row.item.country }}</td>
           <td>
             <v-btn class="primary-button" @click="selectProfile(row.item)">Select</v-btn>
+          </td>
+          <td>
+            <v-icon>mdi-dots-vertical</v-icon>
           </td>
         </tr>
       </template>
