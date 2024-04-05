@@ -9,19 +9,19 @@ pipelines:
   default:
     - parallel:
         - step:
-            name: "Build and Test"
+            name: "Cypress"
             script:
-              - echo "Your build and test goes here..."
+              - echo "Cypress tests if the application works correctly from the user's perspective"
               - /bin/bash cypress-test.sh
         - step:
             name: "Lint"
             script:
-              - echo "Your linting goes here..."
+              - echo "Lint tests if the code meets the project's coding standards"
               - cd vue-app && npm install && npm run lint
         - step:
             name: "API Selenium-Test"
             script:
-              - echo "Your API test goes here..."
+              - echo "API Selenium tests if the API returns the same data as Mock API"
               - cd selenium-tests && /bin/bash api-test.sh
         - step:
             name: "Security scan"
