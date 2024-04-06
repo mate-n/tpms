@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ItineraryReservationEnquiryView from '@/views/ItineraryReservationEnquiryView.vue'
+import NewProfileView from '@/views/NewProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +15,11 @@ const router = createRouter({
       path: '/itinerary-reservation-enquiry',
       name: 'itinerary reservation enquiry',
       component: ItineraryReservationEnquiryView
+    },
+    {
+      path: '/new-profile',
+      name: 'new profile',
+      component: NewProfileView
     },
     {
       path: '/about',
