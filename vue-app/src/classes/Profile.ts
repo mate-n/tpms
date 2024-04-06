@@ -12,6 +12,8 @@ export class Profile implements IProfile {
   personalSalutation: string
   language: string
   vip: string
+  activeStatus: string
+  profileType: string
 
   constructor() {
     this.firstName = ''
@@ -25,5 +27,7 @@ export class Profile implements IProfile {
     this.personalSalutation = ''
     this.language = ''
     this.vip = ''
+    this.activeStatus = ''
+    this.profileType = 'private'
   }
 }
