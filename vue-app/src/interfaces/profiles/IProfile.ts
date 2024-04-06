@@ -10,4 +10,6 @@ export interface IProfile {
   personalSalutation: string
   language: string
   vip: string
+  activeStatus: string
+  profileType: string
 }
