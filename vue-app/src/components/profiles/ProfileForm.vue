@@ -1,11 +1,25 @@
 <script setup lang="ts">
 import { Profile } from '@/classes/Profile'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
-import { ref } from 'vue'
+import ProfileService from '@/services/ProfileService'
+import type { AxiosStatic } from 'axios'
+import { inject, ref } from 'vue'
+const axios: AxiosStatic | undefined = inject('axios')
+const profileService = new ProfileService(axios)
 
 const newProfile = ref<IProfile>(new Profile())
 const save = () => {
-  console.log(newProfile.value)
+  profileService.post(newProfile.value)
+}
+
+const toggleActive = () => {
+  if (newProfile.value.activeStatus === 'ACTIVE') {
+    newProfile.value.activeStatus = 'INACTIVE'
+    return
+  } else {
+    newProfile.value.activeStatus = 'ACTIVE'
+    return
+  }
 }
 </script>
 <template>
@@ -74,9 +88,20 @@ const save = () => {
     </div>
   </div>
   <v-toolbar>
-    <v-toolbar-title></v-toolbar-title>
+    <div class="h-100 d-flex px-5 align-center me-auto" @click="toggleActive()">
+      <template v-if="newProfile.activeStatus === 'ACTIVE'">
+        <v-btn class="text-primary bg-white">
+          <v-icon>mdi-check-circle-outline</v-icon> {{ $t('profile.active') }}</v-btn
+        >
+      </template>
+      <template v-if="newProfile.activeStatus !== 'ACTIVE'">
+        <v-btn class="text-primary bg-white">
+          <v-icon>mdi-check-circle-outline</v-icon> {{ $t('profile.inactive') }}</v-btn
+        >
+      </template>
+    </div>
     <div class="h-100 d-flex px-5 align-center" @click="save()">
-      <v-btn class="primary-button">SAVE</v-btn>
+      <v-btn class="primary-button text-uppercase">{{ $t('actions.save') }}</v-btn>
     </div>
   </v-toolbar>
 </template>
