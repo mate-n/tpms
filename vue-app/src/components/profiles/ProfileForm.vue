@@ -6,6 +6,11 @@ import type { AxiosStatic } from 'axios'
 import { inject, ref } from 'vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
+import { ProfileTypes } from '@/enums/ProfileTypes'
+import { EnumHelper } from '@/helpers/enumHelper'
+const enumHelper = new EnumHelper()
+
+const profileTypes: string[] = enumHelper.getEnumValues(ProfileTypes)
 
 const newProfile = ref<IProfile>(new Profile())
 const save = () => {
@@ -34,7 +39,20 @@ const toggleActive = () => {
           </div>
         </div>
         <div>
-          <div class="border rounded mt-3 px-1">PRIVATE</div>
+          <v-menu>
+            <template v-slot:activator="{ props }">
+              <div class="border rounded mt-3 px-2 text-uppercase" v-bind="props">
+                {{ newProfile.profileType }}
+              </div>
+            </template>
+            <v-list>
+              <v-list-item v-for="(item, index) in profileTypes" :key="index" :value="index">
+                <v-list-item-title @click="newProfile.profileType = item">{{
+                  item
+                }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
       </div>
     </div>
