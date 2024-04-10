@@ -132,7 +132,7 @@ const profileUpdate = () => {
         {{ column.title }}
         <v-icon>mdi-sort-variant </v-icon>
       </template>
-      <template :headers="tableDataHeaders" v-slot:[`header.dots-vertical`]="{ column }">
+      <template v-slot:[`header.dots-vertical`]="{ column }">
         {{ column.title }}
         <v-icon>mdi-cog</v-icon>
       </template>
