@@ -37,10 +37,9 @@ const toggleActive = () => {
   if (profileToBeEdited.value.activeStatus === 'ACTIVE') {
     profileToBeEdited.value.activeStatus = 'INACTIVE'
     return
-  } else {
-    profileToBeEdited.value.activeStatus = 'ACTIVE'
-    return
   }
+  profileToBeEdited.value.activeStatus = 'ACTIVE'
+  return
 }
 </script>
 <template>
