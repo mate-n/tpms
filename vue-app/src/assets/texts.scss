@@ -1,0 +1,15 @@
+@mixin font-size-modifiers {
+  @for $i from 1 through 100 {
+    &-#{$i} {
+      font-size: $i * 0.1rem !important;
+    }
+  }
+}
+
+.font-size-rem {
+  @include font-size-modifiers;
+}
+
+.big-vue-input-field-font-size * {
+  @extend .font-size-rem-14;
+}
