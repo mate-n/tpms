@@ -4,8 +4,9 @@
   @each $name, $hex in $main-colors {
     &-#{$name} {
       display: table-cell;
-      height: 3rem;
-      width: 3rem;
+      height: 5rem;
+      width: 5rem;
+      font-size: 2rem;
       text-align: center;
       vertical-align: middle;
       border-radius: 50%;
