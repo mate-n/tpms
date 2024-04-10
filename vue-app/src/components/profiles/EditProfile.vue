@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import ProfileForm from './ProfileForm.vue'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import { Profile } from '@/classes/Profile'
@@ -14,8 +14,13 @@ const profileToBeEdited = ref<IProfile>(new Profile())
 const update = (profile: IProfile) => {
   emit('update', profile)
 }
+
 onMounted(() => {
   profileToBeEdited.value = props.profileInput.clone()
+})
+
+watch(props, (newInput) => {
+  profileToBeEdited.value = newInput.profileInput.clone()
 })
 
 const toggleFullScreen = () => {
