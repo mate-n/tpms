@@ -28,7 +28,7 @@ export class Profile implements IProfile {
     this.country = ''
     this.salutation = ''
     this.personalSalutation = ''
-    this.language = ''
+    this.language = 'English'
     this.vip = ''
     this.activeStatus = 'ACTIVE'
     this.profileType = 'private'
