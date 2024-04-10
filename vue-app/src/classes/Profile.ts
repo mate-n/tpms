@@ -57,4 +57,23 @@ export class Profile implements IProfile {
     profile.isPasserby = this.isPasserby
     return profile
   }
+
+  castToProfile(profile: IProfile): void {
+    this.firstName = profile.firstName
+    this.lastName = profile.lastName
+    this.middleName = profile.middleName
+    this.email = profile.email
+    this.company = profile.company
+    this.birthday = profile.birthday
+    this.country = profile.country
+    this.salutation = profile.salutation
+    this.personalSalutation = profile.personalSalutation
+    this.language = profile.language
+    this.vip = profile.vip
+    this.activeStatus = profile.activeStatus
+    this.profileType = profile.profileType
+    this.id = profile.id
+    this.city = profile.city
+    this.isPasserby = profile.isPasserby
+  }
 }

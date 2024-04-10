@@ -16,4 +16,5 @@ export interface IProfile {
   city: string
   isPasserby: boolean
   clone(): IProfile
+  castToProfile(profile: IProfile): void
 }
