@@ -2,15 +2,21 @@
 
 @mixin color-avatar-modifiers {
   @each $name, $hex in $main-colors {
-    &-#{$name} {
-      display: table-cell;
-      height: 5rem;
-      width: 5rem;
-      font-size: 2rem;
-      text-align: center;
-      vertical-align: middle;
-      border-radius: 50%;
-      background-color: $hex !important;
+    @for $i from 1 through 100 {
+      &-#{$i} {
+        font-size: $i * 0.1rem !important;
+      }
+
+      &-#{$name}-#{$i} {
+        display: table-cell;
+        height: $i * 0.2rem;
+        width: $i * 0.2rem;
+        font-size: $i * 0.1rem;
+        text-align: center;
+        vertical-align: middle;
+        border-radius: 50%;
+        background-color: $hex !important;
+      }
     }
   }
 }
