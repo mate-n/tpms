@@ -23,7 +23,13 @@ const editProfileDialog = ref(false)
 const selectProfile = (profile: IProfile) => {
   emit('profileSelected', profile)
 }
-const profileToBeEdited = ref<IProfile | undefined>(undefined)
+const editProfile = (profile: IProfile) => {
+  const newProfileToBeEdited = new Profile()
+  newProfileToBeEdited.castToProfile(profile)
+  profileToBeEdited.value = newProfileToBeEdited
+  openEditProfileDialog()
+}
+const profileToBeEdited = ref<IProfile>(new Profile())
 const foundProfiles: Ref<IProfile[]> = ref([])
 const search = () => {
   profileService.search(profilePostBody.value).then((response) => {
@@ -126,6 +132,10 @@ const profileUpdate = () => {
         {{ column.title }}
         <v-icon>mdi-sort-variant </v-icon>
       </template>
+      <template :headers="tableDataHeaders" v-slot:[`header.dots-vertical`]="{ column }">
+        {{ column.title }}
+        <v-icon>mdi-cog</v-icon>
+      </template>
       <template v-slot:item="row">
         <tr>
           <td>
@@ -141,7 +151,7 @@ const profileUpdate = () => {
           <td>
             <v-btn class="primary-button" @click="selectProfile(row.item)">Select</v-btn>
           </td>
-          <td>
+          <td @click="editProfile(row.item)">
             <v-icon>mdi-dots-vertical</v-icon>
           </td>
         </tr>
@@ -159,7 +169,7 @@ const profileUpdate = () => {
   </v-dialog>
 
   <v-dialog v-model="editProfileDialog" fullscreen>
-    <v-card v-if="profileToBeEdited">
+    <v-card>
       <EditProfile
         :profile-input="profileToBeEdited"
         @update="() => profileUpdate()"
