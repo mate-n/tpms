@@ -21,8 +21,8 @@ const profileTypes: string[] = enumHelper.getEnumValues(ProfileTypes)
           </template>
           <v-list>
             <v-list-item>
-              <v-list-item-title @click="profileToBeEdited.isPasserby = true"
-                >Set as passerby profile</v-list-item-title
+              <v-list-item-title @click="profileToBeEdited.isPasserby = true">
+                Set as passerby profile</v-list-item-title
               >
             </v-list-item>
           </v-list>
