@@ -5,6 +5,8 @@ import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import { inject, ref, type Ref } from 'vue'
 import NewProfile from './NewProfile.vue'
+import EditProfile from './EditProfile.vue'
+import { Profile } from '@/classes/Profile'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const emit = defineEmits(['close', 'profileSelected'])
@@ -15,11 +17,13 @@ const profilePostBody: Ref<IProfilePostBody> = ref({
   email: '',
   city: ''
 })
+const profileFromInputFields = ref<IProfile>(new Profile())
 const newProfileDialog = ref(false)
+const editProfileDialog = ref(false)
 const selectProfile = (profile: IProfile) => {
   emit('profileSelected', profile)
 }
-
+const profileToBeEdited = ref<IProfile | undefined>(undefined)
 const foundProfiles: Ref<IProfile[]> = ref([])
 const search = () => {
   profileService.search(profilePostBody.value).then((response) => {
@@ -38,11 +42,36 @@ const tableDataHeaders = [
 ]
 
 const openNewProfileDialog = () => {
+  const profile = new Profile()
+  if (profilePostBody.value.name) profile.lastName = profilePostBody.value.name
+  if (profilePostBody.value.firstName) profile.firstName = profilePostBody.value.firstName
+  if (profilePostBody.value.email) profile.email = profilePostBody.value.email
+  if (profilePostBody.value.city) profile.city = profilePostBody.value.city
+  profileFromInputFields.value = profile
   newProfileDialog.value = true
 }
 
 const closeNewProfileDialog = () => {
   newProfileDialog.value = false
+}
+
+const openEditProfileDialog = () => {
+  editProfileDialog.value = true
+}
+
+const closeEditProfileDialog = () => {
+  editProfileDialog.value = false
+}
+
+const profileSave = (profile: IProfile) => {
+  profileToBeEdited.value = profile
+  closeNewProfileDialog()
+  openEditProfileDialog()
+}
+
+const profileUpdate = () => {
+  search()
+  closeEditProfileDialog()
 }
 </script>
 
@@ -121,7 +150,21 @@ const closeNewProfileDialog = () => {
   </v-container>
   <v-dialog v-model="newProfileDialog" fullscreen>
     <v-card>
-      <NewProfile @close="closeNewProfileDialog()"></NewProfile>
+      <NewProfile
+        :profile-input="profileFromInputFields"
+        @close="closeNewProfileDialog()"
+        @save="(profile) => profileSave(profile)"
+      ></NewProfile>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="editProfileDialog" fullscreen>
+    <v-card v-if="profileToBeEdited">
+      <EditProfile
+        :profile-input="profileToBeEdited"
+        @update="() => profileUpdate()"
+        @close="closeEditProfileDialog()"
+      ></EditProfile>
     </v-card>
   </v-dialog>
 </template>
