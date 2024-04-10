@@ -1,8 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import ProfileForm from './ProfileForm.vue'
-const emit = defineEmits(['close', 'profileSelected'])
+import type { IProfile } from '@/interfaces/profiles/IProfile'
+import { Profile } from '@/classes/Profile'
+import { CrudOperations } from '@/enums/CrudOperations'
+const newProfile = ref<IProfile>(new Profile())
+const props = defineProps({
+  profileInput: { type: Object as () => IProfile, required: true }
+})
+const emit = defineEmits(['close', 'save'])
 const close = () => emit('close')
+const save = (profile: IProfile) => {
+  emit('save', profile)
+}
 const isFullScreen = ref(false)
 
 const toggleFullScreen = () => {
@@ -18,6 +28,14 @@ const toggleFullScreen = () => {
     }
   }
 }
+
+onMounted(() => {
+  newProfile.value = props.profileInput.clone()
+})
+
+watch(props, (newInput) => {
+  newProfile.value = newInput.profileInput.clone()
+})
 </script>
 <template>
   <v-toolbar>
@@ -35,6 +53,10 @@ const toggleFullScreen = () => {
     </div>
   </v-toolbar>
   <div>
-    <ProfileForm></ProfileForm>
+    <ProfileForm
+      :profile-input="newProfile"
+      :crud-operation="CrudOperations.Create"
+      @save="(profile) => save(profile)"
+    ></ProfileForm>
   </div>
 </template>
