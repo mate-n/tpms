@@ -44,23 +44,23 @@ const profileTypes: string[] = enumHelper.getEnumValues(ProfileTypes)
             </div>
           </div>
         </div>
-        <div class="text-center">
-          <v-menu>
-            <template v-slot:activator="{ props }">
-              <v-btn class="text-center mt-3 px-2" v-bind="props">
-                {{ profileToBeEdited.profileType }}
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item v-for="(item, index) in profileTypes" :key="index" :value="index">
-                <v-list-item-title @click="profileToBeEdited.profileType = item">{{
-                  item
-                }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </div>
       </div>
     </div>
+  </div>
+  <div class="text-center">
+    <v-menu>
+      <template v-slot:activator="{ props }">
+        <v-btn class="text-center mt-3 px-2" v-bind="props">
+          {{ profileToBeEdited.profileType }}
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item v-for="(item, index) in profileTypes" :key="index" :value="index">
+          <v-list-item-title @click="profileToBeEdited.profileType = item">{{
+            item
+          }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </div>
 </template>
