@@ -10,6 +10,6 @@
   @include font-size-modifiers;
 }
 
-.big-vue-input-field-font-size * {
+.big-vue-input-field-font-size input {
   @extend .font-size-rem-14;
 }
