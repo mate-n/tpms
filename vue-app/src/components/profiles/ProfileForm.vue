@@ -3,75 +3,68 @@ import { Profile } from '@/classes/Profile'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
-import { inject, ref } from 'vue'
+import { inject, onMounted, ref, watch } from 'vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
-import { ProfileTypes } from '@/enums/ProfileTypes'
-import { EnumHelper } from '@/helpers/enumHelper'
-const enumHelper = new EnumHelper()
+import languages from '@/lists/languages'
+import ProfileAvatar from './ProfileAvatar.vue'
+import { CrudOperations } from '@/enums/CrudOperations'
+const props = defineProps({
+  profileInput: { type: Object as () => IProfile, required: true },
+  crudOperation: { type: Number, required: true }
+})
+const profileToBeEdited = ref<IProfile>(new Profile())
+const emit = defineEmits(['save'])
 
-const profileTypes: string[] = enumHelper.getEnumValues(ProfileTypes)
+onMounted(() => {
+  profileToBeEdited.value = props.profileInput.clone()
+})
 
-const newProfile = ref<IProfile>(new Profile())
+watch(props, (newInput) => {
+  profileToBeEdited.value = newInput.profileInput.clone()
+})
+
 const save = () => {
-  profileService.post(newProfile.value)
+  if (props.crudOperation === CrudOperations.Create) {
+    profileService.post(profileToBeEdited.value)
+  } else if (props.crudOperation === CrudOperations.Update) {
+    profileService.put(profileToBeEdited.value)
+  }
+  emit('save', profileToBeEdited.value)
 }
 
 const toggleActive = () => {
-  if (newProfile.value.activeStatus === 'ACTIVE') {
-    newProfile.value.activeStatus = 'INACTIVE'
+  if (profileToBeEdited.value.activeStatus === 'ACTIVE') {
+    profileToBeEdited.value.activeStatus = 'INACTIVE'
     return
   } else {
-    newProfile.value.activeStatus = 'ACTIVE'
+    profileToBeEdited.value.activeStatus = 'ACTIVE'
     return
   }
 }
 </script>
 <template>
   <div class="d-flex">
-    <div style="flex-grow: 1" class="d-flex align-center justify-center">
-      <div>
-        <div class="d-flex justify-center">
-          <div>
-            <div class="color-avatar-tertiary text-white">
-              {{ newProfile.firstName.charAt(0) }}{{ newProfile.lastName.charAt(0) }}
-            </div>
-          </div>
-        </div>
-        <div>
-          <v-menu>
-            <template v-slot:activator="{ props }">
-              <div class="border rounded mt-3 px-2 text-uppercase" v-bind="props">
-                {{ newProfile.profileType }}
-              </div>
-            </template>
-            <v-list>
-              <v-list-item v-for="(item, index) in profileTypes" :key="index" :value="index">
-                <v-list-item-title @click="newProfile.profileType = item">{{
-                  item
-                }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </div>
-      </div>
+    <div style="flex-grow: 1">
+      <ProfileAvatar v-model="profileToBeEdited" :crud-operation="crudOperation"></ProfileAvatar>
     </div>
-    <div style="flex-grow: 4">
-      <div class="d-flex">
+    <div style="flex-grow: 6">
+      <div class="d-flex big-vue-input-field-font-size">
         <v-text-field
-          v-model="newProfile.lastName"
+          v-model="profileToBeEdited.lastName"
           label="Last Name"
           variant="underlined"
           class="me-3"
         ></v-text-field>
         <v-text-field
-          v-model="newProfile.firstName"
+          v-model="profileToBeEdited.firstName"
           label="First Name"
           variant="underlined"
           class="me-3"
+          aria-required="true"
         ></v-text-field>
         <v-text-field
-          v-model="newProfile.middleName"
+          v-model="profileToBeEdited.middleName"
           label="Middle Name"
           variant="underlined"
           class="me-3"
@@ -79,42 +72,45 @@ const toggleActive = () => {
       </div>
       <div class="d-flex">
         <v-text-field
-          v-model="newProfile.salutation"
+          v-model="profileToBeEdited.salutation"
           label="Salutation"
           variant="underlined"
           class="me-3"
         ></v-text-field>
         <v-text-field
-          v-model="newProfile.personalSalutation"
+          v-model="profileToBeEdited.personalSalutation"
           label="Personal Salutation"
           variant="underlined"
           class="me-3"
         ></v-text-field>
-        <v-text-field
-          v-model="newProfile.language"
+        <v-autocomplete
           label="Language"
+          v-model="profileToBeEdited.language"
+          :items="languages"
+          item-title="name"
           variant="underlined"
           class="me-3"
-        ></v-text-field>
-        <v-text-field
-          v-model="newProfile.vip"
+        ></v-autocomplete>
+        <v-autocomplete
           label="VIP"
+          v-model="profileToBeEdited.vip"
           variant="underlined"
-          class="me-3"
-        ></v-text-field>
+        ></v-autocomplete>
       </div>
     </div>
   </div>
   <v-toolbar>
     <div class="h-100 d-flex px-5 align-center me-auto" @click="toggleActive()">
-      <template v-if="newProfile.activeStatus === 'ACTIVE'">
+      <template v-if="profileToBeEdited.activeStatus === 'ACTIVE'">
         <v-btn class="text-primary bg-white">
           <v-icon>mdi-check-circle-outline</v-icon> {{ $t('profile.active') }}</v-btn
         >
       </template>
-      <template v-if="newProfile.activeStatus !== 'ACTIVE'">
+      <template v-if="profileToBeEdited.activeStatus !== 'ACTIVE'">
         <v-btn class="text-primary bg-white">
-          <v-icon>mdi-check-circle-outline</v-icon> {{ $t('profile.inactive') }}</v-btn
+          <span class="text-danger"
+            ><v-icon>mdi-account-off </v-icon> {{ $t('profile.inactive') }}</span
+          ></v-btn
         >
       </template>
     </div>
