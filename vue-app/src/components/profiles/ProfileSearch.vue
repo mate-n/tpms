@@ -134,12 +134,12 @@ const profileUpdate = () => {
       </template>
       <template v-slot:[`header.dots-vertical`]="{ column }">
         {{ column.title }}
-        <v-icon>mdi-cog</v-icon>
+        <v-icon>mdi-cog-outline</v-icon>
       </template>
       <template v-slot:item="row">
         <tr>
-          <td>
-            <div class="color-avatar-tertiary text-white">
+          <td style="width: 4rem">
+            <div class="color-avatar-tertiary-10 text-white">
               {{ row.item.firstName.charAt(0) }}{{ row.item.lastName.charAt(0) }}
             </div>
           </td>
@@ -151,7 +151,7 @@ const profileUpdate = () => {
           <td>
             <v-btn class="primary-button" @click="selectProfile(row.item)">Select</v-btn>
           </td>
-          <td @click="editProfile(row.item)">
+          <td style="width: 3rem" @click="editProfile(row.item)">
             <v-icon>mdi-dots-vertical</v-icon>
           </td>
         </tr>

@@ -39,7 +39,7 @@ const profileTypes: string[] = enumHelper.getEnumValues(ProfileTypes)
 
         <div class="d-flex justify-center">
           <div>
-            <div class="color-avatar-tertiary text-white">
+            <div class="color-avatar-tertiary-20 text-white">
               {{ profileToBeEdited.firstName.charAt(0) }}{{ profileToBeEdited.lastName.charAt(0) }}
             </div>
           </div>
