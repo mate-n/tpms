@@ -53,8 +53,9 @@ const profileTypes: string[] = enumHelper.getEnumValues(ProfileTypes)
             </template>
             <v-list>
               <v-list-item v-for="(item, index) in profileTypes" :key="index" :value="index">
-                <!-- prettier-ignore -->
-                <v-list-item-title @click="profileToBeEdited.profileType = item">{{ item }}</v-list-item-title>
+                <v-list-item-title @click="profileToBeEdited.profileType = item">{{
+                  item
+                }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
