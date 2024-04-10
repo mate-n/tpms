@@ -44,8 +44,8 @@ const toggleActive = () => {
 </script>
 <template>
   <v-row>
-    <v-col cols="2" class="d-flex justify-center">
-      <div>
+    <v-col cols="2">
+      <div class="my-2">
         <ProfileAvatar v-model="profileToBeEdited" :crud-operation="crudOperation"></ProfileAvatar>
       </div>
     </v-col>
