@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import ProfileContactDetailForm from './ProfileContactDetailForm.vue'
 import { ProfileContactDetail } from '@/classes/ProfileContactDetail'
 import { ref, type Ref } from 'vue'
