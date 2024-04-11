@@ -8,6 +8,7 @@ const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 import languages from '@/lists/languages'
 import ProfileAvatar from './ProfileAvatar.vue'
+import ProfileContactDetailsCard from './ProfileContactDetailsCard.vue'
 import { CrudOperations } from '@/enums/CrudOperations'
 const props = defineProps({
   profileInput: { type: Object as () => IProfile, required: true },
@@ -123,4 +124,5 @@ const toggleActive = () => {
       <v-btn class="primary-button text-uppercase">{{ $t('actions.save') }}</v-btn>
     </div>
   </v-toolbar>
+  <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
 </template>
