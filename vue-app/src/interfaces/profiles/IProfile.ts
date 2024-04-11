@@ -5,7 +5,15 @@ export interface IProfile {
   middleName: string
   email: string
   company: string
-  birthday: string
+  occupation: string
+  specialRates: number[]
+  licensePlate: string
+  passportNumber: string
+  dateOfBirth: Date
+  placeOfBirth: string
+  countryOfBirth: string
+  gender: string
+  nationality: string
   country: string
   salutation: string
   personalSalutation: string
@@ -15,6 +23,9 @@ export interface IProfile {
   profileType: string
   city: string
   isPasserby: boolean
+  contactDetailIds: number[]
+  adressIds: number[]
+
   clone(): IProfile
   castToProfile(profile: IProfile): void
 }
