@@ -51,7 +51,7 @@ const checkForIssues = () => {
 
 <template>
   <v-toolbar
-    class="bg-header text-white d-flex justify-space-between"
+    class="bg-primary text-white d-flex justify-space-between"
     :title="$t('general.itineraryReservationEnquiry')"
     app
   >
