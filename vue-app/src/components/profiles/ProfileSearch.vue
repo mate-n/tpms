@@ -199,7 +199,7 @@ const profileUpdate = () => {
         </div>
       </v-toolbar>
       <v-container>
-        <div style="height: 3rem" v-for="header in availableTableDataHeaders">
+        <div style="height: 3rem" v-for="header in availableTableDataHeaders" :key="header.key">
           <v-checkbox :label="header.key" v-model="header.selected"></v-checkbox>
         </div>
       </v-container>
