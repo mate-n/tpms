@@ -10,6 +10,9 @@ import languages from '@/lists/languages'
 import ProfileAvatar from './ProfileAvatar.vue'
 import ProfileContactDetailsCard from './ProfileContactDetailsCard.vue'
 import { CrudOperations } from '@/enums/CrudOperations'
+import { CloneHelper } from '@/helpers/CloneHelper'
+import { ProfileAddressFaker } from '@/faker/ProfileAddressFaker'
+const cloneHelper = new CloneHelper()
 const props = defineProps({
   profileInput: { type: Object as () => IProfile, required: true },
   crudOperation: { type: Number, required: true }
@@ -18,11 +21,17 @@ const profileToBeEdited = ref<IProfile>(new Profile())
 const emit = defineEmits(['save'])
 
 onMounted(() => {
-  profileToBeEdited.value = props.profileInput.clone()
+  profileToBeEdited.value = cloneHelper.clone(props.profileInput)
+  const profileAddressFaker = new ProfileAddressFaker()
+  console.log(profileAddressFaker.createFakeProfileAddress())
+  const fake1 = profileAddressFaker.createFakeProfileAddress()
+  const fake2 = profileAddressFaker.createFakeProfileAddress()
+  const fake3 = profileAddressFaker.createFakeProfileAddress()
+  console.log([fake1, fake2, fake3])
 })
 
 watch(props, (newInput) => {
-  profileToBeEdited.value = newInput.profileInput.clone()
+  profileToBeEdited.value = cloneHelper.clone(newInput.profileInput)
 })
 
 const save = () => {
@@ -35,12 +44,7 @@ const save = () => {
 }
 
 const toggleActive = () => {
-  if (profileToBeEdited.value.activeStatus === 'ACTIVE') {
-    profileToBeEdited.value.activeStatus = 'INACTIVE'
-    return
-  }
-  profileToBeEdited.value.activeStatus = 'ACTIVE'
-  return
+  profileToBeEdited.value.inactive = !profileToBeEdited.value.inactive
 }
 </script>
 <template>
@@ -76,13 +80,13 @@ const toggleActive = () => {
           </div>
           <div class="d-flex">
             <v-text-field
-              v-model="profileToBeEdited.salutation"
+              v-model="profileToBeEdited.salut"
               label="Salutation"
               variant="underlined"
               class="me-3"
             ></v-text-field>
             <v-text-field
-              v-model="profileToBeEdited.personalSalutation"
+              v-model="profileToBeEdited.salutShort"
               label="Personal Salutation"
               variant="underlined"
               class="me-3"
@@ -97,7 +101,7 @@ const toggleActive = () => {
             ></v-autocomplete>
             <v-autocomplete
               label="VIP"
-              v-model="profileToBeEdited.vip"
+              v-model="profileToBeEdited.vipCodeIDs"
               variant="underlined"
             ></v-autocomplete>
           </div>
@@ -107,12 +111,12 @@ const toggleActive = () => {
   </v-row>
   <v-toolbar>
     <div class="h-100 d-flex px-5 align-center me-auto" @click="toggleActive()">
-      <template v-if="profileToBeEdited.activeStatus === 'ACTIVE'">
+      <template v-if="!profileToBeEdited.inactive">
         <v-btn class="text-primary bg-white">
           <v-icon>mdi-check-circle-outline</v-icon> {{ $t('profile.active') }}</v-btn
         >
       </template>
-      <template v-if="profileToBeEdited.activeStatus !== 'ACTIVE'">
+      <template v-if="profileToBeEdited.inactive">
         <v-btn class="text-primary bg-white">
           <span class="text-danger"
             ><v-icon>mdi-account-off </v-icon> {{ $t('profile.inactive') }}</span
@@ -124,5 +128,12 @@ const toggleActive = () => {
       <v-btn class="primary-button text-uppercase">{{ $t('actions.save') }}</v-btn>
     </div>
   </v-toolbar>
-  <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
+  <v-row>
+    <v-col>
+      <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
+    </v-col>
+    <v-col>
+      <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
+    </v-col>
+  </v-row>
 </template>

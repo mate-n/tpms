@@ -25,8 +25,8 @@ const selectProfile = (profile: IProfile) => {
   emit('profileSelected', profile)
 }
 const editProfile = (profile: IProfile) => {
-  const newProfileToBeEdited = new Profile()
-  newProfileToBeEdited.castToProfile(profile)
+  let newProfileToBeEdited = new Profile()
+  newProfileToBeEdited = Object.assign(newProfileToBeEdited, profile)
   profileToBeEdited.value = newProfileToBeEdited
   openEditProfileDialog()
 }
@@ -55,7 +55,6 @@ const openNewProfileDialog = () => {
   if (profilePostBody.value.name) profile.lastName = profilePostBody.value.name
   if (profilePostBody.value.firstName) profile.firstName = profilePostBody.value.firstName
   if (profilePostBody.value.email) profile.email = profilePostBody.value.email
-  if (profilePostBody.value.city) profile.city = profilePostBody.value.city
   profileFromInputFields.value = profile
   newProfileDialog.value = true
 }

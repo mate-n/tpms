@@ -4,6 +4,8 @@ import ProfileForm from './ProfileForm.vue'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import { Profile } from '@/classes/Profile'
 import { CrudOperations } from '@/enums/CrudOperations'
+import { CloneHelper } from '@/helpers/CloneHelper'
+const cloneHelper = new CloneHelper()
 const newProfile = ref<IProfile>(new Profile())
 const props = defineProps({
   profileInput: { type: Object as () => IProfile, required: true }
@@ -30,11 +32,11 @@ const toggleFullScreen = () => {
 }
 
 onMounted(() => {
-  newProfile.value = props.profileInput.clone()
+  newProfile.value = cloneHelper.clone(props.profileInput)
 })
 
 watch(props, (newInput) => {
-  newProfile.value = newInput.profileInput.clone()
+  newProfile.value = cloneHelper.clone(newInput.profileInput)
 })
 </script>
 <template>
