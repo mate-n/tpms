@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CrudOperations } from '@/enums/CrudOperations'
 import { ProfileTypes } from '@/enums/ProfileTypes'
-import { EnumHelper } from '@/helpers/enumHelper'
+import { EnumHelper } from '@/helpers/EnumHelper'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 defineProps({
   crudOperation: { type: Number, required: true }
