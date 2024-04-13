@@ -1,12 +1,17 @@
 export interface IProfileAddress {
   id: number
+  profileID: number
   type: string
   recipient: string
   country: string
-  postalCode: string
+  state: string
+  zip: string
   city: string
   street1: string
   street2: string
   street3: string
   mailingAddress: boolean
+  primary: boolean
+  nationalityISO3166Alpha2: string
+  countryISO3: string
 }
