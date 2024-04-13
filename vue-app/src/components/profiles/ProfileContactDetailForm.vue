@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import type { IProfileContactDetail } from '@/interfaces/profiles/IProfileContactDetail'
-const contactDetailsToBeEdited = defineModel({
+import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
+
+const profileCommunicationToBeEdited = defineModel({
   required: true,
-  type: Object as () => IProfileContactDetail
+  type: Object as () => IProfileCommunication
 })
 </script>
 
@@ -15,20 +16,19 @@ const contactDetailsToBeEdited = defineModel({
       <v-col>
         <v-select
           label="Select"
-          v-model="contactDetailsToBeEdited.type"
           variant="underlined"
           :items="['E-Mail', 'Mobile', 'Phone', 'Skype']"
         ></v-select>
       </v-col>
       <v-col>
         <v-text-field
-          v-model="contactDetailsToBeEdited.value"
+          v-model="profileCommunicationToBeEdited.value"
           label="Value"
           variant="underlined"
         ></v-text-field>
       </v-col>
       <v-col>
-        <v-checkbox label="Primary" v-model="contactDetailsToBeEdited.isPrimary"> </v-checkbox>
+        <v-checkbox label="Primary" v-model="profileCommunicationToBeEdited.primary"> </v-checkbox>
       </v-col>
       <v-col>
         <v-icon> mdi-delete-outline </v-icon>

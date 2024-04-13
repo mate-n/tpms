@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import ProfileContactDetailForm from './ProfileContactDetailForm.vue'
-import { ProfileContactDetail } from '@/classes/ProfileContactDetail'
 import { ref, type Ref } from 'vue'
-import type { IProfileContactDetail } from '@/interfaces/profiles/IProfileContactDetail'
+import { ProfileCommunication } from '@/classes/ProfileCommunication'
+import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
 const emit = defineEmits(['close'])
-const contactDetails: Ref<IProfileContactDetail[]> = ref([])
+const contactDetails: Ref<IProfileCommunication[]> = ref([])
 const addContactDetail = () => {
-  contactDetails.value.push(new ProfileContactDetail())
+  contactDetails.value.push(new ProfileCommunication())
 }
 </script>
 <template>
@@ -19,7 +19,7 @@ const addContactDetail = () => {
       <v-btn @click="emit('close')"><v-icon>mdi-close</v-icon></v-btn>
     </div>
   </v-toolbar>
-  <div v-for="(contactDetail, index) in contactDetails" :key="contactDetail.type">
+  <div v-for="(contactDetail, index) in contactDetails" :key="contactDetail.typeID">
     <ProfileContactDetailForm v-model="contactDetails[index]"></ProfileContactDetailForm>
   </div>
 </template>
