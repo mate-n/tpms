@@ -1,0 +1,32 @@
+@import 'texts.scss';
+@import 'colors.scss';
+
+.profile-card-caption {
+  @extend .text-gray;
+  font-size: 0.8rem;
+}
+
+.profiles-card {
+  height: 100%;
+  border-radius: 0.5rem;
+  @extend .bg-white;
+  font-size: 0.85rem;
+  box-shadow:
+    0px 2px 1px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
+    0px 1px 1px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
+    0px 1px 3px 0px var(--v-shadow-key-ambient-opacity, rgba(0, 0, 0, 0.12)) !important;
+
+  & input {
+    @extend .font-size-rem-8;
+  }
+}
+
+.profiles-card-toolbar {
+  @extend .bg-white;
+  border-top-left-radius: 0.5rem !important;
+  border-top-right-radius: 0.5rem !important;
+}
+
+.profiles-card-divider {
+  border-top: 0.1rem solid black !important;
+}
