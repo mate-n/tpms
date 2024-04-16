@@ -9,9 +9,19 @@ const profileService = new ProfileService(axios)
 import languages from '@/lists/languages'
 import ProfileAvatar from './ProfileAvatar.vue'
 import ProfileContactDetailsCard from './ProfileContactDetailsCard.vue'
+import ProfileAddressCard from './ProfileAddressCard.vue'
 import { CrudOperations } from '@/enums/CrudOperations'
 import { CloneHelper } from '@/helpers/CloneHelper'
 import { ProfileAddressFaker } from '@/faker/ProfileAddressFaker'
+import ProfilePersonalInfoCard from './ProfilePersonalInfoCard.vue'
+import ProfileAdditionalInfoCard from './ProfileAdditionalInfoCard.vue'
+import ProfileUserDefinedCard from './ProfileUserDefinedCard.vue'
+import ProfilePreferencesCard from './ProfilePreferencesCard.vue'
+import ProfileMarketingCard from './ProfileMarketingCard.vue'
+import ProfileMembershipCardsCard from './ProfileMembershipCardsCard.vue'
+import ProfileAttachmentsCard from './ProfileAttachmentsCard.vue'
+import ProfileDocumentsCard from './ProfileDocumentsCard.vue'
+
 const cloneHelper = new CloneHelper()
 const props = defineProps({
   profileInput: { type: Object as () => IProfile, required: true },
@@ -129,11 +139,37 @@ const toggleActive = () => {
     </div>
   </v-toolbar>
   <v-row>
-    <v-col>
+    <v-col class="pr-0">
       <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
     </v-col>
+    <v-col class="pr-0">
+      <ProfileAddressCard v-model="profileToBeEdited"></ProfileAddressCard>
+    </v-col>
+    <v-col class="pr-0">
+      <ProfilePersonalInfoCard v-model="profileToBeEdited"></ProfilePersonalInfoCard>
+    </v-col>
+    <v-col class="pr-0">
+      <ProfileAdditionalInfoCard v-model="profileToBeEdited"></ProfileAdditionalInfoCard>
+    </v-col>
+    <v-col class="pr-0">
+      <ProfileUserDefinedCard v-model="profileToBeEdited"></ProfileUserDefinedCard>
+    </v-col>
+  </v-row>
+  <v-row>
     <v-col>
-      <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
+      <ProfilePreferencesCard v-model="profileToBeEdited"></ProfilePreferencesCard>
+    </v-col>
+    <v-col>
+      <ProfileMarketingCard v-model="profileToBeEdited"></ProfileMarketingCard>
+    </v-col>
+    <v-col>
+      <ProfileMembershipCardsCard v-model="profileToBeEdited"></ProfileMembershipCardsCard>
+    </v-col>
+    <v-col>
+      <ProfileDocumentsCard v-model="profileToBeEdited"></ProfileDocumentsCard>
+    </v-col>
+    <v-col>
+      <ProfileAttachmentsCard v-model="profileToBeEdited"></ProfileAttachmentsCard>
     </v-col>
   </v-row>
 </template>
