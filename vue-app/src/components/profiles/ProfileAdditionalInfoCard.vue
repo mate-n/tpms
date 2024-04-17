@@ -1,19 +1,20 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { IProfile } from '@/interfaces/profiles/IProfile'
+import ProfileAdditionalInfoForm from './ProfileAdditionalInfoForm.vue'
+
+const profileToBeEdited = defineModel({
+  required: true,
+  type: Object as () => IProfile
+})
+</script>
 
 <template>
-  <v-toolbar class="bg-white elevation-1">
-    <v-toolbar-title><span class="text-primary">Additional Info</span></v-toolbar-title>
-  </v-toolbar>
-  <v-card>
-    <template v-slot:text>
-      <div class="mb-2">
-        Mobile<br />
-        123456789
-      </div>
-      <div>
-        E-Mail<br />
-        max.mustermann@mail.com
-      </div>
-    </template>
-  </v-card>
+  <div class="profiles-card">
+    <v-toolbar class="profiles-card-toolbar">
+      <v-toolbar-title><span class="text-primary">Additional Info</span></v-toolbar-title>
+    </v-toolbar>
+    <v-container>
+      <ProfileAdditionalInfoForm v-model="profileToBeEdited"></ProfileAdditionalInfoForm>
+    </v-container>
+  </div>
 </template>
