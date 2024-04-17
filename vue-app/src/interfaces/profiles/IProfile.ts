@@ -5,6 +5,7 @@ export interface IProfile {
   firstName: string
   lastName: string
   middleName: string
+  postNominalTitle: string
   email: string
   language: string
   phone: string
