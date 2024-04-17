@@ -13,7 +13,6 @@ const profileToBeEdited = defineModel({
     <v-toolbar class="profiles-card-toolbar">
       <v-toolbar-title><span class="text-primary">Personal Info</span></v-toolbar-title>
     </v-toolbar>
-    <v-divider class="profiles-card-divider"></v-divider>
     <v-container>
       <ProfilePersonalInfoForm v-model="profileToBeEdited"></ProfilePersonalInfoForm>
     </v-container>
