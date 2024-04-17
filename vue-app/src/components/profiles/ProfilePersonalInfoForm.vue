@@ -1,7 +1,20 @@
 <script setup lang="ts">
+import type { IGender } from '@/interfaces/IGender'
+import type { INationality } from '@/interfaces/INationality'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
-import { ref } from 'vue'
-
+import { GenderService } from '@/services/GenderService'
+import { NationalityService } from '@/services/NationalityService'
+import { CountryService } from '@/services/CountryService'
+import type { AxiosStatic } from 'axios'
+import { inject, onMounted, ref } from 'vue'
+import type { ICountry } from '@/interfaces/ICountry'
+const axios: AxiosStatic | undefined = inject('axios')
+const genderService = new GenderService(axios)
+const nationalityService = new NationalityService(axios)
+const countryService = new CountryService(axios)
+const availableGenders = ref<IGender[]>([])
+const availableNationalities = ref<INationality[]>([])
+const availableCountries = ref<ICountry[]>([])
 const profileToBeEdited = defineModel({
   required: true,
   type: Object as () => IProfile
@@ -12,6 +25,20 @@ const birthdayMenu = ref(false)
 const changeBirthDay = (date: any) => {
   profileToBeEdited.value.birthday = date
 }
+
+onMounted(() => {
+  genderService.getAvailableGenders().then((response) => {
+    availableGenders.value = response
+  })
+
+  nationalityService.getAvailableNationalities().then((response) => {
+    availableNationalities.value = response
+  })
+
+  countryService.getAvailableCountries().then((response) => {
+    availableCountries.value = response
+  })
+})
 </script>
 
 <template>
@@ -46,15 +73,25 @@ const changeBirthDay = (date: any) => {
     </v-col>
   </v-row>
 
-  <v-select label="Gender" variant="underlined" :v-model="profileToBeEdited.gender"></v-select>
+  <v-select
+    label="Gender"
+    variant="underlined"
+    :v-model="profileToBeEdited.gender"
+    :items="availableGenders"
+    item-title="value"
+  ></v-select>
   <v-select
     label="Nationality"
     variant="underlined"
     :v-model="profileToBeEdited.nationality"
+    :items="availableNationalities"
+    item-title="value"
   ></v-select>
   <v-select
     label="Country of Birth"
     variant="underlined"
     :v-model="profileToBeEdited.birthCountry"
+    :items="availableCountries"
+    item-title="value"
   ></v-select>
 </template>
