@@ -7,6 +7,7 @@ export class Profile implements IProfile {
   firstName: string
   lastName: string
   middleName: string
+  postNominalTitle: string
   email: string
   language: string
   phone: string
@@ -76,6 +77,7 @@ export class Profile implements IProfile {
     this.firstName = ''
     this.lastName = ''
     this.middleName = ''
+    this.postNominalTitle = ''
     this.email = ''
     this.language = ''
     this.phone = ''
