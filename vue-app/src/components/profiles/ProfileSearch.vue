@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import type { IProfilePostBody } from '@/interfaces/IProfilePostBody'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
-import { inject, ref, type Ref } from 'vue'
+import { inject, onMounted, ref, type Ref } from 'vue'
 import NewProfile from './NewProfile.vue'
 import EditProfile from './EditProfile.vue'
 import { Profile } from '@/classes/Profile'
+import type { IProfileSearch } from '@/interfaces/profiles/IProfileSearch'
+import { ProfileSearch } from '@/classes/ProfileSearch'
+import type { IGuestType } from '@/interfaces/IGuestType'
+import { GuestTypeService } from '@/services/GuestTypeService'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
+const guestTypes = ref(<IGuestType[]>[])
+const guestTypeService = new GuestTypeService(axios)
 const emit = defineEmits(['close', 'profileSelected'])
 const close = () => emit('close')
-const profilePostBody: Ref<IProfilePostBody> = ref({
-  name: '',
-  firstName: '',
-  email: '',
-  city: ''
-})
+const profilePostBody: Ref<IProfileSearch> = ref(new ProfileSearch())
 const profileFromInputFields = ref<IProfile>(new Profile())
 const newProfileDialog = ref(false)
 const editProfileDialog = ref(false)
@@ -53,7 +53,6 @@ const availableTableDataHeaders = ref([
 const openNewProfileDialog = () => {
   const profile = new Profile()
   if (profilePostBody.value.name) profile.lastName = profilePostBody.value.name
-  if (profilePostBody.value.firstName) profile.firstName = profilePostBody.value.firstName
   if (profilePostBody.value.email) profile.email = profilePostBody.value.email
   profileFromInputFields.value = profile
   newProfileDialog.value = true
@@ -81,6 +80,12 @@ const profileUpdate = () => {
   search()
   closeEditProfileDialog()
 }
+
+onMounted(() => {
+  guestTypeService.getAvailableGuestTypes().then((response) => {
+    guestTypes.value = response
+  })
+})
 </script>
 
 <template>
@@ -102,12 +107,6 @@ const profileUpdate = () => {
         class="me-3"
       ></v-text-field>
       <v-text-field
-        v-model="profilePostBody.firstName"
-        label="First Name"
-        variant="underlined"
-        class="me-3"
-      ></v-text-field>
-      <v-text-field
         v-model="profilePostBody.email"
         label="Email"
         variant="underlined"
@@ -120,11 +119,19 @@ const profileUpdate = () => {
         class="me-3"
       ></v-text-field>
       <v-text-field
-        v-model="profilePostBody.profileId"
+        v-model="profilePostBody.profileID"
         label="Profile ID"
         variant="underlined"
         class="me-3"
       ></v-text-field>
+      <v-autocomplete
+        label="Type"
+        v-model="profileToBeEdited.salut"
+        :items="guestTypes"
+        item-title="value"
+        variant="underlined"
+        class="me-3"
+      ></v-autocomplete>
       <v-btn class="primary-button" @click="search()"><v-icon>mdi-magnify</v-icon>Search</v-btn>
     </div>
   </v-container>
@@ -139,7 +146,9 @@ const profileUpdate = () => {
       </template>
       <template v-slot:[`header.menu`]="{ column }">
         {{ column.title }}
-        <v-icon @click="changeColumnsDialog = true">mdi-cog-outline</v-icon>
+        <v-btn icon variant="text">
+          <v-icon @click="changeColumnsDialog = true">mdi-cog-outline</v-icon>
+        </v-btn>
       </template>
       <template v-slot:item="row">
         <tr>
@@ -158,11 +167,15 @@ const profileUpdate = () => {
             </div>
 
             <div v-if="header.key === 'select'">
-              <v-btn class="primary-button" @click="selectProfile(row.item)">Select</v-btn>
+              <v-btn class="primary-button" size="small" @click="selectProfile(row.item)"
+                >Select</v-btn
+              >
             </div>
 
             <div v-if="header.key === 'menu'">
-              <v-icon @click="editProfile(row.item)">mdi-dots-vertical</v-icon>
+              <v-btn icon variant="text">
+                <v-icon @click="editProfile(row.item)">mdi-dots-vertical</v-icon>
+              </v-btn>
             </div>
           </td>
         </tr>
