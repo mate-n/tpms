@@ -6,7 +6,7 @@ import { computed, inject, onMounted, ref } from 'vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileAddressService = new ProfileAddressService(axios)
 const profileAddresses = ref<IProfileAddress[]>([])
-const primaryOfFirstAddress = computed(() => {
+const primaryOrFirstAddress = computed(() => {
   const primaryAddress = profileAddresses.value.find((profileAddress) => profileAddress.primary)
   if (primaryAddress) {
     return primaryAddress
@@ -31,28 +31,28 @@ onMounted(() => {
     </v-toolbar>
     <v-divider class="profiles-card-divider"></v-divider>
     <v-container>
-      <div v-if="primaryOfFirstAddress">
+      <div v-if="primaryOrFirstAddress">
         <div class="mb-2">
           <span class="profile-card-caption"> Country </span><br />
-          {{ primaryOfFirstAddress.country }}
+          {{ primaryOrFirstAddress.country }}
         </div>
         <div class="mb-2">
           <span class="profile-card-caption"> ZIP / Postal Code </span><br />
-          {{ primaryOfFirstAddress.zip }}
+          {{ primaryOrFirstAddress.zip }}
         </div>
         <div class="mb-2">
           <span class="profile-card-caption"> Citye </span><br />
-          {{ primaryOfFirstAddress.city }}
+          {{ primaryOrFirstAddress.city }}
         </div>
         <div class="mb-2">
           <span class="profile-card-caption"> State /Province / Region </span><br />
-          {{ primaryOfFirstAddress.state }}
+          {{ primaryOrFirstAddress.state }}
         </div>
         <div class="mb-2">
           <span class="profile-card-caption"> Street Address </span><br />
-          {{ primaryOfFirstAddress.street1 }}<br />
-          {{ primaryOfFirstAddress.street2 }}<br />
-          {{ primaryOfFirstAddress.street3 }}
+          {{ primaryOrFirstAddress.street1 }}<br />
+          {{ primaryOrFirstAddress.street2 }}<br />
+          {{ primaryOrFirstAddress.street3 }}
         </div>
       </div>
     </v-container>
