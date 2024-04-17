@@ -4,8 +4,8 @@ import { inject, onMounted, ref } from 'vue'
 import ProfileContactDetailsForm from './ProfileContactDetailsForm.vue'
 import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
 import { CommunicationTypes } from '@/enums/CommunicationTypes'
-import ProfileCommunicationService from '@/services/profiles/ProfileCommunicationService'
 import type { AxiosStatic } from 'axios'
+import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileCommunicationService = new ProfileCommunicationService(axios)
 const editProfileContactDetailsDialog = ref(false)
