@@ -1,23 +1,34 @@
 <script setup lang="ts"></script>
 
 <template>
-  <v-toolbar class="bg-white elevation-1">
-    <v-toolbar-title><span class="text-primary">Membership cards</span></v-toolbar-title>
-    <v-btn icon>
-      <v-icon class="text-gray">mdi-pencil-outline</v-icon>
-    </v-btn>
-  </v-toolbar>
-  <v-divider></v-divider>
-  <v-card>
-    <template v-slot:text>
+  <div class="profiles-card">
+    <v-toolbar class="profiles-card-toolbar">
+      <v-toolbar-title><span class="text-primary">Membership cards</span></v-toolbar-title>
+      <v-btn icon class="text-gray"> <v-icon>mdi-wallet-membership</v-icon> </v-btn>
+    </v-toolbar>
+
+    <v-divider class="profiles-card-divider"></v-divider>
+    <v-container>
       <div class="mb-2">
-        Mobile<br />
-        123456789
+        <span class="profile-card-caption">Name of program</span><br />
+        -
       </div>
-      <div>
-        E-Mail<br />
-        max.mustermann@mail.com
+      <div class="mb-2">
+        <span class="profile-card-caption">Card Number</span><br />
+        -
       </div>
-    </template>
-  </v-card>
+      <div class="mb-2">
+        <span class="profile-card-caption">Point balance</span><br />
+        -
+      </div>
+      <div class="mb-2">
+        <span class="profile-card-caption">Tier Level</span><br />
+        -
+      </div>
+      <div class="mb-2">
+        <span class="profile-card-caption">Expiration Date</span><br />
+        -
+      </div>
+    </v-container>
+  </div>
 </template>
