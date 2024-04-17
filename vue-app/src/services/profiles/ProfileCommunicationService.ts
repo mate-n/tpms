@@ -4,7 +4,7 @@ import type { IService } from '@/interfaces/IService'
 import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
 import type { IProfileCommunicationSearch } from '@/interfaces/profiles/IProfileCommunicationSearch'
 
-class ProfileCommunicationService implements IService {
+export class ProfileCommunicationService implements IService {
   axiosInstance: AxiosStatic
   constructor(axiosInstance: AxiosStatic | undefined) {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
@@ -23,5 +23,3 @@ class ProfileCommunicationService implements IService {
     })
   }
 }
-
-export default ProfileCommunicationService
