@@ -1,9 +1,23 @@
 <script setup lang="ts">
+import type { ICommunicationMethod } from '@/interfaces/ICommunicationMethod'
 import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
+import { CommunicationMethodService } from '@/services/CommunicationMethodService'
+import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
+import type { AxiosStatic } from 'axios'
+import { inject, onMounted, ref } from 'vue'
+const communicationMethods = ref(<ICommunicationMethod[]>[])
+const axios: AxiosStatic | undefined = inject('axios')
+const communicationMethodService = new CommunicationMethodService(axios)
 
 const profileCommunicationToBeEdited = defineModel({
   required: true,
   type: Object as () => IProfileCommunication
+})
+
+onMounted(() => {
+  communicationMethodService.getAvailableCommunicationMethods().then((response) => {
+    communicationMethods.value = response
+  })
 })
 </script>
 
@@ -17,7 +31,8 @@ const profileCommunicationToBeEdited = defineModel({
         <v-select
           label="Select"
           variant="underlined"
-          :items="['E-Mail', 'Mobile', 'Phone', 'Skype']"
+          :items="communicationMethods"
+          item-title="value"
         ></v-select>
       </v-col>
       <v-col>
