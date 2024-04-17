@@ -3,7 +3,7 @@ import type { IProfile } from '@/interfaces/profiles/IProfile'
 import { faker } from '@faker-js/faker'
 
 export class ProfilesFaker {
-  createFakeProfile(): IProfile {
+  create(): IProfile {
     let profile = new Profile()
     const fakeData = {
       id: faker.datatype.number(),
