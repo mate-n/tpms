@@ -4,15 +4,11 @@ import type { IProfile } from '@/interfaces/profiles/IProfile'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import { inject, onMounted, ref, watch } from 'vue'
-const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
-import languages from '@/lists/languages'
 import ProfileAvatar from './ProfileAvatar.vue'
 import ProfileContactDetailsCard from './ProfileContactDetailsCard.vue'
 import ProfileAddressCard from './ProfileAddressCard.vue'
 import { CrudOperations } from '@/enums/CrudOperations'
 import { CloneHelper } from '@/helpers/CloneHelper'
-import { ProfileAddressFaker } from '@/faker/ProfileAddressFaker'
 import ProfilePersonalInfoCard from './ProfilePersonalInfoCard.vue'
 import ProfileAdditionalInfoCard from './ProfileAdditionalInfoCard.vue'
 import ProfileUserDefinedCard from './ProfileUserDefinedCard.vue'
@@ -21,7 +17,14 @@ import ProfileMarketingCard from './ProfileMarketingCard.vue'
 import ProfileMembershipCardsCard from './ProfileMembershipCardsCard.vue'
 import ProfileAttachmentsCard from './ProfileAttachmentsCard.vue'
 import ProfileDocumentsCard from './ProfileDocumentsCard.vue'
-
+import { LanguageService } from '@/services/LanguageService'
+import type { ILanguage } from '@/interfaces/ILanguage'
+import type { ISalutation } from '@/interfaces/ISalutation'
+import { SalutationService } from '@/services/SalutationService'
+const axios: AxiosStatic | undefined = inject('axios')
+const profileService = new ProfileService(axios)
+const languageService = new LanguageService(axios)
+const salutationService = new SalutationService(axios)
 const cloneHelper = new CloneHelper()
 const props = defineProps({
   profileInput: { type: Object as () => IProfile, required: true },
@@ -29,15 +32,16 @@ const props = defineProps({
 })
 const profileToBeEdited = ref<IProfile>(new Profile())
 const emit = defineEmits(['save'])
-
+const languages = ref(<ILanguage[]>[])
+const salutations = ref(<ISalutation[]>[])
 onMounted(() => {
+  languageService.getAvailableLanguages().then((response) => {
+    languages.value = response
+  })
+  salutationService.getAvailableSalutations().then((response) => {
+    salutations.value = response
+  })
   profileToBeEdited.value = cloneHelper.clone(props.profileInput)
-  const profileAddressFaker = new ProfileAddressFaker()
-  console.log(profileAddressFaker.createFakeProfileAddress())
-  const fake1 = profileAddressFaker.createFakeProfileAddress()
-  const fake2 = profileAddressFaker.createFakeProfileAddress()
-  const fake3 = profileAddressFaker.createFakeProfileAddress()
-  console.log([fake1, fake2, fake3])
 })
 
 watch(props, (newInput) => {
@@ -89,12 +93,14 @@ const toggleActive = () => {
             ></v-text-field>
           </div>
           <div class="d-flex">
-            <v-text-field
+            <v-autocomplete
+              label="Salutaton"
               v-model="profileToBeEdited.salut"
-              label="Salutation"
+              :items="salutations"
+              item-title="value"
               variant="underlined"
               class="me-3"
-            ></v-text-field>
+            ></v-autocomplete>
             <v-text-field
               v-model="profileToBeEdited.salutShort"
               label="Personal Salutation"
@@ -105,13 +111,19 @@ const toggleActive = () => {
               label="Language"
               v-model="profileToBeEdited.language"
               :items="languages"
-              item-title="name"
+              item-title="value"
               variant="underlined"
               class="me-3"
             ></v-autocomplete>
             <v-autocomplete
               label="VIP"
               v-model="profileToBeEdited.vipCodeIDs"
+              variant="underlined"
+              class="me-3"
+            ></v-autocomplete>
+            <v-autocomplete
+              label="Post Nominal Title"
+              v-model="profileToBeEdited.postNominalTitle"
               variant="underlined"
             ></v-autocomplete>
           </div>
@@ -137,39 +149,68 @@ const toggleActive = () => {
     <div class="h-100 d-flex px-5 align-center" @click="save()">
       <v-btn class="primary-button text-uppercase">{{ $t('actions.save') }}</v-btn>
     </div>
+    <v-btn icon class="profiles-icon-button">
+      <v-icon>mdi-calculator-variant-outline</v-icon>
+    </v-btn>
+    <v-btn icon class="profiles-icon-button">
+      <v-icon>mdi-clipboard-text-outline</v-icon>
+    </v-btn>
+    <v-btn icon class="profiles-icon-button">
+      <v-icon>mdi-account-multiple-outline</v-icon>
+    </v-btn>
+    <v-btn icon class="profiles-icon-button">
+      <v-icon>mdi-bank-outline</v-icon>
+    </v-btn>
+    <v-btn icon class="profiles-icon-button">
+      <v-icon>mdi-receipt-text-outline</v-icon>
+    </v-btn>
+    <v-btn icon class="profiles-icon-button">
+      <v-icon>mdi-calendar-blank-outline</v-icon>
+    </v-btn>
+    <v-btn icon class="profiles-icon-button">
+      <v-icon>mdi-security</v-icon>
+    </v-btn>
+    <v-btn icon class="profiles-icon-button">
+      <v-icon>mdi-account-check-outline</v-icon>
+    </v-btn>
+    <v-btn icon class="profiles-icon-button">
+      <v-icon>mdi-paw</v-icon>
+    </v-btn>
   </v-toolbar>
-  <v-row>
-    <v-col class="pr-0">
-      <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
-    </v-col>
-    <v-col class="pr-0">
-      <ProfileAddressCard v-model="profileToBeEdited"></ProfileAddressCard>
-    </v-col>
-    <v-col class="pr-0">
-      <ProfilePersonalInfoCard v-model="profileToBeEdited"></ProfilePersonalInfoCard>
-    </v-col>
-    <v-col class="pr-0">
-      <ProfileAdditionalInfoCard v-model="profileToBeEdited"></ProfileAdditionalInfoCard>
-    </v-col>
-    <v-col class="pr-0">
-      <ProfileUserDefinedCard v-model="profileToBeEdited"></ProfileUserDefinedCard>
-    </v-col>
-  </v-row>
-  <v-row>
-    <v-col>
-      <ProfilePreferencesCard v-model="profileToBeEdited"></ProfilePreferencesCard>
-    </v-col>
-    <v-col>
-      <ProfileMarketingCard v-model="profileToBeEdited"></ProfileMarketingCard>
-    </v-col>
-    <v-col>
-      <ProfileMembershipCardsCard v-model="profileToBeEdited"></ProfileMembershipCardsCard>
-    </v-col>
-    <v-col>
-      <ProfileDocumentsCard v-model="profileToBeEdited"></ProfileDocumentsCard>
-    </v-col>
-    <v-col>
-      <ProfileAttachmentsCard v-model="profileToBeEdited"></ProfileAttachmentsCard>
-    </v-col>
-  </v-row>
+  <v-container fluid>
+    <v-row>
+      <v-col class="pr-0 profiles-card-column">
+        <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
+      </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <ProfileAddressCard v-model="profileToBeEdited"></ProfileAddressCard>
+      </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <ProfilePersonalInfoCard v-model="profileToBeEdited"></ProfilePersonalInfoCard>
+      </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <ProfileAdditionalInfoCard v-model="profileToBeEdited"></ProfileAdditionalInfoCard>
+      </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <ProfileUserDefinedCard v-model="profileToBeEdited"></ProfileUserDefinedCard>
+      </v-col>
+    </v-row>
+    <v-row class="mt-0">
+      <v-col class="pr-0 profiles-card-column">
+        <ProfilePreferencesCard v-model="profileToBeEdited"></ProfilePreferencesCard>
+      </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <ProfileMarketingCard v-model="profileToBeEdited"></ProfileMarketingCard>
+      </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <ProfileMembershipCardsCard v-model="profileToBeEdited"></ProfileMembershipCardsCard>
+      </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <ProfileDocumentsCard v-model="profileToBeEdited"></ProfileDocumentsCard>
+      </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <ProfileAttachmentsCard v-model="profileToBeEdited"></ProfileAttachmentsCard>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
