@@ -1,29 +1,25 @@
 <script setup lang="ts">
-import { useDate } from 'vuetify'
-import { ProfileDocumentFaker } from '@/faker/ProfileDocumentFaker'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import type { IProfileDocument } from '@/interfaces/profiles/IProfileDocument'
 import { ProfileDocumentService } from '@/services/profiles/ProfileDocumentService'
 import type { AxiosStatic } from 'axios'
 import { computed, inject, onMounted, ref } from 'vue'
 import { DateFormatter } from '@/helpers/DateFormatter'
+import type { IGuestTravelDocument } from '@/interfaces/IGuestTravelDocument'
+import { GuestTravelDocumentService } from '@/services/GuestTravelDocumentService'
 const dateFormatter = new DateFormatter()
-const usedate = useDate()
 const axios: AxiosStatic | undefined = inject('axios')
-const documentFaker = new ProfileDocumentFaker()
-const fake1 = documentFaker.create()
-const fake2 = documentFaker.create()
-const fake3 = documentFaker.create()
-console.log(fake1)
-
-console.log([fake1, fake2, fake3])
-
 const profileDocumentService = new ProfileDocumentService(axios)
+const guestTravelDocumentService = new GuestTravelDocumentService(axios)
+const guestTravelDocuments = ref(<IGuestTravelDocument[]>[])
 const profileDocuments = ref(<IProfileDocument[]>[])
 
 onMounted(() => {
   profileDocumentService.search({ ids: [1, 2, 3] }).then((response) => {
     profileDocuments.value = response
+  })
+
+  guestTravelDocumentService.getAvailableGuestTravelDocuments().then((response) => {
+    guestTravelDocuments.value = response
   })
 })
 
@@ -50,7 +46,12 @@ const primaryOrFirstProfileDocument = computed(() => {
       <div v-if="primaryOrFirstProfileDocument">
         <div class="mb-2">
           <span class="profile-card-caption">Type </span><br />
-          {{ primaryOrFirstProfileDocument.typeID }}
+          {{
+            guestTravelDocuments.find(
+              (guestTravelDocument) =>
+                guestTravelDocument.id === primaryOrFirstProfileDocument.typeID
+            )?.value
+          }}
         </div>
         <div class="mb-2">
           <span class="profile-card-caption">Number </span><br />
