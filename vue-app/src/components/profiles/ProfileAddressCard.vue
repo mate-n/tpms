@@ -3,6 +3,12 @@ import type { IProfileAddress } from '@/interfaces/profiles/IProfileAddress'
 import { ProfileAddressService } from '@/services/profiles/ProfileAddressService'
 import type { AxiosStatic } from 'axios'
 import { computed, inject, onMounted, ref } from 'vue'
+import ProfileAddressesForm from './ProfileAddressesForm.vue'
+import type { IProfile } from '@/interfaces/profiles/IProfile'
+const props = defineProps({
+  profile: { type: Object as () => IProfile, required: true }
+})
+const profileAddressesDialog = ref(false)
 const axios: AxiosStatic | undefined = inject('axios')
 const profileAddressService = new ProfileAddressService(axios)
 const profileAddresses = ref<IProfileAddress[]>([])
@@ -25,7 +31,7 @@ onMounted(() => {
   <div class="profiles-card">
     <v-toolbar class="profiles-card-toolbar">
       <v-toolbar-title><span class="text-primary">Address</span></v-toolbar-title>
-      <v-btn icon>
+      <v-btn @click="profileAddressesDialog = true" icon>
         <v-icon class="text-gray">mdi-pencil-outline</v-icon>
       </v-btn>
     </v-toolbar>
@@ -56,5 +62,12 @@ onMounted(() => {
         </div>
       </div>
     </v-container>
+    <v-dialog v-model="profileAddressesDialog" auto>
+      test
+      <ProfileAddressesForm
+        :profile="profile"
+        @close="profileAddressesDialog = false"
+      ></ProfileAddressesForm>
+    </v-dialog>
   </div>
 </template>
