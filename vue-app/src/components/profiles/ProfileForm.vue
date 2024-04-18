@@ -62,76 +62,81 @@ const toggleActive = () => {
 }
 </script>
 <template>
-  <v-row>
-    <v-col cols="2">
-      <div class="my-2">
-        <ProfileAvatar v-model="profileToBeEdited" :crud-operation="crudOperation"></ProfileAvatar>
-      </div>
-    </v-col>
-    <v-col cols="10">
-      <div class="d-flex">
-        <div style="flex-grow: 6">
-          <div class="d-flex big-vue-input-field-font-size">
-            <v-text-field
-              v-model="profileToBeEdited.lastName"
-              label="Last Name"
-              variant="underlined"
-              class="me-3"
-            ></v-text-field>
-            <v-text-field
-              v-model="profileToBeEdited.firstName"
-              label="First Name"
-              variant="underlined"
-              class="me-3"
-              aria-required="true"
-            ></v-text-field>
-            <v-text-field
-              v-model="profileToBeEdited.middleName"
-              label="Middle Name"
-              variant="underlined"
-              class="me-3"
-            ></v-text-field>
-          </div>
-          <div class="d-flex">
-            <v-autocomplete
-              label="Salutaton"
-              v-model="profileToBeEdited.salut"
-              :items="salutations"
-              item-title="value"
-              variant="underlined"
-              class="me-3"
-            ></v-autocomplete>
-            <v-text-field
-              v-model="profileToBeEdited.salutShort"
-              label="Personal Salutation"
-              variant="underlined"
-              class="me-3"
-            ></v-text-field>
-            <v-autocomplete
-              label="Language"
-              v-model="profileToBeEdited.language"
-              :items="languages"
-              item-title="value"
-              variant="underlined"
-              class="me-3"
-            ></v-autocomplete>
-            <v-autocomplete
-              label="VIP"
-              v-model="profileToBeEdited.vipCodeIDs"
-              variant="underlined"
-              class="me-3"
-            ></v-autocomplete>
-            <v-autocomplete
-              label="Post Nominal Title"
-              v-model="profileToBeEdited.postNominalTitle"
-              variant="underlined"
-            ></v-autocomplete>
+  <v-container fluid class="bg-white">
+    <v-row>
+      <v-col cols="2">
+        <div class="my-2">
+          <ProfileAvatar
+            v-model="profileToBeEdited"
+            :crud-operation="crudOperation"
+          ></ProfileAvatar>
+        </div>
+      </v-col>
+      <v-col cols="10" class="border-s">
+        <div class="d-flex">
+          <div style="flex-grow: 6">
+            <div class="d-flex big-vue-input-field-font-size">
+              <v-text-field
+                v-model="profileToBeEdited.lastName"
+                label="Last Name"
+                variant="underlined"
+                class="me-3"
+              ></v-text-field>
+              <v-text-field
+                v-model="profileToBeEdited.firstName"
+                label="First Name"
+                variant="underlined"
+                class="me-3"
+                aria-required="true"
+              ></v-text-field>
+              <v-text-field
+                v-model="profileToBeEdited.middleName"
+                label="Middle Name"
+                variant="underlined"
+                class="me-3"
+              ></v-text-field>
+            </div>
+            <div class="d-flex">
+              <v-autocomplete
+                label="Salutaton"
+                v-model="profileToBeEdited.salut"
+                :items="salutations"
+                item-title="value"
+                variant="underlined"
+                class="me-3"
+              ></v-autocomplete>
+              <v-text-field
+                v-model="profileToBeEdited.salutShort"
+                label="Personal Salutation"
+                variant="underlined"
+                class="me-3"
+              ></v-text-field>
+              <v-autocomplete
+                label="Language"
+                v-model="profileToBeEdited.language"
+                :items="languages"
+                item-title="value"
+                variant="underlined"
+                class="me-3"
+              ></v-autocomplete>
+              <v-autocomplete
+                label="VIP"
+                v-model="profileToBeEdited.vipCodeIDs"
+                variant="underlined"
+                class="me-3"
+              ></v-autocomplete>
+              <v-autocomplete
+                label="Post Nominal Title"
+                v-model="profileToBeEdited.postNominalTitle"
+                variant="underlined"
+              ></v-autocomplete>
+            </div>
           </div>
         </div>
-      </div>
-    </v-col>
-  </v-row>
-  <v-toolbar>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-toolbar class="bg-lightgray">
     <div class="h-100 d-flex px-5 align-center me-auto" @click="toggleActive()">
       <template v-if="!profileToBeEdited.inactive">
         <v-btn class="text-primary bg-white">
@@ -177,10 +182,10 @@ const toggleActive = () => {
       <v-icon>mdi-paw</v-icon>
     </v-btn>
   </v-toolbar>
-  <v-container fluid>
+  <v-container fluid class="bg-lightgray pt-0">
     <v-row>
       <v-col class="pr-0 profiles-card-column">
-        <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
+        <ProfileContactDetailsCard :profile="profileToBeEdited"></ProfileContactDetailsCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
         <ProfileAddressCard v-model="profileToBeEdited"></ProfileAddressCard>
