@@ -48,3 +48,12 @@
   margin-right: 0.5rem;
   border: 0.1rem solid darken(map-get($main-colors, 'lightgray'), 10%) !important;
 }
+
+.profiles-card-container {
+  @extend .bg-lightgray;
+  border-bottom-left-radius: 0.5rem !important;
+  border-bottom-right-radius: 0.5rem !important;
+  padding-top: 0.5rem !important;
+  padding-left: 0.3rem !important;
+  padding-right: 0.3rem !important;
+}
