@@ -17,7 +17,7 @@ const propertyService = new PropertyService(axios)
 const roomService = new RoomService(axios)
 const dateHelper = new DateHelper()
 const reservationValidator = new ReservationValidator()
-const emit = defineEmits(['check', 'change'])
+const emit = defineEmits(['check', 'change', 'remove'])
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 const props = defineProps({
   previousReservation: { type: Object as () => IReservation, required: false },
@@ -95,6 +95,10 @@ const check = () => {
 
 const reset = () => {
   reservation.value.reset()
+}
+
+const remove = (reservation: IReservation) => {
+  emit('remove', reservation)
 }
 
 const emitChange = () => {
@@ -227,7 +231,8 @@ const profileSelected = (profile: IProfile) => {
       </v-col>
       <v-col class="d-flex justify-space-between">
         <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
-        <v-btn class="primary-button" @click="check()">Check</v-btn>
+        <v-btn class="primary-button mr-3" @click="check()">Check</v-btn>
+        <v-btn class="danger-button" @click="remove(reservation)"> Remove </v-btn>
       </v-col>
     </v-row>
   </v-container>
