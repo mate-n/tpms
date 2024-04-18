@@ -1,22 +1,43 @@
 <script setup lang="ts">
 import type { IProfile } from '@/interfaces/profiles/IProfile'
-import { inject, onMounted, ref } from 'vue'
-import ProfileContactDetailsForm from './ProfileContactDetailsForm.vue'
+import { inject, onBeforeMount, onMounted, ref, watch } from 'vue'
 import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
 import { CommunicationTypes } from '@/enums/CommunicationTypes'
 import type { AxiosStatic } from 'axios'
 import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
+import ProfileCommunicationsForm from './ProfileCommunicationsForm.vue'
+import { CommunicationMethodService } from '@/services/CommunicationMethodService'
+import type { ICommunicationMethod } from '@/interfaces/ICommunicationMethod'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileCommunicationService = new ProfileCommunicationService(axios)
+const communicationMethodService = new CommunicationMethodService(axios)
+const communicationMethods = ref<ICommunicationMethod[]>([])
 const editProfileContactDetailsDialog = ref(false)
-const profileToBeEdited = defineModel({ required: true, type: Object as () => IProfile })
 const profileCommunications = ref<IProfileCommunication[]>([])
+const props = defineProps({
+  profile: { type: Object as () => IProfile, required: true }
+})
 
-onMounted(() => {
-  profileCommunicationService.search({ ids: [1, 2, 3] }).then((response) => {
-    profileCommunications.value = response
+onBeforeMount(() => {
+  communicationMethodService.getAvailableCommunicationMethods().then((response) => {
+    communicationMethods.value = response
   })
 })
+
+watch(props, () => {
+  if (props.profile.id) {
+    profileCommunicationService.getAllOfProfile(props.profile.id).then((response) => {
+      profileCommunications.value = response
+    })
+  }
+})
+
+const getCommunicationMethodValue = (communicationMethodID: number) => {
+  const communicationMethod = communicationMethods.value.find(
+    (cm) => cm.id === communicationMethodID
+  )
+  return communicationMethod ? communicationMethod.value : ''
+}
 </script>
 <template>
   <div class="profiles-card">
@@ -31,14 +52,18 @@ onMounted(() => {
       <div v-for="profileCommunication of profileCommunications" :key="profileCommunication.id">
         <div class="mb-2">
           <span class="profile-card-caption">
-            {{ CommunicationTypes[profileCommunication.communicationTypeID] }}<br />
+            {{ getCommunicationMethodValue(profileCommunication.communicationTypeID) }}
+            <br />
           </span>
           {{ profileCommunication.value }}
         </div>
       </div>
     </v-container>
-    <v-dialog v-model="editProfileContactDetailsDialog" fullscreen>
-      <ProfileContactDetailsForm v-model="profileToBeEdited"></ProfileContactDetailsForm>
+    <v-dialog v-model="editProfileContactDetailsDialog" auto>
+      <ProfileCommunicationsForm
+        :profile="profile"
+        @close="editProfileContactDetailsDialog = false"
+      ></ProfileCommunicationsForm>
     </v-dialog>
   </div>
 </template>
