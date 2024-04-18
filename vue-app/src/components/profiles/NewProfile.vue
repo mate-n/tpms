@@ -40,7 +40,7 @@ watch(props, (newInput) => {
 })
 </script>
 <template>
-  <v-toolbar>
+  <v-toolbar class="bg-white">
     <v-toolbar-title>New Profile</v-toolbar-title>
     <div class="border-s h-100 d-flex px-5 align-center" @click="toggleFullScreen()">
       <template v-if="isFullScreen">
@@ -54,11 +54,11 @@ watch(props, (newInput) => {
       <v-btn><v-icon>mdi-close</v-icon></v-btn>
     </div>
   </v-toolbar>
-  <div>
-    <ProfileForm
-      :profile-input="newProfile"
-      :crud-operation="CrudOperations.Create"
-      @save="(profile) => save(profile)"
-    ></ProfileForm>
-  </div>
+  <v-divider class="profiles-card-divider"></v-divider>
+
+  <ProfileForm
+    :profile-input="newProfile"
+    :crud-operation="CrudOperations.Create"
+    @save="(profile) => save(profile)"
+  ></ProfileForm>
 </template>

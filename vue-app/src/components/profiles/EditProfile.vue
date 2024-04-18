@@ -40,7 +40,7 @@ const toggleFullScreen = () => {
 }
 </script>
 <template>
-  <v-toolbar>
+  <v-toolbar class="bg-white">
     <v-toolbar-title
       >Profile <v-icon>mdi-arrow-right</v-icon> #{{ profileToBeEdited.id }}</v-toolbar-title
     >
@@ -56,11 +56,11 @@ const toggleFullScreen = () => {
       <v-btn><v-icon>mdi-close</v-icon></v-btn>
     </div>
   </v-toolbar>
-  <div>
-    <ProfileForm
-      :profile-input="profileToBeEdited"
-      @save="(profile) => update(profile)"
-      :crud-operation="CrudOperations.Update"
-    ></ProfileForm>
-  </div>
+  <v-divider class="profiles-card-divider"></v-divider>
+
+  <ProfileForm
+    :profile-input="profileToBeEdited"
+    @save="(profile) => update(profile)"
+    :crud-operation="CrudOperations.Update"
+  ></ProfileForm>
 </template>
