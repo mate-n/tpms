@@ -42,16 +42,16 @@ watch(props, (newInput) => {
 <template>
   <v-toolbar class="bg-white">
     <v-toolbar-title>New Profile</v-toolbar-title>
-    <div class="border-s h-100 d-flex px-5 align-center" @click="toggleFullScreen()">
+    <div class="profiles-card-toolbar-button" @click="toggleFullScreen()">
       <template v-if="isFullScreen">
-        <v-btn><v-icon>mdi-fullscreen-exit</v-icon></v-btn>
+        <v-icon size="large">mdi-fullscreen-exit</v-icon>
       </template>
       <template v-if="!isFullScreen">
-        <v-btn><v-icon>mdi-fullscreen</v-icon></v-btn>
+        <v-icon size="large">mdi-fullscreen</v-icon>
       </template>
     </div>
-    <div class="border-s h-100 d-flex px-5 align-center" @click="close()">
-      <v-btn><v-icon>mdi-close</v-icon></v-btn>
+    <div class="profiles-card-toolbar-button" @click="close()">
+      <v-icon>mdi-close</v-icon>
     </div>
   </v-toolbar>
   <v-divider class="profiles-card-divider"></v-divider>
