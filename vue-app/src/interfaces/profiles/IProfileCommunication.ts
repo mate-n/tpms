@@ -1,5 +1,5 @@
 export interface IProfileCommunication {
-  id: number
+  id?: number
   communicationTypeID: number
   typeID: number
   value: string
