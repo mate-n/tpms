@@ -50,7 +50,11 @@ const profileTypes: string[] = enumHelper.getEnumValues(ProfileTypes)
   <div class="text-center">
     <v-menu>
       <template v-slot:activator="{ props }">
-        <v-btn density="compact" class="elevation-1 text-center mt-3 px-2" v-bind="props">
+        <v-btn
+          density="compact"
+          class="elevation-1 text-center mt-3 px-2 profiles-pill"
+          v-bind="props"
+        >
           {{ profileToBeEdited.profileType }}
         </v-btn>
       </template>
