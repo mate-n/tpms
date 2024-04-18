@@ -1,7 +1,7 @@
 import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
 
 export class ProfileCommunication implements IProfileCommunication {
-  id: number
+  id?: number
   communicationTypeID: number
   typeID: number
   value: string
@@ -10,7 +10,6 @@ export class ProfileCommunication implements IProfileCommunication {
   profileID: number
 
   constructor() {
-    this.id = 0
     this.communicationTypeID = 0
     this.typeID = 0
     this.value = ''

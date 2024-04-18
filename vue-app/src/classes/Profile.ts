@@ -1,7 +1,7 @@
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 
 export class Profile implements IProfile {
-  id: number
+  id?: number
 
   //General
   firstName: string
@@ -71,8 +71,6 @@ export class Profile implements IProfile {
   traceIds: number[]
 
   constructor() {
-    this.id = 0
-
     //General
     this.firstName = ''
     this.lastName = ''
