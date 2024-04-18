@@ -52,7 +52,7 @@ class ProfileService implements IService {
   search(profilePostBody: IProfileSearch) {
     return new Promise<IProfile[]>((resolve, reject) => {
       this.axiosInstance
-        .post('profiles/search', profilePostBody)
+        .post('v1/profiles/search', profilePostBody)
         .then((response: any) => {
           resolve(response.data)
         })
