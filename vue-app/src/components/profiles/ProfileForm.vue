@@ -188,7 +188,7 @@ const toggleActive = () => {
         <ProfileContactDetailsCard :profile="profileToBeEdited"></ProfileContactDetailsCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
-        <ProfileAddressCard v-model="profileToBeEdited"></ProfileAddressCard>
+        <ProfileAddressCard :profile="profileToBeEdited"></ProfileAddressCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
         <ProfilePersonalInfoCard v-model="profileToBeEdited"></ProfilePersonalInfoCard>
