@@ -10,6 +10,8 @@ import type { IProfileSearch } from '@/interfaces/profiles/IProfileSearch'
 import { ProfileSearch } from '@/classes/ProfileSearch'
 import type { IGuestType } from '@/interfaces/IGuestType'
 import { GuestTypeService } from '@/services/GuestTypeService'
+import { DateFormatter } from '@/helpers/DateFormatter'
+const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const guestTypes = ref(<IGuestType[]>[])
@@ -88,17 +90,23 @@ onMounted(() => {
 })
 </script>
 
+<style scoped>
+.v-data-table :deep(.v-data-table__th) {
+  background-color: #f8f8f8 !important;
+}
+</style>
+
 <template>
-  <v-toolbar>
+  <v-toolbar class="bg-white">
     <v-toolbar-title>Profile Search</v-toolbar-title>
-    <div class="border-s h-100 d-flex px-3 align-center">
-      <v-btn @click="openNewProfileDialog()">NEW PROFILE</v-btn>
-    </div>
-    <div class="border-s h-100 d-flex px-5 align-center" @click="close()">
-      <v-btn><v-icon>mdi-close</v-icon></v-btn>
+    <div class="profiles-card-toolbar-button" @click="openNewProfileDialog()">NEW PROFILE</div>
+    <div class="profiles-card-toolbar-button" @click="close()">
+      <v-icon size="large">mdi-close</v-icon>
     </div>
   </v-toolbar>
-  <v-container fluid>
+  <v-divider class="profiles-card-divider"></v-divider>
+
+  <v-container class="bg-white" fluid>
     <div class="d-flex">
       <v-text-field
         v-model="profilePostBody.name"
@@ -135,7 +143,7 @@ onMounted(() => {
       <v-btn class="primary-button" @click="search()"><v-icon>mdi-magnify</v-icon>Search</v-btn>
     </div>
   </v-container>
-  <v-container fluid v-if="foundProfiles.length > 0">
+  <v-container fluid v-if="foundProfiles.length > 0" class="bg-white px-0">
     <v-data-table
       :headers="availableTableDataHeaders.filter((h) => h.selected)"
       :items="foundProfiles"
@@ -157,7 +165,13 @@ onMounted(() => {
             :key="header.key"
           >
             <div v-if="row.item.hasOwnProperty(header.key)">
-              {{ row.item[header.key as keyof IProfile] }}
+              <template v-if="header.key === 'birthday'">
+                {{ dateFormatter.dddotmmdotyyyy(row.item['birthday']) }}
+              </template>
+
+              <template v-if="header.key !== 'birthday'">
+                {{ row.item[header.key as keyof IProfile] }}
+              </template>
             </div>
 
             <div v-if="header.key === 'avatar'">
