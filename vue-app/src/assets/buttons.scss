@@ -1,4 +1,6 @@
 @import 'variables';
+@import 'texts.scss';
+@import 'colors.scss';
 
 @mixin button-modifiers {
   @each $name, $hex in $main-colors {
@@ -34,4 +36,18 @@
   background-color: #cecece !important;
   color: black !important;
   cursor: not-allowed !important;
+}
+
+.profiles-card-toolbar-button {
+  background-color: map-get($main-colors, 'white');
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-right: 1.1rem;
+  padding-left: 1.1rem;
+  border-left: 0.1rem solid lightgray;
+
+  &:hover {
+    background-color: darken(map-get($main-colors, 'white'), 3%) !important;
+  }
 }
