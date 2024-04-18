@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker'
 
 export class ProfileDocumentFaker {
   create(): IProfileDocument {
-    let profileDocument = new ProfileDocument()
+    const profileDocument = new ProfileDocument()
     profileDocument.validFrom = faker.date.recent()
     profileDocument.validTo = faker.date.future()
     profileDocument.city = faker.location.city()
