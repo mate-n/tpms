@@ -31,6 +31,12 @@
   color: black !important;
 }
 
+.danger-button {
+  @extend .uppercase;
+  background-color: map-get($main-colors, 'danger') !important;
+  color: white !important;
+}
+
 .disabled-button {
   @extend .uppercase;
   background-color: #cecece !important;
