@@ -2,9 +2,12 @@
 import { ProfileAddress } from '@/classes/ProfileAddress'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import type { IProfileAddress } from '@/interfaces/profiles/IProfileAddress'
-import { ref, watch, type Ref } from 'vue'
+import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileAddressForm from './ProfileAddressForm.vue'
-
+import type { AxiosStatic } from 'axios'
+import { ProfileAddressService } from '@/services/profiles/ProfileAddressService'
+const axios: AxiosStatic | undefined = inject('axios')
+const profileAddressService = new ProfileAddressService(axios)
 const emit = defineEmits(['close'])
 const profileAddresses: Ref<IProfileAddress[]> = ref([])
 const props = defineProps({
@@ -21,6 +24,23 @@ const showSaveButton = ref(false)
 const addProfileAddress = () => {
   profileAddresses.value.push(new ProfileAddress())
 }
+
+const getProfileAddresses = () => {
+  return new Promise<void>((resolve) => {
+    if (props.profile.id) {
+      profileAddressService.getAllByProfileID(props.profile.id).then((response) => {
+        profileAddresses.value = response
+        resolve()
+      })
+    } else {
+      resolve()
+    }
+  })
+}
+
+onMounted(() => {
+  getProfileAddresses()
+})
 </script>
 <template>
   <v-toolbar fluid class="profiles-card-toolbar">
@@ -37,7 +57,7 @@ const addProfileAddress = () => {
   </v-toolbar>
   <v-container fluid class="profiles-card-container d-flex flex-wrap">
     <div v-for="(profileAddress, index) in profileAddresses" :key="profileAddress.id">
-      <div class="bg-white mb-2 me-1 mb-1">
+      <div class="bg-white mb-2 me-1 mb-1" style="min-width: 25rem">
         <ProfileAddressForm v-model="profileAddresses[index]"></ProfileAddressForm>
       </div>
     </div>
