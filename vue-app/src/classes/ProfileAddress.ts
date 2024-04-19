@@ -3,7 +3,7 @@ import type { IProfileAddress } from '@/interfaces/profiles/IProfileAddress'
 export class ProfileAddress implements IProfileAddress {
   id: number = 0
   profileID: number = 0
-  type: string = ''
+  typeString: string = ''
   recipient: string = ''
   country: string = ''
   state: string = ''
@@ -20,7 +20,7 @@ export class ProfileAddress implements IProfileAddress {
   constructor() {
     this.id = 0
     this.profileID = 0
-    this.type = ''
+    this.typeString = ''
     this.recipient = ''
     this.country = ''
     this.state = ''

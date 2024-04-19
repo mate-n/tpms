@@ -1,7 +1,7 @@
 export interface IProfileAddress {
   id: number
   profileID: number
-  type: string
+  typeString: string
   recipient: string
   country: string
   state: string

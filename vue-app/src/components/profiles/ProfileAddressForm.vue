@@ -22,7 +22,7 @@ const profileAddressToBeEdited = defineModel({
         </v-col>
       </v-row>
       <v-select
-        v-model="profileAddressToBeEdited.type"
+        v-model="profileAddressToBeEdited.typeString"
         label="Type"
         variant="underlined"
         :items="['Business', 'Home', 'Other']"
