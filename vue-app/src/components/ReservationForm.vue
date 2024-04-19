@@ -78,14 +78,12 @@ const check = () => {
   if (!reservation.value.property) return
   if (!reservation.value.room) return
   const availabilityPostBody: IAvailabilityPostBody = {
-    arrivaldate: dateHelper.getYYYYMMDDFromDate(reservation.value.arrivalDate),
-    departuredate: dateHelper.getYYYYMMDDFromDate(reservation.value.departureDate),
-    roomtype: reservation.value.room.roomtype,
-    propertyid: reservation.value.property.id
+    availabilityStart: reservation.value.arrivalDate,
+    availabilityEnd: reservation.value.departureDate
   }
 
   availabilityService.getAvailability(availabilityPostBody).then((response: any) => {
-    const availabilityData: IAvailabilityData[] = response.data.availability_data
+    const availabilityData: IAvailabilityData[] = response
     reservation.value.availablityData = availabilityData
     reservation.value.baseRateCategory = 'Base Rate | Low Season'
     reservationValidator.validate(reservation.value)
