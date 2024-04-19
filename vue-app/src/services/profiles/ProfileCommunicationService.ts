@@ -10,7 +10,7 @@ export class ProfileCommunicationService implements IService {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
   }
 
-  getAllOfProfile(profileID: number) {
+  getAllByProfileID(profileID: number) {
     return new Promise<IProfileCommunication[]>((resolve, reject) => {
       this.axiosInstance
         .get(`v1/profiles/${profileID}/communications`)
