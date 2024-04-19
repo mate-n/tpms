@@ -12,7 +12,7 @@ export class GuestMarketCodeService implements IService {
   getAvailableMarketCodes() {
     return new Promise<IGuestMarketCode[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/available-guest-market-codes')
+        .get('v1/dropdowns/guest-market-codes')
         .then((response: any) => {
           resolve(response.data)
         })

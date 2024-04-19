@@ -12,7 +12,7 @@ export class KeywordService implements IService {
   getAvailableKeywords() {
     return new Promise<IKeyword[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/available-keywords')
+        .get('v1/dropdowns/keywords')
         .then((response: any) => {
           resolve(response.data)
         })

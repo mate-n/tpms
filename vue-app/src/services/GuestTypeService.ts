@@ -12,7 +12,7 @@ export class GuestTypeService implements IService {
   getAvailableGuestTypes() {
     return new Promise<IGuestType[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/available-guest-types')
+        .get('v1/dropdowns/guest-types')
         .then((response: any) => {
           resolve(response.data)
         })

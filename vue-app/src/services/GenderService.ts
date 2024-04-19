@@ -12,7 +12,7 @@ export class GenderService implements IService {
   getAvailableGenders() {
     return new Promise<IGender[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/available-genders')
+        .get('v1/dropdowns/genders')
         .then((response: any) => {
           resolve(response.data)
         })

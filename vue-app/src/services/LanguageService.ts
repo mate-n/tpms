@@ -12,7 +12,7 @@ export class LanguageService implements IService {
   getAvailableLanguages() {
     return new Promise<ILanguage[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/available-languages')
+        .get('v1/dropdowns/languages')
         .then((response: any) => {
           resolve(response.data)
         })

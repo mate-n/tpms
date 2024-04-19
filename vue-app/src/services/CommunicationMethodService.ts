@@ -12,7 +12,7 @@ export class CommunicationMethodService implements IService {
   getAvailableCommunicationMethods() {
     return new Promise<ICommunicationMethod[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/available-communication-methods')
+        .get('v1/dropdowns/communication-methods')
         .then((response: any) => {
           resolve(response.data)
         })

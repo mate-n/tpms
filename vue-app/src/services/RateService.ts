@@ -12,7 +12,7 @@ export class RateService implements IService {
   getAvailableRates() {
     return new Promise<IRate[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/available-rates')
+        .get('v1/dropdowns/rates')
         .then((response: any) => {
           resolve(response.data)
         })

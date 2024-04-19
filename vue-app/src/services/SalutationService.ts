@@ -12,7 +12,7 @@ export class SalutationService implements IService {
   getAvailableSalutations() {
     return new Promise<ISalutation[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/available-salutations')
+        .get('v1/dropdowns/salutations')
         .then((response: any) => {
           resolve(response.data)
         })

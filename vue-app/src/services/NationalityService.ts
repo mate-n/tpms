@@ -12,7 +12,7 @@ export class NationalityService implements IService {
   getAvailableNationalities() {
     return new Promise<IGender[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/available-nationalities')
+        .get('v1/dropdowns/nationalities')
         .then((response: any) => {
           resolve(response.data)
         })

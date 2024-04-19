@@ -12,7 +12,7 @@ export class RoomService implements IService {
   getRooms() {
     return new Promise<IRoom[]>((resolve, reject) => {
       this.axiosInstance
-        .get('rooms')
+        .get('v1/room-types')
         .then((response: any) => {
           resolve(response.data)
         })

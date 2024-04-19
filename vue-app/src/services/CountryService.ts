@@ -12,7 +12,7 @@ export class CountryService implements IService {
   getAvailableCountries() {
     return new Promise<ICountry[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/available-countries')
+        .get('v1/dropdowns/countries')
         .then((response: any) => {
           resolve(response.data)
         })

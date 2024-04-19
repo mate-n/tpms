@@ -12,7 +12,7 @@ export class FeatureService implements IService {
   getAvailableFeatures() {
     return new Promise<IFeature[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/available-features')
+        .get('v1/dropdowns/features')
         .then((response: any) => {
           resolve(response.data)
         })

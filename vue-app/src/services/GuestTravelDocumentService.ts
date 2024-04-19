@@ -12,7 +12,7 @@ export class GuestTravelDocumentService implements IService {
   getAvailableGuestTravelDocuments() {
     return new Promise<IGuestTravelDocument[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/available-guest-travel-documents')
+        .get('v1/dropdowns/guest-travel-documents')
         .then((response: any) => {
           resolve(response.data)
         })
