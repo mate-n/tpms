@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { IProfileAddress } from '@/interfaces/profiles/IProfileAddress'
 
+const emits = defineEmits(['delete'])
 const profileAddressToBeEdited = defineModel({
   required: true,
   type: Object as () => IProfileAddress
@@ -8,11 +9,18 @@ const profileAddressToBeEdited = defineModel({
 </script>
 <template>
   <v-card>
-    <v-card-item>
-      <v-card-title class="text-primary">Address I </v-card-title>
-    </v-card-item>
-
     <v-card-text>
+      <v-row>
+        <v-col class="text-primary"> Address I </v-col>
+        <v-col class="d-flex justify-end">
+          <v-btn
+            @click="$emit('delete')"
+            density="compact"
+            class="elevation-1 text-center mt-3 px-2 profiles-pill"
+            >Delete</v-btn
+          >
+        </v-col>
+      </v-row>
       <v-select
         v-model="profileAddressToBeEdited.type"
         label="Type"
@@ -24,7 +32,7 @@ const profileAddressToBeEdited = defineModel({
       ></v-select>
       <v-text-field
         v-model="profileAddressToBeEdited.recipient"
-        label="Passport Number"
+        label="Recipient"
         variant="underlined"
       ></v-text-field>
 
@@ -66,6 +74,7 @@ const profileAddressToBeEdited = defineModel({
       ></v-text-field>
       <v-text-field v-model="profileAddressToBeEdited.street2" variant="underlined"></v-text-field>
       <v-text-field v-model="profileAddressToBeEdited.street3" variant="underlined"></v-text-field>
+      <v-checkbox v-model="profileAddressToBeEdited.primary" label="Mailing Address"></v-checkbox>
     </v-card-text>
   </v-card>
 </template>
