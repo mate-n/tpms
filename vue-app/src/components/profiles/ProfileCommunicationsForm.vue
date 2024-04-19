@@ -58,7 +58,7 @@ const saveProfileCommunications = () => {
 const getProfileCommunications = () => {
   return new Promise<void>((resolve) => {
     if (props.profile.id) {
-      profileCommunicationService.getAllOfProfile(props.profile.id).then((response) => {
+      profileCommunicationService.getAllByProfileID(props.profile.id).then((response) => {
         profileCommunications.value = response
         resolve()
       })
