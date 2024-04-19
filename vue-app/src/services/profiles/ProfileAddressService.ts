@@ -13,7 +13,7 @@ export class ProfileAddressService implements IService {
   getAllByProfileID(profileID: number) {
     return new Promise<IProfileAddress[]>((resolve, reject) => {
       this.axiosInstance
-        .get(`v1/profiles/${profileID}/addresses`)
+        .get(`v1/profiles/1/addresses`)
         .then((response: any) => {
           resolve(response.data)
         })
