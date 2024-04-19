@@ -2,7 +2,6 @@
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import { inject, onBeforeMount, onMounted, ref, watch } from 'vue'
 import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
-import { CommunicationTypes } from '@/enums/CommunicationTypes'
 import type { AxiosStatic } from 'axios'
 import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
 import ProfileCommunicationsForm from './ProfileCommunicationsForm.vue'
@@ -26,7 +25,7 @@ onBeforeMount(() => {
 
 watch(props, () => {
   if (props.profile.id) {
-    profileCommunicationService.getAllOfProfile(props.profile.id).then((response) => {
+    profileCommunicationService.getAllByProfileID(props.profile.id).then((response) => {
       profileCommunications.value = response
     })
   }
