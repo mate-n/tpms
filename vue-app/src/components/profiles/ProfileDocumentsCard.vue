@@ -2,19 +2,32 @@
 import type { IProfileDocument } from '@/interfaces/profiles/IProfileDocument'
 import { ProfileDocumentService } from '@/services/profiles/ProfileDocumentService'
 import type { AxiosStatic } from 'axios'
-import { computed, inject, onMounted, ref } from 'vue'
+import { computed, inject, onMounted, ref, type Ref } from 'vue'
 import { DateFormatter } from '@/helpers/DateFormatter'
 import type { IGuestTravelDocument } from '@/interfaces/IGuestTravelDocument'
 import { GuestTravelDocumentService } from '@/services/GuestTravelDocumentService'
+import type { IProfileDocumentSearch } from '@/interfaces/profiles/IProfileDocumentSearch'
+import type { IProfile } from '@/interfaces/profiles/IProfile'
+import ProfileDocumentsForm from '@/components/profiles/ProfileDocumentsForm.vue'
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
 const profileDocumentService = new ProfileDocumentService(axios)
 const guestTravelDocumentService = new GuestTravelDocumentService(axios)
-const guestTravelDocuments = ref(<IGuestTravelDocument[]>[])
-const profileDocuments = ref(<IProfileDocument[]>[])
+const guestTravelDocuments: Ref<IGuestTravelDocument[]> = ref([])
+const profileDocuments: Ref<IProfileDocument[]> = ref([])
+defineProps({
+  profile: { type: Object as () => IProfile, required: true }
+})
+
+const profileDocumentsDialog = ref(false)
 
 onMounted(() => {
-  profileDocumentService.search({ ids: [1, 2, 3] }).then((response) => {
+  const profileDocumentSearch: IProfileDocumentSearch = {
+    ids: [1, 2, 3],
+    pageNumber: 0,
+    pageSize: 10
+  }
+  profileDocumentService.search(profileDocumentSearch).then((response) => {
     profileDocuments.value = response
   })
 
@@ -38,7 +51,9 @@ const primaryOrFirstProfileDocument = computed(() => {
   <div class="profiles-card">
     <v-toolbar class="profiles-card-toolbar">
       <v-toolbar-title><span class="text-primary">Documents</span></v-toolbar-title>
-      <v-btn icon class="text-gray"> <v-icon>mdi-folder-outline</v-icon></v-btn>
+      <v-btn @click="profileDocumentsDialog = true" icon>
+        <v-btn icon class="text-gray"> <v-icon>mdi-folder-outline</v-icon></v-btn>
+      </v-btn>
     </v-toolbar>
 
     <v-divider class="profiles-card-divider"></v-divider>
@@ -71,5 +86,13 @@ const primaryOrFirstProfileDocument = computed(() => {
         </div>
       </div>
     </v-container>
+    <v-dialog v-model="profileDocumentsDialog" auto scrollable>
+      <v-card>
+        <ProfileDocumentsForm
+          :profile="profile"
+          @close="profileDocumentsDialog = false"
+        ></ProfileDocumentsForm>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
