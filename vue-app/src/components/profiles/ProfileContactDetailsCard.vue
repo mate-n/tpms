@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { IProfile } from '@/interfaces/profiles/IProfile'
-import { inject, onBeforeMount, onMounted, ref, watch } from 'vue'
+import { inject, onBeforeMount, ref, watch } from 'vue'
 import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
 import type { AxiosStatic } from 'axios'
 import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
@@ -31,7 +31,7 @@ watch(props, () => {
   }
 })
 
-const getCommunicationMethodValue = (communicationMethodID: number) => {
+const getCommunicationMethodValue = (communicationMethodID: number | undefined) => {
   const communicationMethod = communicationMethods.value.find(
     (cm) => cm.id === communicationMethodID
   )
@@ -58,11 +58,13 @@ const getCommunicationMethodValue = (communicationMethodID: number) => {
         </div>
       </div>
     </v-container>
-    <v-dialog v-model="editProfileContactDetailsDialog" auto>
-      <ProfileCommunicationsForm
-        :profile="profile"
-        @close="editProfileContactDetailsDialog = false"
-      ></ProfileCommunicationsForm>
+    <v-dialog v-model="editProfileContactDetailsDialog" scrollable auto>
+      <v-card>
+        <ProfileCommunicationsForm
+          :profile="profile"
+          @close="editProfileContactDetailsDialog = false"
+        ></ProfileCommunicationsForm>
+      </v-card>
     </v-dialog>
   </div>
 </template>
