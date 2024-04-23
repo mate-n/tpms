@@ -33,7 +33,7 @@ onMounted(() => {
   propertyService.getProperties().then((response: IProperty[]) => {
     properties.value = response
   })
-  roomService.getRooms().then((response: IRoom[]) => {
+  roomService.getAll().then((response: IRoom[]) => {
     rooms.value = response
   })
 })
@@ -310,7 +310,7 @@ const profileSelected = (profile: IProfile) => {
       </tbody>
     </v-table>
   </v-container>
-  <v-dialog v-model="profileDialog" fullscreen>
+  <v-dialog v-model="profileDialog" fullscreen scrollable>
     <v-card>
       <ProfileSearch
         @close="closeProfileDialog()"
