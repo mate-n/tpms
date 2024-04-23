@@ -6,6 +6,8 @@ import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileAddressForm from './ProfileAddressForm.vue'
 import type { AxiosStatic } from 'axios'
 import { ProfileAddressService } from '@/services/profiles/ProfileAddressService'
+import { IdentityHelper } from '@/helpers/IdentityHelper'
+const identityHelper = new IdentityHelper()
 const axios: AxiosStatic | undefined = inject('axios')
 const profileAddressService = new ProfileAddressService(axios)
 const emit = defineEmits(['close'])
@@ -38,14 +40,51 @@ const getProfileAddresses = () => {
   })
 }
 
+const deleteProfileAddress = (profileAddress: IProfileAddress) => {
+  profileAddressService.delete(profileAddress)
+  profileAddresses.value = profileAddresses.value.filter(
+    (innerProfileAddress) => !identityHelper.isSame(innerProfileAddress, profileAddress)
+  )
+}
+
 onMounted(() => {
   getProfileAddresses()
 })
+
+const saveAllProfileAddresses = () => {
+  const promisesToSaveProfileAddresses: Promise<void>[] = []
+
+  profileAddresses.value.forEach((profileAddress) => {
+    if (profileAddress.id) {
+      const promiseToSaveProfileAddress = new Promise<void>((innerResolve) => {
+        profileAddressService.put(profileAddress).then(() => {
+          innerResolve()
+        })
+      })
+      promisesToSaveProfileAddresses.push(promiseToSaveProfileAddress)
+    } else {
+      const promiseToSaveProfileAddress = new Promise<void>((innerResolve) => {
+        profileAddressService.post(profileAddress).then(() => {
+          innerResolve()
+        })
+      })
+      promisesToSaveProfileAddresses.push(promiseToSaveProfileAddress)
+    }
+  })
+
+  Promise.all(promisesToSaveProfileAddresses).then(() => {
+    showSaveButton.value = false
+  })
+}
 </script>
 <template>
   <v-toolbar fluid class="profiles-card-toolbar">
     <v-toolbar-title> Profile Addresses </v-toolbar-title>
-    <div v-if="showSaveButton" class="profiles-card-toolbar-button text-primary">
+    <div
+      v-if="showSaveButton"
+      class="profiles-card-toolbar-button text-primary"
+      @click="saveAllProfileAddresses()"
+    >
       <v-icon size="large">mdi-content-save-outline</v-icon>
     </div>
     <div class="profiles-card-toolbar-button" @click="addProfileAddress()">
@@ -58,7 +97,11 @@ onMounted(() => {
   <v-container fluid class="profiles-card-container d-flex flex-wrap">
     <div v-for="(profileAddress, index) in profileAddresses" :key="profileAddress.id">
       <div class="bg-white mb-2 me-1 mb-1" style="min-width: 25rem">
-        <ProfileAddressForm v-model="profileAddresses[index]"></ProfileAddressForm>
+        <ProfileAddressForm
+          v-model="profileAddresses[index]"
+          :indexOfProfileAddress="index"
+          @delete="(profileAddress) => deleteProfileAddress(profileAddress)"
+        ></ProfileAddressForm>
       </div>
     </div>
   </v-container>
