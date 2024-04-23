@@ -1,4 +1,6 @@
-export interface IProfileDocument {
+import type { IEntityWithIdentity } from '../IEntityWithIdentity'
+
+export interface IProfileDocument extends IEntityWithIdentity {
   validFrom: Date
   validTo: Date
   city: string
@@ -10,5 +12,4 @@ export interface IProfileDocument {
   shortName: string
   typeID: number
   udfRawData: string | null
-  id: number
 }
