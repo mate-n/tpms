@@ -1,6 +1,6 @@
-export interface IProfile {
-  id?: number
+import type { IEntityWithIdentity } from '../IEntityWithIdentity'
 
+export interface IProfile extends IEntityWithIdentity {
   //General
   firstName: string
   lastName: string
