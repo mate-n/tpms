@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { inject, onBeforeMount, onMounted, ref, watch, type Ref } from 'vue'
+import { inject, onBeforeMount, ref, watch, type Ref } from 'vue'
 import { ProfileCommunication } from '@/classes/ProfileCommunication'
 import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import type { AxiosStatic } from 'axios'
 import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
 import ProfileCommunicationForm from './ProfileCommunicationForm.vue'
+import { IdentityHelper } from '@/helpers/IdentityHelper'
+const identityHelper = new IdentityHelper()
 const emit = defineEmits(['close'])
 const profileCommunications: Ref<IProfileCommunication[]> = ref([])
 const props = defineProps({
@@ -74,8 +76,13 @@ const reloadProfileCommunications = () => {
   })
 }
 
-const deleteProfileCommunication = () => {
-  reloadProfileCommunications()
+const deleteProfileCommunication = (profileCommunication: IProfileCommunication) => {
+  profileCommunicationService.delete(profileCommunication)
+
+  profileCommunications.value = profileCommunications.value.filter(
+    (innerProfileCommunication) =>
+      !identityHelper.isSame(innerProfileCommunication, profileCommunication)
+  )
 }
 </script>
 <template>
@@ -103,7 +110,7 @@ const deleteProfileCommunication = () => {
       <div class="bg-white mb-2">
         <ProfileCommunicationForm
           v-model="profileCommunications[index]"
-          @delete="deleteProfileCommunication()"
+          @delete="(profileCOmmunication) => deleteProfileCommunication(profileCommunication)"
         ></ProfileCommunicationForm>
       </div>
     </div>
