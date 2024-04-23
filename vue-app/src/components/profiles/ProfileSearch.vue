@@ -14,7 +14,7 @@ import { DateFormatter } from '@/helpers/DateFormatter'
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
-const guestTypes = ref(<IGuestType[]>[])
+const guestTypes: Ref<IGuestType[]> = ref([])
 const guestTypeService = new GuestTypeService(axios)
 const emit = defineEmits(['close', 'profileSelected'])
 const close = () => emit('close')
@@ -196,7 +196,7 @@ onMounted(() => {
       </template>
     </v-data-table>
   </v-container>
-  <v-dialog v-model="newProfileDialog" fullscreen>
+  <v-dialog v-model="newProfileDialog" fullscreen scrollable>
     <v-card>
       <NewProfile
         :profile-input="profileFromInputFields"
@@ -206,7 +206,7 @@ onMounted(() => {
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="editProfileDialog" fullscreen>
+  <v-dialog v-model="editProfileDialog" fullscreen scrollable>
     <v-card>
       <EditProfile
         :profile-input="profileToBeEdited"
@@ -216,7 +216,7 @@ onMounted(() => {
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="changeColumnsDialog" max-width="500">
+  <v-dialog v-model="changeColumnsDialog" max-width="500" scrollable>
     <v-card>
       <v-toolbar class="bg-white elevation-3">
         <v-toolbar-title>Columns</v-toolbar-title>
