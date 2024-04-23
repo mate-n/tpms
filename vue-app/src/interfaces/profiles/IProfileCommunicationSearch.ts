@@ -1,3 +1,3 @@
-export interface IProfileCommunicationSearch {
-  ids: number[]
-}
+import type { ISearch } from '../ISearch'
+
+export interface IProfileCommunicationSearch extends ISearch {}
