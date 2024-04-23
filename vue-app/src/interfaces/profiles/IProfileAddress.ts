@@ -1,5 +1,6 @@
-export interface IProfileAddress {
-  id: number
+import type { IEntityWithIdentity } from '../IEntityWithIdentity'
+
+export interface IProfileAddress extends IEntityWithIdentity {
   profileID: number
   typeString: string
   recipient: string
