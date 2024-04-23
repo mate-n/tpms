@@ -1,4 +1,6 @@
-export interface IProfileSearch {
+import type { ISearch } from '../ISearch'
+
+export interface IProfileSearch extends ISearch {
   name: string | null
   email: string | null
   city: string | null
