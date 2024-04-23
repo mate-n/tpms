@@ -3,13 +3,11 @@ import { CommunicationMethodHelper } from '@/helpers/CommunicationMethodHelper'
 import type { ICommunicationMethod } from '@/interfaces/ICommunicationMethod'
 import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
 import { CommunicationMethodService } from '@/services/CommunicationMethodService'
-import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
 import type { AxiosStatic } from 'axios'
-import { inject, onBeforeMount, ref } from 'vue'
+import { inject, onBeforeMount, ref, type Ref } from 'vue'
 const emit = defineEmits(['delete'])
-const communicationMethods = ref(<ICommunicationMethod[]>[])
 const axios: AxiosStatic | undefined = inject('axios')
-const profileCommunicationService = new ProfileCommunicationService(axios)
+const communicationMethods: Ref<ICommunicationMethod[]> = ref([])
 const communicationMethodService = new CommunicationMethodService(axios)
 const communicationMethodHelper = new CommunicationMethodHelper()
 const profileCommunicationToBeEdited = defineModel({
@@ -24,9 +22,7 @@ onBeforeMount(() => {
 })
 
 const deleteProfileCommunication = () => {
-  profileCommunicationService.delete(profileCommunicationToBeEdited.value).then(() => {
-    emit('delete')
-  })
+  emit('delete', profileCommunicationToBeEdited.value)
 }
 </script>
 
