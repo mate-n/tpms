@@ -1,3 +1,3 @@
-export interface IProfileAddressSearch {
-  ids: number[]
-}
+import type { ISearch } from '../ISearch'
+
+export interface IProfileAddressSearch extends ISearch {}
