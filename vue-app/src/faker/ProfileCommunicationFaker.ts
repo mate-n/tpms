@@ -6,9 +6,9 @@ export class ProfileCommunicationFaker {
   create(): IProfileCommunication {
     let profileCommunication = new ProfileCommunication()
     const fakeData = {
-      id: faker.datatype.number(),
-      profileID: faker.datatype.number(),
-      type: faker.random.word(),
+      id: faker.number.int(),
+      profileID: faker.number.int(),
+      type: faker.lorem.word(),
       value: faker.phone.number(),
       primary: faker.datatype.boolean(),
       communicationTypeID: faker.number.int(4)
