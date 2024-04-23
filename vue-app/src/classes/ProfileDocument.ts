@@ -12,7 +12,8 @@ export class ProfileDocument implements IProfileDocument {
   shortName: string
   typeID: number
   udfRawData: string | null
-  id: number
+  id?: number
+  uniqueHash?: number
 
   constructor() {
     this.validFrom = new Date()
@@ -26,6 +27,6 @@ export class ProfileDocument implements IProfileDocument {
     this.shortName = ''
     this.typeID = 0
     this.udfRawData = null
-    this.id = 0
+    this.uniqueHash = new Date().getTime()
   }
 }
