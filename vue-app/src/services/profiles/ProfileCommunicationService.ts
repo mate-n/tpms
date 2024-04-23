@@ -1,13 +1,25 @@
 import { type AxiosStatic } from 'axios'
 import { AxiosInstanceFactory } from '../../factories/AxiosInstanceFactory'
-import type { IService } from '@/interfaces/IService'
 import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
 import type { IProfileCommunicationSearch } from '@/interfaces/profiles/IProfileCommunicationSearch'
+import type { IProfilesService } from '@/interfaces/profiles/IProfilesService'
 
-export class ProfileCommunicationService implements IService {
+export class ProfileCommunicationService implements IProfilesService {
   axiosInstance: AxiosStatic
   constructor(axiosInstance: AxiosStatic | undefined) {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
+  }
+  get(profileID: number, id: number) {
+    return new Promise((resolve, reject) => {
+      this.axiosInstance
+        .post(`v1/profiles/${profileID}/communications/${id}`)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
   }
 
   getAllByProfileID(profileID: number) {
