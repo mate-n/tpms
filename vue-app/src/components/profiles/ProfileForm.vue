@@ -3,7 +3,7 @@ import { Profile } from '@/classes/Profile'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
-import { inject, onMounted, ref, watch } from 'vue'
+import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileAvatar from './ProfileAvatar.vue'
 import ProfileContactDetailsCard from './ProfileContactDetailsCard.vue'
 import ProfileAddressCard from './ProfileAddressCard.vue'
@@ -32,8 +32,8 @@ const props = defineProps({
 })
 const profileToBeEdited = ref<IProfile>(new Profile())
 const emit = defineEmits(['save'])
-const languages = ref(<ILanguage[]>[])
-const salutations = ref(<ISalutation[]>[])
+const languages: Ref<ILanguage[]> = ref([])
+const salutations: Ref<ISalutation[]> = ref([])
 onMounted(() => {
   languageService.getAvailableLanguages().then((response) => {
     languages.value = response
@@ -211,7 +211,7 @@ const toggleActive = () => {
         <ProfileMembershipCardsCard v-model="profileToBeEdited"></ProfileMembershipCardsCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
-        <ProfileDocumentsCard v-model="profileToBeEdited"></ProfileDocumentsCard>
+        <ProfileDocumentsCard :profile="profileToBeEdited"></ProfileDocumentsCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
         <ProfileAttachmentsCard v-model="profileToBeEdited"></ProfileAttachmentsCard>
