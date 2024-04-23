@@ -6,8 +6,10 @@ import { GenderService } from '@/services/GenderService'
 import { NationalityService } from '@/services/NationalityService'
 import { CountryService } from '@/services/CountryService'
 import type { AxiosStatic } from 'axios'
-import { inject, onMounted, ref } from 'vue'
+import { computed, inject, onMounted, ref } from 'vue'
 import type { ICountry } from '@/interfaces/ICountry'
+import { DateFormatter } from '@/helpers/DateFormatter'
+const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
 const genderService = new GenderService(axios)
 const nationalityService = new NationalityService(axios)
@@ -21,6 +23,9 @@ const profileToBeEdited = defineModel({
 })
 
 const birthdayMenu = ref(false)
+const birthdayFormatted = computed(() => {
+  return dateFormatter.dddotmmdotyyyy(profileToBeEdited.value.birthday)
+})
 
 const changeBirthDay = (date: any) => {
   profileToBeEdited.value.birthday = date
@@ -49,7 +54,7 @@ onMounted(() => {
           <v-text-field
             label="Date of Birth"
             append-inner-icon="mdi-calendar"
-            v-model="profileToBeEdited.birthday"
+            v-model="birthdayFormatted"
             v-bind="props"
             variant="underlined"
           ></v-text-field>
@@ -74,6 +79,7 @@ onMounted(() => {
   </v-row>
 
   <v-select
+    v-model="profileToBeEdited.gender"
     label="Gender"
     variant="underlined"
     :v-model="profileToBeEdited.gender"
@@ -81,6 +87,7 @@ onMounted(() => {
     item-title="value"
   ></v-select>
   <v-select
+    v-model="profileToBeEdited.nationality"
     label="Nationality"
     variant="underlined"
     :v-model="profileToBeEdited.nationality"
@@ -88,6 +95,7 @@ onMounted(() => {
     item-title="value"
   ></v-select>
   <v-select
+    v-model="profileToBeEdited.birthCountry"
     label="Country of Birth"
     variant="underlined"
     :v-model="profileToBeEdited.birthCountry"
