@@ -1,7 +1,7 @@
 import type { IProfileAddress } from '@/interfaces/profiles/IProfileAddress'
 
 export class ProfileAddress implements IProfileAddress {
-  id: number = 0
+  id?: number
   profileID: number = 0
   typeString: string = ''
   recipient: string = ''
@@ -16,9 +16,9 @@ export class ProfileAddress implements IProfileAddress {
   primary: boolean = false
   nationalityISO3166Alpha2: string
   countryISO3: string
+  uniqueHash?: number
 
   constructor() {
-    this.id = 0
     this.profileID = 0
     this.typeString = ''
     this.recipient = ''
@@ -32,5 +32,6 @@ export class ProfileAddress implements IProfileAddress {
     this.mailingAddress = false
     ;(this.primary = false), (this.nationalityISO3166Alpha2 = '')
     this.countryISO3 = ''
+    this.uniqueHash = new Date().getTime()
   }
 }
