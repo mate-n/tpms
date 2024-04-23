@@ -5,7 +5,8 @@ import type { AxiosStatic } from 'axios'
 import { computed, inject, onMounted, ref } from 'vue'
 import ProfileAddressesForm from './ProfileAddressesForm.vue'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
-const props = defineProps({
+import type { IProfileAddressSearch } from '@/interfaces/profiles/IProfileAddressSearch'
+defineProps({
   profile: { type: Object as () => IProfile, required: true }
 })
 const profileAddressesDialog = ref(false)
@@ -21,7 +22,12 @@ const primaryOrFirstAddress = computed(() => {
 })
 
 onMounted(() => {
-  profileAddressService.search({ ids: [1, 2, 3] }).then((response) => {
+  const profileAddressSearch: IProfileAddressSearch = {
+    ids: [1, 2, 3],
+    pageNumber: 0,
+    pageSize: 10
+  }
+  profileAddressService.search(profileAddressSearch).then((response) => {
     profileAddresses.value = response
   })
 })
@@ -62,12 +68,13 @@ onMounted(() => {
         </div>
       </div>
     </v-container>
-    <v-dialog v-model="profileAddressesDialog" auto>
-      test
+  </div>
+  <v-dialog v-model="profileAddressesDialog">
+    <v-card>
       <ProfileAddressesForm
         :profile="profile"
         @close="profileAddressesDialog = false"
       ></ProfileAddressesForm>
-    </v-dialog>
-  </div>
+    </v-card>
+  </v-dialog>
 </template>
