@@ -18,7 +18,7 @@ const guestTypes: Ref<IGuestType[]> = ref([])
 const guestTypeService = new GuestTypeService(axios)
 const emit = defineEmits(['close', 'profileSelected'])
 const close = () => emit('close')
-const profilePostBody: Ref<IProfileSearch> = ref(new ProfileSearch())
+const profileSearch: Ref<IProfileSearch> = ref(new ProfileSearch())
 const profileFromInputFields = ref<IProfile>(new Profile())
 const newProfileDialog = ref(false)
 const editProfileDialog = ref(false)
@@ -35,7 +35,7 @@ const editProfile = (profile: IProfile) => {
 const profileToBeEdited = ref<IProfile>(new Profile())
 const foundProfiles: Ref<IProfile[]> = ref([])
 const search = () => {
-  profileService.search(profilePostBody.value).then((response) => {
+  profileService.search(profileSearch.value).then((response) => {
     foundProfiles.value = response
   })
 }
@@ -54,8 +54,8 @@ const availableTableDataHeaders = ref([
 
 const openNewProfileDialog = () => {
   const profile = new Profile()
-  if (profilePostBody.value.name) profile.lastName = profilePostBody.value.name
-  if (profilePostBody.value.email) profile.email = profilePostBody.value.email
+  if (profileSearch.value.name) profile.lastName = profileSearch.value.name
+  if (profileSearch.value.email) profile.email = profileSearch.value.email
   profileFromInputFields.value = profile
   newProfileDialog.value = true
 }
@@ -109,25 +109,25 @@ onMounted(() => {
   <v-container class="bg-white" fluid>
     <div class="d-flex">
       <v-text-field
-        v-model="profilePostBody.name"
+        v-model="profileSearch.name"
         label="Name"
         variant="underlined"
         class="me-3"
       ></v-text-field>
       <v-text-field
-        v-model="profilePostBody.email"
+        v-model="profileSearch.email"
         label="Email"
         variant="underlined"
         class="me-3"
       ></v-text-field>
       <v-text-field
-        v-model="profilePostBody.city"
+        v-model="profileSearch.city"
         label="City"
         variant="underlined"
         class="me-3"
       ></v-text-field>
       <v-text-field
-        v-model="profilePostBody.profileID"
+        v-model="profileSearch.profileID"
         label="Profile ID"
         variant="underlined"
         class="me-3"
