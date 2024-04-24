@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { IReservation } from '@/interfaces/IReservation'
-import { computed, inject, onMounted, ref, type Ref } from 'vue'
+import { computed, inject, onBeforeMount, ref, type Ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ReservationValidator } from '@/validators/ReservationValidator'
 import AvailabilityService from '@/services/AvailabilityService'
@@ -11,6 +11,7 @@ import { RoomService } from '@/services/RoomService'
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
 const propertyService = new PropertyService(axios)
+const profileService = new ProfileService(axios)
 const roomService = new RoomService(axios)
 const dateHelper = new DateHelper()
 const reservationValidator = new ReservationValidator()
@@ -20,21 +21,29 @@ const props = defineProps({
   previousReservation: { type: Object as () => IReservation, required: false },
   nextReservation: { type: Object as () => IReservation, required: false }
 })
-const properties: Ref<IProperty[]> = ref([])
-const rooms: Ref<IRoom[]> = ref([])
+const propertiesInDropdown: Ref<IProperty[]> = ref([])
+const roomsInDropdown: Ref<IRoom[]> = ref([])
+const profilesInDropdown: Ref<IProfile[]> = ref([])
 const profileDialog = ref(false)
 import ProfileSearch from './profiles/ProfileSearch.vue'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import type { IPropertyAvailability } from '@/interfaces/availability/IPropertyAvailability'
 import type { IPropertyAvailabilitySearch } from '@/interfaces/availability/IPropertyAvailabilitySearch'
 import type { IRoom } from '@/interfaces/IRoom'
+import ProfileService from '@/services/ProfileService'
+import type { IProfileSearch } from '@/interfaces/profiles/IProfileSearch'
 
-onMounted(() => {
+onBeforeMount(() => {
   propertyService.getProperties().then((response: IProperty[]) => {
-    properties.value = response
+    propertiesInDropdown.value = response
   })
   roomService.getAll().then((response: IRoom[]) => {
-    rooms.value = response
+    roomsInDropdown.value = response
+  })
+
+  const profileSearch: IProfileSearch = {}
+  profileService.search(profileSearch).then((response: IProfile[]) => {
+    profilesInDropdown.value = response
   })
 })
 
@@ -83,7 +92,8 @@ const check = () => {
     availabilityEnd: reservation.value.departureDate,
     numberOfRooms: reservation.value.numberOfRooms,
     roomID: reservation.value.room.id,
-    numberOfGuestsPerRoom: reservation.value.numberOfGuestsPerRoom
+    numberOfGuestsPerRoom: reservation.value.numberOfGuestsPerRoom,
+    profileID: reservation.value.profileID
   }
 
   availabilityService
@@ -118,7 +128,7 @@ const closeProfileDialog = () => {
 }
 
 const profileSelected = (profile: IProfile) => {
-  reservation.value.guest = profile.lastName + ' ' + profile.firstName
+  reservation.value.profileID = profile.id
   closeProfileDialog()
 }
 </script>
@@ -130,7 +140,7 @@ const profileSelected = (profile: IProfile) => {
         <v-select
           label=""
           v-model="reservation.property"
-          :items="properties"
+          :items="propertiesInDropdown"
           item-title="name"
           @update:model-value="emitChange()"
           :return-object="true"
@@ -202,7 +212,7 @@ const profileSelected = (profile: IProfile) => {
         <v-autocomplete
           label="Room Type"
           v-model="reservation.room"
-          :items="rooms"
+          :items="roomsInDropdown"
           item-title="name"
           :error-messages="reservation.errors['roomType']"
           @update:model-value="emitChange()"
@@ -223,8 +233,10 @@ const profileSelected = (profile: IProfile) => {
           label="Guest"
           placeholder="Last Name | First Name"
           hint="Last Name | First Name"
-          v-model="reservation.guest"
-          :items="['Daniel, Oechslin', 'Sandro Raess', 'John Doe', 'Max Mustermann']"
+          v-model="reservation.profileID"
+          :items="profilesInDropdown"
+          :item-title="(profile) => `${profile.lastName}, ${profile.firstName}`"
+          :item-value="(profile) => profile.id"
           :disabled="previousReservation !== undefined"
           @update:model-value="emitChange()"
         ></v-autocomplete>
