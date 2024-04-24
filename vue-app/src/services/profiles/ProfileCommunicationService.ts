@@ -35,7 +35,7 @@ export class ProfileCommunicationService implements IProfilesService {
     })
   }
 
-  post(profileCommunication: IProfileCommunication) {
+  create(profileCommunication: IProfileCommunication) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
         .post(`v1/profiles/${profileCommunication.profileID}/communications`, profileCommunication)
@@ -48,7 +48,7 @@ export class ProfileCommunicationService implements IProfilesService {
     })
   }
 
-  put(profileCommunication: IProfileCommunication) {
+  update(profileCommunication: IProfileCommunication) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
         .put(`v1/profiles/${profileCommunication.profileID}/communications`, profileCommunication)
@@ -86,6 +86,28 @@ export class ProfileCommunicationService implements IProfilesService {
         .catch((e: any) => {
           reject(e)
         })
+    })
+  }
+
+  createOrUpdate(model: IProfileCommunication) {
+    return new Promise<IProfileCommunication>((resolve, reject) => {
+      if (model.id) {
+        this.update(model)
+          .then((response: any) => {
+            resolve(response)
+          })
+          .catch((e: any) => {
+            reject(e)
+          })
+      } else {
+        this.create(model)
+          .then((response: any) => {
+            resolve(response)
+          })
+          .catch((e: any) => {
+            reject(e)
+          })
+      }
     })
   }
 }

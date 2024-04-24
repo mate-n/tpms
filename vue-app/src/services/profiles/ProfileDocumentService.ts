@@ -36,7 +36,7 @@ export class ProfileDocumentService implements IProfilesService {
     })
   }
 
-  post(model: IProfileDocument) {
+  create(model: IProfileDocument) {
     return new Promise<IProfileDocument>((resolve, reject) => {
       this.axiosInstance
         .post(`v1/profiles/${model.profileID}/documents`, model)
@@ -48,7 +48,7 @@ export class ProfileDocumentService implements IProfilesService {
         })
     })
   }
-  put(model: IProfileDocument) {
+  update(model: IProfileDocument) {
     return new Promise<IProfileDocument>((resolve, reject) => {
       this.axiosInstance
         .put(`v1/profiles/${model.profileID}/documents`, model)
@@ -84,6 +84,28 @@ export class ProfileDocumentService implements IProfilesService {
         .catch((e: any) => {
           reject(e)
         })
+    })
+  }
+
+  createOrUpdate(model: IProfileDocument) {
+    return new Promise<IProfileDocument>((resolve, reject) => {
+      if (model.id) {
+        this.update(model)
+          .then((response: any) => {
+            resolve(response)
+          })
+          .catch((e: any) => {
+            reject(e)
+          })
+      } else {
+        this.create(model)
+          .then((response: any) => {
+            resolve(response)
+          })
+          .catch((e: any) => {
+            reject(e)
+          })
+      }
     })
   }
 }

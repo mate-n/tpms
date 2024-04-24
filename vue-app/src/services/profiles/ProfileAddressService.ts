@@ -9,7 +9,7 @@ export class ProfileAddressService implements IProfilesService {
   constructor(axiosInstance: AxiosStatic | undefined) {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
   }
-  post(profileAddress: IProfileAddress) {
+  create(profileAddress: IProfileAddress) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
         .post(`v1/profiles/addresses`, profileAddress)
@@ -22,7 +22,7 @@ export class ProfileAddressService implements IProfilesService {
     })
   }
 
-  put(profileAddress: IProfileAddress) {
+  update(profileAddress: IProfileAddress) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
         .put(`v1/profiles/${profileAddress.profileID}/addresses`, profileAddress)
@@ -84,6 +84,28 @@ export class ProfileAddressService implements IProfilesService {
         .catch((e: any) => {
           reject(e)
         })
+    })
+  }
+
+  createOrUpdate(model: IProfileAddress) {
+    return new Promise<IProfileAddress>((resolve, reject) => {
+      if (model.id) {
+        this.update(model)
+          .then((response: any) => {
+            resolve(response)
+          })
+          .catch((e: any) => {
+            reject(e)
+          })
+      } else {
+        this.create(model)
+          .then((response: any) => {
+            resolve(response)
+          })
+          .catch((e: any) => {
+            reject(e)
+          })
+      }
     })
   }
 }
