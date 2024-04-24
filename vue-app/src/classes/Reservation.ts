@@ -11,7 +11,7 @@ export class Reservation implements IReservation {
   numberOfRooms: number
   room: IRoom | undefined
   numberOfGuestsPerRoom: number
-  guest: string
+  profileID: number | undefined
   baseRateCategory: string
   orderIndex: number
   property: IProperty | undefined
@@ -26,7 +26,6 @@ export class Reservation implements IReservation {
     this.departureDate = new Date()
     this.numberOfRooms = 1
     this.numberOfGuestsPerRoom = 1
-    this.guest = ''
     this.baseRateCategory = ''
     this.orderIndex = 0
     this.propertyAvailabilities = []
@@ -40,7 +39,6 @@ export class Reservation implements IReservation {
     this.departureDate = new Date()
     this.numberOfRooms = 1
     this.numberOfGuestsPerRoom = 1
-    this.guest = ''
     this.baseRateCategory = ''
     this.orderIndex = 0
     this.propertyAvailabilities = []
