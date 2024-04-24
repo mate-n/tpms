@@ -324,4 +324,3 @@ const profileSelected = (profile: IProfile) => {
     </v-card>
   </v-dialog>
 </template>
-@/interfaces/IRoom
