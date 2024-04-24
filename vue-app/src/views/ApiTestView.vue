@@ -3,6 +3,7 @@ import { ProfileAddressFaker } from '@/faker/ProfileAddressFaker'
 import { ProfileCommunicationFaker } from '@/faker/ProfileCommunicationFaker'
 import { ProfileDocumentFaker } from '@/faker/ProfileDocumentFaker'
 import { ProfilesFaker } from '@/faker/ProfilesFaker'
+import { PropertyAvailabilityFaker } from '@/faker/PropertyAvailabilityFaker'
 
 const profileFaker = new ProfilesFaker()
 const profileFake1 = profileFaker.create()
@@ -31,4 +32,11 @@ const profileDocumentFake2 = profileDocumentFaker.create()
 const profileDocumentFake3 = profileDocumentFaker.create()
 console.log(profileDocumentFake1)
 console.log([profileDocumentFake1, profileDocumentFake2, profileDocumentFake3])
+
+const propertyAvailabilityFaker = new PropertyAvailabilityFaker()
+const propertyAvailabilityFake1 = propertyAvailabilityFaker.create()
+const propertyAvailabilityFake2 = propertyAvailabilityFaker.create()
+const propertyAvailabilityFake3 = propertyAvailabilityFaker.create()
+console.log(propertyAvailabilityFake1)
+console.log([propertyAvailabilityFake1, propertyAvailabilityFake2, propertyAvailabilityFake3])
 </script>
