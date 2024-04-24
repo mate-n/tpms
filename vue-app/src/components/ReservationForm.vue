@@ -267,11 +267,11 @@ const profileSelected = (profile: IProfile) => {
         <tr class="bg-lightblue">
           <th class="" style="width: 15rem"></th>
           <th
-            v-for="propertyAvailibility of reservation.propertyAvailabilities"
-            :key="propertyAvailibility.room.code"
+            v-for="propertyAvailability of reservation.propertyAvailabilities"
+            :key="propertyAvailability.room.code"
             class="text-center"
           >
-            {{ propertyAvailibility.room.code }}
+            {{ propertyAvailability.room.code }}
           </th>
           <template v-if="reservation.propertyAvailabilities.length === 0">
             <th v-for="i in 12" :key="i"></th>
@@ -311,8 +311,8 @@ const profileSelected = (profile: IProfile) => {
             class="bg-lightgray"
           >
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
-              <template v-if="propertyAvailability.ratesData[0]">
-                {{ propertyAvailability.ratesData[0].roomRate }}
+              <template v-if="propertyAvailability.roomRates[0]">
+                {{ propertyAvailability.roomRates[0].roomRate }}
               </template>
             </div>
           </td>
