@@ -1,8 +1,8 @@
 import { type AxiosStatic } from 'axios'
 import { AxiosInstanceFactory } from '../factories/AxiosInstanceFactory'
 import type { IService } from '@/interfaces/IService'
-import type { IProfilePostBody } from '@/interfaces/IProfilePostBody'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
+import type { IProfileSearch } from '@/interfaces/profiles/IProfileSearch'
 
 class ProfileService implements IService {
   axiosInstance: AxiosStatic
@@ -49,10 +49,10 @@ class ProfileService implements IService {
     })
   }
 
-  search(profilePostBody: IProfilePostBody) {
+  search(profilePostBody: IProfileSearch) {
     return new Promise<IProfile[]>((resolve, reject) => {
       this.axiosInstance
-        .post('profiles/search', profilePostBody)
+        .post('v1/profiles/search', profilePostBody)
         .then((response: any) => {
           resolve(response.data)
         })

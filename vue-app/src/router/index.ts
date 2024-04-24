@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import ItineraryReservationEnquiryView from '@/views/ItineraryReservationEnquiryView.vue'
 import NewProfileView from '@/views/NewProfileView.vue'
 import ProfileSearchView from '@/views/ProfileSearchView.vue'
+import ApiTestView from '@/views/ApiTestView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,6 +26,11 @@ const router = createRouter({
       path: '/profile-search',
       name: 'profile search',
       component: ProfileSearchView
+    },
+    {
+      path: '/api-test',
+      name: 'api test',
+      component: ApiTestView
     },
     {
       path: '/about',

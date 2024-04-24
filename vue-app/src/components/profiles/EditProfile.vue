@@ -4,6 +4,8 @@ import ProfileForm from './ProfileForm.vue'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import { Profile } from '@/classes/Profile'
 import { CrudOperations } from '@/enums/CrudOperations'
+import { CloneHelper } from '@/helpers/CloneHelper'
+const cloneHelper = new CloneHelper()
 const emit = defineEmits(['close', 'update'])
 const close = () => emit('close')
 const isFullScreen = ref(false)
@@ -16,11 +18,11 @@ const update = (profile: IProfile) => {
 }
 
 onMounted(() => {
-  profileToBeEdited.value = props.profileInput.clone()
+  profileToBeEdited.value = cloneHelper.clone(props.profileInput)
 })
 
 watch(props, (newInput) => {
-  profileToBeEdited.value = newInput.profileInput.clone()
+  profileToBeEdited.value = cloneHelper.clone(newInput.profileInput)
 })
 
 const toggleFullScreen = () => {
@@ -38,27 +40,27 @@ const toggleFullScreen = () => {
 }
 </script>
 <template>
-  <v-toolbar>
+  <v-toolbar class="bg-white">
     <v-toolbar-title
       >Profile <v-icon>mdi-arrow-right</v-icon> #{{ profileToBeEdited.id }}</v-toolbar-title
     >
-    <div class="border-s h-100 d-flex px-5 align-center" @click="toggleFullScreen()">
+    <div class="profiles-card-toolbar-button" @click="toggleFullScreen()">
       <template v-if="isFullScreen">
-        <v-btn><v-icon>mdi-fullscreen-exit</v-icon></v-btn>
+        <v-icon size="large">mdi-fullscreen-exit</v-icon>
       </template>
       <template v-if="!isFullScreen">
-        <v-btn><v-icon>mdi-fullscreen</v-icon></v-btn>
+        <v-icon size="large">mdi-fullscreen</v-icon>
       </template>
     </div>
-    <div class="border-s h-100 d-flex px-5 align-center" @click="close()">
-      <v-btn><v-icon>mdi-close</v-icon></v-btn>
+    <div class="profiles-card-toolbar-button" @click="close()">
+      <v-icon>mdi-close</v-icon>
     </div>
   </v-toolbar>
-  <div>
-    <ProfileForm
-      :profile-input="profileToBeEdited"
-      @save="(profile) => update(profile)"
-      :crud-operation="CrudOperations.Update"
-    ></ProfileForm>
-  </div>
+  <v-divider class="profiles-card-divider"></v-divider>
+
+  <ProfileForm
+    :profile-input="profileToBeEdited"
+    @save="(profile) => update(profile)"
+    :crud-operation="CrudOperations.Update"
+  ></ProfileForm>
 </template>

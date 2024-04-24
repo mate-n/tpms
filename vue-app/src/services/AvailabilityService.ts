@@ -13,7 +13,7 @@ class AvailabilityService implements IService {
   getAvailability(availabilityPostBody: IAvailabilityPostBody) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
-        .post('?getavailability', availabilityPostBody)
+        .post('v1/properties/1/availabilities', availabilityPostBody)
         .then((response: any) => {
           resolve(response.data)
         })

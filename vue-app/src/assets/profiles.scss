@@ -1,0 +1,59 @@
+@import 'variables';
+@import 'texts.scss';
+@import 'colors.scss';
+
+.profile-card-caption {
+  @extend .text-gray;
+  font-size: 0.8rem;
+}
+
+.profiles-card {
+  height: 100%;
+  border-radius: 0.5rem;
+  @extend .bg-white;
+  font-size: 0.85rem;
+  & input {
+    @extend .font-size-rem-8;
+  }
+}
+
+.profiles-card-toolbar {
+  @extend .bg-white;
+  border-top-left-radius: 0.5rem !important;
+  border-top-right-radius: 0.5rem !important;
+}
+
+.profiles-card-divider {
+  border-top: 0.1rem solid black !important;
+}
+
+.profiles-pill {
+  background-color: #f8f8f8;
+  color: #707070;
+  border-radius: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  margin-right: 0.3rem;
+  font-size: 0.8rem;
+  border: 0.1rem solid darken(map-get($main-colors, 'lightgray'), 20%);
+  box-shadow: 0 0 1px 1px #fff;
+}
+
+.profiles-card-column {
+  width: 20% !important;
+}
+
+.profiles-icon-button {
+  @extend .text-primary;
+  @extend .bg-white;
+  margin-right: 0.5rem;
+  border: 0.1rem solid darken(map-get($main-colors, 'lightgray'), 10%) !important;
+}
+
+.profiles-card-container {
+  @extend .bg-lightgray;
+  border-bottom-left-radius: 0.5rem !important;
+  border-bottom-right-radius: 0.5rem !important;
+  padding-top: 0.5rem !important;
+  padding-left: 0.3rem !important;
+  padding-right: 0.3rem !important;
+}

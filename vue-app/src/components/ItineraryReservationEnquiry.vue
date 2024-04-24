@@ -28,6 +28,13 @@ const onReservationChanged = () => {
   checkForIssues()
 }
 
+const removeReservation = (reservation: IReservation) => {
+  const index = reservations.value.indexOf(reservation)
+  reservations.value.splice(index, 1)
+  updateAllReservations()
+  checkForIssues()
+}
+
 const getNewOrderIndex = () => {
   if (reservations.value.length === 0) return 0
   return reservations.value.length
@@ -51,7 +58,7 @@ const checkForIssues = () => {
 
 <template>
   <v-toolbar
-    class="bg-header text-white d-flex justify-space-between"
+    class="bg-primary text-white d-flex justify-space-between"
     :title="$t('general.itineraryReservationEnquiry')"
     app
   >
@@ -83,6 +90,7 @@ const checkForIssues = () => {
       v-model="reservations[i]"
       @check="checkForIssues()"
       @change="onReservationChanged()"
+      @remove="(reservation) => removeReservation(reservation)"
       :previous-reservation="reservations[i - 1]"
       :next-reservation="reservations[i + 1]"
     ></ReservationForm>

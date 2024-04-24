@@ -17,7 +17,7 @@ const propertyService = new PropertyService(axios)
 const roomService = new RoomService(axios)
 const dateHelper = new DateHelper()
 const reservationValidator = new ReservationValidator()
-const emit = defineEmits(['check', 'change'])
+const emit = defineEmits(['check', 'change', 'remove'])
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 const props = defineProps({
   previousReservation: { type: Object as () => IReservation, required: false },
@@ -33,7 +33,7 @@ onMounted(() => {
   propertyService.getProperties().then((response: IProperty[]) => {
     properties.value = response
   })
-  roomService.getRooms().then((response: IRoom[]) => {
+  roomService.getAll().then((response: IRoom[]) => {
     rooms.value = response
   })
 })
@@ -78,14 +78,12 @@ const check = () => {
   if (!reservation.value.property) return
   if (!reservation.value.room) return
   const availabilityPostBody: IAvailabilityPostBody = {
-    arrivaldate: dateHelper.getYYYYMMDDFromDate(reservation.value.arrivalDate),
-    departuredate: dateHelper.getYYYYMMDDFromDate(reservation.value.departureDate),
-    roomtype: reservation.value.room.roomtype,
-    propertyid: reservation.value.property.id
+    availabilityStart: reservation.value.arrivalDate,
+    availabilityEnd: reservation.value.departureDate
   }
 
   availabilityService.getAvailability(availabilityPostBody).then((response: any) => {
-    const availabilityData: IAvailabilityData[] = response.data.availability_data
+    const availabilityData: IAvailabilityData[] = response
     reservation.value.availablityData = availabilityData
     reservation.value.baseRateCategory = 'Base Rate | Low Season'
     reservationValidator.validate(reservation.value)
@@ -95,6 +93,10 @@ const check = () => {
 
 const reset = () => {
   reservation.value.reset()
+}
+
+const remove = (reservation: IReservation) => {
+  emit('remove', reservation)
 }
 
 const emitChange = () => {
@@ -227,7 +229,8 @@ const profileSelected = (profile: IProfile) => {
       </v-col>
       <v-col class="d-flex justify-space-between">
         <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
-        <v-btn class="primary-button" @click="check()">Check</v-btn>
+        <v-btn class="primary-button mr-3" @click="check()">Check</v-btn>
+        <v-btn class="danger-button" @click="remove(reservation)"> Remove </v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -307,7 +310,7 @@ const profileSelected = (profile: IProfile) => {
       </tbody>
     </v-table>
   </v-container>
-  <v-dialog v-model="profileDialog" fullscreen>
+  <v-dialog v-model="profileDialog" fullscreen scrollable>
     <v-card>
       <ProfileSearch
         @close="closeProfileDialog()"

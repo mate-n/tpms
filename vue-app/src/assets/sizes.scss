@@ -1,0 +1,11 @@
+@mixin height-size-modifiers {
+  @for $i from 1 through 100 {
+    &-#{$i} {
+      min-height: $i * 0.1rem !important;
+    }
+  }
+}
+
+.height {
+  @include height-size-modifiers;
+}

@@ -8,9 +8,10 @@ import App from './App.vue'
 import router from './router'
 
 // Theme
-const myCustomLightTheme: ThemeDefinition = {
+const customLightTheme: ThemeDefinition = {
   dark: false,
   colors: {
+    primary: '#006221',
     background: '#f5f5f5'
   }
 }
@@ -24,9 +25,9 @@ const vuetify = createVuetify({
   components,
   directives,
   theme: {
-    defaultTheme: 'myCustomLightTheme',
+    defaultTheme: 'customLightTheme',
     themes: {
-      myCustomLightTheme
+      customLightTheme
     }
   }
 })
