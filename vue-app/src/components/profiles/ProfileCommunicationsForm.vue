@@ -35,21 +35,12 @@ const saveProfileCommunications = () => {
   const promisesToSaveProfileCommunications: Promise<void>[] = []
 
   profileCommunications.value.forEach((profileCommunication) => {
-    if (profileCommunication.id) {
-      const promiseToSaveProfileCommunication = new Promise<void>((innerResolve) => {
-        profileCommunicationService.put(profileCommunication).then(() => {
-          innerResolve()
-        })
+    const promiseToSaveProfileCommunication = new Promise<void>((innerResolve) => {
+      profileCommunicationService.createOrUpdate(profileCommunication).then(() => {
+        innerResolve()
       })
-      promisesToSaveProfileCommunications.push(promiseToSaveProfileCommunication)
-    } else {
-      const promiseToSaveProfileCommunication = new Promise<void>((innerResolve) => {
-        profileCommunicationService.post(profileCommunication).then(() => {
-          innerResolve()
-        })
-      })
-      promisesToSaveProfileCommunications.push(promiseToSaveProfileCommunication)
-    }
+    })
+    promisesToSaveProfileCommunications.push(promiseToSaveProfileCommunication)
   })
 
   Promise.all(promisesToSaveProfileCommunications).then(() => {
