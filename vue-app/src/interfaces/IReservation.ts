@@ -10,7 +10,7 @@ export interface IReservation {
   numberOfRooms: number
   room: IRoom | undefined
   numberOfGuestsPerRoom: number
-  guest: string
+  profileID: number | undefined
   baseRateCategory: string
   orderIndex: number
   propertyAvailabilities: IPropertyAvailability[]
