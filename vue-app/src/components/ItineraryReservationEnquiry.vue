@@ -17,7 +17,7 @@ const addReservation = () => {
   newReservation.orderIndex = getNewOrderIndex()
   if (lastReservation) {
     newReservation.arrivalDate = lastReservation.departureDate
-    newReservation.guest = selectedGuest.value
+    newReservation.profileID = selectedProfile.value
   }
   const newDepartureDate = dateHelper.addDays(newReservation.arrivalDate, 1)
   newReservation.departureDate = newDepartureDate
@@ -40,14 +40,14 @@ const getNewOrderIndex = () => {
   return reservations.value.length
 }
 
-const selectedGuest = computed(() => {
-  if (reservations.value.length === 0) return ''
-  return reservations.value[0].guest
+const selectedProfile = computed(() => {
+  if (reservations.value.length === 0) return 0
+  return reservations.value[0].profileID
 })
 
 const updateAllReservations = () => {
   for (const reservation of reservations.value) {
-    reservation.guest = selectedGuest.value
+    reservation.profileID = selectedProfile.value
   }
 }
 
