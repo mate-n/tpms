@@ -55,21 +55,12 @@ const saveAllProfileAddresses = () => {
   const promisesToSaveProfileAddresses: Promise<void>[] = []
 
   profileAddresses.value.forEach((profileAddress) => {
-    if (profileAddress.id) {
-      const promiseToSaveProfileAddress = new Promise<void>((innerResolve) => {
-        profileAddressService.put(profileAddress).then(() => {
-          innerResolve()
-        })
+    const promiseToSaveProfileAddress = new Promise<void>((innerResolve) => {
+      profileAddressService.createOrUpdate(profileAddress).then(() => {
+        innerResolve()
       })
       promisesToSaveProfileAddresses.push(promiseToSaveProfileAddress)
-    } else {
-      const promiseToSaveProfileAddress = new Promise<void>((innerResolve) => {
-        profileAddressService.post(profileAddress).then(() => {
-          innerResolve()
-        })
-      })
-      promisesToSaveProfileAddresses.push(promiseToSaveProfileAddress)
-    }
+    })
   })
 
   Promise.all(promisesToSaveProfileAddresses).then(() => {
