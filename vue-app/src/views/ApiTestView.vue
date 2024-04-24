@@ -4,6 +4,7 @@ import { ProfileCommunicationFaker } from '@/faker/ProfileCommunicationFaker'
 import { ProfileDocumentFaker } from '@/faker/ProfileDocumentFaker'
 import { ProfilesFaker } from '@/faker/ProfilesFaker'
 import { PropertyAvailabilityFaker } from '@/faker/PropertyAvailabilityFaker'
+import { RoomTypeFaker } from '@/faker/RoomTypeFaker'
 
 const profileFaker = new ProfilesFaker()
 const profileFake1 = profileFaker.create()
@@ -39,4 +40,12 @@ const propertyAvailabilityFake2 = propertyAvailabilityFaker.create()
 const propertyAvailabilityFake3 = propertyAvailabilityFaker.create()
 console.log(propertyAvailabilityFake1)
 console.log([propertyAvailabilityFake1, propertyAvailabilityFake2, propertyAvailabilityFake3])
+
+const roomTypeFaker = new RoomTypeFaker()
+const roomTypeFake1 = roomTypeFaker.create()
+const roomTypeFake2 = roomTypeFaker.create()
+const roomTypeFake3 = roomTypeFaker.create()
+const roomTypeFake4 = roomTypeFaker.create()
+console.log(roomTypeFake1)
+console.log([roomTypeFake1, roomTypeFake2, roomTypeFake3, roomTypeFake4])
 </script>
