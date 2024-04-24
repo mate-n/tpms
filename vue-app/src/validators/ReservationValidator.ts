@@ -39,10 +39,10 @@ export class ReservationValidator implements IValidator {
   isRoomTypeAvailable(reservation: IReservation): void {
     if (reservation.propertyAvailabilities.length === 0) return
     if (!reservation.room) return
-    const foundAvailibilityDatum = reservation.propertyAvailabilities.find(
+    const foundPropertyAvailability = reservation.propertyAvailabilities.find(
       (ad) => ad.room.type === reservation.room?.type
     )
-    if (foundAvailibilityDatum && foundAvailibilityDatum.availabilityCount == 0) {
+    if (foundPropertyAvailability && foundPropertyAvailability.availabilityCount == 0) {
       reservation.errors['roomType'] = 'Room Type is not available'
     }
   }
