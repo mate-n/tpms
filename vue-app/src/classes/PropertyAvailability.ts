@@ -7,12 +7,12 @@ export class PropertyAvailability implements IPropertyAvailability {
   room: IRoom
   availabilityCount: number
   baseRateCategory: string
-  ratesData: IRoomRate[]
+  roomRates: IRoomRate[]
 
   constructor() {
     this.room = new Room()
     this.availabilityCount = 0
     this.baseRateCategory = ''
-    this.ratesData = []
+    this.roomRates = []
   }
 }

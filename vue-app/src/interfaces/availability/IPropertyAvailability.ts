@@ -5,5 +5,5 @@ export interface IPropertyAvailability {
   room: IRoom
   availabilityCount: number
   baseRateCategory: string
-  ratesData: IRoomRate[]
+  roomRates: IRoomRate[]
 }
