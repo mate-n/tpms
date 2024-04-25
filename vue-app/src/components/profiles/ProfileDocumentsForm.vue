@@ -38,7 +38,7 @@ const deleteProfileDocument = (profileDocument: IProfileDocument) => {
 </script>
 <template>
   <v-toolbar fluid class="profiles-card-toolbar">
-    <v-toolbar-title> Profile Addresses </v-toolbar-title>
+    <v-toolbar-title>Profile Documents </v-toolbar-title>
     <div class="profiles-card-toolbar-button" @click="addProfileDocument()">
       <v-icon size="large">mdi-plus</v-icon>ADD
     </div>
