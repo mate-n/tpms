@@ -155,19 +155,7 @@ const toggleActive = () => {
       <v-btn class="primary-button text-uppercase">{{ $t('actions.save') }}</v-btn>
     </div>
     <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-calculator-variant-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
       <v-icon>mdi-clipboard-text-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-account-multiple-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-bank-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-receipt-text-outline</v-icon>
     </v-btn>
     <v-btn icon class="profiles-icon-button">
       <v-icon>mdi-calendar-blank-outline</v-icon>
@@ -177,9 +165,6 @@ const toggleActive = () => {
     </v-btn>
     <v-btn icon class="profiles-icon-button">
       <v-icon>mdi-account-check-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-paw</v-icon>
     </v-btn>
   </v-toolbar>
   <v-container fluid class="bg-lightgray pt-0">
@@ -201,6 +186,7 @@ const toggleActive = () => {
       <v-col class="pr-0 profiles-card-column">
         <ProfilePreferencesCard v-model="profileToBeEdited"></ProfilePreferencesCard>
       </v-col>
+      <v-col class="pr-0 profiles-card-column"> </v-col>
     </v-row>
   </v-container>
 </template>
