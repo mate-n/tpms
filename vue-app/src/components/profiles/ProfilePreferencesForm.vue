@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import type { IBookableObject } from '@/interfaces/IBookableObject'
 import type { IFeature } from '@/interfaces/IFeature'
+import type { ILanguage } from '@/interfaces/ILanguage'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import type { IProfilePreferencesPatchBody } from '@/interfaces/profiles/IProfilePreferencesPatchBody'
 import { BookableObjectService } from '@/services/BookableObjectService'
 import { FeatureService } from '@/services/FeatureService'
+import { LanguageService } from '@/services/LanguageService'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
-import { inject, onBeforeMount, ref, watch } from 'vue'
+import { inject, onBeforeMount, ref, watch, type Ref } from 'vue'
 const emits = defineEmits(['close'])
 const profileToBeEdited = defineModel({
   required: true,
@@ -17,9 +19,12 @@ const showSaveButton = ref(false)
 const axios: AxiosStatic | undefined = inject('axios')
 const featureService = new FeatureService(axios)
 const profileService = new ProfileService(axios)
+const languageService = new LanguageService(axios)
 const bookableObjectService = new BookableObjectService(axios)
 const featuresInDropdown = ref<IFeature[]>([])
 const bookableObjectsInDropdown = ref<IBookableObject[]>([])
+const languages: Ref<ILanguage[]> = ref([])
+
 onBeforeMount(() => {
   featureService.getAvailableFeatures().then((response) => {
     featuresInDropdown.value = response
@@ -27,6 +32,10 @@ onBeforeMount(() => {
 
   bookableObjectService.getAvailableBookableObjects().then((response) => {
     bookableObjectsInDropdown.value = response
+  })
+
+  languageService.getAvailableLanguages().then((response) => {
+    languages.value = response
   })
 })
 
@@ -92,12 +101,24 @@ const saveProfilePreferences = () => {
       >
       </v-select>
     </v-container>
-    <v-container fluid class="bg-white">
+    <v-container fluid class="bg-white mb-2">
       <v-textarea
         v-model="profileToBeEdited.preferencesNote"
         variant="underlined"
         label="Note"
       ></v-textarea>
+    </v-container>
+
+    <v-container fluid class="bg-white mb-2">
+      <v-autocomplete
+        label="Language"
+        prepend-icon="mdi-microphone-outline"
+        v-model="profileToBeEdited.preferencesLanguage"
+        :items="languages"
+        item-title="value"
+        variant="underlined"
+        class="me-3"
+      ></v-autocomplete>
     </v-container>
   </v-container>
 </template>
