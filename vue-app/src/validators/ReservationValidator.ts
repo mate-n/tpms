@@ -14,14 +14,14 @@ export class ReservationValidator implements IValidator {
   }
 
   isGuestsPerRoomValid(reservation: IReservation): void {
-    if (reservation.guestsPerRoom < 1) {
-      reservation.errors['guestsPerRoom'] = 'Guests per room cannot be less than 1'
+    if (reservation.numberOfGuestsPerRoom < 1) {
+      reservation.errors['numberOfGuestsPerRoom'] = 'Guests per room cannot be less than 1'
     }
   }
 
   isRoomsValid(reservation: IReservation): void {
-    if (reservation.rooms < 1) {
-      reservation.errors['rooms'] = 'Rooms cannot be less than 1'
+    if (reservation.numberOfRooms < 1) {
+      reservation.errors['numberOfRooms'] = 'Rooms cannot be less than 1'
     }
   }
 
@@ -37,12 +37,12 @@ export class ReservationValidator implements IValidator {
   }
 
   isRoomTypeAvailable(reservation: IReservation): void {
-    if (reservation.availablityData.length === 0) return
+    if (reservation.propertyAvailabilities.length === 0) return
     if (!reservation.room) return
-    const foundAvailibilityDatum = reservation.availablityData.find(
-      (ad) => ad.room_type_code === reservation.room?.roomtype
+    const foundPropertyAvailability = reservation.propertyAvailabilities.find(
+      (ad) => ad.room.type === reservation.room?.type
     )
-    if (foundAvailibilityDatum && foundAvailibilityDatum.availability_count == 0) {
+    if (foundPropertyAvailability && foundPropertyAvailability.availabilityCount == 0) {
       reservation.errors['roomType'] = 'Room Type is not available'
     }
   }

@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import type { IReservation } from '@/interfaces/IReservation'
-import { computed, inject, onMounted, ref, type Ref } from 'vue'
+import { computed, inject, onBeforeMount, ref, type Ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ReservationValidator } from '@/validators/ReservationValidator'
 import AvailabilityService from '@/services/AvailabilityService'
 import type { AxiosStatic } from 'axios'
-import type { IAvailabilityPostBody } from '@/interfaces/availability/IAvailabilityPostBody'
-import type { IAvailabilityData } from '@/interfaces/availability/IAvailabilityData'
 import type { IProperty } from '@/interfaces/IProperty'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
-import type { IRoom } from '@/interfaces/IRoom'
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
 const propertyService = new PropertyService(axios)
+const profileService = new ProfileService(axios)
 const roomService = new RoomService(axios)
 const dateHelper = new DateHelper()
 const reservationValidator = new ReservationValidator()
@@ -23,18 +21,29 @@ const props = defineProps({
   previousReservation: { type: Object as () => IReservation, required: false },
   nextReservation: { type: Object as () => IReservation, required: false }
 })
-const properties: Ref<IProperty[]> = ref([])
-const rooms: Ref<IRoom[]> = ref([])
+const propertiesInDropdown: Ref<IProperty[]> = ref([])
+const roomsInDropdown: Ref<IRoom[]> = ref([])
+const profilesInDropdown: Ref<IProfile[]> = ref([])
 const profileDialog = ref(false)
 import ProfileSearch from './profiles/ProfileSearch.vue'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
+import type { IPropertyAvailability } from '@/interfaces/availability/IPropertyAvailability'
+import type { IPropertyAvailabilitySearch } from '@/interfaces/availability/IPropertyAvailabilitySearch'
+import type { IRoom } from '@/interfaces/IRoom'
+import ProfileService from '@/services/ProfileService'
+import type { IProfileSearch } from '@/interfaces/profiles/IProfileSearch'
 
-onMounted(() => {
+onBeforeMount(() => {
   propertyService.getProperties().then((response: IProperty[]) => {
-    properties.value = response
+    propertiesInDropdown.value = response
   })
   roomService.getAll().then((response: IRoom[]) => {
-    rooms.value = response
+    roomsInDropdown.value = response
+  })
+
+  const profileSearch: IProfileSearch = {}
+  profileService.search(profileSearch).then((response: IProfile[]) => {
+    profilesInDropdown.value = response
   })
 })
 
@@ -77,18 +86,24 @@ const departureDateString = computed(() => {
 const check = () => {
   if (!reservation.value.property) return
   if (!reservation.value.room) return
-  const availabilityPostBody: IAvailabilityPostBody = {
+  const propertyAvailabilitySearch: IPropertyAvailabilitySearch = {
+    propertyID: reservation.value.property.id,
     availabilityStart: reservation.value.arrivalDate,
-    availabilityEnd: reservation.value.departureDate
+    availabilityEnd: reservation.value.departureDate,
+    numberOfRooms: reservation.value.numberOfRooms,
+    roomID: reservation.value.room.id,
+    numberOfGuestsPerRoom: reservation.value.numberOfGuestsPerRoom,
+    profileID: reservation.value.profileID
   }
 
-  availabilityService.getAvailability(availabilityPostBody).then((response: any) => {
-    const availabilityData: IAvailabilityData[] = response
-    reservation.value.availablityData = availabilityData
-    reservation.value.baseRateCategory = 'Base Rate | Low Season'
-    reservationValidator.validate(reservation.value)
-    emit('check')
-  })
+  availabilityService
+    .getAvailabilitiesByPropertyID(propertyAvailabilitySearch)
+    .then((response: IPropertyAvailability[]) => {
+      reservation.value.propertyAvailabilities = response
+      reservation.value.baseRateCategory = 'Base Rate | Low Season'
+      reservationValidator.validate(reservation.value)
+      emit('check')
+    })
 }
 
 const reset = () => {
@@ -113,7 +128,7 @@ const closeProfileDialog = () => {
 }
 
 const profileSelected = (profile: IProfile) => {
-  reservation.value.guest = profile.lastName + ' ' + profile.firstName
+  reservation.value.profileID = profile.id
   closeProfileDialog()
 }
 </script>
@@ -125,7 +140,7 @@ const profileSelected = (profile: IProfile) => {
         <v-select
           label=""
           v-model="reservation.property"
-          :items="properties"
+          :items="propertiesInDropdown"
           item-title="name"
           @update:model-value="emitChange()"
           :return-object="true"
@@ -187,8 +202,8 @@ const profileSelected = (profile: IProfile) => {
       <v-col>
         <v-text-field
           label="Rooms"
-          v-model="reservation.rooms"
-          :error-messages="reservation.errors['rooms']"
+          v-model="reservation.numberOfRooms"
+          :error-messages="reservation.errors['numberOfRooms']"
           type="number"
           @change="emitChange()"
         ></v-text-field>
@@ -197,7 +212,7 @@ const profileSelected = (profile: IProfile) => {
         <v-autocomplete
           label="Room Type"
           v-model="reservation.room"
-          :items="rooms"
+          :items="roomsInDropdown"
           item-title="name"
           :error-messages="reservation.errors['roomType']"
           @update:model-value="emitChange()"
@@ -207,8 +222,8 @@ const profileSelected = (profile: IProfile) => {
       <v-col>
         <v-text-field
           label="Guests per room"
-          v-model="reservation.guestsPerRoom"
-          :error-messages="reservation.errors['guestsPerRoom']"
+          v-model="reservation.numberOfGuestsPerRoom"
+          :error-messages="reservation.errors['numberOfGuestsPerRoom']"
           type="number"
           @change="emitChange()"
         ></v-text-field>
@@ -218,8 +233,10 @@ const profileSelected = (profile: IProfile) => {
           label="Guest"
           placeholder="Last Name | First Name"
           hint="Last Name | First Name"
-          v-model="reservation.guest"
-          :items="['Daniel, Oechslin', 'Sandro Raess', 'John Doe', 'Max Mustermann']"
+          v-model="reservation.profileID"
+          :items="profilesInDropdown"
+          :item-title="(profile) => `${profile.lastName}, ${profile.firstName}`"
+          :item-value="(profile) => profile.id"
           :disabled="previousReservation !== undefined"
           @update:model-value="emitChange()"
         ></v-autocomplete>
@@ -250,13 +267,13 @@ const profileSelected = (profile: IProfile) => {
         <tr class="bg-lightblue">
           <th class="" style="width: 15rem"></th>
           <th
-            v-for="availabilityDatum of reservation.availablityData"
-            :key="availabilityDatum.room_type_code"
+            v-for="propertyAvailability of reservation.propertyAvailabilities"
+            :key="propertyAvailability.room.code"
             class="text-center"
           >
-            {{ availabilityDatum.room_type_code }}
+            {{ propertyAvailability.room.code }}
           </th>
-          <template v-if="reservation.availablityData.length === 0">
+          <template v-if="reservation.propertyAvailabilities.length === 0">
             <th v-for="i in 12" :key="i"></th>
           </template>
         </tr>
@@ -268,15 +285,15 @@ const profileSelected = (profile: IProfile) => {
             Availibility (incl. OB)
           </td>
           <td
-            v-for="availablityDatum of reservation.availablityData"
-            :key="availablityDatum.room_type_code"
+            v-for="propertyAvailability of reservation.propertyAvailabilities"
+            :key="propertyAvailability.room.code"
             class="bg-lightgray"
           >
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
-              {{ availablityDatum.availability_count }}
+              {{ propertyAvailability.availabilityCount }}
             </div>
           </td>
-          <template v-if="reservation.availablityData.length === 0">
+          <template v-if="reservation.propertyAvailabilities.length === 0">
             <td v-for="i in 12" :key="i" class="bg-lightgray">
               <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
                 <v-icon>mdi-circle-small</v-icon>
@@ -289,17 +306,17 @@ const profileSelected = (profile: IProfile) => {
             {{ reservation.baseRateCategory }}
           </td>
           <td
-            v-for="availabilityDatum of reservation.availablityData"
-            :key="availabilityDatum.room_type_code"
+            v-for="propertyAvailability of reservation.propertyAvailabilities"
+            :key="propertyAvailability.room.code"
             class="bg-lightgray"
           >
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
-              <template v-if="availabilityDatum.rates_data[0]">
-                {{ availabilityDatum.rates_data[0].room_rate }}
+              <template v-if="propertyAvailability.roomRates[0]">
+                {{ propertyAvailability.roomRates[0].roomRate }}
               </template>
             </div>
           </td>
-          <template v-if="reservation.availablityData.length === 0">
+          <template v-if="reservation.propertyAvailabilities.length === 0">
             <td v-for="i in 12" :key="i" class="bg-lightgray">
               <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
                 <v-icon>mdi-circle-small</v-icon>

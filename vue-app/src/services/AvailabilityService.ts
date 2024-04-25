@@ -1,7 +1,7 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { IAvailabilityPostBody } from '@/interfaces/availability/IAvailabilityPostBody'
 import type { IService } from '@/interfaces/IService'
-import type { IUnitAvailabilityPostBody } from '@/interfaces/availability/IUnitAvailabilityPostBody'
+import type { IPropertyAvailability } from '@/interfaces/availability/IPropertyAvailability'
+import type { IPropertyAvailabilitySearch } from '@/interfaces/availability/IPropertyAvailabilitySearch'
 import type { AxiosStatic } from 'axios'
 
 class AvailabilityService implements IService {
@@ -10,23 +10,13 @@ class AvailabilityService implements IService {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
   }
 
-  getAvailability(availabilityPostBody: IAvailabilityPostBody) {
-    return new Promise((resolve, reject) => {
+  getAvailabilitiesByPropertyID(propertyAvailabilitySearch: IPropertyAvailabilitySearch) {
+    return new Promise<IPropertyAvailability[]>((resolve, reject) => {
       this.axiosInstance
-        .post('v1/properties/1/availabilities', availabilityPostBody)
-        .then((response: any) => {
-          resolve(response.data)
-        })
-        .catch((e: any) => {
-          reject(e)
-        })
-    })
-  }
-
-  getUnitAvailability(unitAvailabilityPostBody: IUnitAvailabilityPostBody) {
-    return new Promise((resolve, reject) => {
-      this.axiosInstance
-        .post('getunitavailability', unitAvailabilityPostBody)
+        .post(
+          `v1/properties/${propertyAvailabilitySearch.propertyID}/availabilities`,
+          propertyAvailabilitySearch
+        )
         .then((response: any) => {
           resolve(response.data)
         })
