@@ -3,10 +3,15 @@ import type { IFeature } from '@/interfaces/IFeature'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import { FeatureService } from '@/services/FeatureService'
 import type { AxiosStatic } from 'axios'
-import { inject, onMounted, ref } from 'vue'
+import { inject, onBeforeMount, ref } from 'vue'
+import ProfilePreferencesForm from './ProfilePreferencesForm.vue'
+import { BookableObjectService } from '@/services/BookableObjectService'
+import type { IBookableObject } from '@/interfaces/IBookableObject'
 const axios: AxiosStatic | undefined = inject('axios')
 const featureService = new FeatureService(axios)
+const bookableObjectService = new BookableObjectService(axios)
 const availableFeatures = ref<IFeature[]>([])
+const availableBookableObjects = ref<IBookableObject[]>([])
 const profileToBeEdited = defineModel({
   required: true,
   type: Object as () => IProfile
@@ -17,9 +22,15 @@ const getValueForFeatureID = (featureID: number) => {
   return feature ? feature.value : ' '
 }
 
-onMounted(() => {
+const editProfilePreferencesDialog = ref(false)
+
+onBeforeMount(() => {
   featureService.getAvailableFeatures().then((response) => {
     availableFeatures.value = response
+  })
+
+  bookableObjectService.getAvailableBookableObjects().then((response) => {
+    availableBookableObjects.value = response
   })
 })
 </script>
@@ -28,7 +39,9 @@ onMounted(() => {
   <div class="profiles-card">
     <v-toolbar class="profiles-card-toolbar">
       <v-toolbar-title><span class="text-primary">Preferences / Notes</span></v-toolbar-title>
-      <v-btn class="text-gray" icon> <v-icon>mdi-calendar-text-outline</v-icon></v-btn>
+      <v-btn class="text-gray" @click="editProfilePreferencesDialog = true" icon>
+        <v-icon>mdi-calendar-text-outline</v-icon></v-btn
+      >
     </v-toolbar>
 
     <v-divider class="profiles-card-divider"></v-divider>
@@ -46,12 +59,16 @@ onMounted(() => {
           </div>
         </div>
       </div>
-
       <div class="mb-2">
         <span class="profile-card-caption">Preferred Room </span><br />
         <div class="d-flex">
           <div class="profiles-pill">
-            {{ profileToBeEdited.preferencesDefaultObjectID }}
+            {{
+              availableBookableObjects.find(
+                (bookableObject) =>
+                  bookableObject.id === profileToBeEdited.preferencesDefaultObjectID
+              )?.value
+            }}
           </div>
         </div>
       </div>
@@ -62,4 +79,12 @@ onMounted(() => {
       </div>
     </v-container>
   </div>
+  <v-dialog v-model="editProfilePreferencesDialog" scrollable max-width="500">
+    <v-card>
+      <ProfilePreferencesForm
+        v-model="profileToBeEdited"
+        @close="editProfilePreferencesDialog = false"
+      ></ProfilePreferencesForm>
+    </v-card>
+  </v-dialog>
 </template>
