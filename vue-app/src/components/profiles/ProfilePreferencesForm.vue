@@ -30,7 +30,7 @@ onBeforeMount(() => {
 
 <template>
   <v-toolbar fluid class="profiles-card-toolbar">
-    <v-toolbar-title> Profile Addresses </v-toolbar-title>
+    <v-toolbar-title>Profile Preferences </v-toolbar-title>
     <div v-if="showSaveButton" class="profiles-card-toolbar-button text-primary">
       <v-icon size="large">mdi-content-save-outline</v-icon>
     </div>
