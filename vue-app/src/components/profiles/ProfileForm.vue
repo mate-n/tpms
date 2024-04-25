@@ -193,28 +193,13 @@ const toggleActive = () => {
       <v-col class="pr-0 profiles-card-column">
         <ProfilePersonalInfoCard v-model="profileToBeEdited"></ProfilePersonalInfoCard>
       </v-col>
+    </v-row>
+    <v-row class="mt-0">
       <v-col class="pr-0 profiles-card-column">
         <ProfileAdditionalInfoCard v-model="profileToBeEdited"></ProfileAdditionalInfoCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
-        <ProfileUserDefinedCard v-model="profileToBeEdited"></ProfileUserDefinedCard>
-      </v-col>
-    </v-row>
-    <v-row class="mt-0">
-      <v-col class="pr-0 profiles-card-column">
         <ProfilePreferencesCard v-model="profileToBeEdited"></ProfilePreferencesCard>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <ProfileMarketingCard v-model="profileToBeEdited"></ProfileMarketingCard>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <ProfileMembershipCardsCard v-model="profileToBeEdited"></ProfileMembershipCardsCard>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <ProfileDocumentsCard :profile="profileToBeEdited"></ProfileDocumentsCard>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <ProfileAttachmentsCard v-model="profileToBeEdited"></ProfileAttachmentsCard>
       </v-col>
     </v-row>
   </v-container>
