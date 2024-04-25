@@ -44,7 +44,7 @@ export class Profile implements IProfile {
   //Preferences / Notes
   preferencesNote: string
   preferencesFeatureIDs: number[]
-  preferencesDefaultObjectID: number
+  preferencesDefaultObjectID: number | undefined
   preferencesLanguage: string
 
   //Marketing
@@ -114,7 +114,7 @@ export class Profile implements IProfile {
     //Preferences / Notes
     this.preferencesNote = ''
     this.preferencesFeatureIDs = []
-    this.preferencesDefaultObjectID = 0
+    this.preferencesDefaultObjectID = undefined
     this.preferencesLanguage = ''
 
     //Marketing
