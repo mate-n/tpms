@@ -12,7 +12,7 @@ const availableCountries = ref<ICountry[]>([])
 defineProps({
   indexOfProfileAddress: { type: Number, required: true }
 })
-defineEmits(['delete'])
+const emits = defineEmits(['delete', 'changeMailingAddress'])
 const profileAddressToBeEdited = defineModel({
   required: true,
   type: Object as () => IProfileAddress
@@ -22,6 +22,10 @@ onBeforeMount(() => {
     availableCountries.value = response
   })
 })
+
+const changeMailingAddress = () => {
+  emits('changeMailingAddress', profileAddressToBeEdited.value)
+}
 </script>
 <template>
   <v-card>
@@ -92,7 +96,11 @@ onBeforeMount(() => {
       ></v-text-field>
       <v-text-field v-model="profileAddressToBeEdited.street2" variant="underlined"></v-text-field>
       <v-text-field v-model="profileAddressToBeEdited.street3" variant="underlined"></v-text-field>
-      <v-checkbox v-model="profileAddressToBeEdited.primary" label="Mailing Address"></v-checkbox>
+      <v-checkbox
+        v-model="profileAddressToBeEdited.primary"
+        @change="changeMailingAddress()"
+        label="Mailing Address"
+      ></v-checkbox>
     </v-card-text>
   </v-card>
 </template>
