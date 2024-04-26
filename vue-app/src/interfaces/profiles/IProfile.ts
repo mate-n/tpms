@@ -42,7 +42,7 @@ export interface IProfile extends IEntityWithIdentity {
   //Preferences / Notes
   preferencesNote: string
   preferencesFeatureIDs: number[]
-  preferencesDefaultObjectID: number
+  preferencesDefaultObjectID: number | undefined
   preferencesLanguage: string
 
   //Marketing

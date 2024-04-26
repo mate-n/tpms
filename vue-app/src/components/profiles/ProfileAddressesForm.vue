@@ -47,6 +47,18 @@ const deleteProfileAddress = (profileAddress: IProfileAddress) => {
   )
 }
 
+const changeMailingAddress = (profileAddress: IProfileAddress) => {
+  for (const innerProfileDocument of profileAddresses.value) {
+    innerProfileDocument.primary = false
+  }
+  const foundProfileAddress = identityHelper.findByIdOrUniqueHash(
+    profileAddresses.value,
+    profileAddress.id,
+    profileAddress.uniqueHash
+  )
+  if (foundProfileAddress) foundProfileAddress.primary = true
+}
+
 onMounted(() => {
   getProfileAddresses()
 })
@@ -92,6 +104,7 @@ const saveAllProfileAddresses = () => {
           v-model="profileAddresses[index]"
           :indexOfProfileAddress="index"
           @delete="(profileAddress) => deleteProfileAddress(profileAddress)"
+          @changeMailingAddress="(profileAddress) => changeMailingAddress(profileAddress)"
         ></ProfileAddressForm>
       </div>
     </div>

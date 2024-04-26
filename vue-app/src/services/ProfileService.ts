@@ -3,6 +3,7 @@ import { AxiosInstanceFactory } from '../factories/AxiosInstanceFactory'
 import type { IService } from '@/interfaces/IService'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/interfaces/profiles/IProfileSearch'
+import type { IProfilePreferencesPatchBody } from '@/interfaces/profiles/IProfilePreferencesPatchBody'
 
 class ProfileService implements IService {
   axiosInstance: AxiosStatic
@@ -26,7 +27,7 @@ class ProfileService implements IService {
   post(profile: IProfile) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
-        .post('profiles', profile)
+        .post('v1/profiles', profile)
         .then((response: any) => {
           resolve(response.data)
         })
@@ -39,7 +40,20 @@ class ProfileService implements IService {
   put(profile: IProfile) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
-        .put('profiles', profile)
+        .put('v1/profiles', profile)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
+
+  patchProfilePreferences(profilePreferencesPatchBody: IProfilePreferencesPatchBody) {
+    return new Promise<IProfilePreferencesPatchBody>((resolve, reject) => {
+      this.axiosInstance
+        .patch('v1/profiles', profilePreferencesPatchBody)
         .then((response: any) => {
           resolve(response.data)
         })

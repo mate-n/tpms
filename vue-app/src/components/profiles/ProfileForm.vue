@@ -11,12 +11,7 @@ import { CrudOperations } from '@/enums/CrudOperations'
 import { CloneHelper } from '@/helpers/CloneHelper'
 import ProfilePersonalInfoCard from './ProfilePersonalInfoCard.vue'
 import ProfileAdditionalInfoCard from './ProfileAdditionalInfoCard.vue'
-import ProfileUserDefinedCard from './ProfileUserDefinedCard.vue'
 import ProfilePreferencesCard from './ProfilePreferencesCard.vue'
-import ProfileMarketingCard from './ProfileMarketingCard.vue'
-import ProfileMembershipCardsCard from './ProfileMembershipCardsCard.vue'
-import ProfileAttachmentsCard from './ProfileAttachmentsCard.vue'
-import ProfileDocumentsCard from './ProfileDocumentsCard.vue'
 import { LanguageService } from '@/services/LanguageService'
 import type { ILanguage } from '@/interfaces/ILanguage'
 import type { ISalutation } from '@/interfaces/ISalutation'
@@ -155,19 +150,7 @@ const toggleActive = () => {
       <v-btn class="primary-button text-uppercase">{{ $t('actions.save') }}</v-btn>
     </div>
     <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-calculator-variant-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
       <v-icon>mdi-clipboard-text-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-account-multiple-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-bank-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-receipt-text-outline</v-icon>
     </v-btn>
     <v-btn icon class="profiles-icon-button">
       <v-icon>mdi-calendar-blank-outline</v-icon>
@@ -177,9 +160,6 @@ const toggleActive = () => {
     </v-btn>
     <v-btn icon class="profiles-icon-button">
       <v-icon>mdi-account-check-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-paw</v-icon>
     </v-btn>
   </v-toolbar>
   <v-container fluid class="bg-lightgray pt-0">
@@ -193,29 +173,15 @@ const toggleActive = () => {
       <v-col class="pr-0 profiles-card-column">
         <ProfilePersonalInfoCard v-model="profileToBeEdited"></ProfilePersonalInfoCard>
       </v-col>
+    </v-row>
+    <v-row class="mt-0">
       <v-col class="pr-0 profiles-card-column">
         <ProfileAdditionalInfoCard v-model="profileToBeEdited"></ProfileAdditionalInfoCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
-        <ProfileUserDefinedCard v-model="profileToBeEdited"></ProfileUserDefinedCard>
-      </v-col>
-    </v-row>
-    <v-row class="mt-0">
-      <v-col class="pr-0 profiles-card-column">
         <ProfilePreferencesCard v-model="profileToBeEdited"></ProfilePreferencesCard>
       </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <ProfileMarketingCard v-model="profileToBeEdited"></ProfileMarketingCard>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <ProfileMembershipCardsCard v-model="profileToBeEdited"></ProfileMembershipCardsCard>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <ProfileDocumentsCard :profile="profileToBeEdited"></ProfileDocumentsCard>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <ProfileAttachmentsCard v-model="profileToBeEdited"></ProfileAttachmentsCard>
-      </v-col>
+      <v-col class="pr-0 profiles-card-column"> </v-col>
     </v-row>
   </v-container>
 </template>
