@@ -1,4 +1,3 @@
-import type { IProperty } from '@/interfaces/IProperty'
 import type { IReservation } from '@/interfaces/IReservation'
 import type { IRoom } from '@/interfaces/IRoom'
 import type { IPropertyAvailability } from '@/interfaces/availability/IPropertyAvailability'
@@ -14,7 +13,7 @@ export class Reservation implements IReservation {
   profileID: number | undefined
   baseRateCategory: string
   orderIndex: number
-  property: IProperty | undefined
+  propertyID: number | undefined
   propertyAvailabilities: IPropertyAvailability[]
   issues: string[]
   errors: Record<string, string>

@@ -1,10 +1,9 @@
-import type { IProperty } from './IProperty'
 import type { IRoom } from './IRoom'
 import type { IPropertyAvailability } from './availability/IPropertyAvailability'
 
 export interface IReservation {
   id: number
-  property: IProperty | undefined
+  propertyID: number | undefined
   arrivalDate: Date
   departureDate: Date
   numberOfRooms: number
