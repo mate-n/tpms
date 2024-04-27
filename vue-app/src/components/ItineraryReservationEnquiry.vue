@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
 import type { Ref } from 'vue'
 import type { IReservation } from '@/interfaces/IReservation'
 import { Reservation as ReservationClass } from '@/classes/Reservation'
@@ -54,6 +54,10 @@ const updateAllReservations = () => {
 const checkForIssues = () => {
   itineraryReservationValidator.validate(reservations.value)
 }
+
+onBeforeMount(() => {
+  addReservation()
+})
 </script>
 
 <template>
