@@ -247,7 +247,9 @@ const profileSelected = (profile: IProfile) => {
       <v-col class="d-flex justify-space-between">
         <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
         <v-btn class="primary-button mr-3" @click="check()">Check</v-btn>
-        <v-btn class="danger-button" @click="remove(reservation)"> Remove </v-btn>
+        <v-btn v-if="previousReservation" class="danger-button" @click="remove(reservation)">
+          Remove
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>
