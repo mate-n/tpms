@@ -21,4 +21,17 @@ export class PropertyService implements IService {
         })
     })
   }
+
+  getMyProperty() {
+    return new Promise<IProperty>((resolve, reject) => {
+      this.axiosInstance
+        .get('v1/properties/get-my-property')
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
 }
