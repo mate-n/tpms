@@ -1,4 +1,3 @@
-import type { IRoom } from './IRoom'
 import type { IPropertyAvailability } from './availability/IPropertyAvailability'
 
 export interface IReservation {
@@ -7,7 +6,7 @@ export interface IReservation {
   arrivalDate: Date
   departureDate: Date
   numberOfRooms: number
-  room: IRoom | undefined
+  roomID: number | undefined
   numberOfGuestsPerRoom: number
   profileID: number | undefined
   baseRateCategory: string

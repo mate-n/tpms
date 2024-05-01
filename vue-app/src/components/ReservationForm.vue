@@ -89,13 +89,12 @@ const departureDateString = computed(() => {
 
 const check = () => {
   if (!reservation.value.propertyID) return
-  const roomID = reservation.value.room ? reservation.value.room.id : undefined
   const propertyAvailabilitySearch: IPropertyAvailabilitySearch = {
     propertyID: reservation.value.propertyID,
     availabilityStart: reservation.value.arrivalDate,
     availabilityEnd: reservation.value.departureDate,
     numberOfRooms: reservation.value.numberOfRooms,
-    roomID: roomID,
+    roomID: reservation.value.roomID,
     numberOfGuestsPerRoom: reservation.value.numberOfGuestsPerRoom,
     profileID: reservation.value.profileID
   }
@@ -138,7 +137,7 @@ const profileSelected = (profile: IProfile) => {
 
 watch(
   [
-    () => reservation.value.room,
+    () => reservation.value.roomID,
     () => reservation.value.numberOfRooms,
     () => reservation.value.numberOfGuestsPerRoom,
     () => reservation.value.profileID,
@@ -231,12 +230,12 @@ watch(
       <v-col>
         <v-autocomplete
           label="Room Type"
-          v-model="reservation.room"
+          v-model="reservation.roomID"
           :items="roomsInDropdown"
           item-title="name"
+          item-value="id"
           :error-messages="reservation.errors['roomType']"
           @update:model-value="emitChange()"
-          :return-object="true"
         ></v-autocomplete>
       </v-col>
       <v-col>
