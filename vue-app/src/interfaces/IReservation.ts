@@ -1,7 +1,7 @@
+import type { IEntityWithIdentity } from './IEntityWithIdentity'
 import type { IPropertyAvailability } from './availability/IPropertyAvailability'
 
-export interface IReservation {
-  id: number
+export interface IReservation extends IEntityWithIdentity {
   propertyID: number | undefined
   arrivalDate: Date
   departureDate: Date

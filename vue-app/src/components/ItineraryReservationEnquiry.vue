@@ -6,6 +6,8 @@ import { Reservation as ReservationClass } from '@/classes/Reservation'
 import ReservationForm from '@/components/ReservationForm.vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ItineraryReservationValidator } from '@/validators/ItineraryReservationValidator'
+import { useBasketItemsStore } from '@/stores/basketItems'
+const basketItemsStore = useBasketItemsStore()
 const dateHelper = new DateHelper()
 const itineraryReservationValidator = new ItineraryReservationValidator()
 const reservations: Ref<IReservation[]> = ref([])
@@ -53,6 +55,12 @@ const updateAllReservations = () => {
 
 const checkForIssues = () => {
   itineraryReservationValidator.validate(reservations.value)
+}
+
+const book = () => {
+  for (const reservation of reservations.value) {
+    basketItemsStore.addReservation(reservation)
+  }
 }
 
 onBeforeMount(() => {
@@ -103,7 +111,7 @@ onBeforeMount(() => {
   <v-container fluid>
     <div class="d-flex justify-end mt-3">
       <v-btn class="secondary-button">Cancel</v-btn>
-      <v-btn class="ml-2 disabled-button">Book</v-btn>
+      <v-btn class="ml-2 primary-button" @click="book()">Book</v-btn>
     </div>
   </v-container>
 </template>

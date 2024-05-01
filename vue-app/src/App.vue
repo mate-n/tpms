@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { RouterView } from 'vue-router'
+import { useBasketItemsStore } from './stores/basketItems'
+import BasketItems from './components/BasketItems.vue'
+const basketItemsStore = useBasketItemsStore()
 const drawer = ref(false)
 </script>
 
@@ -28,6 +31,20 @@ const drawer = ref(false)
       </template>
 
       <v-app-bar-title>{{ $t('app.name') }}</v-app-bar-title>
+      <v-menu :close-on-content-click="false">
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" icon>
+            <v-badge
+              :content="basketItemsStore.reservations.length"
+              color="primary"
+              :model-value="basketItemsStore.reservations.length > 0"
+            >
+              <v-icon icon="mdi-cart-outline" size="x-large"></v-icon>
+            </v-badge>
+          </v-btn>
+        </template>
+        <BasketItems />
+      </v-menu>
     </v-app-bar>
 
     <v-main> <RouterView /></v-main>
