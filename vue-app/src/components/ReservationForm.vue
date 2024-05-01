@@ -38,7 +38,7 @@ onBeforeMount(() => {
     propertiesInDropdown.value = response
   })
 
-  propertyService.getMyProperty().then((response: IProperty) => {
+  propertyService.getLocalProperty().then((response: IProperty) => {
     reservation.value.propertyID = response.id
   })
   roomService.getAll().then((response: IRoom[]) => {
