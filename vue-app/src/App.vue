@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { RouterView } from 'vue-router'
 import { useBasketItemsStore } from './stores/basketItems'
-import BasketItems from './components/BasketItems.vue'
+import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
 const basketItemsStore = useBasketItemsStore()
 const drawer = ref(false)
 </script>
@@ -43,7 +43,7 @@ const drawer = ref(false)
             </v-badge>
           </v-btn>
         </template>
-        <BasketItems />
+        <BasketMenuCard />
       </v-menu>
     </v-app-bar>
 

@@ -11,10 +11,10 @@ class ProfileService implements IService {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
   }
 
-  getProfile() {
-    return new Promise((resolve, reject) => {
+  get(id: number) {
+    return new Promise<IProfile>((resolve, reject) => {
       this.axiosInstance
-        .post('?lookup&email=gert@ankerdata2.co.za')
+        .get('v1/profiles/' + id)
         .then((response: any) => {
           resolve(response.data)
         })
