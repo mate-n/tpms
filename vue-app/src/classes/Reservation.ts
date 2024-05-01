@@ -1,27 +1,23 @@
-import type { IProperty } from '@/interfaces/IProperty'
 import type { IReservation } from '@/interfaces/IReservation'
-import type { IRoom } from '@/interfaces/IRoom'
 import type { IPropertyAvailability } from '@/interfaces/availability/IPropertyAvailability'
 
 export class Reservation implements IReservation {
   id: number
-  camp: string
+  propertyID: number | undefined
   arrivalDate: Date
   departureDate: Date
   numberOfRooms: number
-  room: IRoom | undefined
+  roomID: number | undefined
   numberOfGuestsPerRoom: number
   profileID: number | undefined
   baseRateCategory: string
   orderIndex: number
-  property: IProperty | undefined
   propertyAvailabilities: IPropertyAvailability[]
   issues: string[]
   errors: Record<string, string>
 
   constructor() {
     this.id = 0
-    this.camp = ''
     this.arrivalDate = new Date()
     this.departureDate = new Date()
     this.numberOfRooms = 1
@@ -34,7 +30,6 @@ export class Reservation implements IReservation {
   }
 
   reset() {
-    this.camp = ''
     this.arrivalDate = new Date()
     this.departureDate = new Date()
     this.numberOfRooms = 1

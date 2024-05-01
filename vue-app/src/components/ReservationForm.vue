@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { IReservation } from '@/interfaces/IReservation'
-import { computed, inject, onBeforeMount, ref, type Ref } from 'vue'
+import { computed, inject, onBeforeMount, ref, watch, type Ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ReservationValidator } from '@/validators/ReservationValidator'
 import AvailabilityService from '@/services/AvailabilityService'
@@ -36,6 +36,10 @@ import type { IProfileSearch } from '@/interfaces/profiles/IProfileSearch'
 onBeforeMount(() => {
   propertyService.getProperties().then((response: IProperty[]) => {
     propertiesInDropdown.value = response
+  })
+
+  propertyService.getLocalProperty().then((response: IProperty) => {
+    reservation.value.propertyID = response.id
   })
   roomService.getAll().then((response: IRoom[]) => {
     roomsInDropdown.value = response
@@ -84,14 +88,13 @@ const departureDateString = computed(() => {
 })
 
 const check = () => {
-  if (!reservation.value.property) return
-  if (!reservation.value.room) return
+  if (!reservation.value.propertyID) return
   const propertyAvailabilitySearch: IPropertyAvailabilitySearch = {
-    propertyID: reservation.value.property.id,
+    propertyID: reservation.value.propertyID,
     availabilityStart: reservation.value.arrivalDate,
     availabilityEnd: reservation.value.departureDate,
     numberOfRooms: reservation.value.numberOfRooms,
-    roomID: reservation.value.room.id,
+    roomID: reservation.value.roomID,
     numberOfGuestsPerRoom: reservation.value.numberOfGuestsPerRoom,
     profileID: reservation.value.profileID
   }
@@ -131,6 +134,22 @@ const profileSelected = (profile: IProfile) => {
   reservation.value.profileID = profile.id
   closeProfileDialog()
 }
+
+watch(
+  [
+    () => reservation.value.roomID,
+    () => reservation.value.numberOfRooms,
+    () => reservation.value.numberOfGuestsPerRoom,
+    () => reservation.value.profileID,
+    () => reservation.value.arrivalDate,
+    () => reservation.value.departureDate,
+    () => reservation.value.propertyID
+  ],
+  () => {
+    check()
+  },
+  { deep: true }
+)
 </script>
 
 <template>
@@ -139,11 +158,11 @@ const profileSelected = (profile: IProfile) => {
       <v-col class="d-flex align-center h-100">
         <v-select
           label=""
-          v-model="reservation.property"
+          v-model="reservation.propertyID"
           :items="propertiesInDropdown"
           item-title="name"
+          item-value="id"
           @update:model-value="emitChange()"
-          :return-object="true"
         ></v-select>
         <v-icon>mdi-city</v-icon>
       </v-col>
@@ -211,12 +230,12 @@ const profileSelected = (profile: IProfile) => {
       <v-col>
         <v-autocomplete
           label="Room Type"
-          v-model="reservation.room"
+          v-model="reservation.roomID"
           :items="roomsInDropdown"
           item-title="name"
+          item-value="id"
           :error-messages="reservation.errors['roomType']"
           @update:model-value="emitChange()"
-          :return-object="true"
         ></v-autocomplete>
       </v-col>
       <v-col>
@@ -246,8 +265,9 @@ const profileSelected = (profile: IProfile) => {
       </v-col>
       <v-col class="d-flex justify-space-between">
         <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
-        <v-btn class="primary-button mr-3" @click="check()">Check</v-btn>
-        <v-btn class="danger-button" @click="remove(reservation)"> Remove </v-btn>
+        <v-btn v-if="previousReservation" class="danger-button" @click="remove(reservation)">
+          Remove
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>
