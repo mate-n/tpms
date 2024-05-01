@@ -10,7 +10,6 @@ export class ReservationValidator implements IValidator {
     this.isGuestsPerRoomValid(reservation)
     this.isRoomsValid(reservation)
     this.isNightsValid(reservation)
-    this.isRoomTypeAvailable(reservation)
   }
 
   isGuestsPerRoomValid(reservation: IReservation): void {
@@ -33,17 +32,6 @@ export class ReservationValidator implements IValidator {
 
     if (nights < 1) {
       reservation.errors['nights'] = 'Nights cannot be less than 1'
-    }
-  }
-
-  isRoomTypeAvailable(reservation: IReservation): void {
-    if (reservation.propertyAvailabilities.length === 0) return
-    if (!reservation.room) return
-    const foundPropertyAvailability = reservation.propertyAvailabilities.find(
-      (ad) => ad.room.type === reservation.room?.type
-    )
-    if (foundPropertyAvailability && foundPropertyAvailability.availabilityCount == 0) {
-      reservation.errors['roomType'] = 'Room Type is not available'
     }
   }
 }
