@@ -2,7 +2,7 @@ import type { IReservation } from '@/interfaces/IReservation'
 import type { IPropertyAvailability } from '@/interfaces/availability/IPropertyAvailability'
 
 export class Reservation implements IReservation {
-  id: number
+  uniqueHash?: number
   propertyID: number | undefined
   arrivalDate: Date
   departureDate: Date
@@ -17,7 +17,7 @@ export class Reservation implements IReservation {
   errors: Record<string, string>
 
   constructor() {
-    this.id = 0
+    this.uniqueHash = new Date().getTime()
     this.arrivalDate = new Date()
     this.departureDate = new Date()
     this.numberOfRooms = 1
