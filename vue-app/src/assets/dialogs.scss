@@ -1,0 +1,30 @@
+@import 'variables';
+@import 'texts.scss';
+@import 'colors.scss';
+
+.standard-dialog-card-toolbar {
+  @extend .bg-white;
+  border-top-left-radius: 0.5rem !important;
+  border-top-right-radius: 0.5rem !important;
+}
+
+.standard-dialog-icon-button {
+  @extend .text-primary;
+  @extend .bg-white;
+  margin-right: 0.5rem;
+  border: 0.1rem solid darken(map-get($main-colors, 'lightgray'), 10%) !important;
+}
+
+.standard-dialog-card-divider {
+  border-top: 0.1rem solid black !important;
+}
+
+.standard-dialog-card {
+  height: 100%;
+  border-radius: 0.5rem;
+  @extend .bg-white;
+  font-size: 0.85rem;
+  & input {
+    @extend .font-size-rem-8;
+  }
+}
