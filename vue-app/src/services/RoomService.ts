@@ -9,6 +9,19 @@ export class RoomService implements IService {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
   }
 
+  get(id: number) {
+    return new Promise<IRoom>((resolve, reject) => {
+      this.axiosInstance
+        .get('v1/rooms/' + id)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
+
   getAll() {
     return new Promise<IRoom[]>((resolve, reject) => {
       this.axiosInstance
