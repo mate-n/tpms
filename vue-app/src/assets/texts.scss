@@ -1,3 +1,6 @@
+@import 'variables';
+@import 'colors.scss';
+
 @mixin font-size-modifiers {
   @for $i from 1 through 100 {
     &-#{$i} {
@@ -12,4 +15,9 @@
 
 .big-vue-input-field-font-size input {
   @extend .font-size-rem-14;
+}
+
+.standard-caption {
+  @extend .text-gray;
+  font-size: 0.8rem;
 }
