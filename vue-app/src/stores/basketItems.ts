@@ -17,10 +17,10 @@ export const useBasketItemsStore = defineStore('basketItems', {
       )
     },
     searchReservation(reservation: IReservation) {
-      return identityHelper.findByIdOrUniqueHash(
+      return identityHelper.findByIdOrLocalID(
         this.reservations,
         reservation.id,
-        reservation.uniqueHash
+        reservation.localID
       )
     }
   }
