@@ -1,3 +1,4 @@
+import { LocalIDFactory } from '@/factories/LocalIDFactory'
 import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
 
 export class ProfileCommunication implements IProfileCommunication {
@@ -7,7 +8,7 @@ export class ProfileCommunication implements IProfileCommunication {
   primary: boolean
   description: string
   profileID: number
-  uniqueHash?: number
+  localID?: string
 
   constructor() {
     this.typeID = 0
@@ -15,6 +16,6 @@ export class ProfileCommunication implements IProfileCommunication {
     this.primary = false
     this.description = ''
     this.profileID = 0
-    this.uniqueHash = new Date().getTime()
+    this.localID = LocalIDFactory.createLocalID()
   }
 }
