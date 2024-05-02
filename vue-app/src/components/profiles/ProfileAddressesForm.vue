@@ -51,10 +51,10 @@ const changeMailingAddress = (profileAddress: IProfileAddress) => {
   for (const innerProfileDocument of profileAddresses.value) {
     innerProfileDocument.primary = false
   }
-  const foundProfileAddress = identityHelper.findByIdOrUniqueHash(
+  const foundProfileAddress = identityHelper.findByIdOrLocalID(
     profileAddresses.value,
     profileAddress.id,
-    profileAddress.uniqueHash
+    profileAddress.localID
   )
   if (foundProfileAddress) foundProfileAddress.primary = true
 }
