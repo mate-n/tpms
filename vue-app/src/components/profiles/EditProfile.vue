@@ -5,10 +5,11 @@ import type { IProfile } from '@/interfaces/profiles/IProfile'
 import { Profile } from '@/classes/Profile'
 import { CrudOperations } from '@/enums/CrudOperations'
 import { CloneHelper } from '@/helpers/CloneHelper'
+import { useFullscreen } from '@/composables/Fullscreen'
+
 const cloneHelper = new CloneHelper()
 const emit = defineEmits(['close', 'update'])
 const close = () => emit('close')
-const isFullScreen = ref(false)
 const props = defineProps({
   profileInput: { type: Object as () => IProfile, required: true }
 })
@@ -25,19 +26,7 @@ watch(props, (newInput) => {
   profileToBeEdited.value = cloneHelper.clone(newInput.profileInput)
 })
 
-const toggleFullScreen = () => {
-  isFullScreen.value = !isFullScreen.value
-  const elem = document.documentElement
-  if (isFullScreen.value) {
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen()
-    }
-  } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen()
-    }
-  }
-}
+const { isFullScreen, toggleFullScreen } = useFullscreen()
 </script>
 <template>
   <v-toolbar class="bg-white">
