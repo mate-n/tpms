@@ -1,3 +1,4 @@
+import { LocalIDFactory } from '@/factories/LocalIDFactory'
 import type { IProfileAddress } from '@/interfaces/profiles/IProfileAddress'
 
 export class ProfileAddress implements IProfileAddress {
@@ -16,7 +17,7 @@ export class ProfileAddress implements IProfileAddress {
   primary: boolean = false
   nationalityISO3166Alpha2: string
   countryISO3: string
-  uniqueHash?: number
+  localID?: string
 
   constructor() {
     this.profileID = 0
@@ -32,6 +33,6 @@ export class ProfileAddress implements IProfileAddress {
     this.mailingAddress = false
     ;(this.primary = false), (this.nationalityISO3166Alpha2 = '')
     this.countryISO3 = ''
-    this.uniqueHash = new Date().getTime()
+    this.localID = LocalIDFactory.createLocalID()
   }
 }
