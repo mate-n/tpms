@@ -1,7 +1,8 @@
+import { LocalIDFactory } from '@/factories/LocalIDFactory'
 import type { IProfile } from '@/interfaces/profiles/IProfile'
 
 export class Profile implements IProfile {
-  uniqueHash?: number
+  localID?: string
 
   //General
   firstName: string
@@ -71,7 +72,7 @@ export class Profile implements IProfile {
   traceIds: number[]
 
   constructor() {
-    this.uniqueHash = new Date().getTime()
+    this.localID = LocalIDFactory.createLocalID()
 
     //General
     this.firstName = ''
