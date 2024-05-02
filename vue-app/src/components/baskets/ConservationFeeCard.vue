@@ -22,12 +22,42 @@ const removeAllReservations = () => {
       </div>
     </v-toolbar>
     <v-divider class="standard-dialog-card-divider"></v-divider>
-    <v-container fluid class="bg-lightgray">
-      <ReservationInBasketCard
-        v-for="reservation in basketItemsStore.reservations"
-        :key="reservation.id"
-        :reservation="reservation"
-      />
+    <v-container fluid class="bg-lightgray d-flex">
+      <v-row>
+        <v-col>
+          <v-card>
+            <v-card-title>Charge</v-card-title>
+            <v-card-text>
+              <v-select label="Room" variant="underlined" item-title="value"></v-select>
+              <v-select label="Item" variant="underlined" item-title="value"></v-select>
+              <v-checkbox label="Overwrite Item"></v-checkbox>
+              <v-select label="Currency" variant="underlined" item-title="value"></v-select>
+              <v-row>
+                <v-col>
+                  <v-select label="Unit price" variant="underlined" item-title="value"></v-select>
+                </v-col>
+                <v-col>
+                  <v-select label="Quantity" variant="underlined" item-title="value"></v-select>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col>
+          <v-card class="mb-2">
+            <v-card-title>Time-span</v-card-title>
+            <v-card-text>
+              <v-select variant="underlined" item-title="value"></v-select>
+            </v-card-text>
+          </v-card>
+          <v-card>
+            <v-card-title>Days of Week</v-card-title>
+            <v-card-text>
+              <v-select label="Select" variant="underlined" item-title="value"></v-select>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-container>
   </div>
 </template>
