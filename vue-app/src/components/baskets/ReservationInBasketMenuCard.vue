@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
-import type { IProperty } from '@/interfaces/IProperty'
-import type { IReservation } from '@/interfaces/IReservation'
-import type { IRoom } from '@/interfaces/IRoom'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
+import type { IProperty } from '@/shared/interfaces/IProperty'
+import type { IReservation } from '@/shared/interfaces/IReservation'
+import type { IRoom } from '@/shared/interfaces/IRoom'
 import { useBasketItemsStore } from '@/stores/basketItems'
 import type { AxiosStatic } from 'axios'
 import { ref, type Ref } from 'vue'

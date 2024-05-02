@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { IProfileDocument } from '@/interfaces/profiles/IProfileDocument'
 import { ProfileDocumentService } from '@/services/profiles/ProfileDocumentService'
 import type { AxiosStatic } from 'axios'
 import { computed, inject, onMounted, ref, type Ref } from 'vue'
 import { DateFormatter } from '@/helpers/DateFormatter'
-import type { IGuestTravelDocument } from '@/interfaces/IGuestTravelDocument'
 import { GuestTravelDocumentService } from '@/services/GuestTravelDocumentService'
-import type { IProfileDocumentSearch } from '@/interfaces/profiles/IProfileDocumentSearch'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import ProfileDocumentsForm from '@/components/profiles/ProfileDocumentsForm.vue'
+import type { IGuestTravelDocument } from '@/shared/interfaces/IGuestTravelDocument'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import type { IProfileDocument } from '@/shared/interfaces/profiles/IProfileDocument'
+import type { IProfileDocumentSearch } from '@/shared/interfaces/profiles/IProfileDocumentSearch'
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
 const profileDocumentService = new ProfileDocumentService(axios)

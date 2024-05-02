@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { CommunicationMethodHelper } from '@/helpers/CommunicationMethodHelper'
-import type { ICommunicationMethod } from '@/interfaces/ICommunicationMethod'
-import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
 import { CommunicationMethodService } from '@/services/CommunicationMethodService'
+import type { ICommunicationMethod } from '@/shared/interfaces/ICommunicationMethod'
+import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
 import type { AxiosStatic } from 'axios'
 import { inject, onBeforeMount, ref, type Ref } from 'vue'
 const emit = defineEmits(['delete'])

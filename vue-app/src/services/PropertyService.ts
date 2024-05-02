@@ -1,6 +1,6 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { IProperty } from '@/interfaces/IProperty'
 import type { IService } from '@/interfaces/IService'
+import type { IProperty } from '@/shared/interfaces/IProperty'
 import type { AxiosStatic } from 'axios'
 
 export class PropertyService implements IService {

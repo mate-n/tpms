@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IProfile } from '@/interfaces/profiles/IProfile'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import ProfileAdditionalInfoForm from './ProfileAdditionalInfoForm.vue'
 
 const profileToBeEdited = defineModel({

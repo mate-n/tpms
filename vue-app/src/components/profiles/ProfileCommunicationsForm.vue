@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { inject, onBeforeMount, ref, watch, type Ref } from 'vue'
-import { ProfileCommunication } from '@/classes/ProfileCommunication'
-import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import type { AxiosStatic } from 'axios'
 import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
 import ProfileCommunicationForm from './ProfileCommunicationForm.vue'
 import { IdentityHelper } from '@/helpers/IdentityHelper'
+import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
+import { ProfileCommunication } from '@/shared/classes/ProfileCommunication'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 const identityHelper = new IdentityHelper()
 const emit = defineEmits(['close'])
 const profileCommunications: Ref<IProfileCommunication[]> = ref([])

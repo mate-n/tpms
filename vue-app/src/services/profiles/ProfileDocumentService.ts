@@ -1,7 +1,7 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { IProfileDocument } from '@/interfaces/profiles/IProfileDocument'
-import type { IProfileDocumentSearch } from '@/interfaces/profiles/IProfileDocumentSearch'
-import type { IProfilesService } from '@/interfaces/profiles/IProfilesService'
+import type { IProfileDocument } from '@/shared/interfaces/profiles/IProfileDocument'
+import type { IProfileDocumentSearch } from '@/shared/interfaces/profiles/IProfileDocumentSearch'
+import type { IProfilesService } from '@/interfaces/IProfilesService'
 import type { AxiosStatic } from 'axios'
 
 export class ProfileDocumentService implements IProfilesService {

@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { DateHelper } from '@/helpers/DateHelper'
-import type { IProperty } from '@/interfaces/IProperty'
-import type { IReservation } from '@/interfaces/IReservation'
-import type { IRoom } from '@/interfaces/IRoom'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import ProfileService from '@/services/ProfileService'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
@@ -13,6 +9,10 @@ import type { AxiosStatic } from 'axios'
 import { computed, ref, type Ref } from 'vue'
 import { inject, onBeforeMount } from 'vue'
 import ConservationFeesCard from './ConservationFeesCard.vue'
+import type { IProperty } from '@/shared/interfaces/IProperty'
+import type { IReservation } from '@/shared/interfaces/IReservation'
+import type { IRoom } from '@/shared/interfaces/IRoom'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 const basketItemsStore = useBasketItemsStore()
 
 const props = defineProps({

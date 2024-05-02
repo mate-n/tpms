@@ -1,7 +1,7 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { IProfileAddress } from '@/interfaces/profiles/IProfileAddress'
-import type { IProfileAddressSearch } from '@/interfaces/profiles/IProfileAddressSearch'
-import type { IProfilesService } from '@/interfaces/profiles/IProfilesService'
+import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddress'
+import type { IProfileAddressSearch } from '@/shared/interfaces/profiles/IProfileAddressSearch'
+import type { IProfilesService } from '@/interfaces/IProfilesService'
 import type { AxiosStatic } from 'axios'
 
 export class ProfileAddressService implements IProfilesService {

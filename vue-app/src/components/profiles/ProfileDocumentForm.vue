@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { RomanNumeralConverter } from '@/helpers/RomanNumeralConverter'
-import type { ICountry } from '@/interfaces/ICountry'
-import type { IGuestTravelDocument } from '@/interfaces/IGuestTravelDocument'
-import type { IProfileDocument } from '@/interfaces/profiles/IProfileDocument'
 import { CountryService } from '@/services/CountryService'
 import { GuestTravelDocumentService } from '@/services/GuestTravelDocumentService'
 import { ProfileDocumentService } from '@/services/profiles/ProfileDocumentService'
+import type { ICountry } from '@/shared/interfaces/ICountry'
+import type { IGuestTravelDocument } from '@/shared/interfaces/IGuestTravelDocument'
+import type { IProfileDocument } from '@/shared/interfaces/profiles/IProfileDocument'
 import type { AxiosStatic } from 'axios'
 import { computed, inject, onBeforeMount, ref, watch } from 'vue'
 const romanNumeralConverter = new RomanNumeralConverter()

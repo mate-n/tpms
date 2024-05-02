@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { RomanNumeralConverter } from '@/helpers/RomanNumeralConverter'
-import type { ICountry } from '@/interfaces/ICountry'
-import type { IProfileAddress } from '@/interfaces/profiles/IProfileAddress'
 import { CountryService } from '@/services/CountryService'
+import type { ICountry } from '@/shared/interfaces/ICountry'
+import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddress'
 import type { AxiosStatic } from 'axios'
 import { inject, onBeforeMount, ref } from 'vue'
 const romanNumeralConverter = new RomanNumeralConverter()

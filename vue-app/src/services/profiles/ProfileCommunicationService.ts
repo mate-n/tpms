@@ -1,8 +1,8 @@
 import { type AxiosStatic } from 'axios'
 import { AxiosInstanceFactory } from '../../factories/AxiosInstanceFactory'
-import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
-import type { IProfileCommunicationSearch } from '@/interfaces/profiles/IProfileCommunicationSearch'
-import type { IProfilesService } from '@/interfaces/profiles/IProfilesService'
+import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
+import type { IProfileCommunicationSearch } from '@/shared/interfaces/profiles/IProfileCommunicationSearch'
+import type { IProfilesService } from '@/interfaces/IProfilesService'
 
 export class ProfileCommunicationService implements IProfilesService {
   axiosInstance: AxiosStatic

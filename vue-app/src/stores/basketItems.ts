@@ -1,5 +1,5 @@
 import { IdentityHelper } from '@/helpers/IdentityHelper'
-import type { IReservation } from '@/interfaces/IReservation'
+import type { IReservation } from '@/shared/interfaces/IReservation'
 import { defineStore } from 'pinia'
 const identityHelper = new IdentityHelper()
 

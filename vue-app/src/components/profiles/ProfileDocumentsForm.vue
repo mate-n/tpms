@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ProfileDocument } from '@/classes/ProfileDocument'
-import type { IProfileDocument } from '@/interfaces/profiles/IProfileDocument'
 import { inject, ref } from 'vue'
 import ProfileDocumentForm from './ProfileDocumentForm.vue'
 import { IdentityHelper } from '@/helpers/IdentityHelper'
 import type { AxiosStatic } from 'axios'
 import { ProfileDocumentService } from '@/services/profiles/ProfileDocumentService'
+import type { IProfileDocument } from '@/shared/interfaces/profiles/IProfileDocument'
+import { ProfileDocument } from '@/shared/classes/ProfileDocument'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileDocumentService = new ProfileDocumentService(axios)
 const identityHelper = new IdentityHelper()

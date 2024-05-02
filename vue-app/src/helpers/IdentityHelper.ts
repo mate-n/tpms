@@ -1,4 +1,4 @@
-import type { IEntityWithIdentity } from '@/interfaces/IEntityWithIdentity'
+import type { IEntityWithIdentity } from '@/shared/interfaces/IEntityWithIdentity'
 
 export class IdentityHelper {
   isSame<T extends IEntityWithIdentity>(entity1: T, entity2: T) {

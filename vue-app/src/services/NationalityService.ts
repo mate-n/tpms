@@ -1,6 +1,6 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { IGender } from '@/interfaces/IGender'
 import type { IService } from '@/interfaces/IService'
+import type { IGender } from '@/shared/interfaces/IGender'
 import type { AxiosStatic } from 'axios'
 
 export class NationalityService implements IService {

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ProfileAddressFaker } from '@/faker/ProfileAddressFaker'
-import { ProfileCommunicationFaker } from '@/faker/ProfileCommunicationFaker'
-import { ProfileDocumentFaker } from '@/faker/ProfileDocumentFaker'
-import { ProfilesFaker } from '@/faker/ProfilesFaker'
-import { PropertyAvailabilityFaker } from '@/faker/PropertyAvailabilityFaker'
-import { RoomFaker } from '@/faker/RoomFaker'
+import { ProfileAddressFaker } from '@/shared/faker/ProfileAddressFaker'
+import { ProfileCommunicationFaker } from '@/shared/faker/ProfileCommunicationFaker'
+import { ProfileDocumentFaker } from '@/shared/faker/ProfileDocumentFaker'
+import { ProfilesFaker } from '@/shared/faker/ProfilesFaker'
+import { PropertyAvailabilityFaker } from '@/shared/faker/PropertyAvailabilityFaker'
+import { RoomFaker } from '@/shared/faker/RoomFaker'
 
 const profileFaker = new ProfilesFaker()
 const profileFake1 = profileFaker.create()

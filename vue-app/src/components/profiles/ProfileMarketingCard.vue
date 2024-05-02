@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { IGuestMarketCode } from '@/interfaces/IGuestMarketCode'
-import type { IKeyword } from '@/interfaces/IKeyword'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import { GuestMarketCodeService } from '@/services/GuestMarketCodeService'
 import { KeywordService } from '@/services/KeywordService'
+import type { IGuestMarketCode } from '@/shared/interfaces/IGuestMarketCode'
+import type { IKeyword } from '@/shared/interfaces/IKeyword'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { AxiosStatic } from 'axios'
 import { inject, onMounted, ref } from 'vue'
 const axios: AxiosStatic | undefined = inject('axios')

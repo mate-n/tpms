@@ -1,9 +1,9 @@
 import { type AxiosStatic } from 'axios'
 import { AxiosInstanceFactory } from '../factories/AxiosInstanceFactory'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
+import type { IProfilePreferencesPatchBody } from '@/shared/interfaces/profiles/IProfilePreferencesPatchBody'
 import type { IService } from '@/interfaces/IService'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
-import type { IProfileSearch } from '@/interfaces/profiles/IProfileSearch'
-import type { IProfilePreferencesPatchBody } from '@/interfaces/profiles/IProfilePreferencesPatchBody'
 
 class ProfileService implements IService {
   axiosInstance: AxiosStatic

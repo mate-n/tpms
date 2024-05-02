@@ -1,6 +1,6 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { ICountry } from '@/interfaces/ICountry'
 import type { IService } from '@/interfaces/IService'
+import type { ICountry } from '@/shared/interfaces/ICountry'
 import type { AxiosStatic } from 'axios'
 
 export class CountryService implements IService {

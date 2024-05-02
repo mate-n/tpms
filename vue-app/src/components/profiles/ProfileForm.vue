@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Profile } from '@/classes/Profile'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
@@ -13,9 +11,11 @@ import ProfilePersonalInfoCard from './ProfilePersonalInfoCard.vue'
 import ProfileAdditionalInfoCard from './ProfileAdditionalInfoCard.vue'
 import ProfilePreferencesCard from './ProfilePreferencesCard.vue'
 import { LanguageService } from '@/services/LanguageService'
-import type { ILanguage } from '@/interfaces/ILanguage'
-import type { ISalutation } from '@/interfaces/ISalutation'
 import { SalutationService } from '@/services/SalutationService'
+import { Profile } from '@/shared/classes/Profile'
+import type { ILanguage } from '@/shared/interfaces/ILanguage'
+import type { ISalutation } from '@/shared/interfaces/ISalutation'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const languageService = new LanguageService(axios)
