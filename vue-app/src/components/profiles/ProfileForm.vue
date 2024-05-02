@@ -114,17 +114,6 @@ const toggleActive = () => {
                 variant="underlined"
                 class="me-3"
               ></v-autocomplete>
-              <v-autocomplete
-                label="VIP"
-                v-model="profileToBeEdited.vipCodeIDs"
-                variant="underlined"
-                class="me-3"
-              ></v-autocomplete>
-              <v-autocomplete
-                label="Post Nominal Title"
-                v-model="profileToBeEdited.postNominalTitle"
-                variant="underlined"
-              ></v-autocomplete>
             </div>
           </div>
         </div>
