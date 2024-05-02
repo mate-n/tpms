@@ -1,3 +1,4 @@
+import { LocalIDFactory } from '@/factories/LocalIDFactory'
 import type { IProfileDocument } from '@/interfaces/profiles/IProfileDocument'
 
 export class ProfileDocument implements IProfileDocument {
@@ -13,7 +14,7 @@ export class ProfileDocument implements IProfileDocument {
   typeID: number
   udfRawData: string | null
   id?: number
-  uniqueHash?: number
+  localID?: string
 
   constructor() {
     this.validFrom = new Date()
@@ -27,6 +28,6 @@ export class ProfileDocument implements IProfileDocument {
     this.shortName = ''
     this.typeID = 0
     this.udfRawData = null
-    this.uniqueHash = new Date().getTime()
+    this.localID = LocalIDFactory.createLocalID()
   }
 }
