@@ -1,5 +1,5 @@
-import { PropertyAvailability } from '@/classes/PropertyAvailability'
-import type { IPropertyAvailability } from '@/interfaces/availability/IPropertyAvailability'
+import { PropertyAvailability } from '../../shared/classes/PropertyAvailability'
+import type { IPropertyAvailability } from '../../shared/interfaces/availability/IPropertyAvailability'
 import { faker } from '@faker-js/faker'
 import { RoomRateFaker } from './RoomRateFaker'
 import { RoomFaker } from './RoomFaker'

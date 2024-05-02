@@ -1,4 +1,4 @@
-import type { IRoomRate } from '@/interfaces/availability/IRoomRate'
+import type { IRoomRate } from '../../shared/interfaces/availability/IRoomRate'
 
 export class RoomRate implements IRoomRate {
   ratesCode: string

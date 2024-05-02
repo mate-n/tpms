@@ -1,5 +1,5 @@
-import { LocalIDFactory } from '@/factories/LocalIDFactory'
-import type { IProfileDocument } from '@/interfaces/profiles/IProfileDocument'
+import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
+import type { IProfileDocument } from '../../shared/interfaces/profiles/IProfileDocument'
 
 export class ProfileDocument implements IProfileDocument {
   validFrom: Date

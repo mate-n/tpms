@@ -1,6 +1,6 @@
-import { ProfileDocument } from '@/classes/ProfileDocument'
-import type { IProfileDocument } from '@/interfaces/profiles/IProfileDocument'
+import type { IProfileDocument } from '../../shared/interfaces/profiles/IProfileDocument'
 import { faker } from '@faker-js/faker'
+import { ProfileDocument } from '../classes/ProfileDocument'
 
 export class ProfileDocumentFaker {
   create(): IProfileDocument {

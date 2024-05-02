@@ -1,4 +1,4 @@
-import type { IRoom } from '@/interfaces/IRoom'
+import type { IRoom } from '../../shared/interfaces/IRoom'
 
 export class Room implements IRoom {
   type: number

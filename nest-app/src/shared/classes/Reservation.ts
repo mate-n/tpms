@@ -1,6 +1,6 @@
-import { LocalIDFactory } from '@/factories/LocalIDFactory'
-import type { IReservation } from '@/interfaces/IReservation'
-import type { IPropertyAvailability } from '@/interfaces/availability/IPropertyAvailability'
+import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
+import type { IReservation } from '../../shared/interfaces/IReservation'
+import type { IPropertyAvailability } from '../../shared/interfaces/availability/IPropertyAvailability'
 
 export class Reservation implements IReservation {
   localID?: string

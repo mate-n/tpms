@@ -1,6 +1,6 @@
-import { Profile } from '@/classes/Profile'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
+import type { IProfile } from '../../shared/interfaces/profiles/IProfile'
 import { faker } from '@faker-js/faker'
+import { Profile } from '../classes/Profile'
 
 export class ProfilesFaker {
   create(): IProfile {

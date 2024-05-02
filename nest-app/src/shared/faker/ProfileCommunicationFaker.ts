@@ -1,6 +1,6 @@
-import { ProfileCommunication } from '@/classes/ProfileCommunication'
-import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
+import type { IProfileCommunication } from '../../shared/interfaces/profiles/IProfileCommunication'
 import { faker } from '@faker-js/faker'
+import { ProfileCommunication } from '../classes/ProfileCommunication'
 
 export class ProfileCommunicationFaker {
   create(): IProfileCommunication {

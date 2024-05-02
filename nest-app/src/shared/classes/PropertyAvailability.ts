@@ -1,6 +1,6 @@
-import type { IPropertyAvailability } from '@/interfaces/availability/IPropertyAvailability'
-import type { IRoomRate } from '@/interfaces/availability/IRoomRate'
-import type { IRoom } from '@/interfaces/IRoom'
+import type { IPropertyAvailability } from '../../shared/interfaces/availability/IPropertyAvailability'
+import type { IRoomRate } from '../../shared/interfaces/availability/IRoomRate'
+import type { IRoom } from '../../shared/interfaces/IRoom'
 import { Room } from './Room'
 
 export class PropertyAvailability implements IPropertyAvailability {

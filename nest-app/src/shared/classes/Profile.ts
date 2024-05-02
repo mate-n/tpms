@@ -1,5 +1,5 @@
-import { LocalIDFactory } from '@/factories/LocalIDFactory'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
+import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
+import type { IProfile } from '../../shared/interfaces/profiles/IProfile'
 
 export class Profile implements IProfile {
   localID?: string

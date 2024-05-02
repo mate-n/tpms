@@ -1,4 +1,4 @@
-import { Room } from '@/classes/Room'
+import { Room } from '../../shared/classes/Room'
 import { faker } from '@faker-js/faker'
 
 export class RoomFaker {

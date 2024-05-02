@@ -1,5 +1,5 @@
-import { LocalIDFactory } from '@/factories/LocalIDFactory'
-import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
+import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
+import type { IProfileCommunication } from '../../shared/interfaces/profiles/IProfileCommunication'
 
 export class ProfileCommunication implements IProfileCommunication {
   communicationTypeID: number | undefined

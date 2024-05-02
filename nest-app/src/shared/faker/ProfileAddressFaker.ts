@@ -1,6 +1,6 @@
-import { ProfileAddress } from '@/classes/ProfileAddress'
-import type { IProfileAddress } from '@/interfaces/profiles/IProfileAddress'
+import type { IProfileAddress } from '../../shared/interfaces/profiles/IProfileAddress'
 import { faker } from '@faker-js/faker'
+import { ProfileAddress } from '../classes/ProfileAddress'
 
 export class ProfileAddressFaker {
   create(): IProfileAddress {

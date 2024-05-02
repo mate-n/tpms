@@ -1,5 +1,5 @@
-import { RoomRate } from '@/classes/RoomRate'
-import type { IRoomRate } from '@/interfaces/availability/IRoomRate'
+import { RoomRate } from '../../shared/classes/RoomRate'
+import type { IRoomRate } from '../../shared/interfaces/availability/IRoomRate'
 import { faker } from '@faker-js/faker'
 
 export class RoomRateFaker {

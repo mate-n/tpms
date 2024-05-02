@@ -1,5 +1,5 @@
-import { LocalIDFactory } from '@/factories/LocalIDFactory'
-import type { IProfileAddress } from '@/interfaces/profiles/IProfileAddress'
+import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
+import type { IProfileAddress } from '../../shared/interfaces/profiles/IProfileAddress'
 
 export class ProfileAddress implements IProfileAddress {
   id?: number
