@@ -1,8 +1,9 @@
+import { LocalIDFactory } from '@/factories/LocalIDFactory'
 import type { IReservation } from '@/interfaces/IReservation'
 import type { IPropertyAvailability } from '@/interfaces/availability/IPropertyAvailability'
 
 export class Reservation implements IReservation {
-  uniqueHash?: number
+  localID?: string
   propertyID: number | undefined
   arrivalDate: Date
   departureDate: Date
@@ -17,7 +18,7 @@ export class Reservation implements IReservation {
   errors: Record<string, string>
 
   constructor() {
-    this.uniqueHash = new Date().getTime()
+    this.localID = LocalIDFactory.createLocalID()
     this.arrivalDate = new Date()
     this.departureDate = new Date()
     this.numberOfRooms = 1
