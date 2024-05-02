@@ -19,10 +19,10 @@ const changePrimary = (profileDocument: IProfileDocument) => {
   for (const innerProfileDocument of profileDocuments.value) {
     innerProfileDocument.primary = false
   }
-  const foundProfileDocument = identityHelper.findByIdOrUniqueHash(
+  const foundProfileDocument = identityHelper.findByIdOrLocalID(
     profileDocuments.value,
     profileDocument.id,
-    profileDocument.uniqueHash
+    profileDocument.localID
   )
   if (foundProfileDocument) foundProfileDocument.primary = true
 }
@@ -49,7 +49,7 @@ const deleteProfileDocument = (profileDocument: IProfileDocument) => {
   <v-container fluid class="profiles-card-container d-flex flex-wrap">
     <div
       v-for="(profileDocument, index) in profileDocuments"
-      :key="[profileDocument.id, profileDocument.uniqueHash].toString()"
+      :key="[profileDocument.id, profileDocument.localID].toString()"
     >
       <div class="bg-white mb-2 me-1 mb-1" style="min-width: 25rem">
         <ProfileDocumentForm
