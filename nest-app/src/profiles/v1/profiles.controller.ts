@@ -11,10 +11,15 @@ import {
 import { ProfilesService } from './profiles.service';
 import { IProfileSearch } from 'src/shared/interfaces/profiles/IProfileSearch';
 import { IProfile } from 'src/shared/interfaces/profiles/IProfile';
+import { IProfileAddress } from 'src/shared/interfaces/profiles/IProfileAddress';
+import { ProfileAddressesService } from 'src/profile-addresses/profile-addresses.service';
 
 @Controller('v1/profiles')
 export class ProfilesController {
-  constructor(private readonly profilesService: ProfilesService) {}
+  constructor(
+    private readonly profilesService: ProfilesService,
+    private readonly profileAddressesService: ProfileAddressesService,
+  ) {}
   @Post()
   create(@Body() profile: IProfile) {
     return this.profilesService.create(profile);
@@ -44,5 +49,10 @@ export class ProfilesController {
   @Post('search')
   search(@Body() profileSearch: IProfileSearch) {
     return this.profilesService.search(profileSearch);
+  }
+
+  @Get(':id/addresses')
+  addressses(): IProfileAddress[] {
+    return this.profileAddressesService.findAll();
   }
 }

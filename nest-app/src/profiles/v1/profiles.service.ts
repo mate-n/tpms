@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ProfilesFaker } from 'src/shared/faker/ProfilesFaker';
 import { IProfile } from 'src/shared/interfaces/profiles/IProfile';
 import { IProfileSearch } from 'src/shared/interfaces/profiles/IProfileSearch';
-//import { IProfile } from 'src/shared/interfaces/profiles/IProfile';
 
 @Injectable()
 export class ProfilesService {
