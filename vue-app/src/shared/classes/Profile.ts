@@ -2,6 +2,7 @@ import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
 import type { IProfile } from '../../shared/interfaces/profiles/IProfile'
 
 export class Profile implements IProfile {
+  id?: number
   localID?: string
 
   //General
