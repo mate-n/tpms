@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePropertyDto } from '../dto/create-property.dto';
 import { UpdatePropertyDto } from '../dto/update-property.dto';
+import { IPropertyAvailabilitySearch } from 'src/shared/interfaces/availability/IPropertyAvailabilitySearch';
+import { IPropertyAvailability } from 'src/shared/interfaces/availability/IPropertyAvailability';
+import { IProperty } from 'src/shared/interfaces/IProperty';
 
 @Injectable()
 export class PropertiesService {
@@ -53,8 +56,11 @@ export class PropertiesService {
     ];
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} property`;
+  findOne(id: number): IProperty {
+    return {
+      name: 'Kalahari Tented Camp',
+      id: 3599,
+    };
   }
 
   update(id: number, updatePropertyDto: UpdatePropertyDto) {
@@ -63,5 +69,81 @@ export class PropertiesService {
 
   remove(id: number) {
     return `This action removes a #${id} property`;
+  }
+
+  search(
+    propertyAvailabilitySearch: IPropertyAvailabilitySearch,
+  ): IPropertyAvailability[] {
+    return [
+      {
+        room: {
+          type: 18,
+          minOccupancy: 4,
+          maxOccupancy: 6,
+          code: 'aperte',
+          name: 'voluptatum',
+          description: 'contra',
+          id: 17,
+        },
+        availabilityCount: 64,
+        baseRateCategory: 'vestrum',
+        roomRates: [
+          {
+            ratesCode: 'cimentarius',
+            roomRate: 180,
+          },
+          {
+            ratesCode: 'defluo',
+            roomRate: 590,
+          },
+        ],
+      },
+      {
+        room: {
+          type: 4,
+          minOccupancy: 4,
+          maxOccupancy: 9,
+          code: 'arcesso',
+          name: 'canis',
+          description: 'angustus',
+          id: 58,
+        },
+        availabilityCount: 77,
+        baseRateCategory: 'surculus',
+        roomRates: [
+          {
+            ratesCode: 'audeo',
+            roomRate: 486,
+          },
+          {
+            ratesCode: 'utrimque',
+            roomRate: 19,
+          },
+        ],
+      },
+      {
+        room: {
+          type: 51,
+          minOccupancy: 1,
+          maxOccupancy: 10,
+          code: 'capillus',
+          name: 'tamen',
+          description: 'ad',
+          id: 11,
+        },
+        availabilityCount: 69,
+        baseRateCategory: 'usitas',
+        roomRates: [
+          {
+            ratesCode: 'caelestis',
+            roomRate: 256,
+          },
+          {
+            ratesCode: 'ars',
+            roomRate: 117,
+          },
+        ],
+      },
+    ];
   }
 }

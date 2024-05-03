@@ -10,6 +10,7 @@ import {
 import { PropertiesService } from './properties.service';
 import { CreatePropertyDto } from '../dto/create-property.dto';
 import { UpdatePropertyDto } from '../dto/update-property.dto';
+import { IPropertyAvailabilitySearch } from 'src/shared/interfaces/availability/IPropertyAvailabilitySearch';
 
 @Controller('v1/properties')
 export class PropertiesController {
@@ -18,6 +19,13 @@ export class PropertiesController {
   @Post()
   create(@Body() createPropertyDto: CreatePropertyDto) {
     return this.propertiesService.create(createPropertyDto);
+  }
+
+  @Post(':id/availabilities')
+  availabilities(
+    @Body() propertyAvailabilitySearch: IPropertyAvailabilitySearch,
+  ) {
+    return this.propertiesService.search(propertyAvailabilitySearch);
   }
 
   @Get()
