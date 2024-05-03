@@ -81,7 +81,7 @@ export class DropdownsController {
     ];
   }
 
-  @Get('salutations')
+  @Get('languages')
   languages(): ILanguage[] {
     return [
       {
