@@ -17,4 +17,8 @@ export class ProfileAddressesService {
     ];
     return profileAddresses;
   }
+
+  findOne(): IProfileAddress {
+    return this.profileAddressFaker.create();
+  }
 }
