@@ -71,8 +71,8 @@ const saveAllProfileAddresses = () => {
       profileAddressService.createOrUpdate(profileAddress).then(() => {
         innerResolve()
       })
-      promisesToSaveProfileAddresses.push(promiseToSaveProfileAddress)
     })
+    promisesToSaveProfileAddresses.push(promiseToSaveProfileAddress)
   })
 
   Promise.all(promisesToSaveProfileAddresses).then(() => {
