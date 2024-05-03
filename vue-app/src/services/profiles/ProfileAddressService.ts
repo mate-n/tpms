@@ -25,7 +25,7 @@ export class ProfileAddressService implements IProfilesService {
   update(profileAddress: IProfileAddress) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
-        .put(`v1/profiles/${profileAddress.profileID}/addresses`, profileAddress)
+        .put(`v1/profiles/addresses/${profileAddress.id}`, profileAddress)
         .then((response: any) => {
           resolve(response.data)
         })
@@ -48,10 +48,10 @@ export class ProfileAddressService implements IProfilesService {
     })
   }
 
-  get(profileID: number, id: number) {
+  get(id: number) {
     return new Promise<IProfileAddress>((resolve, reject) => {
       this.axiosInstance
-        .get(`v1/profiles/${profileID}/addresses/${id}`)
+        .get(`v1/profiles/addresses/${id}`)
         .then((response: any) => {
           resolve(response.data)
         })
@@ -77,7 +77,7 @@ export class ProfileAddressService implements IProfilesService {
   delete(profileAdress: IProfileAddress) {
     return new Promise<void>((resolve, reject) => {
       this.axiosInstance
-        .delete(`v1/profiles/${profileAdress.profileID}/communications/${profileAdress.id}`)
+        .delete(`v1/profiles/communications/${profileAdress.id}`)
         .then(() => {
           resolve()
         })
