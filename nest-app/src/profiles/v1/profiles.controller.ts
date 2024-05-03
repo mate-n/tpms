@@ -12,10 +12,12 @@ import { ProfilesService } from './profiles.service';
 import { IProfileSearch } from 'src/shared/interfaces/profiles/IProfileSearch';
 import { IProfile } from 'src/shared/interfaces/profiles/IProfile';
 import { IProfileAddress } from 'src/shared/interfaces/profiles/IProfileAddress';
-import { ProfileAddressesService } from 'src/profile-addresses/profile-addresses.service';
+import { ProfileAddressesService } from 'src/profile-addresses/v1/profile-addresses.service';
+import { ProfileCommunicationFaker } from 'src/shared/faker/ProfileCommunicationFaker';
 
 @Controller('v1/profiles')
 export class ProfilesController {
+  profileCommunicationFaker = new ProfileCommunicationFaker();
   constructor(
     private readonly profilesService: ProfilesService,
     private readonly profileAddressesService: ProfileAddressesService,
@@ -54,5 +56,18 @@ export class ProfilesController {
   @Get(':id/addresses')
   addressses(): IProfileAddress[] {
     return this.profileAddressesService.findAll();
+  }
+
+  @Get(':id/communications')
+  communications(): any[] {
+    const profileCommunication1 = this.profileCommunicationFaker.create();
+    const profileCommunication2 = this.profileCommunicationFaker.create();
+    const profileCommunication3 = this.profileCommunicationFaker.create();
+    const profileCommunications = [
+      profileCommunication1,
+      profileCommunication2,
+      profileCommunication3,
+    ];
+    return profileCommunications;
   }
 }
