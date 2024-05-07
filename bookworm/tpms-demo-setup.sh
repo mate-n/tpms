@@ -2,7 +2,8 @@
 TPMS_DEMO_DIR=/home/$(whoami)/realms
 
 mkdir -p $TPMS_DEMO_DIR/tpms-frontend-demo
-apt-get update && apt-get install git -y
+# The following command must run in Raspberry Pi.
+#sudo apt-get update && sudo apt-get install git -y
 cd $TPMS_DEMO_DIR
 git clone https://ankerdata_tpms:ATBBbUP6LFDmChmSMcJn9pWVcT6K3F3EF006@bitbucket.org/\_realms/tpms-frontend.git
 cd $TPMS_DEMO_DIR/tpms-frontend

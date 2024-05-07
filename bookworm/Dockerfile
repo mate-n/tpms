@@ -1,10 +1,12 @@
 FROM debian:12
 
+RUN apt-get update && apt-get install git curl -y
+
 RUN adduser tpms
 
 WORKDIR /home/tpms
 
-COPY ./bookworm .
+COPY ./bookworm bookworm
 
 RUN chown -R tpms bookworm
 
