@@ -1,6 +1,6 @@
 FROM debian:12
 
-RUN adduser -D tpms
+RUN adduser tpms
 
 WORKDIR /home/tpms
 
