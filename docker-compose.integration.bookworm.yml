@@ -1,0 +1,7 @@
+services:
+  bookworm:
+    build:
+      dockerfile: ./bookworm/Dockerfile
+    ports:
+      - "${PORT_FRONTEND_BOOKWORM}:3000"
+      - "${PORT_BACKEND_BOOKWORM}:3001"
