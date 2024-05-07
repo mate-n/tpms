@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import type { IReservation } from '@/interfaces/IReservation'
 import { computed, inject, onBeforeMount, ref, watch, type Ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ReservationValidator } from '@/validators/ReservationValidator'
 import AvailabilityService from '@/services/AvailabilityService'
 import type { AxiosStatic } from 'axios'
-import type { IProperty } from '@/interfaces/IProperty'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
 const axios: AxiosStatic | undefined = inject('axios')
@@ -26,12 +24,14 @@ const roomsInDropdown: Ref<IRoom[]> = ref([])
 const profilesInDropdown: Ref<IProfile[]> = ref([])
 const profileDialog = ref(false)
 import ProfileSearch from './profiles/ProfileSearch.vue'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
-import type { IPropertyAvailability } from '@/interfaces/availability/IPropertyAvailability'
-import type { IPropertyAvailabilitySearch } from '@/interfaces/availability/IPropertyAvailabilitySearch'
-import type { IRoom } from '@/interfaces/IRoom'
 import ProfileService from '@/services/ProfileService'
-import type { IProfileSearch } from '@/interfaces/profiles/IProfileSearch'
+import type { IProperty } from '@/shared/interfaces/IProperty'
+import type { IReservation } from '@/shared/interfaces/IReservation'
+import type { IRoom } from '@/shared/interfaces/IRoom'
+import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPropertyAvailability'
+import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
 
 onBeforeMount(() => {
   propertyService.getProperties().then((response: IProperty[]) => {

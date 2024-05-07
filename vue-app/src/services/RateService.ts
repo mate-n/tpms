@@ -1,6 +1,6 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { IRate } from '@/interfaces/IRate'
 import type { IService } from '@/interfaces/IService'
+import type { IRate } from '@/shared/interfaces/IRate'
 import type { AxiosStatic } from 'axios'
 
 export class RateService implements IService {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Profile } from '@/classes/Profile'
 import NewProfile from '@/components/profiles/NewProfile.vue'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
+import { Profile } from '@/shared/classes/Profile'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { ref } from 'vue'
 const newProfile = ref<IProfile>(new Profile())
 </script>
@@ -9,3 +9,4 @@ const newProfile = ref<IProfile>(new Profile())
 <template>
   <NewProfile :profile-input="newProfile" />
 </template>
+@/shared/interfaces/profiles/IProfile

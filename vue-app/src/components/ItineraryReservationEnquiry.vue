@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from 'vue'
 import type { Ref } from 'vue'
-import type { IReservation } from '@/interfaces/IReservation'
-import { Reservation as ReservationClass } from '@/classes/Reservation'
 import ReservationForm from '@/components/ReservationForm.vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ItineraryReservationValidator } from '@/validators/ItineraryReservationValidator'
 import { useBasketItemsStore } from '@/stores/basketItems'
+import type { IReservation } from '@/shared/interfaces/IReservation'
+import { Reservation } from '@/shared/classes/Reservation'
 const basketItemsStore = useBasketItemsStore()
 const dateHelper = new DateHelper()
 const itineraryReservationValidator = new ItineraryReservationValidator()
@@ -14,7 +14,7 @@ const reservations: Ref<IReservation[]> = ref([])
 
 const addReservation = () => {
   const lastReservation = reservations.value[reservations.value.length - 1]
-  const newReservation = new ReservationClass()
+  const newReservation = new Reservation()
   reservations.value.push(newReservation)
   newReservation.orderIndex = getNewOrderIndex()
   if (lastReservation) {

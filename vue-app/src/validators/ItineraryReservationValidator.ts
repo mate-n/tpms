@@ -1,7 +1,7 @@
-import type { IReservation } from '@/interfaces/IReservation'
+import type { IReservation } from '@/shared/interfaces/IReservation'
 import { TravelDistanceChecker } from '@/helpers/TravelDistanceChecker'
 import { DateHelper } from '@/helpers/DateHelper'
-import type { IValidator } from '@/interfaces/IValidator'
+import type { IValidator } from '@/shared/interfaces/IValidator'
 
 export class ItineraryReservationValidator implements IValidator {
   private travelDistanceChecker: TravelDistanceChecker = new TravelDistanceChecker()

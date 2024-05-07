@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ProfileAddress } from '@/classes/ProfileAddress'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
-import type { IProfileAddress } from '@/interfaces/profiles/IProfileAddress'
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileAddressForm from './ProfileAddressForm.vue'
 import type { AxiosStatic } from 'axios'
 import { ProfileAddressService } from '@/services/profiles/ProfileAddressService'
 import { IdentityHelper } from '@/helpers/IdentityHelper'
+import { ProfileAddress } from '@/shared/classes/ProfileAddress'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddress'
 const identityHelper = new IdentityHelper()
 const axios: AxiosStatic | undefined = inject('axios')
 const profileAddressService = new ProfileAddressService(axios)
@@ -51,10 +51,10 @@ const changeMailingAddress = (profileAddress: IProfileAddress) => {
   for (const innerProfileDocument of profileAddresses.value) {
     innerProfileDocument.primary = false
   }
-  const foundProfileAddress = identityHelper.findByIdOrUniqueHash(
+  const foundProfileAddress = identityHelper.findByIdOrLocalID(
     profileAddresses.value,
     profileAddress.id,
-    profileAddress.uniqueHash
+    profileAddress.localID
   )
   if (foundProfileAddress) foundProfileAddress.primary = true
 }
@@ -71,8 +71,8 @@ const saveAllProfileAddresses = () => {
       profileAddressService.createOrUpdate(profileAddress).then(() => {
         innerResolve()
       })
-      promisesToSaveProfileAddresses.push(promiseToSaveProfileAddress)
     })
+    promisesToSaveProfileAddresses.push(promiseToSaveProfileAddress)
   })
 
   Promise.all(promisesToSaveProfileAddresses).then(() => {

@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { IGender } from '@/interfaces/IGender'
-import type { INationality } from '@/interfaces/INationality'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import { GenderService } from '@/services/GenderService'
 import { NationalityService } from '@/services/NationalityService'
 import { CountryService } from '@/services/CountryService'
 import type { AxiosStatic } from 'axios'
 import { computed, inject, onMounted, ref } from 'vue'
-import type { ICountry } from '@/interfaces/ICountry'
 import { DateFormatter } from '@/helpers/DateFormatter'
+import type { ICountry } from '@/shared/interfaces/ICountry'
+import type { IGender } from '@/shared/interfaces/IGender'
+import type { INationality } from '@/shared/interfaces/INationality'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
 const genderService = new GenderService(axios)

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { IFeature } from '@/interfaces/IFeature'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import { FeatureService } from '@/services/FeatureService'
 import type { AxiosStatic } from 'axios'
 import { inject, onBeforeMount, ref } from 'vue'
 import ProfilePreferencesForm from './ProfilePreferencesForm.vue'
 import { BookableObjectService } from '@/services/BookableObjectService'
-import type { IBookableObject } from '@/interfaces/IBookableObject'
+import type { IBookableObject } from '@/shared/interfaces/IBookableObject'
+import type { IFeature } from '@/shared/interfaces/IFeature'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 const axios: AxiosStatic | undefined = inject('axios')
 const featureService = new FeatureService(axios)
 const bookableObjectService = new BookableObjectService(axios)
@@ -88,3 +88,4 @@ onBeforeMount(() => {
     </v-card>
   </v-dialog>
 </template>
+@/shared/interfaces/IFeature@/shared/interfaces/profiles/IProfile@/shared/interfaces/IBookableObject

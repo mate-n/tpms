@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { IProfileAddress } from '@/interfaces/profiles/IProfileAddress'
 import { ProfileAddressService } from '@/services/profiles/ProfileAddressService'
 import type { AxiosStatic } from 'axios'
 import { computed, inject, onMounted, ref } from 'vue'
 import ProfileAddressesForm from './ProfileAddressesForm.vue'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
-import type { IProfileAddressSearch } from '@/interfaces/profiles/IProfileAddressSearch'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddress'
+import type { IProfileAddressSearch } from '@/shared/interfaces/profiles/IProfileAddressSearch'
 defineProps({
   profile: { type: Object as () => IProfile, required: true }
 })

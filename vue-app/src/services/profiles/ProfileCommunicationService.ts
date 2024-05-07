@@ -1,8 +1,8 @@
 import { type AxiosStatic } from 'axios'
 import { AxiosInstanceFactory } from '../../factories/AxiosInstanceFactory'
-import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
-import type { IProfileCommunicationSearch } from '@/interfaces/profiles/IProfileCommunicationSearch'
-import type { IProfilesService } from '@/interfaces/profiles/IProfilesService'
+import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
+import type { IProfileCommunicationSearch } from '@/shared/interfaces/profiles/IProfileCommunicationSearch'
+import type { IProfilesService } from '@/interfaces/IProfilesService'
 
 export class ProfileCommunicationService implements IProfilesService {
   axiosInstance: AxiosStatic
@@ -12,7 +12,7 @@ export class ProfileCommunicationService implements IProfilesService {
   get(profileID: number, id: number) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
-        .post(`v1/profiles/${profileID}/communications/${id}`)
+        .post(`v1/profiles/communications/${id}`)
         .then((response: any) => {
           resolve(response.data)
         })
@@ -38,7 +38,7 @@ export class ProfileCommunicationService implements IProfilesService {
   create(profileCommunication: IProfileCommunication) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
-        .post(`v1/profiles/${profileCommunication.profileID}/communications`, profileCommunication)
+        .post(`v1/profiles/communications`, profileCommunication)
         .then((response: any) => {
           resolve(response.data)
         })
@@ -51,7 +51,7 @@ export class ProfileCommunicationService implements IProfilesService {
   update(profileCommunication: IProfileCommunication) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
-        .put(`v1/profiles/${profileCommunication.profileID}/communications`, profileCommunication)
+        .put(`v1/profiles/communications/${profileCommunication.id}`, profileCommunication)
         .then((response: any) => {
           resolve(response.data)
         })
@@ -77,9 +77,7 @@ export class ProfileCommunicationService implements IProfilesService {
   delete(profileCommunication: IProfileCommunication) {
     return new Promise<void>((resolve, reject) => {
       this.axiosInstance
-        .delete(
-          `v1/profiles/${profileCommunication.profileID}/communications/${profileCommunication.id}`
-        )
+        .delete(`v1/profiles/communications/${profileCommunication.id}`)
         .then(() => {
           resolve()
         })

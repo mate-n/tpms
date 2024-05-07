@@ -1,6 +1,6 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { IBookableObject } from '@/interfaces/IBookableObject'
 import type { IService } from '@/interfaces/IService'
+import type { IBookableObject } from '@/shared/interfaces/IBookableObject'
 import type { AxiosStatic } from 'axios'
 
 export class BookableObjectService implements IService {

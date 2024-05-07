@@ -1,6 +1,6 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { IKeyword } from '@/interfaces/IKeyword'
 import type { IService } from '@/interfaces/IService'
+import type { IKeyword } from '@/shared/interfaces/IKeyword'
 import type { AxiosStatic } from 'axios'
 
 export class KeywordService implements IService {

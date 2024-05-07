@@ -1,6 +1,6 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { ICommunicationMethod } from '@/interfaces/ICommunicationMethod'
 import type { IService } from '@/interfaces/IService'
+import type { ICommunicationMethod } from '@/shared/interfaces/ICommunicationMethod'
 import type { AxiosStatic } from 'axios'
 
 export class CommunicationMethodService implements IService {

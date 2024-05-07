@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { IRate } from '@/interfaces/IRate'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import { RateService } from '@/services/RateService'
+import type { IRate } from '@/shared/interfaces/IRate'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { AxiosStatic } from 'axios'
 import { inject, onMounted, ref } from 'vue'
 const axios: AxiosStatic | undefined = inject('axios')

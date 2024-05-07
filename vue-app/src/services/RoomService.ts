@@ -1,6 +1,6 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { IRoom } from '@/interfaces/IRoom'
 import type { IService } from '@/interfaces/IService'
+import type { IRoom } from '@/shared/interfaces/IRoom'
 import type { AxiosStatic } from 'axios'
 
 export class RoomService implements IService {
