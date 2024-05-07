@@ -4,11 +4,11 @@ RUN adduser tpms
 
 WORKDIR /home/tpms
 
-COPY ./bookworm/tpms-demo-setup.sh .
+COPY ./bookworm .
 
 RUN chown -R tpms bookworm
 
-RUN chmod +x ./bookworm/tpms-demo-setup.sh
+RUN chmod +x bookworm/tpms-demo-setup.sh
 
 USER tpms
 
