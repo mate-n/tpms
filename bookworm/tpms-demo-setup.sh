@@ -3,7 +3,7 @@ TPMS_DEMO_DIR=/home/$(whoami)/realms
 
 mkdir -p $TPMS_DEMO_DIR/tpms-frontend-demo
 apt-get update && apt-get install git -y
-cd $TPMS_DEMO_DIR=/home/$(whoami)/realms
+cd $TPMS_DEMO_DIR
 git clone https://ankerdata_tpms:ATBBbUP6LFDmChmSMcJn9pWVcT6K3F3EF006@bitbucket.org/\_realms/tpms-frontend.git
 cd $TPMS_DEMO_DIR/tpms-frontend
 git checkout -b feature/tpms-68-CreateScriptforDemo origin/feature/tpms-68-CreateScriptforDemo
