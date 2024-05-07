@@ -44,7 +44,7 @@ After that, we can start the demo with the following command:
 
 Visit http://localhost:3000/ to see the demo.
 
-## Starting and Stopping
+## Starting, Stopping and Getting Status
 
 If you want to start and stop the demo, be sure that you are in the right folder.
 
@@ -63,3 +63,9 @@ If you want to stop the demo, run the following command:
 You can start the demo again with:
 
     /bin/bash start-tpms-demo.sh
+
+If you want to see, whether the demo is running or not, run:
+
+    /bin/bash show-status-of-tpms-demo.sh
+
+You see a table where you can see the status of "nest-app" and "vue-app". If both of them have the status "online", it means that the demo is running. If both of them have the status "stopped", it means that the demo is not running.
