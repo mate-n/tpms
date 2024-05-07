@@ -14,7 +14,7 @@ Create a docker-image of bookworm.
 
 Start a container of the bookworm-image in the background.
 
-    docker run -d -p 3000:3000 -p 3001:3001 --name bookworm --rm bookworm
+    docker run -dit -p 3000:3000 -p 3001:3001 --name bookworm --rm bookworm
 
 Open console in the container.
 
