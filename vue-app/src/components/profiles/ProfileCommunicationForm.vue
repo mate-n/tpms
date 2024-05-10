@@ -68,7 +68,7 @@ const deleteProfileCommunication = () => {
         :error-messages="
           profileCommunicationToBeEdited.errors && profileCommunicationToBeEdited.errors['value']
         "
-        @change="profileCommunicationValidator.validate(profileCommunicationToBeEdited)"
+        @change="profileCommunicationValidator.validatePromise(profileCommunicationToBeEdited)"
       ></v-text-field>
     </v-col>
     <v-col>
