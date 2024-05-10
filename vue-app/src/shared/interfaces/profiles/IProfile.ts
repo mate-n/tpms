@@ -36,7 +36,7 @@ export interface IProfile extends IEntityWithIdentity {
   nationality: string
 
   //Additional Info
-  company: string
+  companyID: number | undefined
   occupation: string
   additionalInfoDefaultRateIDs: number[]
   licensePlate: string

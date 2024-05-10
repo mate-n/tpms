@@ -40,7 +40,7 @@ export class Profile implements IProfile {
   nationality: string
 
   //Additional Info
-  company: string
+  companyID: number | undefined
   occupation: string
   additionalInfoDefaultRateIDs: number[]
   licensePlate: string
@@ -113,7 +113,7 @@ export class Profile implements IProfile {
     this.nationality = ''
 
     //Additional Info
-    this.company = ''
+    this.companyID = undefined
     this.occupation = ''
     this.additionalInfoDefaultRateIDs = []
     this.licensePlate = ''
