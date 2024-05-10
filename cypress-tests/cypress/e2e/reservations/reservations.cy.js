@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-describe('example to-do app', () => {
+describe('reservations', () => {
     beforeEach(() => {
         cy.visit('http://vue:8080')
     })
