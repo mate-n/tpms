@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ProfileAddressFaker } from '@/faker/ProfileAddressFaker'
-import { ProfileCommunicationFaker } from '@/faker/ProfileCommunicationFaker'
-import { ProfileDocumentFaker } from '@/faker/ProfileDocumentFaker'
-import { ProfilesFaker } from '@/faker/ProfilesFaker'
-import { PropertyAvailabilityFaker } from '@/faker/PropertyAvailabilityFaker'
-import { RoomFaker } from '@/faker/RoomFaker'
+import { ProfileAddressFaker } from '@/shared/faker/ProfileAddressFaker'
+import { ProfileCommunicationFaker } from '@/shared/faker/ProfileCommunicationFaker'
+import { ProfilesFaker } from '@/shared/faker/ProfilesFaker'
+import { PropertyAvailabilityFaker } from '@/shared/faker/PropertyAvailabilityFaker'
+import { RoomFaker } from '@/shared/faker/RoomFaker'
 
 const profileFaker = new ProfilesFaker()
 const profileFake1 = profileFaker.create()
@@ -26,13 +25,6 @@ const profileCommunicationFake2 = profileCommunicationFaker.create()
 const profileCommunicationFake3 = profileCommunicationFaker.create()
 console.log(profileCommunicationFake1)
 console.log([profileCommunicationFake1, profileCommunicationFake2, profileCommunicationFake3])
-
-const profileDocumentFaker = new ProfileDocumentFaker()
-const profileDocumentFake1 = profileDocumentFaker.create()
-const profileDocumentFake2 = profileDocumentFaker.create()
-const profileDocumentFake3 = profileDocumentFaker.create()
-console.log(profileDocumentFake1)
-console.log([profileDocumentFake1, profileDocumentFake2, profileDocumentFake3])
 
 const propertyAvailabilityFaker = new PropertyAvailabilityFaker()
 const propertyAvailabilityFake1 = propertyAvailabilityFaker.create()

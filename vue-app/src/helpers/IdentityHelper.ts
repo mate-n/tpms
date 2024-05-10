@@ -1,4 +1,4 @@
-import type { IEntityWithIdentity } from '@/interfaces/IEntityWithIdentity'
+import type { IEntityWithIdentity } from '@/shared/interfaces/IEntityWithIdentity'
 
 export class IdentityHelper {
   isSame<T extends IEntityWithIdentity>(entity1: T, entity2: T) {
@@ -6,16 +6,16 @@ export class IdentityHelper {
       return entity1.id === entity2.id
     }
 
-    if (entity1.uniqueHash && entity2.uniqueHash) {
-      return entity1.uniqueHash === entity2.uniqueHash
+    if (entity1.localID && entity2.localID) {
+      return entity1.localID === entity2.localID
     }
     return false
   }
 
-  findByIdOrUniqueHash<T extends IEntityWithIdentity>(
+  findByIdOrLocalID<T extends IEntityWithIdentity>(
     entitiesToBeSearched: T[],
     id: number | undefined,
-    uniqueHash: number | undefined
+    localID: string | undefined
   ): T | undefined {
     if (id) {
       const resultById = entitiesToBeSearched.find((entity) => entity.id === id)
@@ -24,12 +24,10 @@ export class IdentityHelper {
       }
     }
 
-    if (uniqueHash) {
-      const resultByUniqueHash = entitiesToBeSearched.find(
-        (entity) => entity.uniqueHash === uniqueHash
-      )
-      if (resultByUniqueHash) {
-        return resultByUniqueHash
+    if (localID) {
+      const resultByLocalID = entitiesToBeSearched.find((entity) => entity.localID === localID)
+      if (resultByLocalID) {
+        return resultByLocalID
       }
     }
 

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import { inject, onBeforeMount, ref, watch } from 'vue'
-import type { IProfileCommunication } from '@/interfaces/profiles/IProfileCommunication'
 import type { AxiosStatic } from 'axios'
 import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
 import ProfileCommunicationsForm from './ProfileCommunicationsForm.vue'
 import { CommunicationMethodService } from '@/services/CommunicationMethodService'
-import type { ICommunicationMethod } from '@/interfaces/ICommunicationMethod'
+import type { ICommunicationMethod } from '@/shared/interfaces/ICommunicationMethod'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileCommunicationService = new ProfileCommunicationService(axios)
 const communicationMethodService = new CommunicationMethodService(axios)

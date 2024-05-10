@@ -1,6 +1,6 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { IGuestType } from '@/interfaces/IGuestType'
 import type { IService } from '@/interfaces/IService'
+import type { IGuestType } from '@/shared/interfaces/IGuestType'
 import type { AxiosStatic } from 'axios'
 
 export class GuestTypeService implements IService {

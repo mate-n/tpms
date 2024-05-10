@@ -1,6 +1,6 @@
-import type { IReservation } from '@/interfaces/IReservation'
+import type { IReservation } from '@/shared/interfaces/IReservation'
 import { DateHelper } from '@/helpers/DateHelper'
-import type { IValidator } from '@/interfaces/IValidator'
+import type { IValidator } from '@/shared/interfaces/IValidator'
 
 export class ReservationValidator implements IValidator {
   private dateHelper: DateHelper = new DateHelper()

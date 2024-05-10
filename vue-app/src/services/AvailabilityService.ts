@@ -1,7 +1,7 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
 import type { IService } from '@/interfaces/IService'
-import type { IPropertyAvailability } from '@/interfaces/availability/IPropertyAvailability'
-import type { IPropertyAvailabilitySearch } from '@/interfaces/availability/IPropertyAvailabilitySearch'
+import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPropertyAvailability'
+import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
 import type { AxiosStatic } from 'axios'
 
 class AvailabilityService implements IService {

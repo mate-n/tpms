@@ -12,6 +12,17 @@ services:
       - .env
     ports:
       - "${PORT_FRONTEND}:8080"
+  nest:
+    build:
+      context: ./nest-app
+      dockerfile: Dockerfile
+      target: development-stage
+    volumes:
+      - ./nest-app/src:/app/src
+    env_file:
+      - .env
+    ports:
+      - "${PORT_BACKEND}:3000"
   npm:
     build: ./npm
     volumes:

@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { DateHelper } from '@/helpers/DateHelper'
-import type { IProperty } from '@/interfaces/IProperty'
-import type { IReservation } from '@/interfaces/IReservation'
-import type { IRoom } from '@/interfaces/IRoom'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import ProfileService from '@/services/ProfileService'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
@@ -12,6 +8,11 @@ import { useBasketItemsStore } from '@/stores/basketItems'
 import type { AxiosStatic } from 'axios'
 import { computed, ref, type Ref } from 'vue'
 import { inject, onBeforeMount } from 'vue'
+import ConservationFeesCard from './ConservationFeesCard.vue'
+import type { IProperty } from '@/shared/interfaces/IProperty'
+import type { IReservation } from '@/shared/interfaces/IReservation'
+import type { IRoom } from '@/shared/interfaces/IRoom'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 const basketItemsStore = useBasketItemsStore()
 
 const props = defineProps({
@@ -56,6 +57,8 @@ const numberOfNights = computed(() => {
 const removeReservation = (reservation: IReservation) => {
   basketItemsStore.removeReservation(reservation)
 }
+
+const conservationFeesDialog = ref(false)
 </script>
 
 <template>
@@ -121,10 +124,15 @@ const removeReservation = (reservation: IReservation) => {
           <v-col></v-col>
           <v-col></v-col>
           <v-col>
-            <v-btn>Add Conservation Fees</v-btn>
+            <v-btn @click="conservationFeesDialog = true">Add Conservation Fees</v-btn>
           </v-col>
         </v-row>
       </div>
     </v-card-text>
   </v-card>
+  <v-dialog v-model="conservationFeesDialog" fullscreen scrollable>
+    <v-card>
+      <ConservationFeesCard @close="conservationFeesDialog = false" />
+    </v-card>
+  </v-dialog>
 </template>

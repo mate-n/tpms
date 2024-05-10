@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import type { IProfile } from '@/interfaces/profiles/IProfile'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import { inject, onMounted, ref, type Ref } from 'vue'
 import NewProfile from './NewProfile.vue'
 import EditProfile from './EditProfile.vue'
-import { Profile } from '@/classes/Profile'
-import type { IProfileSearch } from '@/interfaces/profiles/IProfileSearch'
-import { ProfileSearch } from '@/classes/ProfileSearch'
-import type { IGuestType } from '@/interfaces/IGuestType'
 import { GuestTypeService } from '@/services/GuestTypeService'
 import { DateFormatter } from '@/helpers/DateFormatter'
+import { Profile } from '@/shared/classes/Profile'
+import { ProfileSearch } from '@/shared/classes/ProfileSearch'
+import type { IGuestType } from '@/shared/interfaces/IGuestType'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)

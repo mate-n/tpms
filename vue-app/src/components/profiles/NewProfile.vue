@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import ProfileForm from './ProfileForm.vue'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
-import { Profile } from '@/classes/Profile'
 import { CrudOperations } from '@/enums/CrudOperations'
 import { CloneHelper } from '@/helpers/CloneHelper'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import { Profile } from '@/shared/classes/Profile'
 const cloneHelper = new CloneHelper()
 const newProfile = ref<IProfile>(new Profile())
 const props = defineProps({

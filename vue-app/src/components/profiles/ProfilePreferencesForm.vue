@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { IBookableObject } from '@/interfaces/IBookableObject'
-import type { IFeature } from '@/interfaces/IFeature'
-import type { ILanguage } from '@/interfaces/ILanguage'
-import type { IProfile } from '@/interfaces/profiles/IProfile'
-import type { IProfilePreferencesPatchBody } from '@/interfaces/profiles/IProfilePreferencesPatchBody'
 import { BookableObjectService } from '@/services/BookableObjectService'
 import { FeatureService } from '@/services/FeatureService'
 import { LanguageService } from '@/services/LanguageService'
 import ProfileService from '@/services/ProfileService'
+import type { IBookableObject } from '@/shared/interfaces/IBookableObject'
+import type { IFeature } from '@/shared/interfaces/IFeature'
+import type { ILanguage } from '@/shared/interfaces/ILanguage'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import type { IProfilePreferencesPatchBody } from '@/shared/interfaces/profiles/IProfilePreferencesPatchBody'
 import type { AxiosStatic } from 'axios'
 import { inject, onBeforeMount, ref, watch, type Ref } from 'vue'
 const emits = defineEmits(['close'])

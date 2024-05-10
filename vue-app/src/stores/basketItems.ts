@@ -1,5 +1,5 @@
 import { IdentityHelper } from '@/helpers/IdentityHelper'
-import type { IReservation } from '@/interfaces/IReservation'
+import type { IReservation } from '@/shared/interfaces/IReservation'
 import { defineStore } from 'pinia'
 const identityHelper = new IdentityHelper()
 
@@ -17,10 +17,10 @@ export const useBasketItemsStore = defineStore('basketItems', {
       )
     },
     searchReservation(reservation: IReservation) {
-      return identityHelper.findByIdOrUniqueHash(
+      return identityHelper.findByIdOrLocalID(
         this.reservations,
         reservation.id,
-        reservation.uniqueHash
+        reservation.localID
       )
     }
   }

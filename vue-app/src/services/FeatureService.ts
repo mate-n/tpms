@@ -1,6 +1,6 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
-import type { IFeature } from '@/interfaces/IFeature'
 import type { IService } from '@/interfaces/IService'
+import type { IFeature } from '@/shared/interfaces/IFeature'
 import type { AxiosStatic } from 'axios'
 
 export class FeatureService implements IService {
