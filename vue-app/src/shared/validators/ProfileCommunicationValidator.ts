@@ -34,7 +34,6 @@ export class ProfileCommunicationValidator implements IValidator {
 
   isEmailValidPromise(profileCommunicationToBeValidated: IProfileCommunication): Promise<void> {
     return new Promise((finalResolve) => {
-      console.log(profileCommunicationToBeValidated)
       if (profileCommunicationToBeValidated.communicationTypeID) {
         const getCommunicationMethodPromise = this.communicationMethodService
           .get(profileCommunicationToBeValidated.communicationTypeID)
