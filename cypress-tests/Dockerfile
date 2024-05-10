@@ -13,5 +13,3 @@ RUN npm install
 RUN npx cypress install
 
 COPY entrypoint.sh .
-
-ENTRYPOINT ["sh", "entrypoint.sh"]
