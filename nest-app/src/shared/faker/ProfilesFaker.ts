@@ -50,6 +50,9 @@ export class ProfilesFaker {
     profile.invoiceIds = [faker.number.int(), faker.number.int()]
     profile.reservationIds = [faker.number.int(), faker.number.int()]
     profile.traceIds = [faker.number.int(), faker.number.int()]
+    profile.iataCode = faker.lorem.word()
+    profile.department = faker.lorem.word()
+    profile.name = faker.lorem.word()
     return profile
   }
 }

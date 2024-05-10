@@ -6,6 +6,7 @@ export class Profile implements IProfile {
   localID?: string
 
   //General
+  name: string
   firstName: string
   lastName: string
   middleName: string
@@ -22,6 +23,8 @@ export class Profile implements IProfile {
   inactive: boolean
   profileType: string
   isPasserby: boolean
+  department: string
+  iataCode: string
 
   //Communications / Contact details
   communicationIDs: number[]
@@ -76,6 +79,7 @@ export class Profile implements IProfile {
     this.localID = LocalIDFactory.createLocalID()
 
     //General
+    this.name = ''
     this.firstName = ''
     this.lastName = ''
     this.middleName = ''
@@ -90,8 +94,10 @@ export class Profile implements IProfile {
     this.salutShort = ''
     this.vipCodeIDs = []
     this.inactive = false
-    this.profileType = ''
+    this.profileType = 'Private'
     this.isPasserby = false
+    this.department = ''
+    this.iataCode = ''
 
     //Communications / Contact details
     this.communicationIDs = []

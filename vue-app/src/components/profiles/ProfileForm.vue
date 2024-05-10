@@ -16,6 +16,9 @@ import { Profile } from '@/shared/classes/Profile'
 import type { ILanguage } from '@/shared/interfaces/ILanguage'
 import type { ISalutation } from '@/shared/interfaces/ISalutation'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import PrivateProfileForm from './PrivateProfileForm.vue'
+import CompanyProfileForm from './CompanyProfileForm.vue'
+import TravelAgencyProfileForm from './TravelAgencyProfileForm.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const languageService = new LanguageService(axios)
@@ -68,54 +71,20 @@ const toggleActive = () => {
         </div>
       </v-col>
       <v-col cols="10" class="border-s">
-        <div class="d-flex">
-          <div style="flex-grow: 6">
-            <div class="d-flex big-vue-input-field-font-size">
-              <v-text-field
-                v-model="profileToBeEdited.lastName"
-                label="Last Name"
-                variant="underlined"
-                class="me-3"
-              ></v-text-field>
-              <v-text-field
-                v-model="profileToBeEdited.firstName"
-                label="First Name"
-                variant="underlined"
-                class="me-3"
-                aria-required="true"
-              ></v-text-field>
-              <v-text-field
-                v-model="profileToBeEdited.middleName"
-                label="Middle Name"
-                variant="underlined"
-                class="me-3"
-              ></v-text-field>
-            </div>
-            <div class="d-flex">
-              <v-autocomplete
-                label="Salutaton"
-                v-model="profileToBeEdited.salut"
-                :items="salutations"
-                item-title="value"
-                variant="underlined"
-                class="me-3"
-              ></v-autocomplete>
-              <v-text-field
-                v-model="profileToBeEdited.salutShort"
-                label="Personal Salutation"
-                variant="underlined"
-                class="me-3"
-              ></v-text-field>
-              <v-autocomplete
-                label="Language"
-                v-model="profileToBeEdited.language"
-                :items="languages"
-                item-title="value"
-                variant="underlined"
-                class="me-3"
-              ></v-autocomplete>
-            </div>
-          </div>
+        <div v-if="profileToBeEdited.profileType === 'Private'">
+          <PrivateProfileForm v-model="profileToBeEdited"></PrivateProfileForm>
+        </div>
+        <div
+          v-if="
+            profileToBeEdited.profileType === 'Company' ||
+            profileToBeEdited.profileType === 'Group' ||
+            profileToBeEdited.profileType === 'Source'
+          "
+        >
+          <CompanyProfileForm v-model="profileToBeEdited"></CompanyProfileForm>
+        </div>
+        <div v-if="profileToBeEdited.profileType === 'TravelAgency'">
+          <TravelAgencyProfileForm v-model="profileToBeEdited"></TravelAgencyProfileForm>
         </div>
       </v-col>
     </v-row>

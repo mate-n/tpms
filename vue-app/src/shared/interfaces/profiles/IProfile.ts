@@ -2,6 +2,7 @@ import type { IEntityWithIdentity } from '../IEntityWithIdentity'
 
 export interface IProfile extends IEntityWithIdentity {
   //General
+  name: string
   firstName: string
   lastName: string
   middleName: string
@@ -18,6 +19,8 @@ export interface IProfile extends IEntityWithIdentity {
   inactive: boolean
   profileType: string
   isPasserby: boolean
+  department: string
+  iataCode: string
 
   //Communications / Contact details
   communicationIDs: number[]

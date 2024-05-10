@@ -11,9 +11,12 @@ export class ProfilesService {
   }
 
   findAll(): IProfile[] {
-    const profile1 = this.profilesFaker.create();
-    const profile2 = this.profilesFaker.create();
-    const profile3 = this.profilesFaker.create();
+    let profile1 = this.profilesFaker.create();
+    profile1.id = 1;
+    let profile2 = this.profilesFaker.create();
+    profile2.id = 2;
+    let profile3 = this.profilesFaker.create();
+    profile3.id = 3;
     const profiles = [profile1, profile2, profile3];
     return profiles;
   }
@@ -31,9 +34,12 @@ export class ProfilesService {
   }
 
   search(profileSearch: IProfileSearch) {
-    const profile1 = this.profilesFaker.create();
-    const profile2 = this.profilesFaker.create();
-    const profile3 = this.profilesFaker.create();
+    let profile1 = this.profilesFaker.create();
+    profile1.id = 1;
+    let profile2 = this.profilesFaker.create();
+    profile2.id = 2;
+    let profile3 = this.profilesFaker.create();
+    profile3.id = 3;
     const profiles = [profile1, profile2, profile3];
     return profiles;
   }
