@@ -3,18 +3,26 @@ import { CommunicationMethodHelper } from '@/helpers/CommunicationMethodHelper'
 import { CommunicationMethodService } from '@/services/CommunicationMethodService'
 import type { ICommunicationMethod } from '@/shared/interfaces/ICommunicationMethod'
 import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
+import { ProfileCommunicationValidator } from '@/shared/validators/ProfileCommunicationValidator'
 import type { AxiosStatic } from 'axios'
-import { inject, onBeforeMount, ref, type Ref } from 'vue'
+import { computed, inject, onBeforeMount, ref, type Ref } from 'vue'
 const emit = defineEmits(['delete'])
 const axios: AxiosStatic | undefined = inject('axios')
 const communicationMethods: Ref<ICommunicationMethod[]> = ref([])
 const communicationMethodService = new CommunicationMethodService(axios)
 const communicationMethodHelper = new CommunicationMethodHelper()
+const profileCommunicationValidator = new ProfileCommunicationValidator()
 const profileCommunicationToBeEdited = defineModel({
   required: true,
   type: Object as () => IProfileCommunication
 })
-
+const profileCommunicationValuePlaceholder = computed(() => {
+  if (profileCommunicationToBeEdited.value.communicationTypeID === 143) {
+    return '+1 212 456 7890'
+  } else {
+    return ''
+  }
+})
 onBeforeMount(() => {
   communicationMethodService.getAvailableCommunicationMethods().then((response) => {
     communicationMethods.value = response
@@ -56,6 +64,11 @@ const deleteProfileCommunication = () => {
         label="Value"
         variant="underlined"
         class="me-3"
+        :placeholder="profileCommunicationValuePlaceholder"
+        :error-messages="
+          profileCommunicationToBeEdited.errors && profileCommunicationToBeEdited.errors['value']
+        "
+        @change="profileCommunicationValidator.validate(profileCommunicationToBeEdited)"
       ></v-text-field>
     </v-col>
     <v-col>
