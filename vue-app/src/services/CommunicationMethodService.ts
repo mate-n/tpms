@@ -21,4 +21,17 @@ export class CommunicationMethodService implements IService {
         })
     })
   }
+
+  get(id: number) {
+    return new Promise<ICommunicationMethod>((resolve, reject) => {
+      this.axiosInstance
+        .get('v1/profiles/communications/' + id)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
 }
