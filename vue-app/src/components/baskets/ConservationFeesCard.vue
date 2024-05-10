@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useBasketItemsStore } from '@/stores/basketItems'
-import ReservationInBasketCard from './ReservationInBasketCard.vue'
 import ConservationFeeCard from './ConservationFeeCard.vue'
 import { useFullscreen } from '@/composables/Fullscreen'
 import { ref } from 'vue'
