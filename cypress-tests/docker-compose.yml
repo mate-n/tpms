@@ -34,3 +34,5 @@ services:
     depends_on:
       - vue
       - nest
+    stdin_open: true
+    tty: true
