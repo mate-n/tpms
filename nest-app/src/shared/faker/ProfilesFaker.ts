@@ -4,7 +4,7 @@ import { Profile } from '../classes/Profile'
 
 export class ProfilesFaker {
   create(): IProfile {
-    let profile = new Profile()
+    const profile = new Profile()
     profile.id = faker.number.int()
     profile.firstName = faker.person.firstName()
     profile.lastName = faker.person.lastName()
@@ -28,7 +28,7 @@ export class ProfilesFaker {
     profile.birthday = faker.date.past()
     profile.gender = faker.person.gender()
     profile.nationality = faker.location.countryCode()
-    profile.company = faker.company.name()
+    profile.companyID = faker.number.int(3)
     profile.occupation = faker.person.jobTitle()
     profile.additionalInfoDefaultRateIDs = [faker.number.int(), faker.number.int()]
     profile.licensePlate = faker.vehicle.vin()
