@@ -193,7 +193,7 @@ watch(
           label="Nights"
           :model-value="numberOfNights"
           type="number"
-          :error-messages="reservation.errors['nights']"
+          :error-messages="reservation.errors && reservation.errors['nights']"
           :readonly="true"
         ></v-text-field>
       </v-col>
@@ -222,7 +222,7 @@ watch(
         <v-text-field
           label="Rooms"
           v-model="reservation.numberOfRooms"
-          :error-messages="reservation.errors['numberOfRooms']"
+          :error-messages="reservation.errors && reservation.errors['numberOfRooms']"
           type="number"
           @change="emitChange()"
         ></v-text-field>
@@ -234,7 +234,7 @@ watch(
           :items="roomsInDropdown"
           item-title="name"
           item-value="id"
-          :error-messages="reservation.errors['roomType']"
+          :error-messages="reservation.errors && reservation.errors['roomType']"
           @update:model-value="emitChange()"
         ></v-autocomplete>
       </v-col>
@@ -242,7 +242,7 @@ watch(
         <v-text-field
           label="Guests per room"
           v-model="reservation.numberOfGuestsPerRoom"
-          :error-messages="reservation.errors['numberOfGuestsPerRoom']"
+          :error-messages="reservation.errors && reservation.errors['numberOfGuestsPerRoom']"
           type="number"
           @change="emitChange()"
         ></v-text-field>
