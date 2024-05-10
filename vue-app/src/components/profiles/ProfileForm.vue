@@ -20,7 +20,7 @@ import PrivateProfileForm from './PrivateProfileForm.vue'
 import CompanyProfileForm from './CompanyProfileForm.vue'
 import TravelAgencyProfileForm from './TravelAgencyProfileForm.vue'
 const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
+const profileService = new ProfileService()
 const languageService = new LanguageService(axios)
 const salutationService = new SalutationService(axios)
 const cloneHelper = new CloneHelper()

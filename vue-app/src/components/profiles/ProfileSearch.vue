@@ -14,7 +14,7 @@ import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch
 import { CloneHelper } from '@/helpers/CloneHelper'
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
+const profileService = new ProfileService()
 const guestTypes: Ref<IGuestType[]> = ref([])
 const guestTypeService = new GuestTypeService(axios)
 const emit = defineEmits(['close', 'profileSelected'])

@@ -9,7 +9,7 @@ import { RoomService } from '@/services/RoomService'
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
 const propertyService = new PropertyService(axios)
-const profileService = new ProfileService(axios)
+const profileService = new ProfileService()
 const roomService = new RoomService(axios)
 const dateHelper = new DateHelper()
 const reservationValidator = new ReservationValidator()
