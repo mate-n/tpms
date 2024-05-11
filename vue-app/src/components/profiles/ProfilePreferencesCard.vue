@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { FeatureService } from '@/services/FeatureService'
-import type { AxiosStatic } from 'axios'
-import { inject, onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import ProfilePreferencesForm from './ProfilePreferencesForm.vue'
 import { BookableObjectService } from '@/services/BookableObjectService'
 import type { IBookableObject } from '@/shared/interfaces/IBookableObject'
 import type { IFeature } from '@/shared/interfaces/IFeature'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-const axios: AxiosStatic | undefined = inject('axios')
-const featureService = new FeatureService(axios)
-const bookableObjectService = new BookableObjectService(axios)
+const featureService = new FeatureService()
+const bookableObjectService = new BookableObjectService()
 const availableFeatures = ref<IFeature[]>([])
 const availableBookableObjects = ref<IBookableObject[]>([])
 const profileToBeEdited = defineModel({

@@ -2,11 +2,13 @@ import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
 import type { IService } from '@/interfaces/IService'
 import type { IBookableObject } from '@/shared/interfaces/IBookableObject'
 import type { AxiosStatic } from 'axios'
+import { inject } from 'vue'
+const axios: AxiosStatic | undefined = inject('axios')
 
 export class BookableObjectService implements IService {
   axiosInstance: AxiosStatic
-  constructor(axiosInstance: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
+  constructor() {
+    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
 
   getAvailableBookableObjects() {

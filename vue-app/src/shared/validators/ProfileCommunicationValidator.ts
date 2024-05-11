@@ -1,12 +1,9 @@
 import { CommunicationMethodService } from '@/services/CommunicationMethodService'
 import type { IValidator } from '../interfaces/IValidator'
 import type { IProfileCommunication } from '../interfaces/profiles/IProfileCommunication'
-import type { AxiosStatic } from 'axios'
-import { inject } from 'vue'
-const axios: AxiosStatic | undefined = inject('axios')
 
 export class ProfileCommunicationValidator implements IValidator {
-  communicationMethodService = new CommunicationMethodService(axios)
+  communicationMethodService = new CommunicationMethodService()
 
   validatePromise(profileCommunicationToBeValidated: IProfileCommunication): Promise<void> {
     return new Promise((finalResolve) => {
@@ -35,7 +32,7 @@ export class ProfileCommunicationValidator implements IValidator {
   isEmailValidPromise(profileCommunicationToBeValidated: IProfileCommunication): Promise<void> {
     return new Promise((finalResolve) => {
       if (profileCommunicationToBeValidated.communicationTypeID) {
-        const getCommunicationMethodPromise = this.communicationMethodService
+        this.communicationMethodService
           .get(profileCommunicationToBeValidated.communicationTypeID)
           .then((communicationMethods) => {
             console.log(communicationMethods)

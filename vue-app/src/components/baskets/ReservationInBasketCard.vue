@@ -5,9 +5,8 @@ import ProfileService from '@/services/ProfileService'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
 import { useBasketItemsStore } from '@/stores/basketItems'
-import type { AxiosStatic } from 'axios'
 import { computed, ref, type Ref } from 'vue'
-import { inject, onBeforeMount } from 'vue'
+import { onBeforeMount } from 'vue'
 import ConservationFeesCard from './ConservationFeesCard.vue'
 import type { IProperty } from '@/shared/interfaces/IProperty'
 import type { IReservation } from '@/shared/interfaces/IReservation'
@@ -21,10 +20,9 @@ const props = defineProps({
 const property: Ref<IProperty | null> = ref(null)
 const profile: Ref<IProfile | null> = ref(null)
 const room: Ref<IRoom | null> = ref(null)
-const axios: AxiosStatic | undefined = inject('axios')
-const propertyService = new PropertyService(axios)
+const propertyService = new PropertyService()
 const profileService = new ProfileService()
-const roomService = new RoomService(axios)
+const roomService = new RoomService()
 const dateFormatter = new DateFormatter()
 const dateHelper = new DateHelper()
 onBeforeMount(() => {

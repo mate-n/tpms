@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ProfileAddressService } from '@/services/profiles/ProfileAddressService'
-import type { AxiosStatic } from 'axios'
-import { computed, inject, onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import ProfileAddressesForm from './ProfileAddressesForm.vue'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddress'
@@ -10,8 +9,7 @@ defineProps({
   profile: { type: Object as () => IProfile, required: true }
 })
 const profileAddressesDialog = ref(false)
-const axios: AxiosStatic | undefined = inject('axios')
-const profileAddressService = new ProfileAddressService(axios)
+const profileAddressService = new ProfileAddressService()
 const profileAddresses = ref<IProfileAddress[]>([])
 const primaryOrFirstAddress = computed(() => {
   const primaryAddress = profileAddresses.value.find((profileAddress) => profileAddress.primary)

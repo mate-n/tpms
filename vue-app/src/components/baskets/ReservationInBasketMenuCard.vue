@@ -6,9 +6,8 @@ import type { IProperty } from '@/shared/interfaces/IProperty'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import { useBasketItemsStore } from '@/stores/basketItems'
-import type { AxiosStatic } from 'axios'
 import { ref, type Ref } from 'vue'
-import { inject, onBeforeMount } from 'vue'
+import { onBeforeMount } from 'vue'
 const basketItemsStore = useBasketItemsStore()
 
 const props = defineProps({
@@ -16,9 +15,8 @@ const props = defineProps({
 })
 const property: Ref<IProperty | null> = ref(null)
 const room: Ref<IRoom | null> = ref(null)
-const axios: AxiosStatic | undefined = inject('axios')
-const propertyService = new PropertyService(axios)
-const roomService = new RoomService(axios)
+const propertyService = new PropertyService()
+const roomService = new RoomService()
 const dateFormatter = new DateFormatter()
 
 onBeforeMount(() => {

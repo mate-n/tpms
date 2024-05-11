@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ProfileService from '@/services/ProfileService'
-import type { AxiosStatic } from 'axios'
-import { inject, onMounted, ref, watch, type Ref } from 'vue'
+import { onMounted, ref, watch, type Ref } from 'vue'
 import NewProfile from './NewProfile.vue'
 import EditProfile from './EditProfile.vue'
 import { GuestTypeService } from '@/services/GuestTypeService'
@@ -13,10 +12,9 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
 import { CloneHelper } from '@/helpers/CloneHelper'
 const dateFormatter = new DateFormatter()
-const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService()
 const guestTypes: Ref<IGuestType[]> = ref([])
-const guestTypeService = new GuestTypeService(axios)
+const guestTypeService = new GuestTypeService()
 const emit = defineEmits(['close', 'profileSelected'])
 const close = () => emit('close')
 const profileSearch: Ref<IProfileSearch> = ref(new ProfileSearch())

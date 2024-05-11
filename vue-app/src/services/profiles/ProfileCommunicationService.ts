@@ -3,11 +3,13 @@ import { AxiosInstanceFactory } from '../../factories/AxiosInstanceFactory'
 import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
 import type { IProfileCommunicationSearch } from '@/shared/interfaces/profiles/IProfileCommunicationSearch'
 import type { IProfilesService } from '@/interfaces/IProfilesService'
+import { inject } from 'vue'
+const axios: AxiosStatic | undefined = inject('axios')
 
 export class ProfileCommunicationService implements IProfilesService {
   axiosInstance: AxiosStatic
-  constructor(axiosInstance: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
+  constructor() {
+    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
   get(profileID: number, id: number) {
     return new Promise((resolve, reject) => {

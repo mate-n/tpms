@@ -3,11 +3,9 @@ import { RomanNumeralConverter } from '@/helpers/RomanNumeralConverter'
 import { CountryService } from '@/services/CountryService'
 import type { ICountry } from '@/shared/interfaces/ICountry'
 import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddress'
-import type { AxiosStatic } from 'axios'
-import { inject, onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 const romanNumeralConverter = new RomanNumeralConverter()
-const axios: AxiosStatic | undefined = inject('axios')
-const countryService = new CountryService(axios)
+const countryService = new CountryService()
 const availableCountries = ref<ICountry[]>([])
 defineProps({
   indexOfProfileAddress: { type: Number, required: true }

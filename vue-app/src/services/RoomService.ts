@@ -2,11 +2,13 @@ import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
 import type { IService } from '@/interfaces/IService'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import type { AxiosStatic } from 'axios'
+import { inject } from 'vue'
+const axios: AxiosStatic | undefined = inject('axios')
 
 export class RoomService implements IService {
   axiosInstance: AxiosStatic
-  constructor(axiosInstance: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
+  constructor() {
+    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
 
   get(id: number) {

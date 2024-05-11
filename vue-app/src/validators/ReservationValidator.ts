@@ -5,6 +5,7 @@ import type { IEntityWithErrors } from '@/shared/interfaces/IEntityWithErrors'
 
 export class ReservationValidator implements IValidator {
   validatePromise(objectToBeValidated: IEntityWithErrors): Promise<void> {
+    console.log(objectToBeValidated)
     throw new Error('Method not implemented.')
   }
   private dateHelper: DateHelper = new DateHelper()

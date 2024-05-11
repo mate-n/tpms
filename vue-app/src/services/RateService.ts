@@ -2,11 +2,13 @@ import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
 import type { IService } from '@/interfaces/IService'
 import type { IRate } from '@/shared/interfaces/IRate'
 import type { AxiosStatic } from 'axios'
+import { inject } from 'vue'
+const axios: AxiosStatic | undefined = inject('axios')
 
 export class RateService implements IService {
   axiosInstance: AxiosStatic
-  constructor(axiosInstance: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
+  constructor() {
+    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
 
   getAvailableRates() {

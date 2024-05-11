@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { inject, onBeforeMount, ref, watch, type Ref } from 'vue'
-import type { AxiosStatic } from 'axios'
+import { onBeforeMount, ref, watch, type Ref } from 'vue'
 import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
 import ProfileCommunicationForm from './ProfileCommunicationForm.vue'
 import { IdentityHelper } from '@/helpers/IdentityHelper'
@@ -24,8 +23,7 @@ const showSaveButton = ref(false)
 const addProfileCommunication = () => {
   profileCommunications.value.push(new ProfileCommunication())
 }
-const axios: AxiosStatic | undefined = inject('axios')
-const profileCommunicationService = new ProfileCommunicationService(axios)
+const profileCommunicationService = new ProfileCommunicationService()
 
 onBeforeMount(() => {
   reloadProfileCommunications()

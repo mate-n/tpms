@@ -4,12 +4,10 @@ import { CommunicationMethodService } from '@/services/CommunicationMethodServic
 import type { ICommunicationMethod } from '@/shared/interfaces/ICommunicationMethod'
 import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
 import { ProfileCommunicationValidator } from '@/shared/validators/ProfileCommunicationValidator'
-import type { AxiosStatic } from 'axios'
-import { computed, inject, onBeforeMount, ref, type Ref } from 'vue'
+import { computed, onBeforeMount, ref, type Ref } from 'vue'
 const emit = defineEmits(['delete'])
-const axios: AxiosStatic | undefined = inject('axios')
 const communicationMethods: Ref<ICommunicationMethod[]> = ref([])
-const communicationMethodService = new CommunicationMethodService(axios)
+const communicationMethodService = new CommunicationMethodService()
 const communicationMethodHelper = new CommunicationMethodHelper()
 const profileCommunicationValidator = new ProfileCommunicationValidator()
 const profileCommunicationToBeEdited = defineModel({

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ProfileService from '@/services/ProfileService'
-import type { AxiosStatic } from 'axios'
-import { inject, onMounted, ref, watch, type Ref } from 'vue'
+import { onMounted, ref, watch, type Ref } from 'vue'
 import ProfileAvatar from './ProfileAvatar.vue'
 import ProfileContactDetailsCard from './ProfileContactDetailsCard.vue'
 import ProfileAddressCard from './ProfileAddressCard.vue'
@@ -19,10 +18,9 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import PrivateProfileForm from './PrivateProfileForm.vue'
 import CompanyProfileForm from './CompanyProfileForm.vue'
 import TravelAgencyProfileForm from './TravelAgencyProfileForm.vue'
-const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService()
-const languageService = new LanguageService(axios)
-const salutationService = new SalutationService(axios)
+const languageService = new LanguageService()
+const salutationService = new SalutationService()
 const cloneHelper = new CloneHelper()
 const props = defineProps({
   profileInput: { type: Object as () => IProfile, required: true },

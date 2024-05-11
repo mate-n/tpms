@@ -2,18 +2,16 @@
 import { GenderService } from '@/services/GenderService'
 import { NationalityService } from '@/services/NationalityService'
 import { CountryService } from '@/services/CountryService'
-import type { AxiosStatic } from 'axios'
-import { computed, inject, onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { DateFormatter } from '@/helpers/DateFormatter'
 import type { ICountry } from '@/shared/interfaces/ICountry'
 import type { IGender } from '@/shared/interfaces/IGender'
 import type { INationality } from '@/shared/interfaces/INationality'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 const dateFormatter = new DateFormatter()
-const axios: AxiosStatic | undefined = inject('axios')
-const genderService = new GenderService(axios)
-const nationalityService = new NationalityService(axios)
-const countryService = new CountryService(axios)
+const genderService = new GenderService()
+const nationalityService = new NationalityService()
+const countryService = new CountryService()
 const availableGenders = ref<IGender[]>([])
 const availableNationalities = ref<INationality[]>([])
 const availableCountries = ref<ICountry[]>([])
