@@ -127,18 +127,34 @@ const toggleActive = () => {
         >{{ $t('actions.save') }}</v-btn
       >
     </div>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-clipboard-text-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-calendar-blank-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-security</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-account-check-outline</v-icon>
-    </v-btn>
+    <v-tooltip text="Stationery">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-clipboard-text-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+    <v-tooltip text="Reservations">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-calendar-blank-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+    <v-tooltip text="Privacy Settings">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-security</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+    <v-tooltip text="New Reservation">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-account-check-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
   </v-toolbar>
   <v-container fluid class="bg-lightgray pt-0">
     <v-row>
