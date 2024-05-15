@@ -6,8 +6,10 @@ import type { IStationery } from '@/shared/interfaces/IStationery'
 import { onMounted, ref, type Ref } from 'vue'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
+import { StationeryService } from '@/services/StationeryService'
 const axios: AxiosStatic | undefined = inject('axios')
 const languageService = new LanguageService(axios)
+const stationeryService = new StationeryService(axios)
 const stationeryToBeEdited: Ref<Stationery> = ref(new Stationery())
 const emits = defineEmits(['close'])
 const languages: Ref<ILanguage[]> = ref([])
@@ -16,6 +18,9 @@ onMounted(() => {
     languages.value = response
   })
 })
+const send = () => {
+  stationeryService.post(stationeryToBeEdited.value)
+}
 </script>
 
 <template>
@@ -64,7 +69,10 @@ onMounted(() => {
           v-model="stationeryToBeEdited.additionalText"
         ></v-textarea>
       </v-card>
+      <div class="d-flex justify-end mt-3">
+        <v-btn class="secondary-button">Cancel</v-btn>
+        <v-btn class="ml-2 primary-button" @click="send()">Send</v-btn>
+      </div>
     </v-container>
   </div>
 </template>
-onMounted,
