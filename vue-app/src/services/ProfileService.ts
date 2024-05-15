@@ -4,12 +4,10 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
 import type { IProfilePreferencesPatchBody } from '@/shared/interfaces/profiles/IProfilePreferencesPatchBody'
 import type { IService } from '@/interfaces/IService'
-import { inject } from 'vue'
-const axios: AxiosStatic | undefined = inject('axios')
 
 class ProfileService implements IService {
   axiosInstance: AxiosStatic
-  constructor() {
+  constructor(axios: AxiosStatic | undefined) {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
 

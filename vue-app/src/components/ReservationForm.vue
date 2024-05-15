@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, ref, watch, type Ref } from 'vue'
+import { computed, inject, onBeforeMount, ref, watch, type Ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ReservationValidator } from '@/validators/ReservationValidator'
 import AvailabilityService from '@/services/AvailabilityService'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService()
 const propertyService = new PropertyService()
-const profileService = new ProfileService()
+const profileService = new ProfileService(axios)
 const roomService = new RoomService()
 const dateHelper = new DateHelper()
 const reservationValidator = new ReservationValidator()

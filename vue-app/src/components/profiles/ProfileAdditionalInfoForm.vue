@@ -2,11 +2,13 @@
 import { RateService } from '@/services/RateService'
 import type { IRate } from '@/shared/interfaces/IRate'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import { onMounted, ref, watch, type Ref } from 'vue'
+import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileSearch from './ProfileSearch.vue'
 import ProfileService from '@/services/ProfileService'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
-const profileService = new ProfileService()
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
+const profileService = new ProfileService(axios)
 const rateService = new RateService()
 const availableRates = ref<IRate[]>([])
 const profileToBeEdited = defineModel({

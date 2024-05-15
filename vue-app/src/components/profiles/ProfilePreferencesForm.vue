@@ -8,7 +8,9 @@ import type { IFeature } from '@/shared/interfaces/IFeature'
 import type { ILanguage } from '@/shared/interfaces/ILanguage'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfilePreferencesPatchBody } from '@/shared/interfaces/profiles/IProfilePreferencesPatchBody'
-import { onBeforeMount, ref, watch, type Ref } from 'vue'
+import { inject, onBeforeMount, ref, watch, type Ref } from 'vue'
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
 const emits = defineEmits(['close'])
 const profileToBeEdited = defineModel({
   required: true,
@@ -16,7 +18,7 @@ const profileToBeEdited = defineModel({
 })
 const showSaveButton = ref(false)
 const featureService = new FeatureService()
-const profileService = new ProfileService()
+const profileService = new ProfileService(axios)
 const languageService = new LanguageService()
 const bookableObjectService = new BookableObjectService()
 const featuresInDropdown = ref<IFeature[]>([])
