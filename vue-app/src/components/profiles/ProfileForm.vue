@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import ProfileService from '@/services/ProfileService'
-import { onMounted, ref, watch, type Ref } from 'vue'
+import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileAvatar from './ProfileAvatar.vue'
 import ProfileContactDetailsCard from './ProfileContactDetailsCard.vue'
 import ProfileAddressCard from './ProfileAddressCard.vue'
@@ -18,7 +17,12 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import PrivateProfileForm from './PrivateProfileForm.vue'
 import CompanyProfileForm from './CompanyProfileForm.vue'
 import TravelAgencyProfileForm from './TravelAgencyProfileForm.vue'
-const profileService = new ProfileService()
+import { ProfileValidator } from '@/shared/validators/ProfileValidator'
+import ProfileService from '@/services/ProfileService'
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
+const profileService = new ProfileService(axios)
+const profileValidator = new ProfileValidator()
 const languageService = new LanguageService()
 const salutationService = new SalutationService()
 const cloneHelper = new CloneHelper()
@@ -43,6 +47,10 @@ onMounted(() => {
 watch(props, (newInput) => {
   profileToBeEdited.value = cloneHelper.clone(newInput.profileInput)
 })
+
+const validate = () => {
+  profileValidator.validate(profileToBeEdited.value)
+}
 
 const save = () => {
   if (props.crudOperation === CrudOperations.Create) {
@@ -70,7 +78,7 @@ const toggleActive = () => {
       </v-col>
       <v-col cols="10" class="border-s">
         <div v-if="profileToBeEdited.profileType === 'Private'">
-          <PrivateProfileForm v-model="profileToBeEdited"></PrivateProfileForm>
+          <PrivateProfileForm v-model="profileToBeEdited" @change="validate()"></PrivateProfileForm>
         </div>
         <div
           v-if="
