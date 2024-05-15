@@ -1,4 +1,3 @@
-import { CommunicationMethodService } from '@/services/CommunicationMethodService'
 import type { IValidator } from '../interfaces/IValidator'
 import type { IProfileCommunication } from '../interfaces/profiles/IProfileCommunication'
 

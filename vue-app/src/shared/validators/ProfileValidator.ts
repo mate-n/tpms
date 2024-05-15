@@ -7,9 +7,6 @@ export class ProfileValidator implements IValidator {
     profile.errors = {}
     this.isNamePresent(profile)
   }
-  validatePromise(objectToBeValidated: IEntityWithErrors): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
 
   isNamePresent(profile: IProfile): void {
     if (profile.profileType === 'Private') {
