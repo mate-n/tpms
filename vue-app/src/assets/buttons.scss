@@ -57,3 +57,17 @@
     background-color: darken(map-get($main-colors, 'white'), 3%) !important;
   }
 }
+
+.standard-card-toolbar-button {
+  background-color: map-get($main-colors, 'white');
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-right: 1.1rem;
+  padding-left: 1.1rem;
+  border-left: 0.1rem solid lightgray;
+
+  &:hover {
+    background-color: darken(map-get($main-colors, 'white'), 3%) !important;
+  }
+}
