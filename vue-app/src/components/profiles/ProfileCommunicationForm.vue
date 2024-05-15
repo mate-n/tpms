@@ -7,12 +7,14 @@ import { ProfileCommunicationValidator } from '@/shared/validators/ProfileCommun
 import { computed, onBeforeMount, ref, type Ref } from 'vue'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
+import { ValidityHelper } from '@/helpers/ValidityHelper'
 const axios: AxiosStatic | undefined = inject('axios')
 const emit = defineEmits(['delete'])
 const communicationMethods: Ref<ICommunicationMethod[]> = ref([])
 const communicationMethodService = new CommunicationMethodService(axios)
 const communicationMethodHelper = new CommunicationMethodHelper()
 const profileCommunicationValidator = new ProfileCommunicationValidator()
+const validityHelper = new ValidityHelper()
 const profileCommunicationToBeEdited = defineModel({
   required: true,
   type: Object as () => IProfileCommunication
@@ -33,6 +35,22 @@ onBeforeMount(() => {
 const deleteProfileCommunication = () => {
   emit('delete', profileCommunicationToBeEdited.value)
 }
+
+const updateCommunicationTypeName = () => {
+  const foundCommunicationMethod = communicationMethods.value.find(
+    (cm) => cm.id === profileCommunicationToBeEdited.value.communicationTypeID
+  )
+  if (foundCommunicationMethod) {
+    profileCommunicationToBeEdited.value.communicationTypeName = foundCommunicationMethod?.value
+  } else {
+    profileCommunicationToBeEdited.value.communicationTypeName = ''
+  }
+  validate()
+}
+
+const validate = () => {
+  profileCommunicationValidator.validate(profileCommunicationToBeEdited.value)
+}
 </script>
 
 <template>
@@ -41,9 +59,7 @@ const deleteProfileCommunication = () => {
       <v-icon class="text-gray">
         {{
           communicationMethodHelper.getIconNameForCommunicationMethod(
-            communicationMethods.find(
-              (cm) => cm.id === profileCommunicationToBeEdited.communicationTypeID
-            )?.value
+            profileCommunicationToBeEdited.communicationTypeName
           )
         }}
       </v-icon>
@@ -57,6 +73,7 @@ const deleteProfileCommunication = () => {
         item-title="value"
         item-value="id"
         class="me-3"
+        @update:model-value="updateCommunicationTypeName()"
       ></v-select>
     </v-col>
     <v-col>
@@ -69,7 +86,7 @@ const deleteProfileCommunication = () => {
         :error-messages="
           profileCommunicationToBeEdited.errors && profileCommunicationToBeEdited.errors['value']
         "
-        @change="profileCommunicationValidator.validate(profileCommunicationToBeEdited)"
+        @update:model-value="validate()"
       ></v-text-field>
     </v-col>
     <v-col>
