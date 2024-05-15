@@ -6,6 +6,7 @@ import AvailabilityService from '@/services/AvailabilityService'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
 import type { AxiosStatic } from 'axios'
+const validityHelper = new ValidityHelper()
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
 const propertyService = new PropertyService(axios)
@@ -32,6 +33,7 @@ import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPr
 import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
+import { ValidityHelper } from '@/helpers/ValidityHelper'
 
 onBeforeMount(() => {
   propertyService.getProperties().then((response: IProperty[]) => {
@@ -88,6 +90,8 @@ const departureDateString = computed(() => {
 })
 
 const check = () => {
+  reservationValidator.validate(reservation.value)
+  if (!validityHelper.isValid(reservation.value)) return
   if (!reservation.value.propertyID) return
   const propertyAvailabilitySearch: IPropertyAvailabilitySearch = {
     propertyID: reservation.value.propertyID,
@@ -104,7 +108,6 @@ const check = () => {
     .then((response: IPropertyAvailability[]) => {
       reservation.value.propertyAvailabilities = response
       reservation.value.baseRateCategory = 'Base Rate | Low Season'
-      reservationValidator.validate(reservation.value)
       emit('check')
     })
 }
@@ -162,6 +165,7 @@ watch(
           :items="propertiesInDropdown"
           item-title="name"
           item-value="id"
+          :error-messages="reservation.errors && reservation.errors['propertyID']"
           @update:model-value="emitChange()"
         ></v-select>
         <v-icon>mdi-city</v-icon>
@@ -234,7 +238,7 @@ watch(
           :items="roomsInDropdown"
           item-title="name"
           item-value="id"
-          :error-messages="reservation.errors && reservation.errors['roomType']"
+          :error-messages="reservation.errors && reservation.errors['roomID']"
           @update:model-value="emitChange()"
         ></v-autocomplete>
       </v-col>
