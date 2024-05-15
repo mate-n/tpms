@@ -8,6 +8,8 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddress'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
+import { ValidityHelper } from '@/helpers/ValidityHelper'
+const validityHelper = new ValidityHelper()
 const axios: AxiosStatic | undefined = inject('axios')
 const identityHelper = new IdentityHelper()
 const profileAddressService = new ProfileAddressService(axios)
@@ -19,13 +21,17 @@ const props = defineProps({
 watch(
   profileAddresses,
   () => {
-    showSaveButton.value = true
+    showSaveButton.value = areAllProfileAddressesValid()
   },
   { deep: true }
 )
 const showSaveButton = ref(false)
 const addProfileAddress = () => {
   profileAddresses.value.push(new ProfileAddress())
+}
+
+const areAllProfileAddressesValid = () => {
+  return profileAddresses.value.every((profileAddress) => validityHelper.isValid(profileAddress))
 }
 
 const getProfileAddresses = () => {
