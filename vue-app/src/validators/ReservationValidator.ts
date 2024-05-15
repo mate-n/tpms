@@ -15,7 +15,6 @@ export class ReservationValidator implements IValidator {
     this.isGuestsPerRoomValid(reservation)
     this.isRoomsValid(reservation)
     this.isNightsValid(reservation)
-    this.isRoomIDValid(reservation)
     this.isPropertyIDValid(reservation)
   }
 

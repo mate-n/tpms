@@ -91,7 +91,6 @@ const departureDateString = computed(() => {
 
 const check = () => {
   reservationValidator.validate(reservation.value)
-  if (!validityHelper.isValid(reservation.value)) return
   if (!reservation.value.propertyID) return
   const propertyAvailabilitySearch: IPropertyAvailabilitySearch = {
     propertyID: reservation.value.propertyID,
