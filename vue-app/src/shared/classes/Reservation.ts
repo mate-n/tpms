@@ -1,3 +1,4 @@
+import { DateHelper } from '@/helpers/DateHelper'
 import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
 import type { IReservation } from '../../shared/interfaces/IReservation'
 import type { IPropertyAvailability } from '../../shared/interfaces/availability/IPropertyAvailability'
@@ -16,11 +17,12 @@ export class Reservation implements IReservation {
   propertyAvailabilities: IPropertyAvailability[]
   issues: string[]
   errors: Record<string, string>
+  dateHelper: DateHelper = new DateHelper()
 
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
     this.arrivalDate = new Date()
-    this.departureDate = new Date()
+    this.departureDate = this.dateHelper.addDays(this.arrivalDate, 1)
     this.numberOfRooms = 1
     this.numberOfGuestsPerRoom = 1
     this.baseRateCategory = ''
@@ -32,11 +34,14 @@ export class Reservation implements IReservation {
 
   reset() {
     this.arrivalDate = new Date()
-    this.departureDate = new Date()
+    this.departureDate = this.dateHelper.addDays(this.arrivalDate, 1)
     this.numberOfRooms = 1
     this.numberOfGuestsPerRoom = 1
     this.baseRateCategory = ''
     this.orderIndex = 0
+    this.roomID = undefined
+    this.profileID = undefined
+    this.propertyID = undefined
     this.propertyAvailabilities = []
     this.issues = []
     this.errors = {}
