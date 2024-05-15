@@ -70,12 +70,12 @@ const changePrimary = () => {
     <v-col>
       <v-select
         v-model="profileCommunicationToBeEdited.communicationTypeID"
-        label="Type *"
+        label="Type"
         variant="underlined"
         :items="communicationMethods"
         item-title="value"
         item-value="id"
-        class="me-3"
+        class="me-3 required-input"
         :error-messages="
           profileCommunicationToBeEdited.errors &&
           profileCommunicationToBeEdited.errors['communicationTypeID']
@@ -86,9 +86,9 @@ const changePrimary = () => {
     <v-col>
       <v-text-field
         v-model="profileCommunicationToBeEdited.value"
-        label="Value *"
+        label="Value"
         variant="underlined"
-        class="me-3"
+        class="me-3 required-input"
         :placeholder="profileCommunicationValuePlaceholder"
         :error-messages="
           profileCommunicationToBeEdited.errors && profileCommunicationToBeEdited.errors['value']
