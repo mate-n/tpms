@@ -10,6 +10,7 @@ const salutationService = new SalutationService()
 const profileToBeEdited = defineModel({ required: true, type: Object as () => IProfile })
 const languages: Ref<ILanguage[]> = ref([])
 const salutations: Ref<ISalutation[]> = ref([])
+const emit = defineEmits(['change'])
 
 onMounted(() => {
   languageService.getAvailableLanguages().then((response) => {
@@ -27,9 +28,11 @@ onMounted(() => {
       <div class="d-flex big-vue-input-field-font-size">
         <v-text-field
           v-model="profileToBeEdited.lastName"
-          label="Last Name"
+          label="Last Name *"
           variant="underlined"
           class="me-3"
+          :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['lastName']"
+          @update:modelValue="emit('change')"
         ></v-text-field>
         <v-text-field
           v-model="profileToBeEdited.firstName"
