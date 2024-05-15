@@ -7,20 +7,18 @@ import { ProfileCommunicationValidator } from '@/shared/validators/ProfileCommun
 import { computed, onBeforeMount, ref, type Ref } from 'vue'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
-import { ValidityHelper } from '@/helpers/ValidityHelper'
 const axios: AxiosStatic | undefined = inject('axios')
-const emit = defineEmits(['delete'])
+const emit = defineEmits(['delete', 'changeCommunicationType', 'changePrimary'])
 const communicationMethods: Ref<ICommunicationMethod[]> = ref([])
 const communicationMethodService = new CommunicationMethodService(axios)
 const communicationMethodHelper = new CommunicationMethodHelper()
 const profileCommunicationValidator = new ProfileCommunicationValidator()
-const validityHelper = new ValidityHelper()
 const profileCommunicationToBeEdited = defineModel({
   required: true,
   type: Object as () => IProfileCommunication
 })
 const profileCommunicationValuePlaceholder = computed(() => {
-  if (profileCommunicationToBeEdited.value.communicationTypeID === 143) {
+  if (profileCommunicationToBeEdited.value.communicationTypeName === 'Phone') {
     return '+1 212 456 7890'
   } else {
     return ''
@@ -46,10 +44,15 @@ const updateCommunicationTypeName = () => {
     profileCommunicationToBeEdited.value.communicationTypeName = ''
   }
   validate()
+  emit('changeCommunicationType', profileCommunicationToBeEdited.value)
 }
 
 const validate = () => {
   profileCommunicationValidator.validate(profileCommunicationToBeEdited.value)
+}
+
+const changePrimary = () => {
+  emit('changePrimary', profileCommunicationToBeEdited.value)
 }
 </script>
 
@@ -90,7 +93,12 @@ const validate = () => {
       ></v-text-field>
     </v-col>
     <v-col>
-      <v-checkbox label="Primary" v-model="profileCommunicationToBeEdited.primary"> </v-checkbox>
+      <v-checkbox
+        label="Primary"
+        v-model="profileCommunicationToBeEdited.primary"
+        @update:model-value="changePrimary()"
+      >
+      </v-checkbox>
     </v-col>
     <v-col class="d-flex justify-end">
       <v-btn variant="text" icon>

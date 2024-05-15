@@ -83,6 +83,28 @@ const deleteProfileCommunication = (profileCommunication: IProfileCommunication)
       !identityHelper.isSame(innerProfileCommunication, profileCommunication)
   )
 }
+
+const changeCommunicationType = (profileCommunication: IProfileCommunication) => {
+  const foundProfileCommunicationWithSameType = profileCommunications.value.filter(
+    (innerProfileCommunication) =>
+      innerProfileCommunication.communicationTypeID === profileCommunication.communicationTypeID
+  )
+
+  if (foundProfileCommunicationWithSameType.length === 1) {
+    profileCommunication.primary = true
+  }
+}
+
+const changePrimary = (profileCommunication: IProfileCommunication) => {
+  const foundProfileCommunicationWithSameType = profileCommunications.value.filter(
+    (innerProfileCommunication) =>
+      innerProfileCommunication.communicationTypeID === profileCommunication.communicationTypeID
+  )
+  for (const innerProfileCommunication of foundProfileCommunicationWithSameType) {
+    innerProfileCommunication.primary = false
+  }
+  profileCommunication.primary = true
+}
 </script>
 <template>
   <v-toolbar fluid class="profiles-card-toolbar">
@@ -109,6 +131,10 @@ const deleteProfileCommunication = (profileCommunication: IProfileCommunication)
       <div class="bg-white mb-2">
         <ProfileCommunicationForm
           v-model="profileCommunications[index]"
+          @change-communication-type="
+            (profileCommunication) => changeCommunicationType(profileCommunication)
+          "
+          @change-primary="(profileCommunication) => changePrimary(profileCommunication)"
           @delete="(profileCOmmunication) => deleteProfileCommunication(profileCommunication)"
         ></ProfileCommunicationForm>
       </div>
