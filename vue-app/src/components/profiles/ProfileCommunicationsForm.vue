@@ -8,6 +8,8 @@ import { ProfileCommunication } from '@/shared/classes/ProfileCommunication'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
+import { ValidityHelper } from '@/helpers/ValidityHelper'
+const validityHelper = new ValidityHelper()
 const axios: AxiosStatic | undefined = inject('axios')
 const identityHelper = new IdentityHelper()
 const emit = defineEmits(['close'])
@@ -18,11 +20,16 @@ const props = defineProps({
 watch(
   profileCommunications,
   () => {
-    showSaveButton.value = true
+    showSaveButton.value = areAllProfileCommunicationsAreValid()
   },
   { deep: true }
 )
 const showSaveButton = ref(false)
+const areAllProfileCommunicationsAreValid = () => {
+  return profileCommunications.value.every((profileCommunication) =>
+    validityHelper.isValid(profileCommunication)
+  )
+}
 const addProfileCommunication = () => {
   profileCommunications.value.push(new ProfileCommunication())
 }
