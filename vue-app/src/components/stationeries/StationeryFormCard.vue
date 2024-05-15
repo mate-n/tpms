@@ -1,0 +1,70 @@
+<script setup lang="ts">
+import { LanguageService } from '@/services/LanguageService'
+import { Stationery } from '@/shared/classes/Stationery'
+import type { ILanguage } from '@/shared/interfaces/ILanguage'
+import type { IStationery } from '@/shared/interfaces/IStationery'
+import { onMounted, ref, type Ref } from 'vue'
+import { inject } from 'vue'
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
+const languageService = new LanguageService(axios)
+const stationeryToBeEdited: Ref<Stationery> = ref(new Stationery())
+const emits = defineEmits(['close'])
+const languages: Ref<ILanguage[]> = ref([])
+onMounted(() => {
+  languageService.getAvailableLanguages().then((response) => {
+    languages.value = response
+  })
+})
+</script>
+
+<template>
+  <div class="standard-dialog-card">
+    <v-toolbar class="standard-dialog-card-toolbar">
+      <v-toolbar-title><span class="text-primary">Guest letter</span></v-toolbar-title>
+      <div class="standard-card-toolbar-button rounded-te" @click="emits('close')">
+        <v-icon size="large">mdi-close</v-icon>
+      </div>
+    </v-toolbar>
+    <v-divider class="standard-card-divider"></v-divider>
+    <v-container fluid class="bg-lightgray">
+      <v-card class="pa-3">
+        <v-autocomplete
+          label="Language"
+          v-model="stationeryToBeEdited.language"
+          :items="languages"
+          item-title="value"
+          variant="underlined"
+          class="me-3 required-input"
+        ></v-autocomplete>
+        <v-autocomplete
+          label="Template"
+          variant="underlined"
+          v-model="stationeryToBeEdited.template"
+        ></v-autocomplete>
+        <v-autocomplete
+          label="Type"
+          variant="underlined"
+          v-model="stationeryToBeEdited.type"
+        ></v-autocomplete>
+        <v-autocomplete
+          label="Recipient"
+          variant="underlined"
+          v-model="stationeryToBeEdited.recipient"
+        ></v-autocomplete>
+        <v-checkbox
+          label="Additional text"
+          class="mt-1"
+          v-model="stationeryToBeEdited.addAdditionalText"
+        ></v-checkbox>
+        <v-textarea
+          v-if="stationeryToBeEdited.addAdditionalText"
+          label="Additional text"
+          class="mt-1"
+          v-model="stationeryToBeEdited.additionalText"
+        ></v-textarea>
+      </v-card>
+    </v-container>
+  </div>
+</template>
+onMounted,
