@@ -21,6 +21,7 @@ import { ProfileValidator } from '@/shared/validators/ProfileValidator'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import { ValidityHelper } from '@/helpers/ValidityHelper'
+import StationeryCard from '../stationeries/StationeryCard.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const profileValidator = new ProfileValidator()
@@ -70,6 +71,8 @@ const save = () => {
 const toggleActive = () => {
   profileToBeEdited.value.inactive = !profileToBeEdited.value.inactive
 }
+
+const stationeryCardDialog = ref(false)
 </script>
 <template>
   <v-container fluid class="bg-white">
@@ -129,7 +132,12 @@ const toggleActive = () => {
     </div>
     <v-tooltip text="Stationery">
       <template v-slot:activator="{ props }">
-        <v-btn v-bind="props" icon class="profiles-icon-button">
+        <v-btn
+          v-bind="props"
+          icon
+          class="profiles-icon-button"
+          @click="stationeryCardDialog = true"
+        >
           <v-icon>mdi-clipboard-text-outline</v-icon>
         </v-btn>
       </template>
@@ -178,4 +186,10 @@ const toggleActive = () => {
       <v-col class="pr-0 profiles-card-column"> </v-col>
     </v-row>
   </v-container>
+
+  <v-dialog v-model="stationeryCardDialog" scrollable>
+    <v-card>
+      <StationeryCard @close="stationeryCardDialog = false" />
+    </v-card>
+  </v-dialog>
 </template>
