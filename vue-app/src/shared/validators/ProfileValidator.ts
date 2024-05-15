@@ -1,4 +1,3 @@
-import type { IEntityWithErrors } from '../interfaces/IEntityWithErrors'
 import type { IValidator } from '../interfaces/IValidator'
 import type { IProfile } from '../interfaces/profiles/IProfile'
 
