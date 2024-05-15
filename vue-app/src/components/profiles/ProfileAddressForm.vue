@@ -52,12 +52,12 @@ const validate = () => {
       </v-row>
       <v-select
         v-model="profileAddressToBeEdited.typeString"
-        label="Type *"
+        label="Type"
         variant="underlined"
         :items="['Business', 'Home', 'Other']"
         item-title="value"
         item-value="id"
-        class="me-3"
+        class="me-3 required-input"
         :error-messages="
           profileAddressToBeEdited.errors && profileAddressToBeEdited.errors['typeString']
         "
@@ -71,12 +71,12 @@ const validate = () => {
 
       <v-select
         v-model="profileAddressToBeEdited.country"
-        label="Country *"
+        label="Country"
         variant="underlined"
         :items="availableCountries"
         item-title="value"
         item-value="id"
-        class="me-3"
+        class="me-3 required-input"
         :error-messages="
           profileAddressToBeEdited.errors && profileAddressToBeEdited.errors['country']
         "
