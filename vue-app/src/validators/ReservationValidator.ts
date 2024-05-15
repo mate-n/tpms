@@ -15,6 +15,8 @@ export class ReservationValidator implements IValidator {
     this.isGuestsPerRoomValid(reservation)
     this.isRoomsValid(reservation)
     this.isNightsValid(reservation)
+    this.isRoomIDValid(reservation)
+    this.isPropertyIDValid(reservation)
   }
 
   isGuestsPerRoomValid(reservation: IReservation): void {
@@ -37,6 +39,18 @@ export class ReservationValidator implements IValidator {
 
     if (nights < 1) {
       reservation.errors!['nights'] = 'Nights cannot be less than 1'
+    }
+  }
+
+  isRoomIDValid(reservation: IReservation): void {
+    if (!reservation.roomID) {
+      reservation.errors!['roomID'] = 'Room Type cannot be empty'
+    }
+  }
+
+  isPropertyIDValid(reservation: IReservation): void {
+    if (!reservation.propertyID) {
+      reservation.errors!['propertyID'] = 'Property cannot be empty'
     }
   }
 }
