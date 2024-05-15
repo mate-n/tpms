@@ -20,12 +20,14 @@ import TravelAgencyProfileForm from './TravelAgencyProfileForm.vue'
 import { ProfileValidator } from '@/shared/validators/ProfileValidator'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
+import { ValidityHelper } from '@/helpers/ValidityHelper'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const profileValidator = new ProfileValidator()
 const languageService = new LanguageService(axios)
 const salutationService = new SalutationService(axios)
 const cloneHelper = new CloneHelper()
+const validityHelper = new ValidityHelper()
 const props = defineProps({
   profileInput: { type: Object as () => IProfile, required: true },
   crudOperation: { type: Number, required: true }
@@ -53,6 +55,10 @@ const validate = () => {
 }
 
 const save = () => {
+  validate()
+  if (profileToBeEdited.value.errors && Object.keys(profileToBeEdited.value.errors).length > 0) {
+    return
+  }
   if (props.crudOperation === CrudOperations.Create) {
     profileService.post(profileToBeEdited.value)
   } else if (props.crudOperation === CrudOperations.Update) {
@@ -113,8 +119,13 @@ const toggleActive = () => {
         >
       </template>
     </div>
-    <div class="h-100 d-flex px-5 align-center" @click="save()">
-      <v-btn class="primary-button text-uppercase">{{ $t('actions.save') }}</v-btn>
+    <div class="h-100 d-flex px-5 align-center">
+      <v-btn
+        v-if="validityHelper.isValid(profileToBeEdited)"
+        class="primary-button text-uppercase"
+        @click="save()"
+        >{{ $t('actions.save') }}</v-btn
+      >
     </div>
     <v-btn icon class="profiles-icon-button">
       <v-icon>mdi-clipboard-text-outline</v-icon>
