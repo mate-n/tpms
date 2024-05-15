@@ -27,7 +27,7 @@ onMounted(() => {
       <div class="d-flex align-baseline">
         <v-text-field
           v-model="profileToBeEdited.name"
-          label="Name"
+          label="Name *"
           variant="underlined"
           class="me-3"
         ></v-text-field>
