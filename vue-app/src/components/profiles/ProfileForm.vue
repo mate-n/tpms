@@ -87,10 +87,13 @@ const toggleActive = () => {
             profileToBeEdited.profileType === 'Source'
           "
         >
-          <CompanyProfileForm v-model="profileToBeEdited"></CompanyProfileForm>
+          <CompanyProfileForm v-model="profileToBeEdited" @change="validate()"></CompanyProfileForm>
         </div>
         <div v-if="profileToBeEdited.profileType === 'TravelAgency'">
-          <TravelAgencyProfileForm v-model="profileToBeEdited"></TravelAgencyProfileForm>
+          <TravelAgencyProfileForm
+            v-model="profileToBeEdited"
+            @change="validate()"
+          ></TravelAgencyProfileForm>
         </div>
       </v-col>
     </v-row>

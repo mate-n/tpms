@@ -13,6 +13,7 @@ const salutationService = new SalutationService(axios)
 const profileToBeEdited = defineModel({ required: true, type: Object as () => IProfile })
 const languages: Ref<ILanguage[]> = ref([])
 const salutations: Ref<ISalutation[]> = ref([])
+const emit = defineEmits(['change'])
 
 onMounted(() => {
   languageService.getAvailableLanguages().then((response) => {
@@ -33,6 +34,8 @@ onMounted(() => {
           label="Name"
           variant="underlined"
           class="me-3"
+          :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['name']"
+          @update:modelValue="emit('change')"
         ></v-text-field>
         <v-autocomplete
           label="Salutation"
