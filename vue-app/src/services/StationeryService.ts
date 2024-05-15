@@ -21,4 +21,17 @@ export class StationeryService implements IService {
         })
     })
   }
+
+  post(stationery: IStationery) {
+    return new Promise<IStationery>((resolve, reject) => {
+      this.axiosInstance
+        .post('v1/stationeries', stationery)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
 }
