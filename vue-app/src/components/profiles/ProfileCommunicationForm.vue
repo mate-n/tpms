@@ -5,9 +5,12 @@ import type { ICommunicationMethod } from '@/shared/interfaces/ICommunicationMet
 import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
 import { ProfileCommunicationValidator } from '@/shared/validators/ProfileCommunicationValidator'
 import { computed, onBeforeMount, ref, type Ref } from 'vue'
+import { inject } from 'vue'
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
 const emit = defineEmits(['delete'])
 const communicationMethods: Ref<ICommunicationMethod[]> = ref([])
-const communicationMethodService = new CommunicationMethodService()
+const communicationMethodService = new CommunicationMethodService(axios)
 const communicationMethodHelper = new CommunicationMethodHelper()
 const profileCommunicationValidator = new ProfileCommunicationValidator()
 const profileCommunicationToBeEdited = defineModel({
@@ -66,7 +69,7 @@ const deleteProfileCommunication = () => {
         :error-messages="
           profileCommunicationToBeEdited.errors && profileCommunicationToBeEdited.errors['value']
         "
-        @change="profileCommunicationValidator.validatePromise(profileCommunicationToBeEdited)"
+        @change="profileCommunicationValidator.validate(profileCommunicationToBeEdited)"
       ></v-text-field>
     </v-col>
     <v-col>

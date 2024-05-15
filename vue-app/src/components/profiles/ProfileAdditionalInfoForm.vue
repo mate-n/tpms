@@ -9,7 +9,7 @@ import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch
 import type { AxiosStatic } from 'axios'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
-const rateService = new RateService()
+const rateService = new RateService(axios)
 const availableRates = ref<IRate[]>([])
 const profileToBeEdited = defineModel({
   required: true,

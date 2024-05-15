@@ -7,10 +7,10 @@ import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
 import type { AxiosStatic } from 'axios'
 const axios: AxiosStatic | undefined = inject('axios')
-const availabilityService = new AvailabilityService()
-const propertyService = new PropertyService()
+const availabilityService = new AvailabilityService(axios)
+const propertyService = new PropertyService(axios)
 const profileService = new ProfileService(axios)
-const roomService = new RoomService()
+const roomService = new RoomService(axios)
 const dateHelper = new DateHelper()
 const reservationValidator = new ReservationValidator()
 const emit = defineEmits(['check', 'change', 'remove'])

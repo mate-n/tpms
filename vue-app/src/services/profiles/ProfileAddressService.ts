@@ -3,12 +3,10 @@ import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddre
 import type { IProfileAddressSearch } from '@/shared/interfaces/profiles/IProfileAddressSearch'
 import type { IProfilesService } from '@/interfaces/IProfilesService'
 import type { AxiosStatic } from 'axios'
-import { inject } from 'vue'
-const axios: AxiosStatic | undefined = inject('axios')
 
 export class ProfileAddressService implements IProfilesService {
   axiosInstance: AxiosStatic
-  constructor() {
+  constructor(axios: AxiosStatic | undefined) {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
   create(profileAddress: IProfileAddress) {

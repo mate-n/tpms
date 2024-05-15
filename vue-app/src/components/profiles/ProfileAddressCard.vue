@@ -5,11 +5,14 @@ import ProfileAddressesForm from './ProfileAddressesForm.vue'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddress'
 import type { IProfileAddressSearch } from '@/shared/interfaces/profiles/IProfileAddressSearch'
+import { inject } from 'vue'
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
 defineProps({
   profile: { type: Object as () => IProfile, required: true }
 })
 const profileAddressesDialog = ref(false)
-const profileAddressService = new ProfileAddressService()
+const profileAddressService = new ProfileAddressService(axios)
 const profileAddresses = ref<IProfileAddress[]>([])
 const primaryOrFirstAddress = computed(() => {
   const primaryAddress = profileAddresses.value.find((profileAddress) => profileAddress.primary)

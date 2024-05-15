@@ -2,12 +2,10 @@ import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
 import type { IService } from '@/interfaces/IService'
 import type { ICommunicationMethod } from '@/shared/interfaces/ICommunicationMethod'
 import type { AxiosStatic } from 'axios'
-import { inject } from 'vue'
-const axios: AxiosStatic | undefined = inject('axios')
 
 export class CommunicationMethodService implements IService {
   axiosInstance: AxiosStatic
-  constructor() {
+  constructor(axios: AxiosStatic | undefined) {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
 

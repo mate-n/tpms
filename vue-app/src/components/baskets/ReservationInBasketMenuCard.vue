@@ -8,6 +8,9 @@ import type { IRoom } from '@/shared/interfaces/IRoom'
 import { useBasketItemsStore } from '@/stores/basketItems'
 import { ref, type Ref } from 'vue'
 import { onBeforeMount } from 'vue'
+import { inject } from 'vue'
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
 
 const props = defineProps({
@@ -15,8 +18,8 @@ const props = defineProps({
 })
 const property: Ref<IProperty | null> = ref(null)
 const room: Ref<IRoom | null> = ref(null)
-const propertyService = new PropertyService()
-const roomService = new RoomService()
+const propertyService = new PropertyService(axios)
+const roomService = new RoomService(axios)
 const dateFormatter = new DateFormatter()
 
 onBeforeMount(() => {

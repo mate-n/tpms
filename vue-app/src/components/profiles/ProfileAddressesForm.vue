@@ -6,8 +6,11 @@ import { IdentityHelper } from '@/helpers/IdentityHelper'
 import { ProfileAddress } from '@/shared/classes/ProfileAddress'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddress'
+import { inject } from 'vue'
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
 const identityHelper = new IdentityHelper()
-const profileAddressService = new ProfileAddressService()
+const profileAddressService = new ProfileAddressService(axios)
 const emit = defineEmits(['close'])
 const profileAddresses: Ref<IProfileAddress[]> = ref([])
 const props = defineProps({

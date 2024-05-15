@@ -17,10 +17,10 @@ const profileToBeEdited = defineModel({
   type: Object as () => IProfile
 })
 const showSaveButton = ref(false)
-const featureService = new FeatureService()
+const featureService = new FeatureService(axios)
 const profileService = new ProfileService(axios)
-const languageService = new LanguageService()
-const bookableObjectService = new BookableObjectService()
+const languageService = new LanguageService(axios)
+const bookableObjectService = new BookableObjectService(axios)
 const featuresInDropdown = ref<IFeature[]>([])
 const bookableObjectsInDropdown = ref<IBookableObject[]>([])
 const languages: Ref<ILanguage[]> = ref([])

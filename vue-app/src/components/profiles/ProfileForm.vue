@@ -23,8 +23,8 @@ import type { AxiosStatic } from 'axios'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const profileValidator = new ProfileValidator()
-const languageService = new LanguageService()
-const salutationService = new SalutationService()
+const languageService = new LanguageService(axios)
+const salutationService = new SalutationService(axios)
 const cloneHelper = new CloneHelper()
 const props = defineProps({
   profileInput: { type: Object as () => IProfile, required: true },

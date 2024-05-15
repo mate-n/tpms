@@ -3,12 +3,10 @@ import type { IService } from '@/interfaces/IService'
 import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPropertyAvailability'
 import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
 import type { AxiosStatic } from 'axios'
-import { inject } from 'vue'
-const axios: AxiosStatic | undefined = inject('axios')
 
 class AvailabilityService implements IService {
   axiosInstance: AxiosStatic
-  constructor() {
+  constructor(axios: AxiosStatic | undefined) {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
 

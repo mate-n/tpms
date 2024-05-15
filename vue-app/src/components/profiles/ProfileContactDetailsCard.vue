@@ -6,8 +6,11 @@ import { CommunicationMethodService } from '@/services/CommunicationMethodServic
 import type { ICommunicationMethod } from '@/shared/interfaces/ICommunicationMethod'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
-const profileCommunicationService = new ProfileCommunicationService()
-const communicationMethodService = new CommunicationMethodService()
+import { inject } from 'vue'
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
+const profileCommunicationService = new ProfileCommunicationService(axios)
+const communicationMethodService = new CommunicationMethodService(axios)
 const communicationMethods = ref<ICommunicationMethod[]>([])
 const editProfileContactDetailsDialog = ref(false)
 const profileCommunications = ref<IProfileCommunication[]>([])

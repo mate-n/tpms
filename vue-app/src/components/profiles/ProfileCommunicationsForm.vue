@@ -6,6 +6,9 @@ import { IdentityHelper } from '@/helpers/IdentityHelper'
 import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
 import { ProfileCommunication } from '@/shared/classes/ProfileCommunication'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import { inject } from 'vue'
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
 const identityHelper = new IdentityHelper()
 const emit = defineEmits(['close'])
 const profileCommunications: Ref<IProfileCommunication[]> = ref([])
@@ -23,7 +26,7 @@ const showSaveButton = ref(false)
 const addProfileCommunication = () => {
   profileCommunications.value.push(new ProfileCommunication())
 }
-const profileCommunicationService = new ProfileCommunicationService()
+const profileCommunicationService = new ProfileCommunicationService(axios)
 
 onBeforeMount(() => {
   reloadProfileCommunications()
