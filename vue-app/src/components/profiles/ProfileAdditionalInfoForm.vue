@@ -2,11 +2,11 @@
 import { RateService } from '@/services/RateService'
 import type { IRate } from '@/shared/interfaces/IRate'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import type { AxiosStatic } from 'axios'
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileSearch from './ProfileSearch.vue'
 import ProfileService from '@/services/ProfileService'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
+import type { AxiosStatic } from 'axios'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const rateService = new RateService(axios)

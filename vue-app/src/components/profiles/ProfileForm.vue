@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import ProfileService from '@/services/ProfileService'
-import type { AxiosStatic } from 'axios'
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileAvatar from './ProfileAvatar.vue'
 import ProfileContactDetailsCard from './ProfileContactDetailsCard.vue'
@@ -19,11 +17,17 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import PrivateProfileForm from './PrivateProfileForm.vue'
 import CompanyProfileForm from './CompanyProfileForm.vue'
 import TravelAgencyProfileForm from './TravelAgencyProfileForm.vue'
+import { ProfileValidator } from '@/shared/validators/ProfileValidator'
+import ProfileService from '@/services/ProfileService'
+import type { AxiosStatic } from 'axios'
+import { ValidityHelper } from '@/helpers/ValidityHelper'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
+const profileValidator = new ProfileValidator()
 const languageService = new LanguageService(axios)
 const salutationService = new SalutationService(axios)
 const cloneHelper = new CloneHelper()
+const validityHelper = new ValidityHelper()
 const props = defineProps({
   profileInput: { type: Object as () => IProfile, required: true },
   crudOperation: { type: Number, required: true }
@@ -46,7 +50,15 @@ watch(props, (newInput) => {
   profileToBeEdited.value = cloneHelper.clone(newInput.profileInput)
 })
 
+const validate = () => {
+  profileValidator.validate(profileToBeEdited.value)
+}
+
 const save = () => {
+  validate()
+  if (profileToBeEdited.value.errors && Object.keys(profileToBeEdited.value.errors).length > 0) {
+    return
+  }
   if (props.crudOperation === CrudOperations.Create) {
     profileService.post(profileToBeEdited.value)
   } else if (props.crudOperation === CrudOperations.Update) {
@@ -72,7 +84,7 @@ const toggleActive = () => {
       </v-col>
       <v-col cols="10" class="border-s">
         <div v-if="profileToBeEdited.profileType === 'Private'">
-          <PrivateProfileForm v-model="profileToBeEdited"></PrivateProfileForm>
+          <PrivateProfileForm v-model="profileToBeEdited" @change="validate()"></PrivateProfileForm>
         </div>
         <div
           v-if="
@@ -81,10 +93,13 @@ const toggleActive = () => {
             profileToBeEdited.profileType === 'Source'
           "
         >
-          <CompanyProfileForm v-model="profileToBeEdited"></CompanyProfileForm>
+          <CompanyProfileForm v-model="profileToBeEdited" @change="validate()"></CompanyProfileForm>
         </div>
         <div v-if="profileToBeEdited.profileType === 'TravelAgency'">
-          <TravelAgencyProfileForm v-model="profileToBeEdited"></TravelAgencyProfileForm>
+          <TravelAgencyProfileForm
+            v-model="profileToBeEdited"
+            @change="validate()"
+          ></TravelAgencyProfileForm>
         </div>
       </v-col>
     </v-row>
@@ -104,8 +119,13 @@ const toggleActive = () => {
         >
       </template>
     </div>
-    <div class="h-100 d-flex px-5 align-center" @click="save()">
-      <v-btn class="primary-button text-uppercase">{{ $t('actions.save') }}</v-btn>
+    <div class="h-100 d-flex px-5 align-center">
+      <v-btn
+        v-if="validityHelper.isValid(profileToBeEdited)"
+        class="primary-button text-uppercase"
+        @click="save()"
+        >{{ $t('actions.save') }}</v-btn
+      >
     </div>
     <v-btn icon class="profiles-icon-button">
       <v-icon>mdi-clipboard-text-outline</v-icon>

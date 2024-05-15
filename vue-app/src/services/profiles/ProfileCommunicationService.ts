@@ -6,8 +6,8 @@ import type { IProfilesService } from '@/interfaces/IProfilesService'
 
 export class ProfileCommunicationService implements IProfilesService {
   axiosInstance: AxiosStatic
-  constructor(axiosInstance: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
+  constructor(axios: AxiosStatic | undefined) {
+    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
   get(profileID: number, id: number) {
     return new Promise((resolve, reject) => {

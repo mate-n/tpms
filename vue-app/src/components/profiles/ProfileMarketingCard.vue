@@ -4,11 +4,9 @@ import { KeywordService } from '@/services/KeywordService'
 import type { IGuestMarketCode } from '@/shared/interfaces/IGuestMarketCode'
 import type { IKeyword } from '@/shared/interfaces/IKeyword'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import type { AxiosStatic } from 'axios'
-import { inject, onMounted, ref } from 'vue'
-const axios: AxiosStatic | undefined = inject('axios')
-const guestMarketCodeService = new GuestMarketCodeService(axios)
-const keywordService = new KeywordService(axios)
+import { onMounted, ref } from 'vue'
+const guestMarketCodeService = new GuestMarketCodeService()
+const keywordService = new KeywordService()
 const profileToBeEdited = defineModel({
   required: true,
   type: Object as () => IProfile

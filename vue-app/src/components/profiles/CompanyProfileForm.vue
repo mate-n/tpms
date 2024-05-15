@@ -4,14 +4,16 @@ import { SalutationService } from '@/services/SalutationService'
 import type { ILanguage } from '@/shared/interfaces/ILanguage'
 import type { ISalutation } from '@/shared/interfaces/ISalutation'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import { onMounted, ref, type Ref } from 'vue'
+import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
-import { inject, onMounted, ref, type Ref } from 'vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const languageService = new LanguageService(axios)
 const salutationService = new SalutationService(axios)
 const profileToBeEdited = defineModel({ required: true, type: Object as () => IProfile })
 const languages: Ref<ILanguage[]> = ref([])
 const salutations: Ref<ISalutation[]> = ref([])
+const emit = defineEmits(['change'])
 
 onMounted(() => {
   languageService.getAvailableLanguages().then((response) => {
@@ -29,9 +31,11 @@ onMounted(() => {
       <div class="d-flex align-baseline">
         <v-text-field
           v-model="profileToBeEdited.name"
-          label="Name"
+          label="Name *"
           variant="underlined"
           class="me-3"
+          :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['name']"
+          @update:modelValue="emit('change')"
         ></v-text-field>
         <v-autocomplete
           label="Salutation"

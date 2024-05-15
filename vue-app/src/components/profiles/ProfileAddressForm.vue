@@ -3,10 +3,13 @@ import { RomanNumeralConverter } from '@/helpers/RomanNumeralConverter'
 import { CountryService } from '@/services/CountryService'
 import type { ICountry } from '@/shared/interfaces/ICountry'
 import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddress'
+import { onBeforeMount, ref } from 'vue'
+import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
-import { inject, onBeforeMount, ref } from 'vue'
-const romanNumeralConverter = new RomanNumeralConverter()
+import { ProfileAddressValidator } from '@/shared/validators/ProfileAddressValidator'
+const profileAddressValidator = new ProfileAddressValidator()
 const axios: AxiosStatic | undefined = inject('axios')
+const romanNumeralConverter = new RomanNumeralConverter()
 const countryService = new CountryService(axios)
 const availableCountries = ref<ICountry[]>([])
 defineProps({
@@ -25,6 +28,10 @@ onBeforeMount(() => {
 
 const changeMailingAddress = () => {
   emits('changeMailingAddress', profileAddressToBeEdited.value)
+}
+
+const validate = () => {
+  profileAddressValidator.validate(profileAddressToBeEdited.value)
 }
 </script>
 <template>
@@ -45,12 +52,16 @@ const changeMailingAddress = () => {
       </v-row>
       <v-select
         v-model="profileAddressToBeEdited.typeString"
-        label="Type"
+        label="Type *"
         variant="underlined"
         :items="['Business', 'Home', 'Other']"
         item-title="value"
         item-value="id"
         class="me-3"
+        :error-messages="
+          profileAddressToBeEdited.errors && profileAddressToBeEdited.errors['typeString']
+        "
+        @update:model-value="validate()"
       ></v-select>
       <v-text-field
         v-model="profileAddressToBeEdited.recipient"
@@ -60,12 +71,16 @@ const changeMailingAddress = () => {
 
       <v-select
         v-model="profileAddressToBeEdited.country"
-        label="Country"
+        label="Country *"
         variant="underlined"
         :items="availableCountries"
         item-title="value"
         item-value="id"
         class="me-3"
+        :error-messages="
+          profileAddressToBeEdited.errors && profileAddressToBeEdited.errors['country']
+        "
+        @update:model-value="validate()"
       ></v-select>
 
       <v-row>

@@ -5,14 +5,27 @@ import type { AxiosStatic } from 'axios'
 
 export class CommunicationMethodService implements IService {
   axiosInstance: AxiosStatic
-  constructor(axiosInstance: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
+  constructor(axios: AxiosStatic | undefined) {
+    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
 
   getAvailableCommunicationMethods() {
     return new Promise<ICommunicationMethod[]>((resolve, reject) => {
       this.axiosInstance
         .get('v1/dropdowns/communication-methods')
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
+
+  get(id: number) {
+    return new Promise<ICommunicationMethod>((resolve, reject) => {
+      this.axiosInstance
+        .get('v1/profiles/communications/' + id)
         .then((response: any) => {
           resolve(response.data)
         })

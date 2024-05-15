@@ -1,6 +1,7 @@
+import type { IEntityWithErrors } from '../IEntityWithErrors'
 import type { IEntityWithIdentity } from '../IEntityWithIdentity'
 
-export interface IProfile extends IEntityWithIdentity {
+export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
   //General
   name: string
   firstName: string
