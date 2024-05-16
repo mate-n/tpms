@@ -10,6 +10,11 @@ export class DateFormatter {
     )
   }
 
+  hhsemicolonmm(dateInput: Date) {
+    const date = new Date(dateInput)
+    return this.addZeroPadding(date.getHours()) + ':' + this.addZeroPadding(date.getMinutes())
+  }
+
   addZeroPadding(number: number) {
     return ('0' + number).slice(-2)
   }
