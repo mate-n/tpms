@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { Stationery } from '@/shared/classes/Stationery'
 import type { IStationery } from '@/shared/interfaces/IStationery'
 import { ref, type Ref } from 'vue'
 import StationeryFormCard from './StationeryFormCard.vue'
+import { DateFormatter } from '@/helpers/DateFormatter'
 const emits = defineEmits(['close'])
+const dateFormatter = new DateFormatter()
 
 const availableTableDataHeaders = ref([
   { key: 'createdAt', title: 'CREATED DATE', selected: true },
   { key: 'time', title: 'TIME', selected: true },
-  { key: 'createdByName', title: 'CREATED BY', selected: true },
+  { key: 'profileEmail', title: 'CREATED BY', selected: true },
   { key: 'invno', title: 'INV. NO.', selected: true },
   { key: 'resno', title: 'RES. NO.', selected: true },
   { key: 'event', title: 'EVENT', selected: true },
@@ -17,12 +18,16 @@ const availableTableDataHeaders = ref([
 ])
 const stationeries: Ref<IStationery[]> = ref([])
 const changeColumnsDialog = ref(false)
-const addStationery = () => {
-  const newStationery = new Stationery()
-  stationeries.value.push(newStationery)
+const addStationery = (stationery: IStationery) => {
+  stationeries.value.push(stationery)
+  stationeryFormCardDialog.value = false
 }
 
 const stationeryFormCardDialog = ref(false)
+
+const isSpecialColumn = (header: string) => {
+  return ['createdAt', 'time'].includes(header)
+}
 </script>
 
 <template>
@@ -57,8 +62,17 @@ const stationeryFormCardDialog = ref(false)
               :key="header.key"
             >
               <div v-if="row.item.hasOwnProperty(header.key)">
-                <template v-if="header.key !== 'birthday'">
+                <template v-if="!isSpecialColumn(header.key)">
                   {{ row.item[header.key as keyof IStationery] }}
+                </template>
+
+                <template v-if="header.key === 'createdAt'">
+                  {{ dateFormatter.dddotmmdotyyyy(row.item['createdAt']) }}
+                </template>
+              </div>
+              <div v-if="!row.item.hasOwnProperty(header.key)">
+                <template v-if="header.key === 'time'">
+                  {{ dateFormatter.hhsemicolonmm(row.item['createdAt']) }}
                 </template>
               </div>
             </td>
@@ -69,7 +83,10 @@ const stationeryFormCardDialog = ref(false)
   </div>
   <v-dialog v-model="stationeryFormCardDialog" scrollable auto>
     <v-card>
-      <StationeryFormCard @close="stationeryFormCardDialog = false"></StationeryFormCard>
+      <StationeryFormCard
+        @close="stationeryFormCardDialog = false"
+        @stationeryAdded="(stationery) => addStationery(stationery)"
+      ></StationeryFormCard>
     </v-card>
   </v-dialog>
 </template>
