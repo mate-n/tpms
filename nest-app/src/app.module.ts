@@ -8,9 +8,10 @@ import { RoomsController } from './rooms/v1/rooms.controller';
 import { ProfileAddressesController } from './profile-addresses/v1/profile-addresses.controller';
 import { ProfileAddressesService } from './profile-addresses/v1/profile-addresses.service';
 import { ProfileCommunicationsController } from './profile-communications/v1/profile-communications.controller';
+import { StationeriesModule } from './stationeries/v1/stationeries.module';
 
 @Module({
-  imports: [ProfilesModule, PropertiesModule],
+  imports: [ProfilesModule, PropertiesModule, StationeriesModule],
   controllers: [
     AppController,
     DropdownsController,
