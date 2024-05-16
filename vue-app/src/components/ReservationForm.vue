@@ -6,7 +6,6 @@ import AvailabilityService from '@/services/AvailabilityService'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
 import type { AxiosStatic } from 'axios'
-const validityHelper = new ValidityHelper()
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
 const propertyService = new PropertyService(axios)
@@ -33,7 +32,6 @@ import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPr
 import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
-import { ValidityHelper } from '@/helpers/ValidityHelper'
 
 onBeforeMount(() => {
   propertyService.getProperties().then((response: IProperty[]) => {
