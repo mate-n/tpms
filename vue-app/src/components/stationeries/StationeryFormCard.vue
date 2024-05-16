@@ -2,24 +2,31 @@
 import { LanguageService } from '@/services/LanguageService'
 import { Stationery } from '@/shared/classes/Stationery'
 import type { ILanguage } from '@/shared/interfaces/ILanguage'
-import type { IStationery } from '@/shared/interfaces/IStationery'
 import { onMounted, ref, type Ref } from 'vue'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
 import { StationeryService } from '@/services/StationeryService'
+import { useUserStore } from '@/stores/user'
+const userStore = useUserStore()
 const axios: AxiosStatic | undefined = inject('axios')
 const languageService = new LanguageService(axios)
 const stationeryService = new StationeryService(axios)
 const stationeryToBeEdited: Ref<Stationery> = ref(new Stationery())
-const emits = defineEmits(['close'])
+const emits = defineEmits(['close', 'stationeryAdded'])
 const languages: Ref<ILanguage[]> = ref([])
+
 onMounted(() => {
   languageService.getAvailableLanguages().then((response) => {
     languages.value = response
   })
 })
 const send = () => {
-  stationeryService.post(stationeryToBeEdited.value)
+  if (userStore.currentProfile) {
+    stationeryToBeEdited.value.profileID = userStore.currentProfile.id
+  }
+  stationeryService.post(stationeryToBeEdited.value).then((addedStationery) => {
+    emits('stationeryAdded', addedStationery)
+  })
 }
 </script>
 
@@ -45,16 +52,19 @@ const send = () => {
         <v-autocomplete
           label="Template"
           variant="underlined"
+          :items="['Default guest letter']"
           v-model="stationeryToBeEdited.template"
         ></v-autocomplete>
         <v-autocomplete
           label="Type"
           variant="underlined"
+          :items="['Send as email', 'Print as PDF', 'Create an Open Office file (.odt).', 'JSON']"
           v-model="stationeryToBeEdited.type"
         ></v-autocomplete>
         <v-autocomplete
           label="Recipient"
           variant="underlined"
+          :items="['This guest', 'Guest profile search', 'Email address']"
           v-model="stationeryToBeEdited.recipient"
         ></v-autocomplete>
         <v-checkbox
