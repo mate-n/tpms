@@ -1,4 +1,4 @@
-import { DateHelper } from '@/helpers/DateHelper'
+import { DateHelper } from '../../helpers/DateHelper'
 import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
 import type { IReservation } from '../../shared/interfaces/IReservation'
 import type { IPropertyAvailability } from '../../shared/interfaces/availability/IPropertyAvailability'
