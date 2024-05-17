@@ -22,6 +22,7 @@ import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import { ValidityHelper } from '@/helpers/ValidityHelper'
 import StationeryCard from '../stationeries/StationeryCard.vue'
+import ReservationsCard from '../reservations/ReservationsCard.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const profileValidator = new ProfileValidator()
@@ -73,6 +74,7 @@ const toggleActive = () => {
 }
 
 const stationeryCardDialog = ref(false)
+const reservationsCardDialog = ref(false)
 </script>
 <template>
   <v-container fluid class="bg-white">
@@ -144,14 +146,19 @@ const stationeryCardDialog = ref(false)
     </v-tooltip>
     <v-tooltip text="Reservations">
       <template v-slot:activator="{ props }">
-        <v-btn v-bind="props" icon class="profiles-icon-button">
+        <v-btn
+          v-bind="props"
+          icon
+          class="profiles-icon-button"
+          @click="reservationsCardDialog = true"
+        >
           <v-icon>mdi-calendar-blank-outline</v-icon>
         </v-btn>
       </template>
     </v-tooltip>
     <v-tooltip text="Privacy Settings">
       <template v-slot:activator="{ props }">
-        <v-btn v-bind="props" icon class="profiles-icon-button">
+        <v-btn v-bind="props" icon class="profiles-icon-button text-gray">
           <v-icon>mdi-security</v-icon>
         </v-btn>
       </template>
@@ -190,6 +197,12 @@ const stationeryCardDialog = ref(false)
   <v-dialog v-model="stationeryCardDialog" scrollable>
     <v-card>
       <StationeryCard @close="stationeryCardDialog = false" />
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="reservationsCardDialog" scrollable>
+    <v-card>
+      <ReservationsCard @close="reservationsCardDialog = false" />
     </v-card>
   </v-dialog>
 </template>
