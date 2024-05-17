@@ -9,9 +9,15 @@ import { ProfileAddressesController } from './profile-addresses/v1/profile-addre
 import { ProfileAddressesService } from './profile-addresses/v1/profile-addresses.service';
 import { ProfileCommunicationsController } from './profile-communications/v1/profile-communications.controller';
 import { StationeriesModule } from './stationeries/v1/stationeries.module';
+import { ReservationsModule } from './reservations/v1/reservations.module';
 
 @Module({
-  imports: [ProfilesModule, PropertiesModule, StationeriesModule],
+  imports: [
+    ProfilesModule,
+    PropertiesModule,
+    StationeriesModule,
+    ReservationsModule,
+  ],
   controllers: [
     AppController,
     DropdownsController,

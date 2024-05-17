@@ -4,6 +4,7 @@ import type { IReservation } from '../../shared/interfaces/IReservation'
 import type { IPropertyAvailability } from '../../shared/interfaces/availability/IPropertyAvailability'
 
 export class Reservation implements IReservation {
+  id?: number
   localID?: string
   propertyID: number | undefined
   arrivalDate: Date
