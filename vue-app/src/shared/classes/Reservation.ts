@@ -4,6 +4,7 @@ import type { IReservation } from '../../shared/interfaces/IReservation'
 import type { IPropertyAvailability } from '../../shared/interfaces/availability/IPropertyAvailability'
 
 export class Reservation implements IReservation {
+  id?: number
   localID?: string
   propertyID: number | undefined
   arrivalDate: Date
@@ -18,6 +19,7 @@ export class Reservation implements IReservation {
   issues: string[]
   errors: Record<string, string>
   dateHelper: DateHelper = new DateHelper()
+  isBookerGuest: boolean
 
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
@@ -30,6 +32,7 @@ export class Reservation implements IReservation {
     this.propertyAvailabilities = []
     this.issues = []
     this.errors = {}
+    this.isBookerGuest = false
   }
 
   reset() {
