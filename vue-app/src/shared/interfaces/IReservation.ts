@@ -14,6 +14,7 @@ export interface IReservation extends IEntityWithIdentity, IEntityWithErrors {
   orderIndex: number
   propertyAvailabilities: IPropertyAvailability[]
   issues: string[]
+  isBookerGuest: boolean
   reset(): void
   addIssue(issue: string): void
   removeIssue(issue: string): void
