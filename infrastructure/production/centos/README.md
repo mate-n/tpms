@@ -2,7 +2,7 @@
 
 To run tpms-frontend with centos, do this:
 
-    docker compose -f docker-compose.integration.yml up --build
+    docker compose -f docker-compose.yml up --build
 
 Then visit:
 
