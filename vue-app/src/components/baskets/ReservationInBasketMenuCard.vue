@@ -6,13 +6,15 @@ import type { IProperty } from '@/shared/interfaces/IProperty'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import { useBasketItemsStore } from '@/stores/basketItems'
-import { ref, type Ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import { onBeforeMount } from 'vue'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
+import { Reservation } from '@/shared/classes/Reservation'
+import { ReservationHelper } from '@/helpers/ReservationHelper'
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
-
+const reservationHelper = new ReservationHelper()
 const props = defineProps({
   reservation: { type: Object as () => IReservation, required: true }
 })
@@ -39,13 +41,25 @@ onBeforeMount(() => {
 const removeReservation = (reservation: IReservation) => {
   basketItemsStore.removeReservation(reservation)
 }
+
+const showRemoveButton = computed(() => {
+  return reservationHelper.isReservationFirstOrLastOfArray(
+    props.reservation,
+    basketItemsStore.reservations
+  )
+})
 </script>
 
 <template>
   <v-card min-width="350" class="mb-2">
     <v-card-text class="pt-0 px-2">
       <div class="d-flex justify-end">
-        <v-btn variant="text" size="x-small" @click="removeReservation(reservation)" icon
+        <v-btn
+          variant="text"
+          size="x-small"
+          v-if="showRemoveButton"
+          @click="removeReservation(reservation)"
+          icon
           ><v-icon size="medium">mdi-close</v-icon></v-btn
         >
       </div>
