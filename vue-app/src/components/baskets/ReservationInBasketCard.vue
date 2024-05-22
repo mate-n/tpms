@@ -15,6 +15,7 @@ import ProfileService from '@/services/ProfileService'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
+import TicketsCard from '../tickets/TicketsCard.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
@@ -61,6 +62,8 @@ const removeReservation = (reservation: IReservation) => {
 }
 
 const conservationFeesDialog = ref(false)
+
+const ticketsCardDialog = ref(false)
 
 const showRemoveButton = computed(() => {
   return reservationHelper.isReservationFirstOrLastOfArray(
@@ -136,8 +139,11 @@ const showRemoveButton = computed(() => {
           >
           <v-col></v-col>
           <v-col></v-col>
-          <v-col>
-            <v-btn @click="conservationFeesDialog = true" class="me-2">Add Conservation Fees</v-btn>
+          <v-col class="d-flex">
+            <v-btn @click="conservationFeesDialog = true" class="me-2 mb-2"
+              >Add Conservation Fees</v-btn
+            >
+            <v-btn @click="ticketsCardDialog = true" class="me-2">Add Fixed Charges</v-btn>
           </v-col>
         </v-row>
       </div>
@@ -146,6 +152,12 @@ const showRemoveButton = computed(() => {
   <v-dialog v-model="conservationFeesDialog" fullscreen scrollable>
     <v-card>
       <ConservationFeesCard @close="conservationFeesDialog = false" />
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="ticketsCardDialog" fullscreen scrollable>
+    <v-card>
+      <TicketsCard :reservation="reservation" @close="ticketsCardDialog = false" />
     </v-card>
   </v-dialog>
 </template>
