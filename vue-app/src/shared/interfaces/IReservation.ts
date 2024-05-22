@@ -10,6 +10,11 @@ export interface IReservation extends IEntityWithIdentity, IEntityWithErrors {
   roomID: number | undefined
   numberOfGuestsPerRoom: number
   profileID: number | undefined
+  guestProfileID: number | undefined
+  companyProfileID: number | undefined
+  sourceProfileID: number | undefined
+  travelAgentProfileID: number | undefined
+  bookerProfileID: number | undefined
   baseRateCategory: string
   orderIndex: number
   propertyAvailabilities: IPropertyAvailability[]
