@@ -13,12 +13,18 @@ export class Reservation implements IReservation {
   roomID: number | undefined
   numberOfGuestsPerRoom: number
   profileID: number | undefined
+  guestProfileID: number | undefined
+  companyProfileID: number | undefined
+  sourceProfileID: number | undefined
+  travelAgentProfileID: number | undefined
+  bookerProfileID: number | undefined
   baseRateCategory: string
   orderIndex: number
   propertyAvailabilities: IPropertyAvailability[]
   issues: string[]
   errors: Record<string, string>
   dateHelper: DateHelper = new DateHelper()
+  isBookerGuest: boolean
 
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
@@ -31,6 +37,7 @@ export class Reservation implements IReservation {
     this.propertyAvailabilities = []
     this.issues = []
     this.errors = {}
+    this.isBookerGuest = true
   }
 
   reset() {
@@ -42,10 +49,16 @@ export class Reservation implements IReservation {
     this.orderIndex = 0
     this.roomID = undefined
     this.profileID = undefined
+    this.guestProfileID = undefined
+    this.companyProfileID = undefined
+    this.sourceProfileID = undefined
+    this.travelAgentProfileID = undefined
+    this.bookerProfileID = undefined
     this.propertyID = undefined
     this.propertyAvailabilities = []
     this.issues = []
     this.errors = {}
+    this.isBookerGuest = true
   }
 
   addIssue(issue: string) {

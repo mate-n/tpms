@@ -6,7 +6,7 @@ This Readme shows how to run bookworm and start a tpms-demo.
 
 Go into the bookform-folder.
 
-    cd bookworm
+    cd infrastructure/demo/bookworm/
 
 Create a docker-image of bookworm.
 

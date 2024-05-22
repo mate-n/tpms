@@ -1,32 +1,32 @@
 services:
   vue:
     build:
-      context: ./vue-app
+      context: ../../vue-app
       dockerfile: Dockerfile
       target: development-stage
       args:
         VITE_API_BASE_URL: "${API_BASE_URL}"
     volumes:
-      - ./vue-app/src:/app/src
+      - ../../vue-app/src:/app/src
     env_file:
       - .env
     ports:
       - "${PORT_FRONTEND}:8080"
   nest:
     build:
-      context: ./nest-app
+      context: ../../nest-app
       dockerfile: Dockerfile
       target: development-stage
     volumes:
-      - ./nest-app/src:/app/src
+      - ../../nest-app/src:/app/src
     env_file:
       - .env
     ports:
       - "${PORT_BACKEND}:3001"
   npm:
-    build: ./npm
+    build: ../../tools/npm
     volumes:
-      - ./:/app
+      - ../../:/app
     profiles:
       - development
     user: "${UID}:${GID}"
