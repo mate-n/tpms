@@ -2,44 +2,27 @@
 
 This README explains how to start and develop tpms-frontend with Docker.
 
-## Basic Usage
+## Demo
 
-For the first time, create an .env - file with this command:
+If you want to see a demo of tpms-frontend you have two options:
 
-    cp .example.env .env
+1. Start a demo with Docker
+2. Install everything needed to run the demo and then start the demo
 
-Then run:
+### Start a demo with Docker.
 
-    docker compose up
+First, you need to [install Docker](https://docs.docker.com/get-docker/).
 
-Then visit:
+Then, run the following command in the root folder of tpms-frontend (the same place where this README.md is):
 
-    http://localhost:8080/
+    docker compose --project-directory infrastructure/demo/quick-demo/ --env-file=infrastructure/demo/quick-demo/.example.env up
 
-Or the value that is given in .env to PORT_FRONTEND.
+Then visit [http://localhost:8080/](http://localhost:8080/)
 
-## Check current state
+### Install everything needed to run the demo and then start the demo
 
-    docker container ps
-    CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES
-    3e4d817d550c tpms-frontend-vue "docker-entrypoint.s…" About a minute ago Up 7 seconds 0.0.0.0:8080->8080/tcp, :::8080->8080/tcp tpms-frontend-vue-1
+Read "Tpms-Demo-Manual.md" in "infrastructure/demo/bookworm".
 
-## Develop with Docker
+## Development
 
-tpms-frontend is made with vue.js and is using node and npm. If you want to add a (node-)package, do this:
-
-    docker compose run npm sh
-    cd vue-app
-    npm install my_package --save
-
-## Test Integration
-
-To run tpms-frontend with centos, do this:
-
-    docker compose -f docker-compose.integration.yml up --build
-
-Then visit:
-
-    http://localhost:8081/
-
-Or the value that is given in .env to PORT_FRONTEND_INTEGRATION.
+If you want to further develop tpms-frontend, read the README.md in "infrastructure/development"
