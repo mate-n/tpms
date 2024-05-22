@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import type { IStationery } from '@/shared/interfaces/IStationery'
-import { inject, ref, type Ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import StationeryFormCard from './StationeryFormCard.vue'
 import { DateFormatter } from '@/helpers/DateFormatter'
-import type { AxiosStatic } from 'axios'
-const axios: AxiosStatic | undefined = inject('axios')
 const emits = defineEmits(['close'])
 const dateFormatter = new DateFormatter()
 
