@@ -4,7 +4,7 @@ import { Reservation } from '../classes/Reservation'
 
 export class ReservationFaker {
   create(): IReservation {
-    let reservation = new Reservation()
+    const reservation = new Reservation()
     reservation.id = faker.number.int()
     reservation.propertyID = faker.number.int()
     reservation.arrivalDate = faker.date.recent()
