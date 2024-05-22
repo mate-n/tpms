@@ -31,9 +31,9 @@ onMounted(() => {
       <div class="d-flex align-baseline">
         <v-text-field
           v-model="profileToBeEdited.name"
-          label="Name *"
+          label="Name"
           variant="underlined"
-          class="me-3"
+          class="me-3 required-input"
           :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['name']"
           @update:modelValue="emit('change')"
         ></v-text-field>

@@ -1,3 +1,5 @@
+import type { IEntityWithErrors } from './IEntityWithErrors'
+
 export interface IValidator {
-  validate(objectToBeValidated: any): void
+  validate(objectToBeValidated: IEntityWithErrors): void
 }

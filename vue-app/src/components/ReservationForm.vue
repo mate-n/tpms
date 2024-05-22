@@ -88,6 +88,7 @@ const departureDateString = computed(() => {
 })
 
 const check = () => {
+  reservationValidator.validate(reservation.value)
   if (!reservation.value.propertyID) return
   const propertyAvailabilitySearch: IPropertyAvailabilitySearch = {
     propertyID: reservation.value.propertyID,
@@ -104,7 +105,6 @@ const check = () => {
     .then((response: IPropertyAvailability[]) => {
       reservation.value.propertyAvailabilities = response
       reservation.value.baseRateCategory = 'Base Rate | Low Season'
-      reservationValidator.validate(reservation.value)
       emit('check')
     })
 }
@@ -162,6 +162,7 @@ watch(
           :items="propertiesInDropdown"
           item-title="name"
           item-value="id"
+          :error-messages="reservation.errors && reservation.errors['propertyID']"
           @update:model-value="emitChange()"
         ></v-select>
         <v-icon>mdi-city</v-icon>
@@ -234,7 +235,7 @@ watch(
           :items="roomsInDropdown"
           item-title="name"
           item-value="id"
-          :error-messages="reservation.errors && reservation.errors['roomType']"
+          :error-messages="reservation.errors && reservation.errors['roomID']"
           @update:model-value="emitChange()"
         ></v-autocomplete>
       </v-col>

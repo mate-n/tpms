@@ -21,6 +21,8 @@ import { ProfileValidator } from '@/shared/validators/ProfileValidator'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import { ValidityHelper } from '@/helpers/ValidityHelper'
+import StationeryCard from '../stationeries/StationeryCard.vue'
+import ReservationsCard from '../reservations/ReservationsCard.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const profileValidator = new ProfileValidator()
@@ -70,6 +72,9 @@ const save = () => {
 const toggleActive = () => {
   profileToBeEdited.value.inactive = !profileToBeEdited.value.inactive
 }
+
+const stationeryCardDialog = ref(false)
+const reservationsCardDialog = ref(false)
 </script>
 <template>
   <v-container fluid class="bg-white">
@@ -127,18 +132,44 @@ const toggleActive = () => {
         >{{ $t('actions.save') }}</v-btn
       >
     </div>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-clipboard-text-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-calendar-blank-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-security</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-account-check-outline</v-icon>
-    </v-btn>
+    <v-tooltip text="Stationery">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          class="profiles-icon-button"
+          @click="stationeryCardDialog = true"
+        >
+          <v-icon>mdi-clipboard-text-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+    <v-tooltip text="Reservations">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          class="profiles-icon-button"
+          @click="reservationsCardDialog = true"
+        >
+          <v-icon>mdi-calendar-blank-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+    <v-tooltip text="Privacy Settings">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button text-gray">
+          <v-icon>mdi-security</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+    <v-tooltip text="New Reservation">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-account-check-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
   </v-toolbar>
   <v-container fluid class="bg-lightgray pt-0">
     <v-row>
@@ -162,4 +193,16 @@ const toggleActive = () => {
       <v-col class="pr-0 profiles-card-column"> </v-col>
     </v-row>
   </v-container>
+
+  <v-dialog v-model="stationeryCardDialog" scrollable>
+    <v-card>
+      <StationeryCard @close="stationeryCardDialog = false" />
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="reservationsCardDialog" scrollable>
+    <v-card>
+      <ReservationsCard @close="reservationsCardDialog = false" />
+    </v-card>
+  </v-dialog>
 </template>

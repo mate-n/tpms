@@ -3,6 +3,7 @@ import type { IProfileCommunication } from '../../shared/interfaces/profiles/IPr
 
 export class ProfileCommunication implements IProfileCommunication {
   communicationTypeID: number | undefined
+  communicationTypeName: string
   typeID: number
   value: string
   primary: boolean
@@ -11,6 +12,7 @@ export class ProfileCommunication implements IProfileCommunication {
   localID?: string
 
   constructor() {
+    this.communicationTypeName = ''
     this.typeID = 0
     this.value = ''
     this.primary = false
