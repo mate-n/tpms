@@ -14,9 +14,10 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import ProfileService from '@/services/ProfileService'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
+import { ReservationHelper } from '@/helpers/ReservationHelper'
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
-
+const reservationHelper = new ReservationHelper()
 const props = defineProps({
   reservation: { type: Object as () => IReservation, required: true }
 })
@@ -60,6 +61,13 @@ const removeReservation = (reservation: IReservation) => {
 }
 
 const conservationFeesDialog = ref(false)
+
+const showRemoveButton = computed(() => {
+  return reservationHelper.isReservationFirstOrLastOfArray(
+    props.reservation,
+    basketItemsStore.reservations
+  )
+})
 </script>
 
 <template>
@@ -70,7 +78,11 @@ const conservationFeesDialog = ref(false)
           <v-icon>mdi-chevron-double-right</v-icon><strong>{{ property?.name }}</strong>
         </div>
         <div>
-          <v-icon class="text-gray me-2" @click="removeReservation(reservation)">
+          <v-icon
+            class="text-gray me-2"
+            v-if="showRemoveButton"
+            @click="removeReservation(reservation)"
+          >
             mdi-delete-outline
           </v-icon>
         </div>
