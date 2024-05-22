@@ -23,6 +23,7 @@ const propertiesInDropdown: Ref<IProperty[]> = ref([])
 const roomsInDropdown: Ref<IRoom[]> = ref([])
 const profilesInDropdown: Ref<IProfile[]> = ref([])
 const profileDialog = ref(false)
+const reservationHelper = new ReservationHelper()
 import ProfileSearch from './profiles/ProfileSearch.vue'
 import ProfileService from '@/services/ProfileService'
 import type { IProperty } from '@/shared/interfaces/IProperty'
@@ -32,6 +33,7 @@ import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPr
 import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
+import { ReservationHelper } from '@/helpers/ReservationHelper'
 
 onBeforeMount(() => {
   propertyService.getProperties().then((response: IProperty[]) => {
@@ -150,6 +152,22 @@ watch(
   },
   { deep: true }
 )
+
+const showRemoveButton = computed(() => {
+  if (!props.previousReservation && !props.nextReservation) {
+    return false
+  }
+
+  if (!props.previousReservation && props.nextReservation) {
+    return true
+  }
+
+  if (props.nextReservation) {
+    return false
+  }
+
+  return true
+})
 </script>
 
 <template>
@@ -266,7 +284,7 @@ watch(
       </v-col>
       <v-col class="d-flex justify-space-between">
         <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
-        <v-btn v-if="previousReservation" class="danger-button" @click="remove(reservation)">
+        <v-btn class="danger-button" @click="remove(reservation)" v-if="showRemoveButton">
           Remove
         </v-btn>
       </v-col>
