@@ -137,7 +137,7 @@ const showRemoveButton = computed(() => {
           <v-col></v-col>
           <v-col></v-col>
           <v-col>
-            <v-btn @click="conservationFeesDialog = true">Add Conservation Fees</v-btn>
+            <v-btn @click="conservationFeesDialog = true" class="me-2">Add Conservation Fees</v-btn>
           </v-col>
         </v-row>
       </div>
