@@ -51,7 +51,8 @@ const addTicket = (ticket: ITicket) => {
     const ticketOrder: ITicketOrder = {
       TicketId: ticket.TicketId,
       TicketName: ticket.Name,
-      NumberOfTickets: 1
+      NumberOfTickets: 1,
+      TicketPrice: ticket.Price
     }
     selectedTickets.value.push(ticketOrder)
   }
@@ -85,6 +86,14 @@ onMounted(() => {
     property.value = response
   })
 })
+
+const getTotalPrice = () => {
+  let total = 0
+  for (const ticket of selectedTickets.value) {
+    total += ticket.TicketPrice * ticket.NumberOfTickets
+  }
+  return total
+}
 </script>
 
 <template>
@@ -144,8 +153,18 @@ onMounted(() => {
                 </div>
               </div>
             </div>
+
             <v-btn class="w-100 mb-3 primary-button" v-if="selectedTickets.length > 0">Buy</v-btn>
-          </v-col>
+
+            <div>
+              <v-divider></v-divider>
+              <div class="">
+                <strong> Total: </strong>
+                <br />
+                {{ getTotalPrice() }}
+              </div>
+            </div></v-col
+          >
         </v-row>
       </v-card>
     </v-container>
