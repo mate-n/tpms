@@ -34,7 +34,8 @@ const availableTableDataHeaders = ref([
   { key: 'Name', title: 'Name', selected: true },
   { key: 'Price', title: 'Price', selected: true },
   { key: 'Description', title: 'Description', selected: true },
-  { key: 'TicketEventName', title: 'TicketEventName', selected: true }
+  { key: 'TicketEventName', title: 'TicketEventName', selected: true },
+  { key: 'Date', title: 'Date', selected: true }
 ])
 
 const ticketsCardDialog = ref(false)
