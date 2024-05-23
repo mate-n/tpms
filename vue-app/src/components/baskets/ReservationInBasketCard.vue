@@ -71,6 +71,21 @@ const showRemoveButton = computed(() => {
     basketItemsStore.reservations
   )
 })
+
+const clickOnAddFixedCharges = () => {
+  if (props.reservation.ticketIDs.length > 0) {
+    conservationFeesDialog.value = true
+  } else {
+    ticketsCardDialog.value = true
+  }
+}
+
+const addTicketsToReservation = () => {
+  ticketsCardDialog.value = false
+  if (props.reservation.ticketIDs.length > 0) {
+    conservationFeesDialog.value = true
+  }
+}
 </script>
 
 <template>
@@ -140,10 +155,7 @@ const showRemoveButton = computed(() => {
           <v-col></v-col>
           <v-col></v-col>
           <v-col class="d-flex">
-            <v-btn @click="conservationFeesDialog = true" class="me-2 mb-2"
-              >Add Conservation Fees</v-btn
-            >
-            <v-btn @click="ticketsCardDialog = true" class="me-2">Add Fixed Charges</v-btn>
+            <v-btn @click="clickOnAddFixedCharges()" class="me-2">Add Fixed Charges</v-btn>
           </v-col>
         </v-row>
       </div>
@@ -151,13 +163,17 @@ const showRemoveButton = computed(() => {
   </v-card>
   <v-dialog v-model="conservationFeesDialog" fullscreen scrollable>
     <v-card>
-      <ConservationFeesCard @close="conservationFeesDialog = false" />
+      <ConservationFeesCard :reservation="reservation" @close="conservationFeesDialog = false" />
     </v-card>
   </v-dialog>
 
   <v-dialog v-model="ticketsCardDialog" fullscreen scrollable>
     <v-card>
-      <TicketsCard :reservation="reservation" @close="ticketsCardDialog = false" />
+      <TicketsCard
+        :reservation="reservation"
+        @close="ticketsCardDialog = false"
+        @add-tickets-to-reservation="addTicketsToReservation()"
+      />
     </v-card>
   </v-dialog>
 </template>
