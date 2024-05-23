@@ -155,42 +155,41 @@ const addTicketsToReservation = () => {
           </v-col>
           <v-col
             ><h2 class="mb-2 text-center">Confirm</h2>
-            <div
-              v-for="ticket of selectedTickets"
-              :key="ticket.TicketId"
-              class="d-flex align-center justify-space-between"
-            >
-              <div class="me-2">{{ ticket.NumberOfTickets }} x {{ ticket.TicketName }}</div>
-              <div class="d-flex justify-end">
-                <div>
-                  <v-btn variant="text" @click="addTicketOrder(ticket)" icon>
-                    <v-icon class="text-gray"> mdi-plus </v-icon>
-                  </v-btn>
-                </div>
-                <div>
-                  <v-btn variant="text" @click="removeTicketOrder(ticket)" icon>
-                    <v-icon class="text-gray"> mdi-minus </v-icon>
-                  </v-btn>
-                </div>
-              </div>
-            </div>
+            <v-table>
+              <tbody>
+                <tr v-for="item in selectedTickets" :key="item.TicketId">
+                  <td>{{ item.NumberOfTickets }} x</td>
+                  <td>{{ item.TicketName }}</td>
+                  <td>{{ item.TicketPrice }}</td>
+                  <td class="border-e border-s">
+                    {{ item.NumberOfTickets * item.TicketPrice }}
+                  </td>
+                  <td class="d-flex justify-end">
+                    <v-btn variant="text" @click="addTicketOrder(item)" icon>
+                      <v-icon class="text-gray"> mdi-plus </v-icon>
+                    </v-btn>
+                    <v-btn variant="text" @click="removeTicketOrder(item)" icon>
+                      <v-icon class="text-gray"> mdi-minus </v-icon>
+                    </v-btn>
+                  </td>
+                </tr>
+                <tr class="bg-lightgray">
+                  <td></td>
+                  <td></td>
+                  <td class="font-weight-bold">Total:</td>
+                  <td class="font-weight-bold border-s border-e">{{ getTotalPrice() }}</td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </v-table>
 
             <v-btn
-              class="w-100 mb-3 primary-button"
+              class="w-100 mb-3 primary-button mt-3"
               v-if="selectedTickets.length > 0"
               @click="addTicketsToReservation()"
               >Add</v-btn
             >
-
-            <div>
-              <v-divider></v-divider>
-              <div class="">
-                <strong> Total: </strong>
-                <br />
-                {{ getTotalPrice() }}
-              </div>
-            </div></v-col
-          >
+          </v-col>
         </v-row>
       </v-card>
     </v-container>
