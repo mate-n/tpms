@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { DateHelper } from '@/helpers/DateHelper'
+import { PropertyService } from '@/services/PropertyService'
 import { TicketService } from '@/services/TicketService'
+import type { IProperty } from '@/shared/interfaces/IProperty'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { ITicket } from '@/shared/interfaces/ITicket'
 import type { ITicketOrder } from '@/shared/interfaces/ITicketOrder'
+import type { AxiosStatic } from 'axios'
 import type { Ref } from 'vue'
-import { onMounted, ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
+const axios: AxiosStatic | undefined = inject('axios')
+const propertyService = new PropertyService(axios)
 const dateHelper = new DateHelper()
 const ticketsService = new TicketService()
 const emits = defineEmits(['close'])
@@ -52,7 +57,7 @@ const addTicket = (ticket: ITicket) => {
   }
 }
 
-const removeTicket = (ticket: ITicketOrder) => {
+const removeTicketOrder = (ticket: ITicketOrder) => {
   const existingTicket = selectedTickets.value.find((t) => t.TicketId === ticket.TicketId)
   if (existingTicket) {
     if (existingTicket.NumberOfTickets > 1) {
@@ -62,12 +67,34 @@ const removeTicket = (ticket: ITicketOrder) => {
     }
   }
 }
+
+const addTicketOrder = (ticket: ITicketOrder) => {
+  const existingTicket = selectedTickets.value.find((t) => t.TicketId === ticket.TicketId)
+  if (existingTicket) {
+    existingTicket.NumberOfTickets++
+  } else {
+    selectedTickets.value.push(ticket)
+  }
+}
+
+const property: Ref<IProperty | undefined> = ref(undefined)
+
+onMounted(() => {
+  if (!props.reservation.propertyID) return
+  propertyService.get(props.reservation.propertyID).then((response) => {
+    property.value = response
+  })
+})
 </script>
 
 <template>
-  <div class="standard-dialog-card">
+  <div class="standard-dialog-card bg-lightgray">
     <v-toolbar class="standard-dialog-card-toolbar">
-      <v-toolbar-title><span class="text-primary">Tickets</span></v-toolbar-title>
+      <v-toolbar-title
+        ><span class="text-primary">Tickets</span> - {{ property?.name }} -
+        {{ dateFormatter.dddotmmdotyyyy(reservation.arrivalDate) }} -
+        {{ dateFormatter.dddotmmdotyyyy(reservation.departureDate) }}</v-toolbar-title
+      >
       <div class="standard-card-toolbar-button rounded-te" @click="emits('close')">
         <v-icon size="large">mdi-close</v-icon>
       </div>
@@ -99,12 +126,25 @@ const removeTicket = (ticket: ITicketOrder) => {
           </v-col>
           <v-col
             ><h2 class="mb-2 text-center">Confirm</h2>
-            <div v-for="ticket of selectedTickets">
-              <v-btn class="w-100 mb-3 secondary-button" @click="removeTicket(ticket)">
-                {{ ticket.TicketName }} - {{ ticket.NumberOfTickets }}
-              </v-btn>
+            <div
+              v-for="ticket of selectedTickets"
+              class="d-flex align-center justify-space-between"
+            >
+              <div class="me-2">{{ ticket.NumberOfTickets }} x {{ ticket.TicketName }}</div>
+              <div class="d-flex justify-end">
+                <div>
+                  <v-btn variant="text" @click="addTicketOrder(ticket)" icon>
+                    <v-icon class="text-gray"> mdi-plus </v-icon>
+                  </v-btn>
+                </div>
+                <div>
+                  <v-btn variant="text" @click="removeTicketOrder(ticket)" icon>
+                    <v-icon class="text-gray"> mdi-minus </v-icon>
+                  </v-btn>
+                </div>
+              </div>
             </div>
-            <v-btn class="w-100 mb-3 secondary-button"> Confirm </v-btn>
+            <v-btn class="w-100 mb-3 primary-button" v-if="selectedTickets.length > 0">Buy</v-btn>
           </v-col>
         </v-row>
       </v-card>
