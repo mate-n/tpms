@@ -25,6 +25,7 @@ export class Reservation implements IReservation {
   errors: Record<string, string>
   dateHelper: DateHelper = new DateHelper()
   isBookerGuest: boolean
+  ticketIDs: number[]
 
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
@@ -38,6 +39,7 @@ export class Reservation implements IReservation {
     this.issues = []
     this.errors = {}
     this.isBookerGuest = true
+    this.ticketIDs = []
   }
 
   reset() {
@@ -59,6 +61,7 @@ export class Reservation implements IReservation {
     this.issues = []
     this.errors = {}
     this.isBookerGuest = true
+    this.ticketIDs = []
   }
 
   addIssue(issue: string) {
