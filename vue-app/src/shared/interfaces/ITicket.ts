@@ -25,4 +25,5 @@ export interface ITicket {
   RemainingCapacity: number
   EventMaxCapacity: number
   EventRemainingCapacity: number
+  Date: Date
 }
