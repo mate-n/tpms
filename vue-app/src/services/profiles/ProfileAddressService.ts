@@ -6,8 +6,8 @@ import type { AxiosStatic } from 'axios'
 
 export class ProfileAddressService implements IProfilesService {
   axiosInstance: AxiosStatic
-  constructor(axiosInstance: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
+  constructor(axios: AxiosStatic | undefined) {
+    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
   create(profileAddress: IProfileAddress) {
     return new Promise((resolve, reject) => {

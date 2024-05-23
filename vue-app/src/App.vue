@@ -3,6 +3,10 @@ import { ref } from 'vue'
 import { RouterView } from 'vue-router'
 import { useBasketItemsStore } from './stores/basketItems'
 import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
+import { useUserStore } from './stores/user'
+import { Profile } from './shared/classes/Profile'
+const userStore = useUserStore()
+userStore.currentProfile = new Profile()
 const basketItemsStore = useBasketItemsStore()
 const drawer = ref(false)
 </script>

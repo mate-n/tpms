@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { FeatureService } from '@/services/FeatureService'
-import type { AxiosStatic } from 'axios'
-import { inject, onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
 import ProfilePreferencesForm from './ProfilePreferencesForm.vue'
 import { BookableObjectService } from '@/services/BookableObjectService'
 import type { IBookableObject } from '@/shared/interfaces/IBookableObject'
 import type { IFeature } from '@/shared/interfaces/IFeature'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import { inject } from 'vue'
+import type { AxiosStatic } from 'axios'
 const axios: AxiosStatic | undefined = inject('axios')
 const featureService = new FeatureService(axios)
 const bookableObjectService = new BookableObjectService(axios)
@@ -32,6 +33,13 @@ onBeforeMount(() => {
   bookableObjectService.getAvailableBookableObjects().then((response) => {
     availableBookableObjects.value = response
   })
+})
+
+const preferredRoom = computed(() => {
+  return availableBookableObjects.value.find(
+    (bookableObject: IBookableObject) =>
+      bookableObject.id === profileToBeEdited.value.preferencesDefaultObjectID
+  )
 })
 </script>
 
@@ -62,13 +70,8 @@ onBeforeMount(() => {
       <div class="mb-2">
         <span class="profile-card-caption">Preferred Room </span><br />
         <div class="d-flex">
-          <div class="profiles-pill">
-            {{
-              availableBookableObjects.find(
-                (bookableObject) =>
-                  bookableObject.id === profileToBeEdited.preferencesDefaultObjectID
-              )?.value
-            }}
+          <div class="profiles-pill" v-if="preferredRoom">
+            {{ preferredRoom.value }}
           </div>
         </div>
       </div>

@@ -5,8 +5,8 @@ import type { AxiosStatic } from 'axios'
 
 export class NationalityService implements IService {
   axiosInstance: AxiosStatic
-  constructor(axiosInstance: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
+  constructor(axios: AxiosStatic | undefined) {
+    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
 
   getAvailableNationalities() {

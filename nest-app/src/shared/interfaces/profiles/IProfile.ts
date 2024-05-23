@@ -1,7 +1,9 @@
+import type { IEntityWithErrors } from '../IEntityWithErrors'
 import type { IEntityWithIdentity } from '../IEntityWithIdentity'
 
-export interface IProfile extends IEntityWithIdentity {
+export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
   //General
+  name: string
   firstName: string
   lastName: string
   middleName: string
@@ -18,6 +20,8 @@ export interface IProfile extends IEntityWithIdentity {
   inactive: boolean
   profileType: string
   isPasserby: boolean
+  department: string
+  iataCode: string
 
   //Communications / Contact details
   communicationIDs: number[]
@@ -33,7 +37,7 @@ export interface IProfile extends IEntityWithIdentity {
   nationality: string
 
   //Additional Info
-  company: string
+  companyID: number | undefined
   occupation: string
   additionalInfoDefaultRateIDs: number[]
   licensePlate: string

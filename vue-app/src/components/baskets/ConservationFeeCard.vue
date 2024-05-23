@@ -1,14 +1,5 @@
 <script setup lang="ts">
-import { useBasketItemsStore } from '@/stores/basketItems'
-import ReservationInBasketCard from './ReservationInBasketCard.vue'
-const basketItemsStore = useBasketItemsStore()
-
 const emits = defineEmits(['close'])
-const removeAllReservations = () => {
-  for (const reservation of basketItemsStore.reservations) {
-    basketItemsStore.removeReservation(reservation)
-  }
-}
 </script>
 <template>
   <div class="standard-dialog-card">

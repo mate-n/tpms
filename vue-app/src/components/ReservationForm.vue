@@ -3,9 +3,9 @@ import { computed, inject, onBeforeMount, ref, watch, type Ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ReservationValidator } from '@/validators/ReservationValidator'
 import AvailabilityService from '@/services/AvailabilityService'
-import type { AxiosStatic } from 'axios'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
+import type { AxiosStatic } from 'axios'
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
 const propertyService = new PropertyService(axios)
@@ -23,6 +23,7 @@ const propertiesInDropdown: Ref<IProperty[]> = ref([])
 const roomsInDropdown: Ref<IRoom[]> = ref([])
 const profilesInDropdown: Ref<IProfile[]> = ref([])
 const profileDialog = ref(false)
+const reservationHelper = new ReservationHelper()
 import ProfileSearch from './profiles/ProfileSearch.vue'
 import ProfileService from '@/services/ProfileService'
 import type { IProperty } from '@/shared/interfaces/IProperty'
@@ -32,6 +33,7 @@ import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPr
 import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
+import { ReservationHelper } from '@/helpers/ReservationHelper'
 
 onBeforeMount(() => {
   propertyService.getProperties().then((response: IProperty[]) => {
@@ -88,6 +90,7 @@ const departureDateString = computed(() => {
 })
 
 const check = () => {
+  reservationValidator.validate(reservation.value)
   if (!reservation.value.propertyID) return
   const propertyAvailabilitySearch: IPropertyAvailabilitySearch = {
     propertyID: reservation.value.propertyID,
@@ -104,7 +107,6 @@ const check = () => {
     .then((response: IPropertyAvailability[]) => {
       reservation.value.propertyAvailabilities = response
       reservation.value.baseRateCategory = 'Base Rate | Low Season'
-      reservationValidator.validate(reservation.value)
       emit('check')
     })
 }
@@ -150,6 +152,22 @@ watch(
   },
   { deep: true }
 )
+
+const showRemoveButton = computed(() => {
+  if (!props.previousReservation && !props.nextReservation) {
+    return false
+  }
+
+  if (!props.previousReservation && props.nextReservation) {
+    return true
+  }
+
+  if (props.nextReservation) {
+    return false
+  }
+
+  return true
+})
 </script>
 
 <template>
@@ -162,6 +180,7 @@ watch(
           :items="propertiesInDropdown"
           item-title="name"
           item-value="id"
+          :error-messages="reservation.errors && reservation.errors['propertyID']"
           @update:model-value="emitChange()"
         ></v-select>
         <v-icon>mdi-city</v-icon>
@@ -193,7 +212,7 @@ watch(
           label="Nights"
           :model-value="numberOfNights"
           type="number"
-          :error-messages="reservation.errors['nights']"
+          :error-messages="reservation.errors && reservation.errors['nights']"
           :readonly="true"
         ></v-text-field>
       </v-col>
@@ -222,7 +241,7 @@ watch(
         <v-text-field
           label="Rooms"
           v-model="reservation.numberOfRooms"
-          :error-messages="reservation.errors['numberOfRooms']"
+          :error-messages="reservation.errors && reservation.errors['numberOfRooms']"
           type="number"
           @change="emitChange()"
         ></v-text-field>
@@ -234,7 +253,7 @@ watch(
           :items="roomsInDropdown"
           item-title="name"
           item-value="id"
-          :error-messages="reservation.errors['roomType']"
+          :error-messages="reservation.errors && reservation.errors['roomID']"
           @update:model-value="emitChange()"
         ></v-autocomplete>
       </v-col>
@@ -242,7 +261,7 @@ watch(
         <v-text-field
           label="Guests per room"
           v-model="reservation.numberOfGuestsPerRoom"
-          :error-messages="reservation.errors['numberOfGuestsPerRoom']"
+          :error-messages="reservation.errors && reservation.errors['numberOfGuestsPerRoom']"
           type="number"
           @change="emitChange()"
         ></v-text-field>
@@ -265,7 +284,7 @@ watch(
       </v-col>
       <v-col class="d-flex justify-space-between">
         <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
-        <v-btn v-if="previousReservation" class="danger-button" @click="remove(reservation)">
+        <v-btn class="danger-button" @click="remove(reservation)" v-if="showRemoveButton">
           Remove
         </v-btn>
       </v-col>

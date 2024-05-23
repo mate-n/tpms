@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { inject, onBeforeMount, ref, watch, type Ref } from 'vue'
-import type { AxiosStatic } from 'axios'
+import { onBeforeMount, ref, watch, type Ref } from 'vue'
 import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
 import ProfileCommunicationForm from './ProfileCommunicationForm.vue'
 import { IdentityHelper } from '@/helpers/IdentityHelper'
 import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
 import { ProfileCommunication } from '@/shared/classes/ProfileCommunication'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import { inject } from 'vue'
+import type { AxiosStatic } from 'axios'
+import { ValidityHelper } from '@/helpers/ValidityHelper'
+const validityHelper = new ValidityHelper()
+const axios: AxiosStatic | undefined = inject('axios')
 const identityHelper = new IdentityHelper()
 const emit = defineEmits(['close'])
 const profileCommunications: Ref<IProfileCommunication[]> = ref([])
@@ -16,15 +20,19 @@ const props = defineProps({
 watch(
   profileCommunications,
   () => {
-    showSaveButton.value = true
+    showSaveButton.value = areAllProfileCommunicationsAreValid()
   },
   { deep: true }
 )
 const showSaveButton = ref(false)
+const areAllProfileCommunicationsAreValid = () => {
+  return profileCommunications.value.every((profileCommunication) =>
+    validityHelper.isValid(profileCommunication)
+  )
+}
 const addProfileCommunication = () => {
   profileCommunications.value.push(new ProfileCommunication())
 }
-const axios: AxiosStatic | undefined = inject('axios')
 const profileCommunicationService = new ProfileCommunicationService(axios)
 
 onBeforeMount(() => {
@@ -63,6 +71,9 @@ const getProfileCommunications = () => {
 
 const reloadProfileCommunications = () => {
   getProfileCommunications().then(() => {
+    if (profileCommunications.value.length === 0) {
+      addProfileCommunication()
+    }
     showSaveButton.value = false
   })
 }
@@ -74,6 +85,28 @@ const deleteProfileCommunication = (profileCommunication: IProfileCommunication)
     (innerProfileCommunication) =>
       !identityHelper.isSame(innerProfileCommunication, profileCommunication)
   )
+}
+
+const changeCommunicationType = (profileCommunication: IProfileCommunication) => {
+  const foundProfileCommunicationWithSameType = profileCommunications.value.filter(
+    (innerProfileCommunication) =>
+      innerProfileCommunication.communicationTypeID === profileCommunication.communicationTypeID
+  )
+
+  if (foundProfileCommunicationWithSameType.length === 1) {
+    profileCommunication.primary = true
+  }
+}
+
+const changePrimary = (profileCommunication: IProfileCommunication) => {
+  const foundProfileCommunicationWithSameType = profileCommunications.value.filter(
+    (innerProfileCommunication) =>
+      innerProfileCommunication.communicationTypeID === profileCommunication.communicationTypeID
+  )
+  for (const innerProfileCommunication of foundProfileCommunicationWithSameType) {
+    innerProfileCommunication.primary = false
+  }
+  profileCommunication.primary = true
 }
 </script>
 <template>
@@ -101,6 +134,10 @@ const deleteProfileCommunication = (profileCommunication: IProfileCommunication)
       <div class="bg-white mb-2">
         <ProfileCommunicationForm
           v-model="profileCommunications[index]"
+          @change-communication-type="
+            (profileCommunication) => changeCommunicationType(profileCommunication)
+          "
+          @change-primary="(profileCommunication) => changePrimary(profileCommunication)"
           @delete="(profileCOmmunication) => deleteProfileCommunication(profileCommunication)"
         ></ProfileCommunicationForm>
       </div>

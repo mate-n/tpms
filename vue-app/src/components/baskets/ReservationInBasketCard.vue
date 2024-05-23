@@ -1,27 +1,30 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { DateHelper } from '@/helpers/DateHelper'
-import ProfileService from '@/services/ProfileService'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
 import { useBasketItemsStore } from '@/stores/basketItems'
-import type { AxiosStatic } from 'axios'
 import { computed, ref, type Ref } from 'vue'
-import { inject, onBeforeMount } from 'vue'
+import { onBeforeMount } from 'vue'
 import ConservationFeesCard from './ConservationFeesCard.vue'
 import type { IProperty } from '@/shared/interfaces/IProperty'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import ProfileService from '@/services/ProfileService'
+import { inject } from 'vue'
+import type { AxiosStatic } from 'axios'
+import { ReservationHelper } from '@/helpers/ReservationHelper'
+import TicketsCard from '../tickets/TicketsCard.vue'
+const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
-
+const reservationHelper = new ReservationHelper()
 const props = defineProps({
   reservation: { type: Object as () => IReservation, required: true }
 })
 const property: Ref<IProperty | null> = ref(null)
 const profile: Ref<IProfile | null> = ref(null)
 const room: Ref<IRoom | null> = ref(null)
-const axios: AxiosStatic | undefined = inject('axios')
 const propertyService = new PropertyService(axios)
 const profileService = new ProfileService(axios)
 const roomService = new RoomService(axios)
@@ -59,6 +62,30 @@ const removeReservation = (reservation: IReservation) => {
 }
 
 const conservationFeesDialog = ref(false)
+
+const ticketsCardDialog = ref(false)
+
+const showRemoveButton = computed(() => {
+  return reservationHelper.isReservationFirstOrLastOfArray(
+    props.reservation,
+    basketItemsStore.reservations
+  )
+})
+
+const clickOnAddFixedCharges = () => {
+  if (props.reservation.ticketIDs.length > 0) {
+    conservationFeesDialog.value = true
+  } else {
+    ticketsCardDialog.value = true
+  }
+}
+
+const addTicketsToReservation = () => {
+  ticketsCardDialog.value = false
+  if (props.reservation.ticketIDs.length > 0) {
+    conservationFeesDialog.value = true
+  }
+}
 </script>
 
 <template>
@@ -69,7 +96,11 @@ const conservationFeesDialog = ref(false)
           <v-icon>mdi-chevron-double-right</v-icon><strong>{{ property?.name }}</strong>
         </div>
         <div>
-          <v-icon class="text-gray me-2" @click="removeReservation(reservation)">
+          <v-icon
+            class="text-gray me-2"
+            v-if="showRemoveButton"
+            @click="removeReservation(reservation)"
+          >
             mdi-delete-outline
           </v-icon>
         </div>
@@ -123,8 +154,8 @@ const conservationFeesDialog = ref(false)
           >
           <v-col></v-col>
           <v-col></v-col>
-          <v-col>
-            <v-btn @click="conservationFeesDialog = true">Add Conservation Fees</v-btn>
+          <v-col class="d-flex">
+            <v-btn @click="clickOnAddFixedCharges()" class="me-2">Add Fixed Charges</v-btn>
           </v-col>
         </v-row>
       </div>
@@ -132,7 +163,17 @@ const conservationFeesDialog = ref(false)
   </v-card>
   <v-dialog v-model="conservationFeesDialog" fullscreen scrollable>
     <v-card>
-      <ConservationFeesCard @close="conservationFeesDialog = false" />
+      <ConservationFeesCard :reservation="reservation" @close="conservationFeesDialog = false" />
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="ticketsCardDialog" fullscreen scrollable>
+    <v-card>
+      <TicketsCard
+        :reservation="reservation"
+        @close="ticketsCardDialog = false"
+        @add-tickets-to-reservation="addTicketsToReservation()"
+      />
     </v-card>
   </v-dialog>
 </template>

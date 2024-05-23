@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { inject, onMounted, ref, watch, type Ref } from 'vue'
+import { onMounted, ref, watch, type Ref } from 'vue'
 import ProfileAddressForm from './ProfileAddressForm.vue'
-import type { AxiosStatic } from 'axios'
 import { ProfileAddressService } from '@/services/profiles/ProfileAddressService'
 import { IdentityHelper } from '@/helpers/IdentityHelper'
 import { ProfileAddress } from '@/shared/classes/ProfileAddress'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddress'
-const identityHelper = new IdentityHelper()
+import { inject } from 'vue'
+import type { AxiosStatic } from 'axios'
+import { ValidityHelper } from '@/helpers/ValidityHelper'
+const validityHelper = new ValidityHelper()
 const axios: AxiosStatic | undefined = inject('axios')
+const identityHelper = new IdentityHelper()
 const profileAddressService = new ProfileAddressService(axios)
 const emit = defineEmits(['close'])
 const profileAddresses: Ref<IProfileAddress[]> = ref([])
@@ -18,13 +21,17 @@ const props = defineProps({
 watch(
   profileAddresses,
   () => {
-    showSaveButton.value = true
+    showSaveButton.value = areAllProfileAddressesValid()
   },
   { deep: true }
 )
 const showSaveButton = ref(false)
 const addProfileAddress = () => {
   profileAddresses.value.push(new ProfileAddress())
+}
+
+const areAllProfileAddressesValid = () => {
+  return profileAddresses.value.every((profileAddress) => validityHelper.isValid(profileAddress))
 }
 
 const getProfileAddresses = () => {
@@ -60,7 +67,11 @@ const changeMailingAddress = (profileAddress: IProfileAddress) => {
 }
 
 onMounted(() => {
-  getProfileAddresses()
+  getProfileAddresses().then(() => {
+    if (profileAddresses.value.length === 0) {
+      addProfileAddress()
+    }
+  })
 })
 
 const saveAllProfileAddresses = () => {

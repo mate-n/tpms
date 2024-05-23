@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import ProfileService from '@/services/ProfileService'
-import type { AxiosStatic } from 'axios'
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileAvatar from './ProfileAvatar.vue'
 import ProfileContactDetailsCard from './ProfileContactDetailsCard.vue'
@@ -16,11 +14,22 @@ import { Profile } from '@/shared/classes/Profile'
 import type { ILanguage } from '@/shared/interfaces/ILanguage'
 import type { ISalutation } from '@/shared/interfaces/ISalutation'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import PrivateProfileForm from './PrivateProfileForm.vue'
+import CompanyProfileForm from './CompanyProfileForm.vue'
+import TravelAgencyProfileForm from './TravelAgencyProfileForm.vue'
+import { ProfileValidator } from '@/shared/validators/ProfileValidator'
+import ProfileService from '@/services/ProfileService'
+import type { AxiosStatic } from 'axios'
+import { ValidityHelper } from '@/helpers/ValidityHelper'
+import StationeryCard from '../stationeries/StationeryCard.vue'
+import ReservationsCard from '../reservations/ReservationsCard.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
+const profileValidator = new ProfileValidator()
 const languageService = new LanguageService(axios)
 const salutationService = new SalutationService(axios)
 const cloneHelper = new CloneHelper()
+const validityHelper = new ValidityHelper()
 const props = defineProps({
   profileInput: { type: Object as () => IProfile, required: true },
   crudOperation: { type: Number, required: true }
@@ -43,7 +52,15 @@ watch(props, (newInput) => {
   profileToBeEdited.value = cloneHelper.clone(newInput.profileInput)
 })
 
+const validate = () => {
+  profileValidator.validate(profileToBeEdited.value)
+}
+
 const save = () => {
+  validate()
+  if (profileToBeEdited.value.errors && Object.keys(profileToBeEdited.value.errors).length > 0) {
+    return
+  }
   if (props.crudOperation === CrudOperations.Create) {
     profileService.post(profileToBeEdited.value)
   } else if (props.crudOperation === CrudOperations.Update) {
@@ -55,6 +72,9 @@ const save = () => {
 const toggleActive = () => {
   profileToBeEdited.value.inactive = !profileToBeEdited.value.inactive
 }
+
+const stationeryCardDialog = ref(false)
+const reservationsCardDialog = ref(false)
 </script>
 <template>
   <v-container fluid class="bg-white">
@@ -68,54 +88,23 @@ const toggleActive = () => {
         </div>
       </v-col>
       <v-col cols="10" class="border-s">
-        <div class="d-flex">
-          <div style="flex-grow: 6">
-            <div class="d-flex big-vue-input-field-font-size">
-              <v-text-field
-                v-model="profileToBeEdited.lastName"
-                label="Last Name"
-                variant="underlined"
-                class="me-3"
-              ></v-text-field>
-              <v-text-field
-                v-model="profileToBeEdited.firstName"
-                label="First Name"
-                variant="underlined"
-                class="me-3"
-                aria-required="true"
-              ></v-text-field>
-              <v-text-field
-                v-model="profileToBeEdited.middleName"
-                label="Middle Name"
-                variant="underlined"
-                class="me-3"
-              ></v-text-field>
-            </div>
-            <div class="d-flex">
-              <v-autocomplete
-                label="Salutaton"
-                v-model="profileToBeEdited.salut"
-                :items="salutations"
-                item-title="value"
-                variant="underlined"
-                class="me-3"
-              ></v-autocomplete>
-              <v-text-field
-                v-model="profileToBeEdited.salutShort"
-                label="Personal Salutation"
-                variant="underlined"
-                class="me-3"
-              ></v-text-field>
-              <v-autocomplete
-                label="Language"
-                v-model="profileToBeEdited.language"
-                :items="languages"
-                item-title="value"
-                variant="underlined"
-                class="me-3"
-              ></v-autocomplete>
-            </div>
-          </div>
+        <div v-if="profileToBeEdited.profileType === 'Private'">
+          <PrivateProfileForm v-model="profileToBeEdited" @change="validate()"></PrivateProfileForm>
+        </div>
+        <div
+          v-if="
+            profileToBeEdited.profileType === 'Company' ||
+            profileToBeEdited.profileType === 'Group' ||
+            profileToBeEdited.profileType === 'Source'
+          "
+        >
+          <CompanyProfileForm v-model="profileToBeEdited" @change="validate()"></CompanyProfileForm>
+        </div>
+        <div v-if="profileToBeEdited.profileType === 'TravelAgency'">
+          <TravelAgencyProfileForm
+            v-model="profileToBeEdited"
+            @change="validate()"
+          ></TravelAgencyProfileForm>
         </div>
       </v-col>
     </v-row>
@@ -135,21 +124,52 @@ const toggleActive = () => {
         >
       </template>
     </div>
-    <div class="h-100 d-flex px-5 align-center" @click="save()">
-      <v-btn class="primary-button text-uppercase">{{ $t('actions.save') }}</v-btn>
+    <div class="h-100 d-flex px-5 align-center">
+      <v-btn
+        v-if="validityHelper.isValid(profileToBeEdited)"
+        class="primary-button text-uppercase"
+        @click="save()"
+        >{{ $t('actions.save') }}</v-btn
+      >
     </div>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-clipboard-text-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-calendar-blank-outline</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-security</v-icon>
-    </v-btn>
-    <v-btn icon class="profiles-icon-button">
-      <v-icon>mdi-account-check-outline</v-icon>
-    </v-btn>
+    <v-tooltip text="Stationery">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          class="profiles-icon-button"
+          @click="stationeryCardDialog = true"
+        >
+          <v-icon>mdi-clipboard-text-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+    <v-tooltip text="Reservations">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          class="profiles-icon-button"
+          @click="reservationsCardDialog = true"
+        >
+          <v-icon>mdi-calendar-blank-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+    <v-tooltip text="Privacy Settings">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button text-gray">
+          <v-icon>mdi-security</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+    <v-tooltip text="New Reservation">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-account-check-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
   </v-toolbar>
   <v-container fluid class="bg-lightgray pt-0">
     <v-row>
@@ -173,4 +193,16 @@ const toggleActive = () => {
       <v-col class="pr-0 profiles-card-column"> </v-col>
     </v-row>
   </v-container>
+
+  <v-dialog v-model="stationeryCardDialog" scrollable>
+    <v-card>
+      <StationeryCard @close="stationeryCardDialog = false" />
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="reservationsCardDialog" scrollable>
+    <v-card>
+      <ReservationsCard @close="reservationsCardDialog = false" />
+    </v-card>
+  </v-dialog>
 </template>

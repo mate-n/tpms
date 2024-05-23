@@ -6,8 +6,8 @@ import type { AxiosStatic } from 'axios'
 
 class AvailabilityService implements IService {
   axiosInstance: AxiosStatic
-  constructor(axiosInstance: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axiosInstance)
+  constructor(axios: AxiosStatic | undefined) {
+    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
 
   getAvailabilitiesByPropertyID(propertyAvailabilitySearch: IPropertyAvailabilitySearch) {

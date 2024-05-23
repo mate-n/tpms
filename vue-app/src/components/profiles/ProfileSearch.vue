@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ProfileService from '@/services/ProfileService'
-import type { AxiosStatic } from 'axios'
-import { inject, onMounted, ref, type Ref } from 'vue'
+import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import NewProfile from './NewProfile.vue'
 import EditProfile from './EditProfile.vue'
 import { GuestTypeService } from '@/services/GuestTypeService'
@@ -11,8 +10,10 @@ import { ProfileSearch } from '@/shared/classes/ProfileSearch'
 import type { IGuestType } from '@/shared/interfaces/IGuestType'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
-const dateFormatter = new DateFormatter()
+import { CloneHelper } from '@/helpers/CloneHelper'
+import type { AxiosStatic } from 'axios'
 const axios: AxiosStatic | undefined = inject('axios')
+const dateFormatter = new DateFormatter()
 const profileService = new ProfileService(axios)
 const guestTypes: Ref<IGuestType[]> = ref([])
 const guestTypeService = new GuestTypeService(axios)
@@ -23,6 +24,7 @@ const profileFromInputFields = ref<IProfile>(new Profile())
 const newProfileDialog = ref(false)
 const editProfileDialog = ref(false)
 const changeColumnsDialog = ref(false)
+const cloneHelper = new CloneHelper()
 const selectProfile = (profile: IProfile) => {
   emit('profileSelected', profile)
 }
@@ -88,6 +90,20 @@ onMounted(() => {
     guestTypes.value = response
   })
 })
+
+const props = defineProps({
+  profileSearchInput: { type: Object as () => IProfileSearch, required: false }
+})
+
+watch(
+  props,
+  (newInput) => {
+    if (newInput.profileSearchInput) {
+      profileSearch.value = cloneHelper.clone(newInput.profileSearchInput)
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>
@@ -134,9 +150,10 @@ onMounted(() => {
       ></v-text-field>
       <v-autocomplete
         label="Type"
-        v-model="profileToBeEdited.salut"
+        v-model="profileSearch.guestTypeID"
         :items="guestTypes"
         item-title="value"
+        item-value="id"
         variant="underlined"
         class="me-3"
       ></v-autocomplete>
