@@ -14,7 +14,7 @@ const axios: AxiosStatic | undefined = inject('axios')
 const propertyService = new PropertyService(axios)
 const dateHelper = new DateHelper()
 const ticketsService = new TicketService()
-const emits = defineEmits(['close'])
+const emits = defineEmits(['close', 'addTicketsToReservation'])
 const dateFormatter = new DateFormatter()
 const props = defineProps<{
   reservation: IReservation
@@ -35,11 +35,21 @@ const selectedTickets: Ref<ITicketOrder[]> = ref([])
 onMounted(() => {
   ticketsService.getAll().then((data) => {
     tickets.value = data
+    addTicketsFromReservationToSelectedTickets()
   })
 })
 
 const selectDate = (date: Date) => {
   selectedDate.value = date
+}
+
+const addTicketsFromReservationToSelectedTickets = () => {
+  for (const ticketID of props.reservation.ticketIDs) {
+    const ticket = tickets.value.find((t) => t.TicketId === ticketID)
+    if (ticket) {
+      addTicket(ticket)
+    }
+  }
 }
 
 const addTicket = (ticket: ITicket) => {
@@ -93,6 +103,14 @@ const getTotalPrice = () => {
     total += ticket.TicketPrice * ticket.NumberOfTickets
   }
   return total
+}
+
+const addTicketsToReservation = () => {
+  props.reservation.ticketIDs = []
+  for (const ticket of selectedTickets.value) {
+    props.reservation.ticketIDs.push(ticket.TicketId)
+  }
+  emits('addTicketsToReservation')
 }
 </script>
 
@@ -154,7 +172,12 @@ const getTotalPrice = () => {
               </div>
             </div>
 
-            <v-btn class="w-100 mb-3 primary-button" v-if="selectedTickets.length > 0">Buy</v-btn>
+            <v-btn
+              class="w-100 mb-3 primary-button"
+              v-if="selectedTickets.length > 0"
+              @click="addTicketsToReservation()"
+              >Add</v-btn
+            >
 
             <div>
               <v-divider></v-divider>
