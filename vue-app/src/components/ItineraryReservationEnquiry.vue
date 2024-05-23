@@ -12,11 +12,16 @@ const dateHelper = new DateHelper()
 const itineraryReservationValidator = new ItineraryReservationValidator()
 const reservations: Ref<IReservation[]> = ref([])
 
+const updateOrderIndexes = () => {
+  reservations.value.forEach((reservation, index) => {
+    reservation.orderIndex = index
+  })
+}
+
 const addReservation = () => {
   const lastReservation = reservations.value[reservations.value.length - 1]
   const newReservation = new Reservation()
   reservations.value.push(newReservation)
-  newReservation.orderIndex = getNewOrderIndex()
   if (lastReservation) {
     newReservation.arrivalDate = lastReservation.departureDate
     newReservation.profileID = selectedProfile.value
@@ -37,11 +42,6 @@ const removeReservation = (reservation: IReservation) => {
   checkForIssues()
 }
 
-const getNewOrderIndex = () => {
-  if (reservations.value.length === 0) return 0
-  return reservations.value.length
-}
-
 const selectedProfile = computed(() => {
   if (reservations.value.length === 0) return 0
   return reservations.value[0].profileID
@@ -58,6 +58,7 @@ const checkForIssues = () => {
 }
 
 const book = () => {
+  updateOrderIndexes()
   for (const reservation of reservations.value) {
     basketItemsStore.addReservation(reservation)
   }
