@@ -10,7 +10,6 @@ import { computed, ref, type Ref } from 'vue'
 import { onBeforeMount } from 'vue'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
-import { Reservation } from '@/shared/classes/Reservation'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()

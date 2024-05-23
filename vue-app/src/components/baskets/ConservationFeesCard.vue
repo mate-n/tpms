@@ -17,9 +17,8 @@ const getTicketsByTicketIDs = (ticketIDs: number[]) => {
   return ticketIDs.map((ticketID) => getTicketByTicketId(ticketID))
 }
 
-const props = defineProps<{
-  reservation: IReservation
-}>()
+const reservation = defineModel({ required: true, type: Object as () => IReservation })
+
 const emits = defineEmits(['close'])
 
 const { isFullScreen, toggleFullScreen } = useFullscreen()
@@ -75,7 +74,7 @@ const ticketsCardDialog = ref(false)
   <v-dialog v-model="ticketsCardDialog" fullscreen scrollable>
     <v-card>
       <TicketsCard
-        :reservation="reservation"
+        v-model="reservation"
         @close="ticketsCardDialog = false"
         @add-tickets-to-reservation="ticketsCardDialog = false"
       />

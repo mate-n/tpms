@@ -23,7 +23,6 @@ const propertiesInDropdown: Ref<IProperty[]> = ref([])
 const roomsInDropdown: Ref<IRoom[]> = ref([])
 const profilesInDropdown: Ref<IProfile[]> = ref([])
 const profileDialog = ref(false)
-const reservationHelper = new ReservationHelper()
 import ProfileSearch from './profiles/ProfileSearch.vue'
 import ProfileService from '@/services/ProfileService'
 import type { IProperty } from '@/shared/interfaces/IProperty'
@@ -33,7 +32,6 @@ import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPr
 import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
-import { ReservationHelper } from '@/helpers/ReservationHelper'
 
 onBeforeMount(() => {
   propertyService.getProperties().then((response: IProperty[]) => {

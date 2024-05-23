@@ -16,9 +16,8 @@ const dateHelper = new DateHelper()
 const ticketsService = new TicketService()
 const emits = defineEmits(['close', 'addTicketsToReservation'])
 const dateFormatter = new DateFormatter()
-const props = defineProps<{
-  reservation: IReservation
-}>()
+
+const reservation = defineModel({ required: true, type: Object as () => IReservation })
 
 const selectedDate: Ref<Date | undefined> = ref(undefined)
 
@@ -44,7 +43,7 @@ const selectDate = (date: Date) => {
 }
 
 const addTicketsFromReservationToSelectedTickets = () => {
-  for (const ticketID of props.reservation.ticketIDs) {
+  for (const ticketID of reservation.value.ticketIDs) {
     const ticket = tickets.value.find((t) => t.TicketId === ticketID)
     if (ticket) {
       addTicket(ticket)
@@ -91,8 +90,8 @@ const addTicketOrder = (ticket: ITicketOrder) => {
 const property: Ref<IProperty | undefined> = ref(undefined)
 
 onMounted(() => {
-  if (!props.reservation.propertyID) return
-  propertyService.get(props.reservation.propertyID).then((response) => {
+  if (!reservation.value.propertyID) return
+  propertyService.get(reservation.value.propertyID).then((response) => {
     property.value = response
   })
 })
@@ -106,9 +105,9 @@ const getTotalPrice = () => {
 }
 
 const addTicketsToReservation = () => {
-  props.reservation.ticketIDs = []
+  reservation.value.ticketIDs = []
   for (const ticket of selectedTickets.value) {
-    props.reservation.ticketIDs.push(ticket.TicketId)
+    reservation.value.ticketIDs.push(ticket.TicketId)
   }
   emits('addTicketsToReservation')
 }
@@ -135,6 +134,7 @@ const addTicketsToReservation = () => {
             <v-btn
               class="w-100 mb-3"
               v-for="date of availableDates"
+              :key="date.toISOString()"
               :class="selectedDate === date ? 'primary-button' : 'secondary-button'"
               @click="selectDate(date)"
             >
@@ -143,11 +143,13 @@ const addTicketsToReservation = () => {
           </v-col>
           <v-col class="border-e"
             ><h2 class="mb-2 text-center">Choose Tickets</h2>
-            <div v-for="ticket of tickets" v-if="selectedDate">
-              <div v-if="ticket.AvailableTickets > 0">
-                <v-btn class="w-100 mb-3 secondary-button" @click="addTicket(ticket)">
-                  {{ ticket.Name }}
-                </v-btn>
+            <div v-if="selectedDate">
+              <div v-for="ticket of tickets" :key="ticket.TicketId">
+                <div v-if="ticket.AvailableTickets > 0">
+                  <v-btn class="w-100 mb-3 secondary-button" @click="addTicket(ticket)">
+                    {{ ticket.Name }}
+                  </v-btn>
+                </div>
               </div>
             </div>
           </v-col>
@@ -155,6 +157,7 @@ const addTicketsToReservation = () => {
             ><h2 class="mb-2 text-center">Confirm</h2>
             <div
               v-for="ticket of selectedTickets"
+              :key="ticket.TicketId"
               class="d-flex align-center justify-space-between"
             >
               <div class="me-2">{{ ticket.NumberOfTickets }} x {{ ticket.TicketName }}</div>
