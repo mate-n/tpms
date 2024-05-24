@@ -3,6 +3,7 @@ import { useBasketItemsStore } from '@/stores/basketItems'
 import BasketCard from './BasketCard.vue'
 import { ref } from 'vue'
 import ReservationInBasketMenuCard from './ReservationInBasketMenuCard.vue'
+const emit = defineEmits(['close'])
 const basketItemsStore = useBasketItemsStore()
 const removeAllReservations = () => {
   for (const reservation of basketItemsStore.reservations) {
@@ -10,6 +11,11 @@ const removeAllReservations = () => {
   }
 }
 const cartDialog = ref(false)
+const removeReservation = () => {
+  if (basketItemsStore.reservations.length === 0) {
+    emit('close')
+  }
+}
 </script>
 <template>
   <v-container class="bg-lightgray pa-1 rounded">
@@ -17,6 +23,7 @@ const cartDialog = ref(false)
       v-for="reservation in basketItemsStore.reservations"
       :key="reservation.id"
       :reservation="reservation"
+      @remove-reservation="removeReservation()"
     />
     <div class="d-flex justify-end mt-3">
       <v-btn class="me-2 text-none" @click="removeAllReservations()">Empty Cart</v-btn>
