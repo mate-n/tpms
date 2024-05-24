@@ -25,7 +25,13 @@ You need to be in the folder that was created in the installation. Further, you 
 
     cd realms/tpms-frontend-demo/bookworm
 
-Then, if you want to start the demo, run the following command:
+If you want to see, whether the demo is running or not, run:
+
+    /bin/bash show-status-of-tpms-demo.sh
+
+You see a table where you can see the status of "nest-app" and "vue-app". If both of them have the status "online", it means that the demo is running. If both of them have the status "stopped", it means that the demo is not running.
+
+If you want to start the demo, run the following command:
 
         /bin/bash start-tpms-demo.sh
 
@@ -36,9 +42,3 @@ If you want to stop the demo, run the following command:
 You can start the demo again with:
 
     /bin/bash start-tpms-demo.sh
-
-If you want to see, whether the demo is running or not, run:
-
-    /bin/bash show-status-of-tpms-demo.sh
-
-You see a table where you can see the status of "nest-app" and "vue-app". If both of them have the status "online", it means that the demo is running. If both of them have the status "stopped", it means that the demo is not running.
