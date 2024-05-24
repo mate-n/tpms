@@ -9,6 +9,7 @@ const removeAllReservations = () => {
   for (const reservation of basketItemsStore.reservations) {
     basketItemsStore.removeReservation(reservation)
   }
+  emit('close')
 }
 const cartDialog = ref(false)
 const removeReservation = () => {
