@@ -3,7 +3,7 @@ export const englishTranslations = {
     hello: 'hello world'
   },
   app: {
-    name: 'tpms-frontend abc'
+    name: 'tpms-frontend'
   },
   general: {
     itineraryReservationEnquiry: 'Itinerary Reservation Enquiry',
