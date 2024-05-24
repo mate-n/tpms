@@ -8,6 +8,14 @@ Install packages necessary to download the code of tpms-frontend.
 
     sudo apt-get update && sudo apt-get install git -y
 
+You need the script "tpms-demo-setup.sh"-script to install the tpms-demo-frontend. If you don't have the script, please contact us.
+
+1. This script creates the folder "/home/username/realms".
+2. Downloads the latest version of the code of tpms-frontend.
+3. Copies all the necessary files for the demo to the folder "tpms-frontend-demo"
+4. Installs all the packages necessary to run the demo.
+5. Starts the demo.
+
 Run the "tpms-demo-setup.sh"-script.
 
     chmod +x tpms-demo-setup.sh
