@@ -9,6 +9,7 @@ const userStore = useUserStore()
 userStore.currentProfile = new Profile()
 const basketItemsStore = useBasketItemsStore()
 const drawer = ref(false)
+const reservationsMenu = ref(false)
 </script>
 
 <template>
@@ -35,7 +36,8 @@ const drawer = ref(false)
       </template>
 
       <v-app-bar-title>{{ $t('app.name') }}</v-app-bar-title>
-      <v-menu :close-on-content-click="false">
+      {{ reservationsMenu }}
+      <v-menu v-model="reservationsMenu" :close-on-content-click="false">
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" icon>
             <v-badge
@@ -47,7 +49,7 @@ const drawer = ref(false)
             </v-badge>
           </v-btn>
         </template>
-        <BasketMenuCard />
+        <BasketMenuCard @close="reservationsMenu = false" />
       </v-menu>
     </v-app-bar>
 
