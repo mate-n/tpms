@@ -21,6 +21,8 @@ const updateOrderIndexes = () => {
 const addReservation = () => {
   const lastReservation = reservations.value[reservations.value.length - 1]
   const newReservation = new Reservation()
+  newReservation.totalRate = 1934
+  newReservation.averageRate = 1934
   reservations.value.push(newReservation)
   if (lastReservation) {
     newReservation.arrivalDate = lastReservation.departureDate
