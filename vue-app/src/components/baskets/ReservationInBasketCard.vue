@@ -99,9 +99,8 @@ const tickets = computed(() => {
   return reservation.value.ticketIDs.map((ticketID) => getTicketByTicketId(ticketID)) as ITicket[]
 })
 
-const ticketsGrouped = computed(() => {
-  const definedTickets = tickets.value.filter((ticket) => ticket !== undefined) as ITicket[]
-  return ticketHelper.groupTicketsByTicketId(definedTickets)
+const chargesLabel = computed(() => {
+  return reservation.value.ticketIDs.length > 0 ? 'Charges' : 'No Charges'
 })
 
 onMounted(() => {
@@ -182,10 +181,17 @@ onMounted(() => {
         </div>
       </div>
       <div class="ms-2 py-3">
-        <div class="pb-3"><strong>Charges</strong></div>
+        <div class="pb-3">
+          <strong>{{ chargesLabel }}</strong>
+        </div>
         <v-row>
           <v-col>
-            <TicketsTable :tickets="tickets" v-if="reservation.ticketIDs.length > 0" />
+            <TicketsTable
+              :tickets="tickets"
+              :collapsible="true"
+              :collapsed="true"
+              v-if="reservation.ticketIDs.length > 0"
+            />
           </v-col>
           <v-col class="d-flex align-end justify-end">
             <v-btn @click="clickOnAddFixedCharges()" class="me-2">{{
