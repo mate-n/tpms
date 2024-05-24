@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { DateHelper } from '@/helpers/DateHelper'
-import { TicketHelper } from '@/helpers/TicketHelper'
 import { PropertyService } from '@/services/PropertyService'
 import { TicketService } from '@/services/TicketService'
 import type { IProperty } from '@/shared/interfaces/IProperty'
@@ -9,7 +8,7 @@ import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { ITicket } from '@/shared/interfaces/ITicket'
 import type { AxiosStatic } from 'axios'
 import type { Ref } from 'vue'
-import { computed, inject, onMounted, ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
 import TicketsTable from '@/components/tickets/TicketsTable.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const propertyService = new PropertyService(axios)
@@ -18,7 +17,6 @@ const ticketsService = new TicketService()
 const emits = defineEmits(['close', 'addTicketsToReservation'])
 const dateFormatter = new DateFormatter()
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
-const ticketHelper = new TicketHelper()
 const selectedDate: Ref<Date | undefined> = ref(undefined)
 
 const availableDates: Ref<Date[]> = ref([
@@ -81,10 +79,6 @@ const addTicketsToReservation = () => {
   }
   emits('addTicketsToReservation')
 }
-
-const selectedTicketsGrouped = computed(() => {
-  return ticketHelper.groupTicketsByTicketId(selectedTickets.value)
-})
 
 const showSaveButton = ref(false)
 </script>
