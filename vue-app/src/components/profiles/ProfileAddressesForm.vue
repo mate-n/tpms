@@ -67,7 +67,11 @@ const changeMailingAddress = (profileAddress: IProfileAddress) => {
 }
 
 onMounted(() => {
-  getProfileAddresses()
+  getProfileAddresses().then(() => {
+    if (profileAddresses.value.length === 0) {
+      addProfileAddress()
+    }
+  })
 })
 
 const saveAllProfileAddresses = () => {

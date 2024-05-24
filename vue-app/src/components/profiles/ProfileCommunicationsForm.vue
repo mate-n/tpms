@@ -71,6 +71,9 @@ const getProfileCommunications = () => {
 
 const reloadProfileCommunications = () => {
   getProfileCommunications().then(() => {
+    if (profileCommunications.value.length === 0) {
+      addProfileCommunication()
+    }
     showSaveButton.value = false
   })
 }

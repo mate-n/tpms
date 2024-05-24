@@ -150,6 +150,22 @@ watch(
   },
   { deep: true }
 )
+
+const showRemoveButton = computed(() => {
+  if (!props.previousReservation && !props.nextReservation) {
+    return false
+  }
+
+  if (!props.previousReservation && props.nextReservation) {
+    return true
+  }
+
+  if (props.nextReservation) {
+    return false
+  }
+
+  return true
+})
 </script>
 
 <template>
@@ -266,7 +282,7 @@ watch(
       </v-col>
       <v-col class="d-flex justify-space-between">
         <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
-        <v-btn v-if="previousReservation" class="danger-button" @click="remove(reservation)">
+        <v-btn class="danger-button" @click="remove(reservation)" v-if="showRemoveButton">
           Remove
         </v-btn>
       </v-col>

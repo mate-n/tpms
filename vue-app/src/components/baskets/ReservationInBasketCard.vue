@@ -4,7 +4,7 @@ import { DateHelper } from '@/helpers/DateHelper'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
 import { useBasketItemsStore } from '@/stores/basketItems'
-import { computed, ref, type Ref } from 'vue'
+import { computed, onMounted, ref, type Ref } from 'vue'
 import { onBeforeMount } from 'vue'
 import ConservationFeesCard from './ConservationFeesCard.vue'
 import type { IProperty } from '@/shared/interfaces/IProperty'
@@ -14,12 +14,19 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import ProfileService from '@/services/ProfileService'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
+import { ReservationHelper } from '@/helpers/ReservationHelper'
+import TicketsCard from '../tickets/TicketsCard.vue'
+import { TicketHelper } from '@/helpers/TicketHelper'
+import type { ITicket } from '@/shared/interfaces/ITicket'
+import { TicketService } from '@/services/TicketService'
+import TicketsTable from '../tickets/TicketsTable.vue'
+const ticketsService = new TicketService()
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
+const reservationHelper = new ReservationHelper()
+const ticketHelper = new TicketHelper()
+const reservation = defineModel({ required: true, type: Object as () => IReservation })
 
-const props = defineProps({
-  reservation: { type: Object as () => IReservation, required: true }
-})
 const property: Ref<IProperty | null> = ref(null)
 const profile: Ref<IProfile | null> = ref(null)
 const room: Ref<IRoom | null> = ref(null)
@@ -29,20 +36,20 @@ const roomService = new RoomService(axios)
 const dateFormatter = new DateFormatter()
 const dateHelper = new DateHelper()
 onBeforeMount(() => {
-  if (props.reservation.propertyID) {
-    propertyService.get(props.reservation.propertyID).then((response) => {
+  if (reservation.value.propertyID) {
+    propertyService.get(reservation.value.propertyID).then((response) => {
       property.value = response
     })
   }
 
-  if (props.reservation.roomID) {
-    roomService.get(props.reservation.roomID).then((response) => {
+  if (reservation.value.roomID) {
+    roomService.get(reservation.value.roomID).then((response) => {
       room.value = response
     })
   }
 
-  if (props.reservation.profileID) {
-    profileService.get(props.reservation.profileID).then((response) => {
+  if (reservation.value.profileID) {
+    profileService.get(reservation.value.profileID).then((response) => {
       profile.value = response
     })
   }
@@ -50,8 +57,8 @@ onBeforeMount(() => {
 
 const numberOfNights = computed(() => {
   return dateHelper.calculateNightsBetweenDates(
-    props.reservation.arrivalDate,
-    props.reservation.departureDate
+    reservation.value.arrivalDate,
+    reservation.value.departureDate
   )
 })
 
@@ -60,6 +67,50 @@ const removeReservation = (reservation: IReservation) => {
 }
 
 const conservationFeesDialog = ref(false)
+
+const ticketsCardDialog = ref(false)
+
+const showRemoveButton = computed(() => {
+  return reservationHelper.isReservationFirstOrLastOfArray(
+    reservation.value,
+    basketItemsStore.reservations
+  )
+})
+
+const clickOnAddFixedCharges = () => {
+  ticketsCardDialog.value = true
+}
+
+const addTicketsToReservation = () => {
+  ticketsCardDialog.value = false
+}
+
+const buttonNameForFixedCharges = computed(() => {
+  return reservation.value.ticketIDs.length > 0 ? 'Edit Fixed Charges' : 'Add Fixed Charges'
+})
+
+const getTicketByTicketId = (ticketId: number) => {
+  return availableTickets.value.find((t) => t.TicketId === ticketId)
+}
+
+const availableTickets: Ref<ITicket[]> = ref([])
+
+const tickets = computed(() => {
+  return reservation.value.ticketIDs.map((ticketID) => getTicketByTicketId(ticketID)) as ITicket[]
+})
+
+const chargesLabel = computed(() => {
+  return reservation.value.ticketIDs.length > 0 ? 'Charges' : 'No Charges'
+})
+
+onMounted(() => {
+  ticketsService.getAll().then((data) => {
+    availableTickets.value = data
+    for (const ticket of availableTickets.value) {
+      ticket.Date = new Date()
+    }
+  })
+})
 </script>
 
 <template>
@@ -70,7 +121,11 @@ const conservationFeesDialog = ref(false)
           <v-icon>mdi-chevron-double-right</v-icon><strong>{{ property?.name }}</strong>
         </div>
         <div>
-          <v-icon class="text-gray me-2" @click="removeReservation(reservation)">
+          <v-icon
+            class="text-gray me-2"
+            v-if="showRemoveButton"
+            @click="removeReservation(reservation)"
+          >
             mdi-delete-outline
           </v-icon>
         </div>
@@ -110,30 +165,70 @@ const conservationFeesDialog = ref(false)
             <v-col></v-col>
             <v-col><span class="standard-caption">Phone</span><br />{{ profile?.phone }}</v-col>
           </v-row>
+          <v-row>
+            <v-col>
+              TOTAL RATE<br />
+              <strong>{{ reservation.totalRate.toFixed(2) }}</strong></v-col
+            >
+            <v-col>
+              AVERAGE RATE<br />
+              {{ reservation.averageRate.toFixed(2) }}</v-col
+            >
+            <v-col></v-col>
+            <v-col></v-col>
+            <v-col class="d-flex"> </v-col>
+          </v-row>
         </div>
       </div>
       <div class="ms-2 py-3">
+        <div class="pb-3">
+          <strong>{{ chargesLabel }}</strong>
+        </div>
         <v-row>
           <v-col>
-            TOTAL RATE<br />
-            <strong>1.934,00</strong></v-col
-          >
-          <v-col>
-            AVERAGE RATE<br />
-            1.934,00</v-col
-          >
-          <v-col></v-col>
-          <v-col></v-col>
-          <v-col>
-            <v-btn @click="conservationFeesDialog = true">Add Conservation Fees</v-btn>
+            <TicketsTable
+              :tickets="tickets"
+              :collapsible="true"
+              :collapsed="true"
+              v-if="reservation.ticketIDs.length > 0"
+            />
           </v-col>
+          <v-col class="d-flex align-end justify-end">
+            <v-btn @click="clickOnAddFixedCharges()" class="me-2">{{
+              buttonNameForFixedCharges
+            }}</v-btn></v-col
+          >
+        </v-row>
+      </div>
+      <div class="ps-2 ma-0 py-3 bg-lightblue">
+        <v-row>
+          <v-col>
+            TOTAL<br />
+            <strong>{{
+              (reservation.totalRate + ticketHelper.getTotalPrice(tickets)).toFixed(2)
+            }}</strong></v-col
+          >
+          <v-col> </v-col>
+          <v-col></v-col>
+          <v-col></v-col>
+          <v-col class="d-flex"> </v-col>
         </v-row>
       </div>
     </v-card-text>
   </v-card>
   <v-dialog v-model="conservationFeesDialog" fullscreen scrollable>
     <v-card>
-      <ConservationFeesCard @close="conservationFeesDialog = false" />
+      <ConservationFeesCard v-model="reservation" @close="conservationFeesDialog = false" />
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="ticketsCardDialog" fullscreen scrollable>
+    <v-card>
+      <TicketsCard
+        v-model="reservation"
+        @close="ticketsCardDialog = false"
+        @add-tickets-to-reservation="addTicketsToReservation()"
+      />
     </v-card>
   </v-dialog>
 </template>
