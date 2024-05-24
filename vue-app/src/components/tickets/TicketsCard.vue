@@ -106,6 +106,13 @@ const selectedTicketsGrouped = computed(() => {
         {{ dateFormatter.dddotmmdotyyyy(reservation.arrivalDate) }} -
         {{ dateFormatter.dddotmmdotyyyy(reservation.departureDate) }}</v-toolbar-title
       >
+      <div
+        v-if="showSaveButton"
+        class="standard-card-toolbar-button text-primary"
+        @click="addTicketsToReservation()"
+      >
+        <v-icon size="large">mdi-content-save-outline</v-icon>
+      </div>
       <div class="standard-card-toolbar-button rounded-te" @click="emits('close')">
         <v-icon size="large">mdi-close</v-icon>
       </div>
@@ -167,13 +174,6 @@ const selectedTicketsGrouped = computed(() => {
                 </tr>
               </tbody>
             </v-table>
-
-            <v-btn
-              class="w-100 mb-3 primary-button mt-3"
-              v-if="selectedTickets.length > 0"
-              @click="addTicketsToReservation()"
-              >Add</v-btn
-            >
           </v-col>
         </v-row>
       </v-card>
