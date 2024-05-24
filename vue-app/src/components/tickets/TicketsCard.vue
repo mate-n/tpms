@@ -15,7 +15,6 @@ const dateHelper = new DateHelper()
 const ticketsService = new TicketService()
 const emits = defineEmits(['close', 'addTicketsToReservation'])
 const dateFormatter = new DateFormatter()
-
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 
 const selectedDate: Ref<Date | undefined> = ref(undefined)
@@ -35,6 +34,7 @@ onMounted(() => {
     tickets.value = data
     addTicketsFromReservationToSelectedTickets()
   })
+  selectDate(reservation.value.arrivalDate)
 })
 
 const selectDate = (date: Date) => {
@@ -45,19 +45,21 @@ const addTicketsFromReservationToSelectedTickets = () => {
   for (const ticketID of reservation.value.ticketIDs) {
     const ticket = tickets.value.find((t) => t.TicketId === ticketID)
     if (ticket) {
-      addTicket(ticket)
+      selectedTickets.value.push(ticket)
     }
   }
 }
 
 const addTicket = (ticket: ITicket) => {
   selectedTickets.value.push(ticket)
+  showSaveButton.value = true
 }
 
 const removeTicket = (ticket: ITicket) => {
   const index = selectedTickets.value.findIndex((t) => t.TicketId === ticket.TicketId)
   if (index !== -1) {
     selectedTickets.value.splice(index, 1)
+    showSaveButton.value = true
   }
 }
 
@@ -96,6 +98,8 @@ const selectedTicketsGrouped = computed(() => {
   }
   return grouped
 })
+
+const showSaveButton = ref(false)
 </script>
 
 <template>
@@ -127,7 +131,11 @@ const selectedTicketsGrouped = computed(() => {
               class="w-100 mb-3"
               v-for="date of availableDates"
               :key="date.toISOString()"
-              :class="selectedDate === date ? 'primary-button' : 'secondary-button'"
+              :class="
+                selectedDate && dateHelper.isSameDay(selectedDate, date)
+                  ? 'primary-button'
+                  : 'secondary-button'
+              "
               @click="selectDate(date)"
             >
               {{ dateFormatter.dddotmmdotyyyy(date) }}
