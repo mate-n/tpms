@@ -5,17 +5,19 @@ import { TicketService } from '@/services/TicketService'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { ITicket } from '@/shared/interfaces/ITicket'
 import type { Ref } from 'vue'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import TicketsCard from '../tickets/TicketsCard.vue'
+import { DateFormatter } from '@/helpers/DateFormatter'
 const ticketsService = new TicketService()
 const availableTickets: Ref<ITicket[]> = ref([])
 const getTicketByTicketId = (ticketId: number) => {
   return availableTickets.value.find((t) => t.TicketId === ticketId)
 }
+const dateFormatter = new DateFormatter()
 
-const getTicketsByTicketIDs = (ticketIDs: number[]) => {
-  return ticketIDs.map((ticketID) => getTicketByTicketId(ticketID))
-}
+const ticketsByTicketIDs = computed(() => {
+  return reservation.value.ticketIDs.map((ticketID) => getTicketByTicketId(ticketID))
+})
 
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 
@@ -27,6 +29,9 @@ const newConservationFeeDialog = ref(false)
 onMounted(() => {
   ticketsService.getAll().then((data) => {
     availableTickets.value = data
+    for (const ticket of availableTickets.value) {
+      ticket.Date = new Date()
+    }
   })
 })
 
@@ -61,9 +66,28 @@ const ticketsCardDialog = ref(false)
     <v-container fluid class="bg-lightgray">
       <v-card>
         <v-data-table
-          :items="getTicketsByTicketIDs(reservation.ticketIDs)"
+          :items="ticketsByTicketIDs"
           :headers="availableTableDataHeaders.filter((h) => h.selected)"
-        ></v-data-table>
+        >
+          <template v-slot:item="row">
+            <tr>
+              <td
+                v-for="header in availableTableDataHeaders.filter((h) => h.selected)"
+                :key="header.key"
+              >
+                <div v-if="row.item && row.item.hasOwnProperty(header.key)">
+                  <template v-if="header.key !== 'Date'">
+                    {{ row.item[header.key as keyof ITicket] }}
+                  </template>
+
+                  <template v-if="header.key === 'Date'">
+                    {{ dateFormatter.dddotmmdotyyyy(row.item['Date']) }}
+                  </template>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
       </v-card>
     </v-container>
   </div>
