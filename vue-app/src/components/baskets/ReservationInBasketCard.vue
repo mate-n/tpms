@@ -73,19 +73,16 @@ const showRemoveButton = computed(() => {
 })
 
 const clickOnAddFixedCharges = () => {
-  if (reservation.value.ticketIDs.length > 0) {
-    conservationFeesDialog.value = true
-  } else {
-    ticketsCardDialog.value = true
-  }
+  ticketsCardDialog.value = true
 }
 
 const addTicketsToReservation = () => {
   ticketsCardDialog.value = false
-  if (reservation.value.ticketIDs.length > 0) {
-    conservationFeesDialog.value = true
-  }
 }
+
+const buttonNameForFixedCharges = computed(() => {
+  return reservation.value.ticketIDs.length > 0 ? 'Edit Fixed Charges' : 'Add Fixed Charges'
+})
 </script>
 
 <template>
@@ -155,7 +152,9 @@ const addTicketsToReservation = () => {
           <v-col></v-col>
           <v-col></v-col>
           <v-col class="d-flex">
-            <v-btn @click="clickOnAddFixedCharges()" class="me-2">Add Fixed Charges</v-btn>
+            <v-btn @click="clickOnAddFixedCharges()" class="me-2">{{
+              buttonNameForFixedCharges
+            }}</v-btn>
           </v-col>
         </v-row>
       </div>
