@@ -19,9 +19,9 @@ import TicketsCard from '../tickets/TicketsCard.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
-const props = defineProps({
-  reservation: { type: Object as () => IReservation, required: true }
-})
+
+const reservation = defineModel({ required: true, type: Object as () => IReservation })
+
 const property: Ref<IProperty | null> = ref(null)
 const profile: Ref<IProfile | null> = ref(null)
 const room: Ref<IRoom | null> = ref(null)
@@ -31,20 +31,20 @@ const roomService = new RoomService(axios)
 const dateFormatter = new DateFormatter()
 const dateHelper = new DateHelper()
 onBeforeMount(() => {
-  if (props.reservation.propertyID) {
-    propertyService.get(props.reservation.propertyID).then((response) => {
+  if (reservation.value.propertyID) {
+    propertyService.get(reservation.value.propertyID).then((response) => {
       property.value = response
     })
   }
 
-  if (props.reservation.roomID) {
-    roomService.get(props.reservation.roomID).then((response) => {
+  if (reservation.value.roomID) {
+    roomService.get(reservation.value.roomID).then((response) => {
       room.value = response
     })
   }
 
-  if (props.reservation.profileID) {
-    profileService.get(props.reservation.profileID).then((response) => {
+  if (reservation.value.profileID) {
+    profileService.get(reservation.value.profileID).then((response) => {
       profile.value = response
     })
   }
@@ -52,8 +52,8 @@ onBeforeMount(() => {
 
 const numberOfNights = computed(() => {
   return dateHelper.calculateNightsBetweenDates(
-    props.reservation.arrivalDate,
-    props.reservation.departureDate
+    reservation.value.arrivalDate,
+    reservation.value.departureDate
   )
 })
 
@@ -67,13 +67,13 @@ const ticketsCardDialog = ref(false)
 
 const showRemoveButton = computed(() => {
   return reservationHelper.isReservationFirstOrLastOfArray(
-    props.reservation,
+    reservation.value,
     basketItemsStore.reservations
   )
 })
 
 const clickOnAddFixedCharges = () => {
-  if (props.reservation.ticketIDs.length > 0) {
+  if (reservation.value.ticketIDs.length > 0) {
     conservationFeesDialog.value = true
   } else {
     ticketsCardDialog.value = true
@@ -82,7 +82,7 @@ const clickOnAddFixedCharges = () => {
 
 const addTicketsToReservation = () => {
   ticketsCardDialog.value = false
-  if (props.reservation.ticketIDs.length > 0) {
+  if (reservation.value.ticketIDs.length > 0) {
     conservationFeesDialog.value = true
   }
 }
@@ -163,14 +163,14 @@ const addTicketsToReservation = () => {
   </v-card>
   <v-dialog v-model="conservationFeesDialog" fullscreen scrollable>
     <v-card>
-      <ConservationFeesCard :reservation="reservation" @close="conservationFeesDialog = false" />
+      <ConservationFeesCard v-model="reservation" @close="conservationFeesDialog = false" />
     </v-card>
   </v-dialog>
 
   <v-dialog v-model="ticketsCardDialog" fullscreen scrollable>
     <v-card>
       <TicketsCard
-        :reservation="reservation"
+        v-model="reservation"
         @close="ticketsCardDialog = false"
         @add-tickets-to-reservation="addTicketsToReservation()"
       />

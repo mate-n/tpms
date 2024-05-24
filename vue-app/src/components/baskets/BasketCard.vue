@@ -24,11 +24,9 @@ const removeAllReservations = () => {
     </v-toolbar>
     <v-divider class="profiles-card-divider"></v-divider>
     <v-container fluid class="bg-lightgray">
-      <ReservationInBasketCard
-        v-for="reservation in basketItemsStore.reservations"
-        :key="reservation.id"
-        :reservation="reservation"
-      />
+      <div v-for="(reservation, index) in basketItemsStore.reservations" :key="reservation.id">
+        <ReservationInBasketCard v-model="basketItemsStore.reservations[index]" />
+      </div>
     </v-container>
   </div>
 </template>

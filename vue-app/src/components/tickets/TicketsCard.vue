@@ -16,9 +16,8 @@ const dateHelper = new DateHelper()
 const ticketsService = new TicketService()
 const emits = defineEmits(['close', 'addTicketsToReservation'])
 const dateFormatter = new DateFormatter()
-const props = defineProps<{
-  reservation: IReservation
-}>()
+
+const reservation = defineModel({ required: true, type: Object as () => IReservation })
 
 const selectedDate: Ref<Date | undefined> = ref(undefined)
 
@@ -44,7 +43,7 @@ const selectDate = (date: Date) => {
 }
 
 const addTicketsFromReservationToSelectedTickets = () => {
-  for (const ticketID of props.reservation.ticketIDs) {
+  for (const ticketID of reservation.value.ticketIDs) {
     const ticket = tickets.value.find((t) => t.TicketId === ticketID)
     if (ticket) {
       addTicket(ticket)
@@ -91,8 +90,8 @@ const addTicketOrder = (ticket: ITicketOrder) => {
 const property: Ref<IProperty | undefined> = ref(undefined)
 
 onMounted(() => {
-  if (!props.reservation.propertyID) return
-  propertyService.get(props.reservation.propertyID).then((response) => {
+  if (!reservation.value.propertyID) return
+  propertyService.get(reservation.value.propertyID).then((response) => {
     property.value = response
   })
 })
@@ -106,9 +105,9 @@ const getTotalPrice = () => {
 }
 
 const addTicketsToReservation = () => {
-  props.reservation.ticketIDs = []
+  reservation.value.ticketIDs = []
   for (const ticket of selectedTickets.value) {
-    props.reservation.ticketIDs.push(ticket.TicketId)
+    reservation.value.ticketIDs.push(ticket.TicketId)
   }
   emits('addTicketsToReservation')
 }
@@ -135,6 +134,7 @@ const addTicketsToReservation = () => {
             <v-btn
               class="w-100 mb-3"
               v-for="date of availableDates"
+              :key="date.toISOString()"
               :class="selectedDate === date ? 'primary-button' : 'secondary-button'"
               @click="selectDate(date)"
             >
@@ -143,51 +143,53 @@ const addTicketsToReservation = () => {
           </v-col>
           <v-col class="border-e"
             ><h2 class="mb-2 text-center">Choose Tickets</h2>
-            <div v-for="ticket of tickets" v-if="selectedDate">
-              <div v-if="ticket.AvailableTickets > 0">
-                <v-btn class="w-100 mb-3 secondary-button" @click="addTicket(ticket)">
-                  {{ ticket.Name }}
-                </v-btn>
+            <div v-if="selectedDate">
+              <div v-for="ticket of tickets" :key="ticket.TicketId">
+                <div v-if="ticket.AvailableTickets > 0">
+                  <v-btn class="w-100 mb-3 secondary-button" @click="addTicket(ticket)">
+                    {{ ticket.Name }}
+                  </v-btn>
+                </div>
               </div>
             </div>
           </v-col>
           <v-col
             ><h2 class="mb-2 text-center">Confirm</h2>
-            <div
-              v-for="ticket of selectedTickets"
-              class="d-flex align-center justify-space-between"
-            >
-              <div class="me-2">{{ ticket.NumberOfTickets }} x {{ ticket.TicketName }}</div>
-              <div class="d-flex justify-end">
-                <div>
-                  <v-btn variant="text" @click="addTicketOrder(ticket)" icon>
-                    <v-icon class="text-gray"> mdi-plus </v-icon>
-                  </v-btn>
-                </div>
-                <div>
-                  <v-btn variant="text" @click="removeTicketOrder(ticket)" icon>
-                    <v-icon class="text-gray"> mdi-minus </v-icon>
-                  </v-btn>
-                </div>
-              </div>
-            </div>
+            <v-table>
+              <tbody>
+                <tr v-for="item in selectedTickets" :key="item.TicketId">
+                  <td>{{ item.NumberOfTickets }} x</td>
+                  <td>{{ item.TicketName }}</td>
+                  <td>{{ item.TicketPrice }}</td>
+                  <td class="border-e border-s">
+                    {{ item.NumberOfTickets * item.TicketPrice }}
+                  </td>
+                  <td class="d-flex justify-end">
+                    <v-btn variant="text" @click="addTicketOrder(item)" icon>
+                      <v-icon class="text-gray"> mdi-plus </v-icon>
+                    </v-btn>
+                    <v-btn variant="text" @click="removeTicketOrder(item)" icon>
+                      <v-icon class="text-gray"> mdi-minus </v-icon>
+                    </v-btn>
+                  </td>
+                </tr>
+                <tr class="bg-lightgray">
+                  <td></td>
+                  <td></td>
+                  <td class="font-weight-bold">Total:</td>
+                  <td class="font-weight-bold border-s border-e">{{ getTotalPrice() }}</td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </v-table>
 
             <v-btn
-              class="w-100 mb-3 primary-button"
+              class="w-100 mb-3 primary-button mt-3"
               v-if="selectedTickets.length > 0"
               @click="addTicketsToReservation()"
               >Add</v-btn
             >
-
-            <div>
-              <v-divider></v-divider>
-              <div class="">
-                <strong> Total: </strong>
-                <br />
-                {{ getTotalPrice() }}
-              </div>
-            </div></v-col
-          >
+          </v-col>
         </v-row>
       </v-card>
     </v-container>

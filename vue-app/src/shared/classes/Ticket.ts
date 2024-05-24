@@ -27,6 +27,7 @@ export class Ticket implements ITicket {
   RemainingCapacity: number
   EventMaxCapacity: number
   EventRemainingCapacity: number
+  Date: Date
 
   constructor() {
     this.TicketId = 0
@@ -55,5 +56,6 @@ export class Ticket implements ITicket {
     this.RemainingCapacity = 0
     this.EventMaxCapacity = 0
     this.EventRemainingCapacity = 0
+    this.Date = new Date()
   }
 }

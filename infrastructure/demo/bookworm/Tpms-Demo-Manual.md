@@ -6,28 +6,30 @@ This manual explains how to start a demo of tpms-frontend.
 
 Create a folder where all the files necessary for the demo will be added to.
 
-    mkdir tpms-frontend-demo
+    mkdir -p realms/tpms-frontend-demo
 
 Install packages necessary to download the code of tpms-frontend.
 
-    apt-get update && apt-get install git -y
+    sudo apt-get update && sudo apt-get install git -y
 
-Download the code of tpms-frontend. For this, you need to enter a password for bitbucket. If you don't have this password, contact us and ask for the BitBucketAppPassword.
+Go into the created "realms"-folder and download the code of tpms-frontend. For this, you need to enter a password for bitbucket. If you don't have this password, contact us and ask for the BitBucketAppPassword of "ankerdata_tpms".
 
+    cd realms
     git clone https://ankerdata_tpms@bitbucket.org/\_realms/tpms-frontend.git
 
 After downloading the code, you should now have a folder called "tpms-frontend". Go into that folder.
 
     cd tpms-frontend
 
-We downloaded the code of tpms-frontend, but we need a different version of it. The following command gets you the correct version of the code.
+We downloaded the code of tpms-frontend, but we need a different version of it. The following commands get you the correct version of the code.
 
-    git checkout -b feature/tpms-68-CreateScriptforDemo origin/feature/tpms-68-CreateScriptforDemo
+    git checkout -b demo origin/demo
+    git pull origin demo
 
 For the demo, we only need parts of the code. There is a script that copies all the relevant files to the folder we created in the beginning. The following two commands execute that script.
 
-    cd bookworm
-    /bin/bash copy-relevant-files-to-target-folder.sh ../../tpms-frontend-demo
+    cd infrastructure/demo/bookworm
+    /bin/bash copy-relevant-files-to-target-folder.sh ../../../../tpms-frontend-demo
 
 After copying the files, we go to the folder we just copied the files to.
 

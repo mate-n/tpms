@@ -84,12 +84,12 @@ onBeforeMount(() => {
         </v-btn>
       </template>
       <v-list>
-        <v-list-item>
-          <v-list-item-title class="d-flex justify-space-between" @click="addReservation()">
+        <v-list-item @click="addReservation()">
+          <v-list-item-title class="d-flex justify-space-between">
             New <v-icon>mdi-playlist-check</v-icon>
           </v-list-item-title>
         </v-list-item>
-        <v-list-item>
+        <v-list-item disabled class="bg-lightgray">
           <v-list-item-title class="d-flex justify-space-between">
             Existing <v-icon>mdi-playlist-plus</v-icon>
           </v-list-item-title>
