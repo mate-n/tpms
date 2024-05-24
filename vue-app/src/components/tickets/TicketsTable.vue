@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { TicketHelper } from '@/helpers/TicketHelper'
 import type { ITicket } from '@/shared/interfaces/ITicket'
-import { computed } from 'vue'
+import { on } from 'events'
+import { computed, onMounted, ref } from 'vue'
 const ticketHelper = new TicketHelper()
 const props = defineProps({
   tickets: { type: Object as () => ITicket[], required: true },
-  showButtons: { type: Boolean, default: false }
+  showButtons: { type: Boolean, default: false },
+  collapsible: { type: Boolean, default: false },
+  collapsed: { type: Boolean, default: false }
 })
 const ticketsGrouped = computed(() => {
   const definedTickets = props.tickets.filter((ticket) => ticket !== undefined) as ITicket[]
@@ -20,11 +23,21 @@ const addTicket = (ticket: ITicket) => {
 const removeTicket = (ticket: ITicket) => {
   emits('removeTicket', ticket)
 }
+
+const collsapsed = ref(false)
+
+const collapse = () => {
+  collsapsed.value = !collsapsed.value
+}
+
+onMounted(() => {
+  collsapsed.value = props.collapsed
+})
 </script>
 <template>
   <v-table class="border">
     <tbody>
-      <tr v-for="group in ticketsGrouped" :key="group[1][0].TicketId">
+      <tr v-for="group in ticketsGrouped" :key="group[1][0].TicketId" v-if="!collsapsed">
         <td>{{ group[1].length }} x</td>
         <td>{{ group[1][0].Name }}</td>
         <td>{{ group[1][0].Price }}</td>
@@ -43,7 +56,12 @@ const removeTicket = (ticket: ITicket) => {
         </td>
       </tr>
       <tr class="bg-lightgray">
-        <td></td>
+        <td>
+          <v-btn v-if="collapsible" @click="collapse()" variant="text" icon>
+            <v-icon v-if="collsapsed" class="text-gray"> mdi-chevron-down </v-icon>
+            <v-icon v-else class="text-gray"> mdi-chevron-up </v-icon>
+          </v-btn>
+        </td>
         <td></td>
         <td class="font-weight-bold">Total:</td>
         <td class="font-weight-bold border-s">
