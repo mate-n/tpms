@@ -6,10 +6,9 @@ import { TicketService } from '@/services/TicketService'
 import type { IProperty } from '@/shared/interfaces/IProperty'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { ITicket } from '@/shared/interfaces/ITicket'
-import type { ITicketOrder } from '@/shared/interfaces/ITicketOrder'
 import type { AxiosStatic } from 'axios'
 import type { Ref } from 'vue'
-import { inject, onMounted, ref } from 'vue'
+import { computed, inject, onMounted, ref } from 'vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const propertyService = new PropertyService(axios)
 const dateHelper = new DateHelper()
@@ -29,7 +28,7 @@ const availableDates: Ref<Date[]> = ref([
 
 const tickets: Ref<ITicket[]> = ref([])
 
-const selectedTickets: Ref<ITicketOrder[]> = ref([])
+const selectedTickets: Ref<ITicket[]> = ref([])
 
 onMounted(() => {
   ticketsService.getAll().then((data) => {
@@ -52,38 +51,13 @@ const addTicketsFromReservationToSelectedTickets = () => {
 }
 
 const addTicket = (ticket: ITicket) => {
-  const existingTicket = selectedTickets.value.find((t) => t.TicketId === ticket.TicketId)
-  if (existingTicket) {
-    existingTicket.NumberOfTickets++
-    return
-  } else {
-    const ticketOrder: ITicketOrder = {
-      TicketId: ticket.TicketId,
-      TicketName: ticket.Name,
-      NumberOfTickets: 1,
-      TicketPrice: ticket.Price
-    }
-    selectedTickets.value.push(ticketOrder)
-  }
+  selectedTickets.value.push(ticket)
 }
 
-const removeTicketOrder = (ticket: ITicketOrder) => {
-  const existingTicket = selectedTickets.value.find((t) => t.TicketId === ticket.TicketId)
-  if (existingTicket) {
-    if (existingTicket.NumberOfTickets > 1) {
-      existingTicket.NumberOfTickets--
-    } else {
-      selectedTickets.value = selectedTickets.value.filter((t) => t.TicketId !== ticket.TicketId)
-    }
-  }
-}
-
-const addTicketOrder = (ticket: ITicketOrder) => {
-  const existingTicket = selectedTickets.value.find((t) => t.TicketId === ticket.TicketId)
-  if (existingTicket) {
-    existingTicket.NumberOfTickets++
-  } else {
-    selectedTickets.value.push(ticket)
+const removeTicket = (ticket: ITicket) => {
+  const index = selectedTickets.value.findIndex((t) => t.TicketId === ticket.TicketId)
+  if (index !== -1) {
+    selectedTickets.value.splice(index, 1)
   }
 }
 
@@ -99,7 +73,7 @@ onMounted(() => {
 const getTotalPrice = () => {
   let total = 0
   for (const ticket of selectedTickets.value) {
-    total += ticket.TicketPrice * ticket.NumberOfTickets
+    total += ticket.Price
   }
   return total
 }
@@ -111,6 +85,17 @@ const addTicketsToReservation = () => {
   }
   emits('addTicketsToReservation')
 }
+
+const selectedTicketsGrouped = computed(() => {
+  const grouped = new Map<number, ITicket[]>()
+  for (const ticket of selectedTickets.value) {
+    if (!grouped.has(ticket.TicketId)) {
+      grouped.set(ticket.TicketId, [])
+    }
+    grouped.get(ticket.TicketId)?.push(ticket)
+  }
+  return grouped
+})
 </script>
 
 <template>
@@ -157,18 +142,18 @@ const addTicketsToReservation = () => {
             ><h2 class="mb-2 text-center">Confirm</h2>
             <v-table>
               <tbody>
-                <tr v-for="item in selectedTickets" :key="item.TicketId">
-                  <td>{{ item.NumberOfTickets }} x</td>
-                  <td>{{ item.TicketName }}</td>
-                  <td>{{ item.TicketPrice }}</td>
+                <tr v-for="group in selectedTicketsGrouped" :key="group[1][0].TicketId">
+                  <td>{{ group[1].length }} x</td>
+                  <td>{{ group[1][0].Name }}</td>
+                  <td>{{ group[1][0].Price }}</td>
                   <td class="border-e border-s">
-                    {{ item.NumberOfTickets * item.TicketPrice }}
+                    {{ group[1].length * group[1][0].Price }}
                   </td>
                   <td class="d-flex justify-end">
-                    <v-btn variant="text" @click="addTicketOrder(item)" icon>
+                    <v-btn variant="text" @click="addTicket(group[1][0])" icon>
                       <v-icon class="text-gray"> mdi-plus </v-icon>
                     </v-btn>
-                    <v-btn variant="text" @click="removeTicketOrder(item)" icon>
+                    <v-btn variant="text" @click="removeTicket(group[1][0])" icon>
                       <v-icon class="text-gray"> mdi-minus </v-icon>
                     </v-btn>
                   </td>
