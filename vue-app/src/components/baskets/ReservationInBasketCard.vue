@@ -4,7 +4,7 @@ import { DateHelper } from '@/helpers/DateHelper'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
 import { useBasketItemsStore } from '@/stores/basketItems'
-import { computed, ref, type Ref } from 'vue'
+import { computed, onMounted, ref, type Ref } from 'vue'
 import { onBeforeMount } from 'vue'
 import ConservationFeesCard from './ConservationFeesCard.vue'
 import type { IProperty } from '@/shared/interfaces/IProperty'
@@ -16,10 +16,15 @@ import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import TicketsCard from '../tickets/TicketsCard.vue'
+import { TicketHelper } from '@/helpers/TicketHelper'
+import type { ITicket } from '@/shared/interfaces/ITicket'
+import { TicketService } from '@/services/TicketService'
+import TicketsTable from '../tickets/TicketsTable.vue'
+const ticketsService = new TicketService()
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
-
+const ticketHelper = new TicketHelper()
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 
 const property: Ref<IProperty | null> = ref(null)
@@ -83,6 +88,30 @@ const addTicketsToReservation = () => {
 const buttonNameForFixedCharges = computed(() => {
   return reservation.value.ticketIDs.length > 0 ? 'Edit Fixed Charges' : 'Add Fixed Charges'
 })
+
+const getTicketByTicketId = (ticketId: number) => {
+  return availableTickets.value.find((t) => t.TicketId === ticketId)
+}
+
+const availableTickets: Ref<ITicket[]> = ref([])
+
+const tickets = computed(() => {
+  return reservation.value.ticketIDs.map((ticketID) => getTicketByTicketId(ticketID)) as ITicket[]
+})
+
+const ticketsGrouped = computed(() => {
+  const definedTickets = tickets.value.filter((ticket) => ticket !== undefined) as ITicket[]
+  return ticketHelper.groupTicketsByTicketId(definedTickets)
+})
+
+onMounted(() => {
+  ticketsService.getAll().then((data) => {
+    availableTickets.value = data
+    for (const ticket of availableTickets.value) {
+      ticket.Date = new Date()
+    }
+  })
+})
 </script>
 
 <template>
@@ -137,25 +166,46 @@ const buttonNameForFixedCharges = computed(() => {
             <v-col></v-col>
             <v-col><span class="standard-caption">Phone</span><br />{{ profile?.phone }}</v-col>
           </v-row>
+          <v-row>
+            <v-col>
+              TOTAL RATE<br />
+              <strong>{{ reservation.totalRate.toFixed(2) }}</strong></v-col
+            >
+            <v-col>
+              AVERAGE RATE<br />
+              {{ reservation.averageRate.toFixed(2) }}</v-col
+            >
+            <v-col></v-col>
+            <v-col></v-col>
+            <v-col class="d-flex"> </v-col>
+          </v-row>
         </div>
       </div>
       <div class="ms-2 py-3">
+        <div class="pb-3"><strong>Charges</strong></div>
         <v-row>
           <v-col>
-            TOTAL RATE<br />
-            <strong>1.934,00</strong></v-col
-          >
-          <v-col>
-            AVERAGE RATE<br />
-            1.934,00</v-col
-          >
-          <v-col></v-col>
-          <v-col></v-col>
-          <v-col class="d-flex">
+            <TicketsTable :tickets="tickets" v-if="reservation.ticketIDs.length > 0" />
+          </v-col>
+          <v-col class="d-flex align-end justify-end">
             <v-btn @click="clickOnAddFixedCharges()" class="me-2">{{
               buttonNameForFixedCharges
-            }}</v-btn>
-          </v-col>
+            }}</v-btn></v-col
+          >
+        </v-row>
+      </div>
+      <div class="ps-2 ma-0 py-3 bg-lightblue">
+        <v-row>
+          <v-col>
+            TOTAL<br />
+            <strong>{{
+              (reservation.totalRate + ticketHelper.getTotalPrice(tickets)).toFixed(2)
+            }}</strong></v-col
+          >
+          <v-col> </v-col>
+          <v-col></v-col>
+          <v-col></v-col>
+          <v-col class="d-flex"> </v-col>
         </v-row>
       </div>
     </v-card-text>
