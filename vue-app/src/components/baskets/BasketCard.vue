@@ -27,6 +27,14 @@ const removeAllReservations = () => {
       <div v-for="(reservation, index) in basketItemsStore.reservations" :key="reservation.id">
         <ReservationInBasketCard v-model="basketItemsStore.reservations[index]" />
       </div>
+      <div class="d-flex justify-end">
+        <v-btn
+          v-if="basketItemsStore.reservations.length > 0"
+          style="background-color: green; color: white"
+          elevation="4"
+          >BOOK</v-btn
+        >
+      </div>
     </v-container>
   </div>
 </template>
