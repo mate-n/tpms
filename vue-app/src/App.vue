@@ -26,6 +26,7 @@ const reservationsMenu = ref(false)
       ></v-list-item>
       <v-list-item link title="New Profile" to="/new-profile"></v-list-item>
       <v-list-item link title="Profile Search" to="/profile-search"></v-list-item>
+      <v-list-item link title="Reservations" to="/reservations"></v-list-item>
     </v-navigation-drawer>
 
     <v-app-bar app :elevation="2">
