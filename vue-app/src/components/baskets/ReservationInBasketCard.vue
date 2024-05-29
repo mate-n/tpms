@@ -86,7 +86,7 @@ const addTicketsToReservation = () => {
 }
 
 const buttonNameForFixedCharges = computed(() => {
-  return reservation.value.ticketIDs.length > 0 ? 'Edit Fixed Charges' : 'Add Fixed Charges'
+  return reservation.value.ticketIDs.length > 0 ? 'Edit' : 'Add Additional'
 })
 
 const getTicketByTicketId = (ticketId: number) => {
@@ -190,6 +190,7 @@ onMounted(() => {
               :tickets="tickets"
               :collapsible="true"
               :collapsed="true"
+              :show-date="true"
               v-if="reservation.ticketIDs.length > 0"
             />
           </v-col>
