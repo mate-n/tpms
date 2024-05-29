@@ -85,10 +85,6 @@ const addTicketsToReservation = () => {
   ticketsCardDialog.value = false
 }
 
-const buttonNameForFixedCharges = computed(() => {
-  return reservation.value.ticketIDs.length > 0 ? 'Edit' : 'Add Additional'
-})
-
 const getTicketByTicketId = (ticketId: number) => {
   return availableTickets.value.find((t) => t.TicketId === ticketId)
 }
@@ -195,9 +191,7 @@ onMounted(() => {
             />
           </v-col>
           <v-col class="d-flex align-end justify-end">
-            <v-btn @click="clickOnAddFixedCharges()" class="me-2">{{
-              buttonNameForFixedCharges
-            }}</v-btn></v-col
+            <v-btn @click="clickOnAddFixedCharges()" class="me-2"> Add Additional </v-btn></v-col
           >
         </v-row>
       </div>

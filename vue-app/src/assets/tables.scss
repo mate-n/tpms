@@ -8,3 +8,8 @@
     text-align: center;
   }
 }
+
+.tickets-table table tbody td,
+.tickets-table table thead th {
+  border: none !important;
+}
