@@ -83,7 +83,7 @@ onMounted(() => {
         <td v-if="showDate"></td>
         <td class="font-weight-bold">Total:</td>
         <td class="font-weight-bold border-s">
-          {{ ticketHelper.getTotalPrice(tickets) }}
+          {{ ticketHelper.getTotalPrice(tickets).toFixed(2) }}
         </td>
         <td v-if="showButtons"></td>
       </tr>
