@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useBasketItemsStore } from '@/stores/basketItems'
 import ReservationInBasketCard from './ReservationInBasketCard.vue'
+import { computed } from 'vue'
 const basketItemsStore = useBasketItemsStore()
 
 const emits = defineEmits(['close'])
@@ -9,6 +10,12 @@ const removeAllReservations = () => {
     basketItemsStore.removeReservation(reservation)
   }
 }
+
+const totalPrice = computed(() => {
+  return basketItemsStore.reservations.reduce((acc, reservation) => {
+    return acc + reservation.totalRate
+  }, 0)
+})
 </script>
 <template>
   <div class="standard-dialog-card">
@@ -27,7 +34,16 @@ const removeAllReservations = () => {
       <div v-for="(reservation, index) in basketItemsStore.reservations" :key="reservation.id">
         <ReservationInBasketCard v-model="basketItemsStore.reservations[index]" />
       </div>
-      <div class="d-flex justify-end">
+      <div class="d-flex justify-end align-center">
+        <v-card class="me-2">
+          <v-card-text>
+            <p>
+              <strong>Total: {{ totalPrice.toFixed(2) }}</strong>
+            </p>
+          </v-card-text>
+        </v-card>
+        <div></div>
+
         <v-btn
           v-if="basketItemsStore.reservations.length > 0"
           style="background-color: green; color: white"
