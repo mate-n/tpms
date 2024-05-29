@@ -62,10 +62,10 @@ onMounted(() => {
           </td>
           <td v-if="showButtons">
             <div class="d-flex justify-end">
-              <v-btn variant="text" @click="addTicket(group[1][0])" class="bg-lightgray me-1" icon>
+              <v-btn variant="text" @click="addTicket(group[1][0])" class="bg-lightblue me-1" icon>
                 <v-icon> mdi-plus </v-icon>
               </v-btn>
-              <v-btn variant="text" @click="removeTicket(group[1][0])" class="bg-lightgray" icon>
+              <v-btn variant="text" @click="removeTicket(group[1][0])" class="bg-lightblue" icon>
                 <v-icon> mdi-minus </v-icon>
               </v-btn>
             </div>
