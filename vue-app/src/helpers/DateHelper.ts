@@ -1,4 +1,7 @@
+import { DateFormatter } from './DateFormatter'
+
 export class DateHelper {
+  dateFormatter = new DateFormatter()
   calculateNightsBetweenDates(arrivalDate: Date, departureDate: Date): number {
     const arrival = new Date(arrivalDate)
     const departure = new Date(departureDate)
@@ -6,9 +9,9 @@ export class DateHelper {
     return Math.ceil(timeDifference / (1000 * 3600 * 24))
   }
 
-  getDateString(date: Date): string {
-    const newDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-    return newDate.toISOString().substring(0, 10)
+  getDateString(inputDate: Date): string {
+    const date = new Date(inputDate)
+    return this.dateFormatter.dddotmmdotyyyy(date)
   }
 
   isSameDay(d1: Date, d2: Date) {
