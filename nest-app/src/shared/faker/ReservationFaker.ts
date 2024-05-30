@@ -4,7 +4,7 @@ import { Reservation } from '../classes/Reservation'
 
 export class ReservationFaker {
   create(): IReservation {
-    let reservation = new Reservation()
+    const reservation = new Reservation()
     reservation.id = faker.number.int()
     reservation.propertyID = faker.number.int()
     reservation.arrivalDate = faker.date.recent()
@@ -13,7 +13,9 @@ export class ReservationFaker {
     reservation.roomID = faker.number.int()
     reservation.numberOfGuestsPerRoom = faker.number.int()
     reservation.profileID = faker.number.int()
-    reservation.baseRateCategory = faker.random.word()
+    reservation.baseRateCategory = faker.lorem.word()
+    reservation.guestName = faker.person.fullName()
+    reservation.guestProfileID = faker.number.int()
     return reservation
   }
 }

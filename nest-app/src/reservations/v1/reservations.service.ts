@@ -12,7 +12,9 @@ export class ReservationsService {
   findAll() {
     const reservation1 = this.reservationFaker.create();
     const reservation2 = this.reservationFaker.create();
-    return [reservation1, reservation2];
+    const reservation3 = this.reservationFaker.create();
+
+    return [reservation1, reservation2, reservation3];
   }
 
   findOne(id: number) {

@@ -6,19 +6,17 @@ import { TicketService } from '@/services/TicketService'
 import type { IProperty } from '@/shared/interfaces/IProperty'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { ITicket } from '@/shared/interfaces/ITicket'
-import type { ITicketOrder } from '@/shared/interfaces/ITicketOrder'
 import type { AxiosStatic } from 'axios'
 import type { Ref } from 'vue'
 import { inject, onMounted, ref } from 'vue'
+import TicketsTable from '@/components/tickets/TicketsTable.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const propertyService = new PropertyService(axios)
 const dateHelper = new DateHelper()
 const ticketsService = new TicketService()
 const emits = defineEmits(['close', 'addTicketsToReservation'])
 const dateFormatter = new DateFormatter()
-
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
-
 const selectedDate: Ref<Date | undefined> = ref(undefined)
 
 const availableDates: Ref<Date[]> = ref([
@@ -29,13 +27,14 @@ const availableDates: Ref<Date[]> = ref([
 
 const tickets: Ref<ITicket[]> = ref([])
 
-const selectedTickets: Ref<ITicketOrder[]> = ref([])
+const selectedTickets: Ref<ITicket[]> = ref([])
 
 onMounted(() => {
   ticketsService.getAll().then((data) => {
     tickets.value = data
     addTicketsFromReservationToSelectedTickets()
   })
+  selectDate(reservation.value.arrivalDate)
 })
 
 const selectDate = (date: Date) => {
@@ -46,44 +45,21 @@ const addTicketsFromReservationToSelectedTickets = () => {
   for (const ticketID of reservation.value.ticketIDs) {
     const ticket = tickets.value.find((t) => t.TicketId === ticketID)
     if (ticket) {
-      addTicket(ticket)
+      selectedTickets.value.push(ticket)
     }
   }
 }
 
 const addTicket = (ticket: ITicket) => {
-  const existingTicket = selectedTickets.value.find((t) => t.TicketId === ticket.TicketId)
-  if (existingTicket) {
-    existingTicket.NumberOfTickets++
-    return
-  } else {
-    const ticketOrder: ITicketOrder = {
-      TicketId: ticket.TicketId,
-      TicketName: ticket.Name,
-      NumberOfTickets: 1,
-      TicketPrice: ticket.Price
-    }
-    selectedTickets.value.push(ticketOrder)
-  }
+  selectedTickets.value.push(ticket)
+  showSaveButton.value = true
 }
 
-const removeTicketOrder = (ticket: ITicketOrder) => {
-  const existingTicket = selectedTickets.value.find((t) => t.TicketId === ticket.TicketId)
-  if (existingTicket) {
-    if (existingTicket.NumberOfTickets > 1) {
-      existingTicket.NumberOfTickets--
-    } else {
-      selectedTickets.value = selectedTickets.value.filter((t) => t.TicketId !== ticket.TicketId)
-    }
-  }
-}
-
-const addTicketOrder = (ticket: ITicketOrder) => {
-  const existingTicket = selectedTickets.value.find((t) => t.TicketId === ticket.TicketId)
-  if (existingTicket) {
-    existingTicket.NumberOfTickets++
-  } else {
-    selectedTickets.value.push(ticket)
+const removeTicket = (ticket: ITicket) => {
+  const index = selectedTickets.value.findIndex((t) => t.TicketId === ticket.TicketId)
+  if (index !== -1) {
+    selectedTickets.value.splice(index, 1)
+    showSaveButton.value = true
   }
 }
 
@@ -96,14 +72,6 @@ onMounted(() => {
   })
 })
 
-const getTotalPrice = () => {
-  let total = 0
-  for (const ticket of selectedTickets.value) {
-    total += ticket.TicketPrice * ticket.NumberOfTickets
-  }
-  return total
-}
-
 const addTicketsToReservation = () => {
   reservation.value.ticketIDs = []
   for (const ticket of selectedTickets.value) {
@@ -111,6 +79,8 @@ const addTicketsToReservation = () => {
   }
   emits('addTicketsToReservation')
 }
+
+const showSaveButton = ref(false)
 </script>
 
 <template>
@@ -121,6 +91,13 @@ const addTicketsToReservation = () => {
         {{ dateFormatter.dddotmmdotyyyy(reservation.arrivalDate) }} -
         {{ dateFormatter.dddotmmdotyyyy(reservation.departureDate) }}</v-toolbar-title
       >
+      <div
+        v-if="showSaveButton"
+        class="standard-card-toolbar-button text-primary"
+        @click="addTicketsToReservation()"
+      >
+        <v-icon size="large">mdi-content-save-outline</v-icon>
+      </div>
       <div class="standard-card-toolbar-button rounded-te" @click="emits('close')">
         <v-icon size="large">mdi-close</v-icon>
       </div>
@@ -135,7 +112,11 @@ const addTicketsToReservation = () => {
               class="w-100 mb-3"
               v-for="date of availableDates"
               :key="date.toISOString()"
-              :class="selectedDate === date ? 'primary-button' : 'secondary-button'"
+              :class="
+                selectedDate && dateHelper.isSameDay(selectedDate, date)
+                  ? 'primary-button'
+                  : 'secondary-button'
+              "
               @click="selectDate(date)"
             >
               {{ dateFormatter.dddotmmdotyyyy(date) }}
@@ -155,40 +136,12 @@ const addTicketsToReservation = () => {
           </v-col>
           <v-col
             ><h2 class="mb-2 text-center">Confirm</h2>
-            <v-table>
-              <tbody>
-                <tr v-for="item in selectedTickets" :key="item.TicketId">
-                  <td>{{ item.NumberOfTickets }} x</td>
-                  <td>{{ item.TicketName }}</td>
-                  <td>{{ item.TicketPrice }}</td>
-                  <td class="border-e border-s">
-                    {{ item.NumberOfTickets * item.TicketPrice }}
-                  </td>
-                  <td class="d-flex justify-end">
-                    <v-btn variant="text" @click="addTicketOrder(item)" icon>
-                      <v-icon class="text-gray"> mdi-plus </v-icon>
-                    </v-btn>
-                    <v-btn variant="text" @click="removeTicketOrder(item)" icon>
-                      <v-icon class="text-gray"> mdi-minus </v-icon>
-                    </v-btn>
-                  </td>
-                </tr>
-                <tr class="bg-lightgray">
-                  <td></td>
-                  <td></td>
-                  <td class="font-weight-bold">Total:</td>
-                  <td class="font-weight-bold border-s border-e">{{ getTotalPrice() }}</td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </v-table>
-
-            <v-btn
-              class="w-100 mb-3 primary-button mt-3"
-              v-if="selectedTickets.length > 0"
-              @click="addTicketsToReservation()"
-              >Add</v-btn
-            >
+            <TicketsTable
+              :tickets="selectedTickets"
+              @add-ticket="(ticket) => addTicket(ticket)"
+              @remove-ticket="(ticket) => removeTicket(ticket)"
+              :show-buttons="true"
+            />
           </v-col>
         </v-row>
       </v-card>

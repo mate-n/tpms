@@ -17,6 +17,7 @@ const reservationHelper = new ReservationHelper()
 const props = defineProps({
   reservation: { type: Object as () => IReservation, required: true }
 })
+const emits = defineEmits(['removeReservation'])
 const property: Ref<IProperty | null> = ref(null)
 const room: Ref<IRoom | null> = ref(null)
 const propertyService = new PropertyService(axios)
@@ -39,6 +40,7 @@ onBeforeMount(() => {
 
 const removeReservation = (reservation: IReservation) => {
   basketItemsStore.removeReservation(reservation)
+  emits('removeReservation')
 }
 
 const showRemoveButton = computed(() => {

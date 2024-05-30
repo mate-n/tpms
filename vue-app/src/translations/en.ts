@@ -18,5 +18,9 @@ export const englishTranslations = {
   profile: {
     active: 'Active',
     inactive: 'Inactive'
+  },
+  reservation: {
+    singur: 'Reservation',
+    plural: 'Reservations'
   }
 }
