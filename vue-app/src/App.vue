@@ -6,7 +6,6 @@ import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
 import { useUserStore } from './stores/user'
 import { Profile } from './shared/classes/Profile'
 import router from './router'
-import { c } from 'node_modules/vite/dist/node/types.d-FdqQ54oU'
 const userStore = useUserStore()
 userStore.currentProfile = new Profile()
 const basketItemsStore = useBasketItemsStore()
