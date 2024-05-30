@@ -9,7 +9,6 @@ import router from './router'
 const userStore = useUserStore()
 userStore.currentProfile = new Profile()
 const basketItemsStore = useBasketItemsStore()
-const drawer = ref(true)
 const reservationsMenu = ref(false)
 const rail = ref(false)
 const toggleRail = () => {
@@ -19,6 +18,12 @@ const toggleRail = () => {
 const goHome = () => {
   router.push('/')
 }
+
+const onMouseLeave = () => {
+  expansionPanelReservation.value = false
+}
+
+const expansionPanelReservation = ref(false)
 </script>
 
 <style>
@@ -32,14 +37,7 @@ const goHome = () => {
 
 <template>
   <v-app>
-    <v-navigation-drawer
-      rail
-      expand-on-hover
-      :width="400"
-      mobile-breakpoint="xs"
-      rail-width="65"
-      v-model="drawer"
-    >
+    <v-navigation-drawer rail expand-on-hover :width="400" mobile-breakpoint="xs" rail-width="65">
       <v-list-item
         prepend-icon="mdi-home-heart"
         :title="$t('app.name')"
@@ -55,7 +53,7 @@ const goHome = () => {
         value="dashboard"
         to="/dashboard"
       ></v-list-item>
-      <v-expansion-panels class="ma-0 pa-0">
+      <v-expansion-panels class="ma-0 pa-0" v-model="expansionPanelReservation">
         <v-expansion-panel class="ma-0">
           <v-expansion-panel-title class="pa-0 ms-0 me-4"
             ><v-icon class="ms-4">mdi-store-outline</v-icon> <span class="ms-8"></span>Front
