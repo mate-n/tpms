@@ -32,7 +32,14 @@ const goHome = () => {
 
 <template>
   <v-app>
-    <v-navigation-drawer rail expand-on-hover :width="400" rail-width="65" v-model="drawer">
+    <v-navigation-drawer
+      rail
+      expand-on-hover
+      :width="400"
+      mobile-breakpoint="xs"
+      rail-width="65"
+      v-model="drawer"
+    >
       <v-list-item
         prepend-icon="mdi-home-heart"
         :title="$t('app.name')"
