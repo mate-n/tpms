@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, onMounted, ref, watch, type Ref } from 'vue'
+import { computed, inject, onMounted, ref, watch, type Ref } from 'vue'
 import { CrudOperations } from '@/enums/CrudOperations'
 import { CloneHelper } from '@/helpers/CloneHelper'
 import { LanguageService } from '@/services/LanguageService'
@@ -21,10 +21,14 @@ import ProfileAvatar from '../profiles/ProfileAvatar.vue'
 import PrivateProfileForm from '../profiles/PrivateProfileForm.vue'
 import CompanyProfileForm from '../profiles/CompanyProfileForm.vue'
 import TravelAgencyProfileForm from '../profiles/TravelAgencyProfileForm.vue'
+import { DateHelper } from '@/helpers/DateHelper'
+import type { IRoom } from '@/shared/interfaces/IRoom'
+import { RoomService } from '@/services/RoomService'
 
 const axios: AxiosStatic | undefined = inject('axios')
 const reservationService = new ReservationService(axios)
 const profileService = new ProfileService(axios)
+const roomService = new RoomService(axios)
 const reservationValidator = new ReservationValidator()
 const languageService = new LanguageService(axios)
 const salutationService = new SalutationService(axios)
@@ -34,11 +38,14 @@ const props = defineProps({
   reservationInput: { type: Object as () => IReservation, required: true },
   crudOperation: { type: Number, required: true }
 })
+const dateHelper = new DateHelper()
 const reservationToBeEdited = ref<IReservation>(new Reservation())
 const profileAssociatedWithReservation = ref<IProfile>(new Profile())
 const emit = defineEmits(['save'])
 const languages: Ref<ILanguage[]> = ref([])
 const salutations: Ref<ISalutation[]> = ref([])
+const roomsInDropdown: Ref<IRoom[]> = ref([])
+
 onMounted(() => {
   languageService.getAvailableLanguages().then((response) => {
     languages.value = response
@@ -47,6 +54,35 @@ onMounted(() => {
     salutations.value = response
   })
   getReservationWithProfilePromise()
+  roomService.getAll().then((response) => {
+    console.log(response)
+    roomsInDropdown.value = response
+  })
+})
+
+const arrivalDateMenu = ref(false)
+const departureDateMenu = ref(false)
+
+const arrivalDateString = computed(() => {
+  return dateHelper.getDateString(reservationToBeEdited.value.arrivalDate)
+})
+
+const departureDateString = computed(() => {
+  return dateHelper.getDateString(reservationToBeEdited.value.departureDate)
+})
+const arrivalDateMin = computed(() => {
+  return dateHelper.getDateString(new Date())
+})
+
+const numberOfNights = computed(() => {
+  return dateHelper.calculateNightsBetweenDates(
+    reservationToBeEdited.value.arrivalDate,
+    reservationToBeEdited.value.departureDate
+  )
+})
+
+const departureDateMin = computed(() => {
+  return dateHelper.getDateString(reservationToBeEdited.value.arrivalDate)
 })
 
 const getReservationWithProfilePromise = () => {
@@ -285,7 +321,25 @@ const reservationsCardDialog = ref(false)
             <v-toolbar-title><span class="text-primary">Room Details</span></v-toolbar-title>
           </v-toolbar>
           <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
+          <v-container>
+            <v-autocomplete
+              label="Room Type"
+              v-model="reservationToBeEdited.roomID"
+              :items="roomsInDropdown"
+              variant="underlined"
+              item-title="name"
+              item-value="id"
+            ></v-autocomplete>
+
+            <v-autocomplete
+              label="Room To Change"
+              v-model="reservationToBeEdited.roomID"
+              :items="roomsInDropdown"
+              variant="underlined"
+              item-title="name"
+              item-value="id"
+            ></v-autocomplete>
+          </v-container>
         </div>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
