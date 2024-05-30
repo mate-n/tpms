@@ -55,7 +55,6 @@ onMounted(() => {
   })
   getReservationWithProfilePromise()
   roomService.getAll().then((response) => {
-    console.log(response)
     roomsInDropdown.value = response
   })
 })
@@ -91,7 +90,6 @@ const getReservationWithProfilePromise = () => {
 
     if (reservationToBeEdited.value.guestProfileID) {
       profileService.get(reservationToBeEdited.value.guestProfileID).then((response) => {
-        console.log(response)
         profileAssociatedWithReservation.value = response
         resolve(response)
       })
