@@ -91,10 +91,6 @@ const getTicketByTicketId = (ticketId: number) => {
 
 const availableTickets: Ref<ITicket[]> = ref([])
 
-const tickets = computed(() => {
-  return reservation.value.ticketIDs.map((ticketID) => getTicketByTicketId(ticketID)) as ITicket[]
-})
-
 const chargesLabel = computed(() => {
   return reservation.value.ticketIDs.length > 0 ? 'Charges' : 'No Charges'
 })
@@ -183,7 +179,7 @@ onMounted(() => {
         <v-row>
           <v-col>
             <TicketsTable
-              :tickets="tickets"
+              :tickets="reservation.tickets"
               :collapsible="true"
               :collapsed="true"
               :show-date="true"
@@ -200,7 +196,7 @@ onMounted(() => {
           <v-col>
             TOTAL<br />
             <strong>{{
-              (reservation.totalRate + ticketHelper.getTotalPrice(tickets)).toFixed(2)
+              (reservation.totalRate + ticketHelper.getTotalPrice(reservation.tickets)).toFixed(2)
             }}</strong></v-col
           >
           <v-col> </v-col>
