@@ -187,7 +187,96 @@ const reservationsCardDialog = ref(false)
             <v-toolbar-title><span class="text-primary">Stay Details</span></v-toolbar-title>
           </v-toolbar>
           <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
+          <v-container>
+            <v-row>
+              <v-col>
+                <v-menu v-model="arrivalDateMenu" :close-on-content-click="false">
+                  <template v-slot:activator="{ props }">
+                    <v-text-field
+                      v-model="arrivalDateString"
+                      label="Arrival"
+                      append-inner-icon="mdi-calendar"
+                      variant="underlined"
+                      v-bind="props"
+                    ></v-text-field>
+                  </template>
+                  <v-card>
+                    <v-date-picker
+                      :hide-header="true"
+                      v-model="reservationToBeEdited.arrivalDate"
+                      :min="arrivalDateMin"
+                    >
+                    </v-date-picker>
+                  </v-card>
+                </v-menu>
+              </v-col>
+              <v-col>
+                <v-menu v-model="arrivalDateMenu" :close-on-content-click="false">
+                  <template v-slot:activator="{ props }">
+                    <v-text-field
+                      v-model="arrivalDateString"
+                      label="Optional Date"
+                      append-inner-icon="mdi-calendar"
+                      variant="underlined"
+                      v-bind="props"
+                    ></v-text-field>
+                  </template>
+                  <v-card>
+                    <v-date-picker
+                      :hide-header="true"
+                      v-model="reservationToBeEdited.arrivalDate"
+                      :min="arrivalDateMin"
+                    >
+                    </v-date-picker>
+                  </v-card>
+                </v-menu>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  label="Nights"
+                  :model-value="numberOfNights"
+                  variant="underlined"
+                  type="number"
+                  :error-messages="
+                    reservationToBeEdited.errors && reservationToBeEdited.errors['nights']
+                  "
+                  :readonly="true"
+                ></v-text-field>
+                <v-menu v-model="departureDateMenu" :close-on-content-click="false">
+                  <template v-slot:activator="{ props }">
+                    <v-text-field
+                      v-model="departureDateString"
+                      label="Departure"
+                      append-inner-icon="mdi-calendar"
+                      variant="underlined"
+                      v-bind="props"
+                    ></v-text-field>
+                  </template>
+                  <v-card>
+                    <v-date-picker
+                      :hide-header="true"
+                      v-model="reservationToBeEdited.departureDate"
+                      :min="departureDateMin"
+                    ></v-date-picker>
+                  </v-card>
+                </v-menu>
+              </v-col>
+              <v-col>
+                <v-text-field
+                  label="Guests per room"
+                  v-model="reservationToBeEdited.numberOfGuestsPerRoom"
+                  :error-messages="
+                    reservationToBeEdited.errors &&
+                    reservationToBeEdited.errors['numberOfGuestsPerRoom']
+                  "
+                  variant="underlined"
+                  type="number"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
         </div>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
