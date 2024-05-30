@@ -2,8 +2,11 @@
 import { useBasketItemsStore } from '@/stores/basketItems'
 import ReservationInBasketCard from './ReservationInBasketCard.vue'
 import { computed } from 'vue'
+import { TicketHelper } from '@/helpers/TicketHelper'
+import { ReservationHelper } from '@/helpers/ReservationHelper'
 const basketItemsStore = useBasketItemsStore()
-
+const ticketHelper = new TicketHelper()
+const reservationHelper = new ReservationHelper()
 const emits = defineEmits(['close'])
 const removeAllReservations = () => {
   for (const reservation of basketItemsStore.reservations) {
@@ -12,9 +15,7 @@ const removeAllReservations = () => {
 }
 
 const totalPrice = computed(() => {
-  return basketItemsStore.reservations.reduce((acc, reservation) => {
-    return acc + reservation.totalRate
-  }, 0)
+  return reservationHelper.getTotalPrice(basketItemsStore.reservations)
 })
 </script>
 <template>
