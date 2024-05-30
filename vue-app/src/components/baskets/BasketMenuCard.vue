@@ -3,6 +3,8 @@ import { useBasketItemsStore } from '@/stores/basketItems'
 import BasketCard from './BasketCard.vue'
 import { computed, ref } from 'vue'
 import ReservationInBasketMenuCard from './ReservationInBasketMenuCard.vue'
+import { ReservationHelper } from '@/helpers/ReservationHelper'
+const reservationHelper = new ReservationHelper()
 const emit = defineEmits(['close'])
 const basketItemsStore = useBasketItemsStore()
 const removeAllReservations = () => {
@@ -19,9 +21,11 @@ const removeReservation = () => {
 }
 
 const totalPrice = computed(() => {
-  return basketItemsStore.reservations.reduce((acc, reservation) => {
-    return acc + reservation.totalRate
-  }, 0)
+  {
+    {
+      return reservationHelper.getTotalPrice(basketItemsStore.reservations)
+    }
+  }
 })
 </script>
 <template>
@@ -36,7 +40,7 @@ const totalPrice = computed(() => {
       <div>
         <p><strong>Total: </strong></p>
         <p class="text-end">
-          <strong>{{ totalPrice.toFixed(2) }}</strong>
+          <strong>{{ totalPrice }}</strong>
         </p>
       </div>
     </v-card>
