@@ -58,7 +58,7 @@ onMounted(() => {
           <td v-if="showDate">{{ dateFormatter.dddotmmdotyyyy(group[1][0].Date) }}</td>
           <td>{{ group[1][0].Price }}</td>
           <td>
-            {{ group[1].length * group[1][0].Price }}
+            {{ (group[1].length * group[1][0].Price).toFixed(2) }}
           </td>
           <td v-if="showButtons">
             <div class="d-flex justify-end">
