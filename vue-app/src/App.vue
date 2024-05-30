@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { RouterView } from 'vue-router'
 import { useBasketItemsStore } from './stores/basketItems'
 import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
 import { useUserStore } from './stores/user'
 import { Profile } from './shared/classes/Profile'
 import router from './router'
+import { c } from 'node_modules/vite/dist/node/types.d-FdqQ54oU'
 const userStore = useUserStore()
 userStore.currentProfile = new Profile()
 const basketItemsStore = useBasketItemsStore()
@@ -19,11 +20,15 @@ const goHome = () => {
   router.push('/')
 }
 
-const onMouseLeave = () => {
-  expansionPanelReservation.value = false
+const closeExpansionPanelReservation = () => {
+  expansionPanelReservation.value = []
 }
 
-const expansionPanelReservation = ref(false)
+const openExpansionPanelReservation = () => {
+  expansionPanelReservation.value = ['front-desk']
+}
+
+const expansionPanelReservation: Ref<String[]> = ref([])
 </script>
 
 <style>
@@ -37,7 +42,15 @@ const expansionPanelReservation = ref(false)
 
 <template>
   <v-app>
-    <v-navigation-drawer rail expand-on-hover :width="400" mobile-breakpoint="xs" rail-width="65">
+    <v-navigation-drawer
+      rail
+      expand-on-hover
+      :width="400"
+      mobile-breakpoint="xs"
+      rail-width="65"
+      :onmouseleave="() => closeExpansionPanelReservation()"
+      :onmouseenter="() => openExpansionPanelReservation()"
+    >
       <v-list-item
         prepend-icon="mdi-home-heart"
         :title="$t('app.name')"
@@ -54,7 +67,7 @@ const expansionPanelReservation = ref(false)
         to="/dashboard"
       ></v-list-item>
       <v-expansion-panels class="ma-0 pa-0" v-model="expansionPanelReservation">
-        <v-expansion-panel class="ma-0">
+        <v-expansion-panel class="ma-0" value="front-desk">
           <v-expansion-panel-title class="pa-0 ms-0 me-4"
             ><v-icon class="ms-4">mdi-store-outline</v-icon> <span class="ms-8"></span>Front
             Desk</v-expansion-panel-title
