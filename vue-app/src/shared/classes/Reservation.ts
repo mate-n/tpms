@@ -28,6 +28,7 @@ export class Reservation implements IReservation {
   ticketIDs: number[]
   totalRate: number
   averageRate: number
+  guestName: string
 
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
@@ -44,6 +45,7 @@ export class Reservation implements IReservation {
     this.ticketIDs = []
     this.totalRate = 0
     this.averageRate = 0
+    this.guestName = ''
   }
 
   reset() {
