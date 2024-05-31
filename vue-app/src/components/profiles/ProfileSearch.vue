@@ -18,7 +18,6 @@ const profileService = new ProfileService(axios)
 const guestTypes: Ref<IGuestType[]> = ref([])
 const guestTypeService = new GuestTypeService(axios)
 const emit = defineEmits(['close', 'profileSelected'])
-const close = () => emit('close')
 const profileSearch: Ref<IProfileSearch> = ref(new ProfileSearch())
 const profileFromInputFields = ref<IProfile>(new Profile())
 const newProfileDialog = ref(false)
@@ -113,15 +112,6 @@ watch(
 </style>
 
 <template>
-  <v-toolbar class="bg-white">
-    <v-toolbar-title>Profile Search</v-toolbar-title>
-    <div class="profiles-card-toolbar-button" @click="openNewProfileDialog()">NEW PROFILE</div>
-    <div class="profiles-card-toolbar-button" @click="close()">
-      <v-icon size="large">mdi-close</v-icon>
-    </div>
-  </v-toolbar>
-  <v-divider class="profiles-card-divider"></v-divider>
-
   <v-container class="bg-white" fluid>
     <div class="d-flex">
       <v-text-field

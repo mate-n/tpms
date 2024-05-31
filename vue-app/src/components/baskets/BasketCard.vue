@@ -4,6 +4,8 @@ import ReservationInBasketCard from './ReservationInBasketCard.vue'
 import { computed } from 'vue'
 import { TicketHelper } from '@/helpers/TicketHelper'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
+import router from '@/router'
+import { emit } from 'process'
 const basketItemsStore = useBasketItemsStore()
 const ticketHelper = new TicketHelper()
 const reservationHelper = new ReservationHelper()
@@ -17,6 +19,11 @@ const removeAllReservations = () => {
 const totalPrice = computed(() => {
   return reservationHelper.getTotalPrice(basketItemsStore.reservations)
 })
+
+const clickOnBook = () => {
+  emits('close')
+  router.push('/reservations/1')
+}
 </script>
 <template>
   <div class="standard-dialog-card">
@@ -49,6 +56,7 @@ const totalPrice = computed(() => {
           v-if="basketItemsStore.reservations.length > 0"
           style="background-color: green; color: white"
           elevation="4"
+          @click="clickOnBook()"
           >BOOK</v-btn
         >
       </div>
