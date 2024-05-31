@@ -103,14 +103,17 @@ onMounted(() => {
           variant="underlined"
         ></v-autocomplete>
       </v-col>
+
+      <v-col>
+        <div>
+          <v-checkbox label="Confidential Rate" :hide-details="true" density="compact"></v-checkbox>
+          <v-checkbox label="Day Use" :hide-details="true" density="compact"></v-checkbox>
+        </div>
+      </v-col>
       <v-col class="d-flex justify-space-between">
         <v-btn class="primary-button mr-3 w-100">SEARCH</v-btn>
       </v-col>
     </v-row>
-    <div>
-      <v-checkbox label="Confidential Rate" :hide-details="true" density="compact"></v-checkbox>
-      <v-checkbox label="Day Use" :hide-details="true" density="compact"></v-checkbox>
-    </div>
   </v-container>
 
   <v-container fluid class="bg-white">
