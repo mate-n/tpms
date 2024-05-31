@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import realmsLogo from '@/assets/images/realms-icon.webp'
 import { ref, type Ref } from 'vue'
 import { RouterView } from 'vue-router'
 import { useBasketItemsStore } from './stores/basketItems'
@@ -6,14 +7,11 @@ import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
 import { useUserStore } from './stores/user'
 import { Profile } from './shared/classes/Profile'
 import router from './router'
+import BasketCard from './components/baskets/BasketCard.vue'
 const userStore = useUserStore()
 userStore.currentProfile = new Profile()
 const basketItemsStore = useBasketItemsStore()
 const reservationsMenu = ref(false)
-const rail = ref(false)
-const toggleRail = () => {
-  rail.value = !rail.value
-}
 
 const goHome = () => {
   router.push('/')
@@ -28,6 +26,13 @@ const openExpansionPanelReservation = () => {
 }
 
 const expansionPanelReservation: Ref<String[]> = ref([])
+
+const basketDialog = ref(false)
+
+const clickOnViewCart = () => {
+  reservationsMenu.value = false
+  basketDialog.value = true
+}
 </script>
 
 <style>
@@ -46,15 +51,25 @@ const expansionPanelReservation: Ref<String[]> = ref([])
       expand-on-hover
       :width="400"
       mobile-breakpoint="xs"
-      rail-width="65"
+      rail-width="55"
       :onmouseleave="() => closeExpansionPanelReservation()"
       :onmouseenter="() => openExpansionPanelReservation()"
     >
       <v-list-item
-        prepend-icon="mdi-home-heart"
-        :title="$t('app.name')"
+        height="5rem"
+        prepend-icon="mdi-menu"
         value="home"
         @click="goHome()"
+        class="bg-lightgray"
+      >
+        <v-list-item-text>
+          <div><strong>TPMS-Frontend</strong></div>
+          <div class="d-flex align-center justify-start">
+            <div>Realms</div>
+            <div class="ms-3 mt-1">
+              <v-img width="1.8rem" height="1.8rem" aspect-ratio="1/1" :src="realmsLogo"></v-img>
+            </div>
+          </div> </v-list-item-text
       ></v-list-item>
 
       <v-divider></v-divider>
@@ -76,6 +91,13 @@ const expansionPanelReservation: Ref<String[]> = ref([])
               color="primary"
               prepend-icon="mdi-circle-small"
               link
+              title="Profiles"
+              to="/profiles"
+            ></v-list-item>
+            <v-list-item
+              color="primary"
+              prepend-icon="mdi-circle-small"
+              link
               title="Reservations"
               to="/reservations"
             ></v-list-item>
@@ -83,26 +105,18 @@ const expansionPanelReservation: Ref<String[]> = ref([])
               color="primary"
               prepend-icon="mdi-circle-small"
               link
-              title="Profiles"
-              to="/profile-search"
+              title="Itinerary Reservation Enquiry"
+              to="/itinerary-reservation-enquiry"
             ></v-list-item>
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
-      <v-list-item
-        color="primary"
-        link
-        title="Itinerary Reservation Enquiry"
-        to="/itinerary-reservation-enquiry"
-      ></v-list-item>
-      <v-list-item link title="New Profile" to="/new-profile"></v-list-item>
-
       <v-divider></v-divider>
     </v-navigation-drawer>
 
     <v-app-bar app :elevation="2">
       <template v-slot:prepend>
-        <v-app-bar-nav-icon @click="toggleRail()">
+        <v-app-bar-nav-icon @click="goHome()">
           <v-icon icon="mdi-home-heart"></v-icon>
         </v-app-bar-nav-icon>
       </template>
@@ -120,10 +134,18 @@ const expansionPanelReservation: Ref<String[]> = ref([])
             </v-badge>
           </v-btn>
         </template>
-        <BasketMenuCard @close="reservationsMenu = false" />
+        <BasketMenuCard
+          @close="reservationsMenu = false"
+          @click-on-view-cart="() => clickOnViewCart()"
+        />
       </v-menu>
     </v-app-bar>
-
     <v-main> <RouterView /></v-main>
+
+    <v-dialog v-model="basketDialog" scrollable auto>
+      <v-card>
+        <BasketCard @close="basketDialog = false"></BasketCard>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
