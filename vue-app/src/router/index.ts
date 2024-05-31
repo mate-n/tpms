@@ -5,6 +5,8 @@ import ProfileSearchView from '@/views/ProfileSearchView.vue'
 import ApiTestView from '@/views/ApiTestView.vue'
 import ReservationsView from '@/views/ReservationsView.vue'
 import EditReservationView from '@/views/EditReservationView.vue'
+import DashboardView from '@/views/DashboardView.vue'
+import ProfilesView from '@/views/ProfilesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +32,11 @@ const router = createRouter({
       component: ProfileSearchView
     },
     {
+      path: '/profiles',
+      name: 'profiles',
+      component: ProfilesView
+    },
+    {
       path: '/api-test',
       name: 'api test',
       component: ApiTestView
@@ -44,6 +51,11 @@ const router = createRouter({
       name: 'edit reservation',
       component: EditReservationView,
       props: true
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: DashboardView
     },
     {
       path: '/about',
