@@ -2,8 +2,6 @@
 import { onMounted, ref, watch } from 'vue'
 import { CrudOperations } from '@/enums/CrudOperations'
 import { CloneHelper } from '@/helpers/CloneHelper'
-import { useFullscreen } from '@/composables/Fullscreen'
-import { Profile } from '@/shared/classes/Profile'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import ReservationForm from './ReservationForm.vue'
 import type { IReservation } from '@/shared/interfaces/IReservation'
