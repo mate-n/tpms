@@ -10,7 +10,8 @@ import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
 import { CloneHelper } from '@/helpers/CloneHelper'
 import ReservationSlice from './itinerary-reservations/ReservationSlice.vue'
 import type { IReservationSelectable } from '@/shared/interfaces/reservations/IReservationSelectable'
-import EditReservation from './EditReservation.vue'
+import ReservationCards from '@/components/reservations/ReservationCards.vue'
+
 const cloneHelper = new CloneHelper()
 const props = defineProps({
   itineraryReservationInput: { type: Object as () => IItineraryReservation, required: true }
@@ -108,6 +109,6 @@ const selectedReservation = computed(() => {
     </v-row>
   </v-container>
   <v-container fluid class="bg-lightgray pt-0" v-if="selectedReservation">
-    <EditReservation :reservationInput="selectedReservation.reservation"></EditReservation>
+    <ReservationCards v-model="selectedReservation.reservation"></ReservationCards>
   </v-container>
 </template>
