@@ -83,18 +83,25 @@ const selectedReservation = computed(() => {
         <div class="standard-card">
           <v-divider class="standard-card-divider"></v-divider>
           <v-container fluid>
-            <div class="d-flex">
-              <div v-for="reservationSelectable of reservationSelectables" class="me-4">
+            <div class="d-flex justify-space-between">
+              <template v-for="(reservationSelectable, index) of reservationSelectables">
                 <ReservationSlice
                   :reservationSelectable="reservationSelectable"
                   @selectReservation="
                     (reservationSelectable) => selectReservation(reservationSelectable)
                   "
                 ></ReservationSlice>
-              </div>
+                <div
+                  class="d-flex align-center justify-center"
+                  v-if="index !== reservationSelectables.length - 1"
+                >
+                  <v-icon size="x-large">mdi-arrow-right</v-icon>
+                </div>
+              </template>
             </div>
-          </v-container></div
-      ></v-col>
+          </v-container>
+        </div></v-col
+      >
     </v-row>
   </v-container>
   <v-container fluid class="bg-lightgray pt-0" v-if="selectedReservation">
