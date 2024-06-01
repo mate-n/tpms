@@ -7,6 +7,8 @@ import { inject, onMounted, ref } from 'vue'
 import EditReservation from '@/components/reservations/EditReservation.vue'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import { ItineraryReservationService } from '@/services/reservations/ItineraryReservationService'
+import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
+import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
 const axios: AxiosStatic | undefined = inject('axios')
 const itineraryReservationService = new ItineraryReservationService(axios)
 
@@ -14,17 +16,15 @@ const props = defineProps({
   itineraryReservationId: String
 })
 
-const reservation: Ref<IReservation> = ref(new Reservation())
+const itineraryReservation: Ref<IItineraryReservation> = ref(new ItineraryReservation())
 
 onMounted(() => {
   if (props.itineraryReservationId) {
     itineraryReservationService.get(parseInt(props.itineraryReservationId)).then((res) => {
-      reservation.value = res
+      itineraryReservation.value = res
     })
   }
 })
 </script>
 
-<template>
-  <EditReservation :reservation-input="reservation"></EditReservation>
-</template>
+<template>itineraryReservation</template>
