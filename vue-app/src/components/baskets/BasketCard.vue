@@ -2,12 +2,9 @@
 import { useBasketItemsStore } from '@/stores/basketItems'
 import ReservationInBasketCard from './ReservationInBasketCard.vue'
 import { computed } from 'vue'
-import { TicketHelper } from '@/helpers/TicketHelper'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import router from '@/router'
-import { emit } from 'process'
 const basketItemsStore = useBasketItemsStore()
-const ticketHelper = new TicketHelper()
 const reservationHelper = new ReservationHelper()
 const emits = defineEmits(['close'])
 const removeAllReservations = () => {

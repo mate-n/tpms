@@ -1,10 +1,7 @@
 import { faker } from '@faker-js/faker'
-import type { IReservation } from '../interfaces/IReservation'
-import { Reservation } from '../classes/Reservation'
 import type { IItineraryReservation } from '../interfaces/IItineraryReservation'
 import { ItineraryReservation } from '../classes/ItineraryReservation'
 import { ReservationFaker } from './ReservationFaker'
-import { it } from 'node:test'
 
 export class ItineraryReservationFaker {
   reservationFaker = new ReservationFaker()
