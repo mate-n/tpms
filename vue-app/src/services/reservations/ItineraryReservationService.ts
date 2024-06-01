@@ -1,5 +1,6 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
 import type { IService } from '@/interfaces/IService'
+import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { AxiosStatic } from 'axios'
 
@@ -10,9 +11,9 @@ export class ItineraryReservationService implements IService {
   }
 
   getAll() {
-    return new Promise<IReservation[]>((resolve, reject) => {
+    return new Promise<IItineraryReservation[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/reservations')
+        .get('v1/itinerary-reservations')
         .then((response: any) => {
           resolve(response.data)
         })
@@ -23,9 +24,9 @@ export class ItineraryReservationService implements IService {
   }
 
   get(id: number) {
-    return new Promise<IReservation>((resolve, reject) => {
+    return new Promise<IItineraryReservation>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/reservations/' + id)
+        .get('v1/itinerary-reservations/' + id)
         .then((response: any) => {
           resolve(response.data)
         })
@@ -35,10 +36,10 @@ export class ItineraryReservationService implements IService {
     })
   }
 
-  post(reservation: IReservation) {
+  post(reservation: IItineraryReservation) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
-        .post('v1/reservations', reservation)
+        .post('v1/itinerary-reservations', reservation)
         .then((response: any) => {
           resolve(response.data)
         })
@@ -48,10 +49,10 @@ export class ItineraryReservationService implements IService {
     })
   }
 
-  put(reservation: IReservation) {
+  put(reservation: IItineraryReservation) {
     return new Promise((resolve, reject) => {
       this.axiosInstance
-        .put('v1/reservations', reservation)
+        .put('v1/itinerary-reservations', reservation)
         .then((response: any) => {
           resolve(response.data)
         })
