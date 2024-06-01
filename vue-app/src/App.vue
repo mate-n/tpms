@@ -108,6 +108,13 @@ const clickOnViewCart = () => {
               title="Itinerary Reservation Enquiry"
               to="/itinerary-reservation-enquiry"
             ></v-list-item>
+            <v-list-item
+              color="primary"
+              prepend-icon="mdi-circle-small"
+              link
+              title="Itinerary Reservations"
+              to="/itinerary-reservations"
+            ></v-list-item>
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
