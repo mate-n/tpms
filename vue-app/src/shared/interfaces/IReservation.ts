@@ -26,6 +26,7 @@ export interface IReservation extends IEntityWithIdentity, IEntityWithErrors {
   totalRate: number
   averageRate: number
   guestName: string
+  propertyName: string
   reset(): void
   addIssue(issue: string): void
   removeIssue(issue: string): void
