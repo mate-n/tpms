@@ -7,6 +7,7 @@ import ReservationsView from '@/views/ReservationsView.vue'
 import EditReservationView from '@/views/EditReservationView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import ItineraryReservationsView from '@/views/ItineraryReservationsView.vue'
+import EditItineraryReservationView from '@/views/EditItineraryReservationView.vue'
 import ProfilesView from '@/views/ProfilesView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +51,12 @@ const router = createRouter({
       path: '/reservations/:reservationId',
       name: 'edit reservation',
       component: EditReservationView,
+      props: true
+    },
+    {
+      path: '/itinerary-reservations/:itineraryReservationId',
+      name: 'itinerary reservation',
+      component: EditItineraryReservationView,
       props: true
     },
     {
