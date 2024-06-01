@@ -1,37 +1,30 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { CrudOperations } from '@/enums/CrudOperations'
 import { CloneHelper } from '@/helpers/CloneHelper'
-import { useFullscreen } from '@/composables/Fullscreen'
-import { Profile } from '@/shared/classes/Profile'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import ReservationForm from './ReservationForm.vue'
-import type { IReservation } from '@/shared/interfaces/IReservation'
-import { Reservation } from '@/shared/classes/Reservation'
-
+import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
+import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
+import ItineraryReservationForm from './ItineraryReservationForm.vue'
 const cloneHelper = new CloneHelper()
 const emit = defineEmits(['close', 'update'])
-const close = () => emit('close')
 const props = defineProps({
-  reservationInput: { type: Object as () => IReservation, required: true }
+  itineraryReservationInput: { type: Object as () => IItineraryReservation, required: true }
 })
-const reservationToBeEdited = ref<IReservation>(new Reservation())
+const itineraryReservationToBeEdited = ref<IItineraryReservation>(new ItineraryReservation())
 const update = (profile: IProfile) => {
   emit('update', profile)
 }
 
 onMounted(() => {
-  reservationToBeEdited.value = cloneHelper.clone(props.reservationInput)
+  itineraryReservationToBeEdited.value = cloneHelper.clone(props.itineraryReservationInput)
 })
 
 watch(props, (newInput) => {
-  reservationToBeEdited.value = cloneHelper.clone(newInput.reservationInput)
+  itineraryReservationToBeEdited.value = cloneHelper.clone(newInput.itineraryReservationInput)
 })
 </script>
 <template>
-  <ReservationForm
-    :reservation-input="reservationToBeEdited"
-    @save="(profile) => update(profile)"
-    :crud-operation="CrudOperations.Update"
-  ></ReservationForm>
+  <ItineraryReservationForm
+    :itineraryReservationInput="itineraryReservationToBeEdited"
+  ></ItineraryReservationForm>
 </template>
