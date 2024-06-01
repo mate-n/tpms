@@ -4,7 +4,7 @@ import { CloneHelper } from '@/helpers/CloneHelper'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
-import ItineraryReservationForm from './ItineraryReservationForm.vue'
+import ItineraryReservationForm from '@/components/reservations/ItineraryReservationForm.vue'
 const cloneHelper = new CloneHelper()
 const emit = defineEmits(['close', 'update'])
 const props = defineProps({
