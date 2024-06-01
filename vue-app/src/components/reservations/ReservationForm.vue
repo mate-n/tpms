@@ -17,10 +17,7 @@ import { ReservationService } from '@/services/ReservationService'
 import ProfileService from '@/services/ProfileService'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { Profile } from '@/shared/classes/Profile'
-import ProfileAvatar from '../profiles/ProfileAvatar.vue'
-import PrivateProfileForm from '../profiles/PrivateProfileForm.vue'
-import CompanyProfileForm from '../profiles/CompanyProfileForm.vue'
-import TravelAgencyProfileForm from '../profiles/TravelAgencyProfileForm.vue'
+import ProfileGeneralForm from '../profiles/ProfileGeneralForm.vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import { RoomService } from '@/services/RoomService'
@@ -132,44 +129,10 @@ const reservationsCardDialog = ref(false)
       {{ profileAssociatedWithReservation.lastName }}</v-toolbar-title
     >
   </v-toolbar>
-  <v-container fluid class="bg-white">
-    <v-row>
-      <v-col cols="2">
-        <div class="my-2">
-          <ProfileAvatar
-            v-model="profileAssociatedWithReservation"
-            :crud-operation="crudOperation"
-          ></ProfileAvatar>
-        </div>
-      </v-col>
-      <v-col cols="10" class="border-s">
-        <div v-if="profileAssociatedWithReservation.profileType === 'Private'">
-          <PrivateProfileForm
-            v-model="profileAssociatedWithReservation"
-            @change="validate()"
-          ></PrivateProfileForm>
-        </div>
-        <div
-          v-if="
-            profileAssociatedWithReservation.profileType === 'Company' ||
-            profileAssociatedWithReservation.profileType === 'Group' ||
-            profileAssociatedWithReservation.profileType === 'Source'
-          "
-        >
-          <CompanyProfileForm
-            v-model="reservationToBeEdited"
-            @change="validate()"
-          ></CompanyProfileForm>
-        </div>
-        <div v-if="profileAssociatedWithReservation.profileType === 'TravelAgency'">
-          <TravelAgencyProfileForm
-            v-model="reservationToBeEdited"
-            @change="validate()"
-          ></TravelAgencyProfileForm>
-        </div>
-      </v-col>
-    </v-row>
-  </v-container>
+  <ProfileGeneralForm
+    :crudOperation="crudOperation"
+    v-model="profileAssociatedWithReservation"
+  ></ProfileGeneralForm>
   <v-toolbar class="bg-lightgray">
     <div class="h-100 d-flex px-5 align-center me-auto font-size-rem-14">
       Reservations <v-icon class="mx-3" size="x-small">mdi-arrow-right</v-icon> #{{
