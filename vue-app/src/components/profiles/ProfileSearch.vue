@@ -53,14 +53,6 @@ const availableTableDataHeaders = ref([
   { key: 'menu', title: '', selected: true }
 ])
 
-const openNewProfileDialog = () => {
-  const profile = new Profile()
-  if (profileSearch.value.name) profile.lastName = profileSearch.value.name
-  if (profileSearch.value.email) profile.email = profileSearch.value.email
-  profileFromInputFields.value = profile
-  newProfileDialog.value = true
-}
-
 const closeNewProfileDialog = () => {
   newProfileDialog.value = false
 }

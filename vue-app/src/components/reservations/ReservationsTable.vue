@@ -17,7 +17,7 @@ const availableTableDataHeaders = ref([
   { key: 'menu', title: '', selected: true }
 ])
 
-const props = defineProps({
+defineProps({
   reservations: { type: Object as () => IReservation[], required: true }
 })
 const changeColumnsDialog = ref(false)

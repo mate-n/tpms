@@ -1,7 +1,6 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
 import type { IService } from '@/interfaces/IService'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
-import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { AxiosStatic } from 'axios'
 
 export class ItineraryReservationService implements IService {

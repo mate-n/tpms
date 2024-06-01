@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref, type Ref } from 'vue'
-import ReservationsTable from './ReservationsTable.vue'
-import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { AxiosStatic } from 'axios'
-import { ReservationService } from '@/services/ReservationService'
 import { ItineraryReservationService } from '@/services/reservations/ItineraryReservationService'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import ItineraryReservationShow from './ItineraryReservationShow.vue'

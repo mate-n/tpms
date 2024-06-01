@@ -84,7 +84,10 @@ const selectedReservation = computed(() => {
           <v-divider class="standard-card-divider"></v-divider>
           <v-container fluid>
             <div class="d-flex justify-space-between">
-              <template v-for="(reservationSelectable, index) of reservationSelectables">
+              <template
+                v-for="(reservationSelectable, index) of reservationSelectables"
+                :key="reservationSelectable.reservation.id"
+              >
                 <ReservationSlice
                   :reservationSelectable="reservationSelectable"
                   @selectReservation="

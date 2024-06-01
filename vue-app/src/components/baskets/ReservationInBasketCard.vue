@@ -26,7 +26,6 @@ const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
 const ticketHelper = new TicketHelper()
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
-
 const property: Ref<IProperty | null> = ref(null)
 const profile: Ref<IProfile | null> = ref(null)
 const room: Ref<IRoom | null> = ref(null)
@@ -83,10 +82,6 @@ const clickOnAddFixedCharges = () => {
 
 const addTicketsToReservation = () => {
   ticketsCardDialog.value = false
-}
-
-const getTicketByTicketId = (ticketId: number) => {
-  return availableTickets.value.find((t) => t.TicketId === ticketId)
 }
 
 const availableTickets: Ref<ITicket[]> = ref([])

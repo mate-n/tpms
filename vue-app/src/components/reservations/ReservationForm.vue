@@ -94,7 +94,7 @@ const getReservationWithProfilePromise = () => {
   })
 }
 
-watch(props, (newInput) => {
+watch(props, () => {
   getReservationWithProfilePromise()
 })
 

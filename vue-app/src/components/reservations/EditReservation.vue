@@ -9,7 +9,6 @@ import { Reservation } from '@/shared/classes/Reservation'
 
 const cloneHelper = new CloneHelper()
 const emit = defineEmits(['close', 'update'])
-const close = () => emit('close')
 const props = defineProps({
   reservationInput: { type: Object as () => IReservation, required: true }
 })

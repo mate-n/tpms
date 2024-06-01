@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useBasketItemsStore } from '@/stores/basketItems'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import ReservationInBasketMenuCard from './ReservationInBasketMenuCard.vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 const reservationHelper = new ReservationHelper()
@@ -12,7 +12,6 @@ const removeAllReservations = () => {
   }
   emit('close')
 }
-const basketDialog = ref(false)
 const removeReservation = () => {
   if (basketItemsStore.reservations.length === 0) {
     emit('close')

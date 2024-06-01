@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
-import type { ItineraryReservationService } from '@/services/reservations/ItineraryReservationService'
 import type { IReservationSelectable } from '@/shared/interfaces/reservations/IReservationSelectable'
 import { computed } from 'vue'
 const dateFormatter = new DateFormatter()

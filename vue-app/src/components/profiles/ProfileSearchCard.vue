@@ -4,7 +4,6 @@ import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import NewProfile from './NewProfile.vue'
 import EditProfile from './EditProfile.vue'
 import { GuestTypeService } from '@/services/GuestTypeService'
-import { DateFormatter } from '@/helpers/DateFormatter'
 import { Profile } from '@/shared/classes/Profile'
 import { ProfileSearch } from '@/shared/classes/ProfileSearch'
 import type { IGuestType } from '@/shared/interfaces/IGuestType'
@@ -14,7 +13,6 @@ import { CloneHelper } from '@/helpers/CloneHelper'
 import type { AxiosStatic } from 'axios'
 import ProfileSearchVue from './ProfileSearch.vue'
 const axios: AxiosStatic | undefined = inject('axios')
-const dateFormatter = new DateFormatter()
 const profileService = new ProfileService(axios)
 const guestTypes: Ref<IGuestType[]> = ref([])
 const guestTypeService = new GuestTypeService(axios)
@@ -26,15 +24,6 @@ const newProfileDialog = ref(false)
 const editProfileDialog = ref(false)
 const changeColumnsDialog = ref(false)
 const cloneHelper = new CloneHelper()
-const selectProfile = (profile: IProfile) => {
-  emit('profileSelected', profile)
-}
-const editProfile = (profile: IProfile) => {
-  let newProfileToBeEdited = new Profile()
-  newProfileToBeEdited = Object.assign(newProfileToBeEdited, profile)
-  profileToBeEdited.value = newProfileToBeEdited
-  openEditProfileDialog()
-}
 const profileToBeEdited = ref<IProfile>(new Profile())
 const foundProfiles: Ref<IProfile[]> = ref([])
 const search = () => {
