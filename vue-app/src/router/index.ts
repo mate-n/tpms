@@ -6,8 +6,8 @@ import ApiTestView from '@/views/ApiTestView.vue'
 import ReservationsView from '@/views/ReservationsView.vue'
 import EditReservationView from '@/views/EditReservationView.vue'
 import DashboardView from '@/views/DashboardView.vue'
+import ItineraryReservationsView from '@/views/ItineraryReservationsView.vue'
 import ProfilesView from '@/views/ProfilesView.vue'
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -51,6 +51,11 @@ const router = createRouter({
       name: 'edit reservation',
       component: EditReservationView,
       props: true
+    },
+    {
+      path: '/itinerary-reservations',
+      name: 'itinerary reservations',
+      component: ItineraryReservationsView
     },
     {
       path: '/dashboard',
