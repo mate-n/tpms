@@ -18,8 +18,9 @@ const totalPrice = computed(() => {
 })
 
 const clickOnBook = () => {
+  router.push('/itinerary-reservations/1')
+
   emits('close')
-  router.push('/reservations/1')
 }
 </script>
 <template>
