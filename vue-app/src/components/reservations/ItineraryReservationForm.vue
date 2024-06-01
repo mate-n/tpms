@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { Profile } from '@/shared/classes/Profile'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import { inject, onMounted, ref, watch } from 'vue'
+import { computed, inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileGeneralForm from '@/components/profiles/ProfileGeneralForm.vue'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
 import { CloneHelper } from '@/helpers/CloneHelper'
+import ReservationSlice from './itinerary-reservations/ReservationSlice.vue'
+import type { IReservationSelectable } from '@/shared/interfaces/reservations/IReservationSelectable'
+import EditReservation from './EditReservation.vue'
 const cloneHelper = new CloneHelper()
 const props = defineProps({
   itineraryReservationInput: { type: Object as () => IItineraryReservation, required: true }
 })
+const reservationSelectables: Ref<IReservationSelectable[]> = ref([])
 const itineraryReservationToBeEdited = ref<IItineraryReservation>(new ItineraryReservation())
 const profileAssociatedWithItineraryReservation = ref<IProfile>(new Profile())
 const axios: AxiosStatic | undefined = inject('axios')
@@ -22,6 +26,14 @@ onMounted(() => {
 
 const cloneAndGetProfile = () => {
   itineraryReservationToBeEdited.value = cloneHelper.clone(props.itineraryReservationInput)
+  reservationSelectables.value = itineraryReservationToBeEdited.value.reservations.map(
+    (reservation) => {
+      return {
+        reservation: reservation,
+        selected: false
+      }
+    }
+  )
   if (
     props.itineraryReservationInput.reservations.length > 0 &&
     props.itineraryReservationInput.reservations[0].id
@@ -34,6 +46,19 @@ const cloneAndGetProfile = () => {
 
 watch(props, () => {
   cloneAndGetProfile()
+})
+
+const selectReservation = (reservationSelectable: IReservationSelectable) => {
+  reservationSelectables.value.forEach((reservationSelectable) => {
+    reservationSelectable.selected = false
+  })
+  reservationSelectable.selected = true
+}
+
+const selectedReservation = computed(() => {
+  return reservationSelectables.value.find(
+    (reservationSelectable) => reservationSelectable.selected
+  )
 })
 </script>
 <template>
@@ -55,13 +80,24 @@ watch(props, () => {
   <v-container fluid class="bg-lightgray pt-0">
     <v-row>
       <v-col class="pr-0 standard-card-column">
-        <div class="standar-card">
-          <v-toolbar class="standard-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Rate Details</span></v-toolbar-title>
-          </v-toolbar>
+        <div class="standard-card">
           <v-divider class="standard-card-divider"></v-divider>
-          <v-container> </v-container></div
+          <v-container fluid>
+            <div class="d-flex">
+              <div v-for="reservationSelectable of reservationSelectables" class="me-4">
+                <ReservationSlice
+                  :reservationSelectable="reservationSelectable"
+                  @selectReservation="
+                    (reservationSelectable) => selectReservation(reservationSelectable)
+                  "
+                ></ReservationSlice>
+              </div>
+            </div>
+          </v-container></div
       ></v-col>
     </v-row>
+  </v-container>
+  <v-container fluid class="bg-lightgray pt-0" v-if="selectedReservation">
+    <EditReservation :reservationInput="selectedReservation.reservation"></EditReservation>
   </v-container>
 </template>
