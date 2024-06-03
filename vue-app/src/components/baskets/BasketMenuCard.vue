@@ -32,12 +32,14 @@ const clickOnViewCart = () => {
 </script>
 <template>
   <v-container class="bg-lightgray pa-1 rounded">
-    <ReservationInBasketMenuCard
-      v-for="reservation in basketItemsStore.reservations"
-      :key="reservation.id"
-      :reservation="reservation"
-      @remove-reservation="removeReservation()"
-    />
+    <div style="overflow-y: auto; max-height: 90vh">
+      <ReservationInBasketMenuCard
+        v-for="reservation in basketItemsStore.reservations"
+        :key="reservation.id"
+        :reservation="reservation"
+        @remove-reservation="removeReservation()"
+      />
+    </div>
     <v-card min-width="350" class="mb-2 px-2">
       <div>
         <p><strong>Total: </strong></p>
