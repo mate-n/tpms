@@ -25,7 +25,7 @@ const openExpansionPanelReservation = () => {
   expansionPanelReservation.value = ['front-desk']
 }
 
-const expansionPanelReservation: Ref<String[]> = ref([])
+const expansionPanelReservation: Ref<String[]> = ref(['front-desk'])
 
 const basketDialog = ref(false)
 
@@ -46,15 +46,7 @@ const clickOnViewCart = () => {
 
 <template>
   <v-app>
-    <v-navigation-drawer
-      rail
-      expand-on-hover
-      :width="400"
-      mobile-breakpoint="xs"
-      rail-width="55"
-      :onmouseleave="() => closeExpansionPanelReservation()"
-      :onmouseenter="() => openExpansionPanelReservation()"
-    >
+    <v-navigation-drawer :width="330" mobile-breakpoint="xs" rail-width="55">
       <v-list-item
         height="5rem"
         prepend-icon="mdi-menu"
@@ -141,6 +133,7 @@ const clickOnViewCart = () => {
             </v-badge>
           </v-btn>
         </template>
+
         <BasketMenuCard
           @close="reservationsMenu = false"
           @click-on-view-cart="() => clickOnViewCart()"
