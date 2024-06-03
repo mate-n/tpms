@@ -17,10 +17,8 @@ import { ReservationService } from '@/services/ReservationService'
 import ProfileService from '@/services/ProfileService'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { Profile } from '@/shared/classes/Profile'
-import ProfileAvatar from '../profiles/ProfileAvatar.vue'
-import PrivateProfileForm from '../profiles/PrivateProfileForm.vue'
-import CompanyProfileForm from '../profiles/CompanyProfileForm.vue'
-import TravelAgencyProfileForm from '../profiles/TravelAgencyProfileForm.vue'
+import ProfileGeneralForm from '../profiles/ProfileGeneralForm.vue'
+import ReservationCards from './ReservationCards.vue'
 
 const axios: AxiosStatic | undefined = inject('axios')
 const reservationService = new ReservationService(axios)
@@ -39,6 +37,7 @@ const profileAssociatedWithReservation = ref<IProfile>(new Profile())
 const emit = defineEmits(['save'])
 const languages: Ref<ILanguage[]> = ref([])
 const salutations: Ref<ISalutation[]> = ref([])
+
 onMounted(() => {
   languageService.getAvailableLanguages().then((response) => {
     languages.value = response
@@ -55,7 +54,6 @@ const getReservationWithProfilePromise = () => {
 
     if (reservationToBeEdited.value.guestProfileID) {
       profileService.get(reservationToBeEdited.value.guestProfileID).then((response) => {
-        console.log(response)
         profileAssociatedWithReservation.value = response
         resolve(response)
       })
@@ -63,7 +61,7 @@ const getReservationWithProfilePromise = () => {
   })
 }
 
-watch(props, (newInput) => {
+watch(props, () => {
   getReservationWithProfilePromise()
 })
 
@@ -98,44 +96,10 @@ const reservationsCardDialog = ref(false)
       {{ profileAssociatedWithReservation.lastName }}</v-toolbar-title
     >
   </v-toolbar>
-  <v-container fluid class="bg-white">
-    <v-row>
-      <v-col cols="2">
-        <div class="my-2">
-          <ProfileAvatar
-            v-model="profileAssociatedWithReservation"
-            :crud-operation="crudOperation"
-          ></ProfileAvatar>
-        </div>
-      </v-col>
-      <v-col cols="10" class="border-s">
-        <div v-if="profileAssociatedWithReservation.profileType === 'Private'">
-          <PrivateProfileForm
-            v-model="profileAssociatedWithReservation"
-            @change="validate()"
-          ></PrivateProfileForm>
-        </div>
-        <div
-          v-if="
-            profileAssociatedWithReservation.profileType === 'Company' ||
-            profileAssociatedWithReservation.profileType === 'Group' ||
-            profileAssociatedWithReservation.profileType === 'Source'
-          "
-        >
-          <CompanyProfileForm
-            v-model="reservationToBeEdited"
-            @change="validate()"
-          ></CompanyProfileForm>
-        </div>
-        <div v-if="profileAssociatedWithReservation.profileType === 'TravelAgency'">
-          <TravelAgencyProfileForm
-            v-model="reservationToBeEdited"
-            @change="validate()"
-          ></TravelAgencyProfileForm>
-        </div>
-      </v-col>
-    </v-row>
-  </v-container>
+  <ProfileGeneralForm
+    :crudOperation="crudOperation"
+    v-model="profileAssociatedWithReservation"
+  ></ProfileGeneralForm>
   <v-toolbar class="bg-lightgray">
     <div class="h-100 d-flex px-5 align-center me-auto font-size-rem-14">
       Reservations <v-icon class="mx-3" size="x-small">mdi-arrow-right</v-icon> #{{
@@ -179,102 +143,8 @@ const reservationsCardDialog = ref(false)
       </template>
     </v-tooltip>
   </v-toolbar>
-  <v-container fluid class="bg-lightgray pt-0">
-    <v-row>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Stay Details</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Room Details</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Rate Details</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Segmentation</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Linked Profiles</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Traces</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Notes</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">User Defined</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Attachments</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Billing</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-    </v-row>
-  </v-container>
+
+  <ReservationCards v-model="reservationToBeEdited"></ReservationCards>
 
   <v-dialog v-model="stationeryCardDialog" scrollable>
     <v-card>

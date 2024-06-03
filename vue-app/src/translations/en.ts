@@ -22,5 +22,9 @@ export const englishTranslations = {
   reservation: {
     singur: 'Reservation',
     plural: 'Reservations'
+  },
+  itineraryReservation: {
+    singur: 'Itinerary Reservation',
+    plural: 'Itinerary Reservations'
   }
 }

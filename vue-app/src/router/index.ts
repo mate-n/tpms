@@ -5,7 +5,10 @@ import ProfileSearchView from '@/views/ProfileSearchView.vue'
 import ApiTestView from '@/views/ApiTestView.vue'
 import ReservationsView from '@/views/ReservationsView.vue'
 import EditReservationView from '@/views/EditReservationView.vue'
-
+import DashboardView from '@/views/DashboardView.vue'
+import ItineraryReservationsView from '@/views/ItineraryReservationsView.vue'
+import EditItineraryReservationView from '@/views/EditItineraryReservationView.vue'
+import ProfilesView from '@/views/ProfilesView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -30,6 +33,11 @@ const router = createRouter({
       component: ProfileSearchView
     },
     {
+      path: '/profiles',
+      name: 'profiles',
+      component: ProfilesView
+    },
+    {
       path: '/api-test',
       name: 'api test',
       component: ApiTestView
@@ -44,6 +52,22 @@ const router = createRouter({
       name: 'edit reservation',
       component: EditReservationView,
       props: true
+    },
+    {
+      path: '/itinerary-reservations/:itineraryReservationId',
+      name: 'itinerary reservation',
+      component: EditItineraryReservationView,
+      props: true
+    },
+    {
+      path: '/itinerary-reservations',
+      name: 'itinerary reservations',
+      component: ItineraryReservationsView
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: DashboardView
     },
     {
       path: '/about',

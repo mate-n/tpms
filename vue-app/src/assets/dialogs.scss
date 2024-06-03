@@ -28,3 +28,13 @@
     @extend .font-size-rem-8;
   }
 }
+
+.standard-card {
+  height: 100%;
+  border-radius: 0.5rem;
+  @extend .bg-white;
+  font-size: 0.85rem;
+  & input {
+    @extend .font-size-rem-8;
+  }
+}

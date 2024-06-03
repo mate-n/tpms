@@ -76,6 +76,7 @@ const addTicketsToReservation = () => {
   reservation.value.ticketIDs = []
   for (const ticket of selectedTickets.value) {
     reservation.value.ticketIDs.push(ticket.TicketId)
+    reservation.value.tickets.push(ticket)
   }
   emits('addTicketsToReservation')
 }

@@ -26,7 +26,6 @@ const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
 const ticketHelper = new TicketHelper()
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
-
 const property: Ref<IProperty | null> = ref(null)
 const profile: Ref<IProfile | null> = ref(null)
 const room: Ref<IRoom | null> = ref(null)
@@ -85,15 +84,7 @@ const addTicketsToReservation = () => {
   ticketsCardDialog.value = false
 }
 
-const getTicketByTicketId = (ticketId: number) => {
-  return availableTickets.value.find((t) => t.TicketId === ticketId)
-}
-
 const availableTickets: Ref<ITicket[]> = ref([])
-
-const tickets = computed(() => {
-  return reservation.value.ticketIDs.map((ticketID) => getTicketByTicketId(ticketID)) as ITicket[]
-})
 
 const chargesLabel = computed(() => {
   return reservation.value.ticketIDs.length > 0 ? 'Charges' : 'No Charges'
@@ -183,7 +174,7 @@ onMounted(() => {
         <v-row>
           <v-col>
             <TicketsTable
-              :tickets="tickets"
+              :tickets="reservation.tickets"
               :collapsible="true"
               :collapsed="true"
               :show-date="true"
@@ -200,7 +191,7 @@ onMounted(() => {
           <v-col>
             TOTAL<br />
             <strong>{{
-              (reservation.totalRate + ticketHelper.getTotalPrice(tickets)).toFixed(2)
+              (reservation.totalRate + ticketHelper.getTotalPrice(reservation.tickets)).toFixed(2)
             }}</strong></v-col
           >
           <v-col> </v-col>

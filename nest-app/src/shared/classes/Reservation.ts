@@ -2,6 +2,7 @@ import { DateHelper } from '../../helpers/DateHelper'
 import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
 import type { IReservation } from '../../shared/interfaces/IReservation'
 import type { IPropertyAvailability } from '../../shared/interfaces/availability/IPropertyAvailability'
+import type { ITicket } from '../interfaces/ITicket'
 
 export class Reservation implements IReservation {
   id?: number
@@ -26,9 +27,11 @@ export class Reservation implements IReservation {
   dateHelper: DateHelper = new DateHelper()
   isBookerGuest: boolean
   ticketIDs: number[]
+  tickets: ITicket[]
   totalRate: number
   averageRate: number
   guestName: string
+  propertyName: string
 
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
@@ -43,9 +46,11 @@ export class Reservation implements IReservation {
     this.errors = {}
     this.isBookerGuest = true
     this.ticketIDs = []
+    this.tickets = []
     this.totalRate = 0
     this.averageRate = 0
     this.guestName = ''
+    this.propertyName = ''
   }
 
   reset() {
@@ -68,6 +73,8 @@ export class Reservation implements IReservation {
     this.errors = {}
     this.isBookerGuest = true
     this.ticketIDs = []
+    this.guestName = ''
+    this.propertyName = ''
   }
 
   addIssue(issue: string) {
