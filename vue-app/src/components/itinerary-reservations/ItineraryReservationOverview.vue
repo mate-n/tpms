@@ -3,7 +3,7 @@ import { inject, onMounted, ref, type Ref } from 'vue'
 import type { AxiosStatic } from 'axios'
 import { ItineraryReservationService } from '@/services/reservations/ItineraryReservationService'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
-import ItineraryReservationShow from './ItineraryReservationShow.vue'
+import ItineraryReservationsTable from './ItineraryReservationsTable.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const itineraryReservationService = new ItineraryReservationService(axios)
 const itineraryReservations: Ref<IItineraryReservation[]> = ref([])
@@ -70,10 +70,6 @@ onMounted(() => {
   </v-container>
 
   <v-container fluid class="bg-white">
-    <ItineraryReservationShow
-      v-for="itineraryReservation in itineraryReservations"
-      :itineraryReservation="itineraryReservation"
-      :key="itineraryReservation.id"
-    />
+    <ItineraryReservationsTable :itinerary-reservations="itineraryReservations" />
   </v-container>
 </template>

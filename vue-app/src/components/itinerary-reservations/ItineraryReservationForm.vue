@@ -8,7 +8,7 @@ import type { AxiosStatic } from 'axios'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
 import { CloneHelper } from '@/helpers/CloneHelper'
-import ReservationSlice from './itinerary-reservations/ReservationSlice.vue'
+import ReservationSlice from './ReservationSlice.vue'
 import type { IReservationSelectable } from '@/shared/interfaces/reservations/IReservationSelectable'
 import ReservationCards from '@/components/reservations/ReservationCards.vue'
 

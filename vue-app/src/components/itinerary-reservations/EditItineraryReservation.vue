@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
 import { CloneHelper } from '@/helpers/CloneHelper'
-import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
-import ItineraryReservationForm from '@/components/reservations/ItineraryReservationForm.vue'
+import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
+import { onMounted, ref, watch } from 'vue'
+import ItineraryReservationForm from './ItineraryReservationForm.vue'
+
 const cloneHelper = new CloneHelper()
 defineEmits(['close', 'update'])
 const props = defineProps({
