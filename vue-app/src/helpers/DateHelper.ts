@@ -9,6 +9,11 @@ export class DateHelper {
     return Math.ceil(timeDifference / (1000 * 3600 * 24))
   }
 
+  getDateStringForInput(date: Date): string {
+    const dateISOString = date.toISOString()
+    return dateISOString.substring(0, dateISOString.indexOf('T'))
+  }
+
   getDateString(inputDate: Date): string {
     const date = new Date(inputDate)
     return this.dateFormatter.dddotmmdotyyyy(date)
