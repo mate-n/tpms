@@ -54,20 +54,20 @@ onBeforeMount(() => {
 const arrivalDateMenu = ref(false)
 const arrivalDateMin = computed(() => {
   if (props.previousReservation) {
-    return dateHelper.getDateString(props.previousReservation.departureDate)
+    return dateHelper.getDateStringForInput(props.previousReservation.departureDate)
   }
   return dateHelper.getDateString(new Date())
 })
 const arrivalDateMax = computed(() => {
-  return dateHelper.getDateString(reservation.value.departureDate)
+  return dateHelper.getDateStringForInput(reservation.value.departureDate)
 })
 const departureDateMenu = ref(false)
 const departureDateMin = computed(() => {
-  return dateHelper.getDateString(reservation.value.arrivalDate)
+  return dateHelper.getDateStringForInput(reservation.value.arrivalDate)
 })
 const departureDateMax = computed(() => {
   if (props.nextReservation) {
-    return dateHelper.getDateString(props.nextReservation.arrivalDate)
+    return dateHelper.getDateStringForInput(props.nextReservation.arrivalDate)
   }
   return false
 })
@@ -146,6 +146,10 @@ watch(
     () => reservation.value.propertyID
   ],
   () => {
+    const property = propertiesInDropdown.value.find((p) => p.id === reservation.value.propertyID)
+    if (property) {
+      reservation.value.propertyName = property.name
+    }
     check()
   },
   { deep: true }
