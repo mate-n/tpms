@@ -5,6 +5,8 @@ import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import type { AxiosStatic } from 'axios'
 import { ref, computed, type Ref, onMounted, inject } from 'vue'
+import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
+
 const axios: AxiosStatic | undefined = inject('axios')
 const roomService = new RoomService(axios)
 const reservationToBeEdited = defineModel({ required: true, type: Object as () => IReservation })
@@ -195,7 +197,52 @@ onMounted(() => {
             <v-toolbar-title><span class="text-primary">Linked Profiles</span></v-toolbar-title>
           </v-toolbar>
           <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
+          <v-container>
+            <ProfileSearchField
+              label="Guest"
+              :required="reservationToBeEdited.isBookerGuest"
+              icon-name="mdi-account-circle-outline"
+              :profile-search-input="{
+                guestTypeID: 1
+              }"
+              v-model="reservationToBeEdited.guestProfileID"
+            ></ProfileSearchField>
+            <div class="" v-if="!reservationToBeEdited.isBookerGuest">
+              <ProfileSearchField
+                label="Booker"
+                :required="!reservationToBeEdited.isBookerGuest"
+                icon-name="mdi-account-tie-voice-outline"
+                :profile-search-input="{
+                  guestTypeID: 1
+                }"
+                v-model="reservationToBeEdited.bookerProfileID"
+              ></ProfileSearchField>
+            </div>
+            <ProfileSearchField
+              label="Company"
+              icon-name="mdi-briefcase-variant-outline"
+              :profile-search-input="{
+                guestTypeID: 2
+              }"
+              v-model="reservationToBeEdited.companyProfileID"
+            ></ProfileSearchField>
+            <ProfileSearchField
+              label="Source"
+              icon-name="mdi-earth"
+              :profile-search-input="{
+                guestTypeID: 5
+              }"
+              v-model="reservationToBeEdited.sourceProfileID"
+            ></ProfileSearchField>
+            <ProfileSearchField
+              label="Travel Agent"
+              icon-name="mdi-airplane"
+              :profile-search-input="{
+                guestTypeID: 4
+              }"
+              v-model="reservationToBeEdited.travelAgentProfileID"
+            ></ProfileSearchField>
+          </v-container>
         </div>
       </v-col>
     </v-row>
