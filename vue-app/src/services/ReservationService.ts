@@ -1,9 +1,11 @@
 import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
 import type { IService } from '@/interfaces/IService'
+import { Reservation } from '@/shared/classes/Reservation'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { AxiosStatic } from 'axios'
 
 export class ReservationService implements IService {
+  reservation: Reservation = new Reservation()
   axiosInstance: AxiosStatic
   constructor(axios: AxiosStatic | undefined) {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
@@ -27,7 +29,7 @@ export class ReservationService implements IService {
       this.axiosInstance
         .get('v1/reservations/' + id)
         .then((response: any) => {
-          resolve(response.data)
+          resolve(this.reservation.clone(response.data))
         })
         .catch((e: any) => {
           reject(e)
