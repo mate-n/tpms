@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import { CrudOperations } from '@/enums/CrudOperations'
-import { CloneHelper } from '@/helpers/CloneHelper'
 import { LanguageService } from '@/services/LanguageService'
 import { SalutationService } from '@/services/SalutationService'
 import type { ILanguage } from '@/shared/interfaces/ILanguage'
@@ -19,14 +18,13 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { Profile } from '@/shared/classes/Profile'
 import ProfileGeneralForm from '../profiles/ProfileGeneralForm.vue'
 import ReservationCards from './ReservationCards.vue'
-
+const reservationClass = new Reservation()
 const axios: AxiosStatic | undefined = inject('axios')
 const reservationService = new ReservationService(axios)
 const profileService = new ProfileService(axios)
 const reservationValidator = new ReservationValidator()
 const languageService = new LanguageService(axios)
 const salutationService = new SalutationService(axios)
-const cloneHelper = new CloneHelper()
 const validityHelper = new ValidityHelper()
 const props = defineProps({
   reservationInput: { type: Object as () => IReservation, required: true },
@@ -50,7 +48,7 @@ onMounted(() => {
 
 const getReservationWithProfilePromise = () => {
   return new Promise((resolve) => {
-    reservationToBeEdited.value = cloneHelper.clone(props.reservationInput)
+    reservationToBeEdited.value = reservationClass.clone(props.reservationInput)
 
     if (reservationToBeEdited.value.guestProfileID) {
       profileService.get(reservationToBeEdited.value.guestProfileID).then((response) => {
