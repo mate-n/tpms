@@ -10,6 +10,7 @@ import { ProfileAddressesService } from './profile-addresses/v1/profile-addresse
 import { ProfileCommunicationsController } from './profile-communications/v1/profile-communications.controller';
 import { StationeriesModule } from './stationeries/v1/stationeries.module';
 import { ReservationsModule } from './reservations/v1/reservations.module';
+import { ItineraryReservationsModule } from './itinerary-reservations/v1/itinerary-reservations.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ReservationsModule } from './reservations/v1/reservations.module';
     PropertiesModule,
     StationeriesModule,
     ReservationsModule,
+    ItineraryReservationsModule,
   ],
   controllers: [
     AppController,

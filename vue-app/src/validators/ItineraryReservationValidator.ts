@@ -18,6 +18,16 @@ export class ItineraryReservationValidator {
         } else {
           reservations[i].removeIssue('Reservation dates do not match up')
         }
+        const isTravelDistanceTooFar =
+          this.travelDistanceChecker.isDistanceIsPossibleToTravelWithinADay(
+            reservations[i - 1].propertyName,
+            reservations[i].propertyName
+          )
+        if (!isTravelDistanceTooFar) {
+          reservations[i].addIssue('Travel distance too far')
+        } else {
+          reservations[i].removeIssue('Travel distance too far')
+        }
       }
     }
   }

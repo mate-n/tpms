@@ -13,7 +13,15 @@ export class ReservationFaker {
     reservation.roomID = faker.number.int()
     reservation.numberOfGuestsPerRoom = faker.number.int()
     reservation.profileID = faker.number.int()
-    reservation.baseRateCategory = faker.random.word()
+    reservation.baseRateCategory = faker.lorem.word()
+    reservation.guestName = faker.person.fullName()
+    reservation.guestProfileID = faker.number.int()
+    reservation.companyProfileID = faker.number.int()
+    reservation.sourceProfileID = faker.number.int()
+    reservation.travelAgentProfileID = faker.number.int()
+    reservation.bookerProfileID = faker.number.int()
+    reservation.orderIndex = faker.number.int()
+    reservation.propertyName = faker.location.city()
     return reservation
   }
 }

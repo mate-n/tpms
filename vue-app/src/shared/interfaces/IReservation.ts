@@ -1,5 +1,6 @@
 import type { IEntityWithErrors } from './IEntityWithErrors'
 import type { IEntityWithIdentity } from './IEntityWithIdentity'
+import type { ITicket } from './ITicket'
 import type { IPropertyAvailability } from './availability/IPropertyAvailability'
 
 export interface IReservation extends IEntityWithIdentity, IEntityWithErrors {
@@ -21,8 +22,11 @@ export interface IReservation extends IEntityWithIdentity, IEntityWithErrors {
   issues: string[]
   isBookerGuest: boolean
   ticketIDs: number[]
+  tickets: ITicket[]
   totalRate: number
   averageRate: number
+  guestName: string
+  propertyName: string
   reset(): void
   addIssue(issue: string): void
   removeIssue(issue: string): void

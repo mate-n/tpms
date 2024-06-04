@@ -21,4 +21,43 @@ export class ReservationService implements IService {
         })
     })
   }
+
+  get(id: number) {
+    return new Promise<IReservation>((resolve, reject) => {
+      this.axiosInstance
+        .get('v1/reservations/' + id)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
+
+  post(reservation: IReservation) {
+    return new Promise((resolve, reject) => {
+      this.axiosInstance
+        .post('v1/reservations', reservation)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
+
+  put(reservation: IReservation) {
+    return new Promise((resolve, reject) => {
+      this.axiosInstance
+        .put('v1/reservations', reservation)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
 }

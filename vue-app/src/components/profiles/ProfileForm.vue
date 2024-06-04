@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
-import ProfileAvatar from './ProfileAvatar.vue'
 import ProfileContactDetailsCard from './ProfileContactDetailsCard.vue'
 import ProfileAddressCard from './ProfileAddressCard.vue'
 import { CrudOperations } from '@/enums/CrudOperations'
@@ -14,15 +13,13 @@ import { Profile } from '@/shared/classes/Profile'
 import type { ILanguage } from '@/shared/interfaces/ILanguage'
 import type { ISalutation } from '@/shared/interfaces/ISalutation'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import PrivateProfileForm from './PrivateProfileForm.vue'
-import CompanyProfileForm from './CompanyProfileForm.vue'
-import TravelAgencyProfileForm from './TravelAgencyProfileForm.vue'
 import { ProfileValidator } from '@/shared/validators/ProfileValidator'
 import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import { ValidityHelper } from '@/helpers/ValidityHelper'
 import StationeryCard from '../stationeries/StationeryCard.vue'
 import ReservationsCard from '../reservations/ReservationsCard.vue'
+import ProfileGeneralForm from './ProfileGeneralForm.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const profileValidator = new ProfileValidator()
@@ -77,38 +74,10 @@ const stationeryCardDialog = ref(false)
 const reservationsCardDialog = ref(false)
 </script>
 <template>
-  <v-container fluid class="bg-white">
-    <v-row>
-      <v-col cols="2">
-        <div class="my-2">
-          <ProfileAvatar
-            v-model="profileToBeEdited"
-            :crud-operation="crudOperation"
-          ></ProfileAvatar>
-        </div>
-      </v-col>
-      <v-col cols="10" class="border-s">
-        <div v-if="profileToBeEdited.profileType === 'Private'">
-          <PrivateProfileForm v-model="profileToBeEdited" @change="validate()"></PrivateProfileForm>
-        </div>
-        <div
-          v-if="
-            profileToBeEdited.profileType === 'Company' ||
-            profileToBeEdited.profileType === 'Group' ||
-            profileToBeEdited.profileType === 'Source'
-          "
-        >
-          <CompanyProfileForm v-model="profileToBeEdited" @change="validate()"></CompanyProfileForm>
-        </div>
-        <div v-if="profileToBeEdited.profileType === 'TravelAgency'">
-          <TravelAgencyProfileForm
-            v-model="profileToBeEdited"
-            @change="validate()"
-          ></TravelAgencyProfileForm>
-        </div>
-      </v-col>
-    </v-row>
-  </v-container>
+  <ProfileGeneralForm
+    :crudOperation="crudOperation"
+    v-model="profileToBeEdited"
+  ></ProfileGeneralForm>
   <v-toolbar class="bg-lightgray">
     <div class="h-100 d-flex px-5 align-center me-auto" @click="toggleActive()">
       <template v-if="!profileToBeEdited.inactive">

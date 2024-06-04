@@ -1,36 +1,113 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import realmsLogo from '@/assets/images/realms-icon.webp'
+import { ref, type Ref } from 'vue'
 import { RouterView } from 'vue-router'
 import { useBasketItemsStore } from './stores/basketItems'
 import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
 import { useUserStore } from './stores/user'
 import { Profile } from './shared/classes/Profile'
+import router from './router'
+import BasketCard from './components/baskets/BasketCard.vue'
 const userStore = useUserStore()
 userStore.currentProfile = new Profile()
 const basketItemsStore = useBasketItemsStore()
-const drawer = ref(false)
 const reservationsMenu = ref(false)
+
+const goHome = () => {
+  router.push('/')
+}
+
+const expansionPanelReservation: Ref<String[]> = ref(['front-desk'])
+
+const basketDialog = ref(false)
+
+const clickOnViewCart = () => {
+  reservationsMenu.value = false
+  basketDialog.value = true
+}
 </script>
+
+<style>
+#innerExPan > * {
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+}
+</style>
 
 <template>
   <v-app>
-    <v-navigation-drawer temporary v-model="drawer">
-      <v-list-item :title="$t('app.name')"></v-list-item>
-      <v-divider></v-divider>
-      <v-list-item link title="Home" to="/"></v-list-item>
-      <v-list-item link title="About" to="/about"></v-list-item>
+    <v-navigation-drawer :width="330" mobile-breakpoint="xs" rail-width="55">
       <v-list-item
-        link
-        title="Itinerary Reservation Enquiry"
-        to="/itinerary-reservation-enquiry"
+        height="5rem"
+        prepend-icon="mdi-menu"
+        value="home"
+        @click="goHome()"
+        class="bg-lightgray"
+      >
+        <v-list-item-text>
+          <div><strong>TPMS-Frontend</strong></div>
+          <div class="d-flex align-center justify-start">
+            <div>Realms</div>
+            <div class="ms-3 mt-1">
+              <v-img width="1.8rem" height="1.8rem" aspect-ratio="1/1" :src="realmsLogo"></v-img>
+            </div>
+          </div> </v-list-item-text
       ></v-list-item>
-      <v-list-item link title="New Profile" to="/new-profile"></v-list-item>
-      <v-list-item link title="Profile Search" to="/profile-search"></v-list-item>
+
+      <v-divider></v-divider>
+      <v-list-item
+        color="primary"
+        prepend-icon="mdi-home-outline"
+        title="Dashboard"
+        value="dashboard"
+        to="/dashboard"
+      ></v-list-item>
+      <v-expansion-panels class="ma-0 pa-0" v-model="expansionPanelReservation">
+        <v-expansion-panel class="ma-0" value="front-desk">
+          <v-expansion-panel-title class="pa-0 ms-0 me-4"
+            ><v-icon class="ms-4">mdi-store-outline</v-icon> <span class="ms-8"></span>Front
+            Desk</v-expansion-panel-title
+          >
+          <v-expansion-panel-text id="innerExPan">
+            <v-list-item
+              color="primary"
+              prepend-icon="mdi-circle-small"
+              link
+              title="Profiles"
+              to="/profiles"
+            ></v-list-item>
+            <v-list-item
+              color="primary"
+              prepend-icon="mdi-circle-small"
+              link
+              title="Reservations"
+              to="/reservations"
+            ></v-list-item>
+            <v-list-item
+              color="primary"
+              prepend-icon="mdi-circle-small"
+              link
+              title="Itinerary Reservation Enquiry"
+              to="/itinerary-reservation-enquiry"
+            ></v-list-item>
+            <v-list-item
+              color="primary"
+              prepend-icon="mdi-circle-small"
+              link
+              title="Itinerary Reservations"
+              to="/itinerary-reservations"
+            ></v-list-item>
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
+      <v-divider></v-divider>
     </v-navigation-drawer>
 
     <v-app-bar app :elevation="2">
       <template v-slot:prepend>
-        <v-app-bar-nav-icon @click.stop="drawer = true">
+        <v-app-bar-nav-icon @click="goHome()">
           <v-icon icon="mdi-home-heart"></v-icon>
         </v-app-bar-nav-icon>
       </template>
@@ -48,10 +125,19 @@ const reservationsMenu = ref(false)
             </v-badge>
           </v-btn>
         </template>
-        <BasketMenuCard @close="reservationsMenu = false" />
+
+        <BasketMenuCard
+          @close="reservationsMenu = false"
+          @click-on-view-cart="() => clickOnViewCart()"
+        />
       </v-menu>
     </v-app-bar>
-
     <v-main> <RouterView /></v-main>
+
+    <v-dialog v-model="basketDialog" scrollable auto>
+      <v-card>
+        <BasketCard @close="basketDialog = false"></BasketCard>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>

@@ -19,7 +19,7 @@ export class ProfilesFaker {
     profile.salutShort = faker.person.prefix()
     profile.vipCodeIDs = [faker.number.int(), faker.number.int()]
     profile.inactive = faker.datatype.boolean()
-    profile.profileType = faker.lorem.word()
+    profile.profileType = 'Private'
     profile.isPasserby = faker.datatype.boolean()
     profile.communicationIDs = [faker.number.int(), faker.number.int()]
     profile.addressIDs = [faker.number.int(), faker.number.int()]
