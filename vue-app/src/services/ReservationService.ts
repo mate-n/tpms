@@ -29,7 +29,7 @@ export class ReservationService implements IService {
       this.axiosInstance
         .get('v1/reservations/' + id)
         .then((response: any) => {
-          resolve(this.reservation.clone(response.data))
+          resolve(this.reservation.convertToReservation(response.data))
         })
         .catch((e: any) => {
           reject(e)
