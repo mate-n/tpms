@@ -46,15 +46,14 @@ const clickOnViewCart = () => {
         @click="goHome()"
         class="bg-lightgray"
       >
-        <v-list-item-text>
-          <div><strong>TPMS-Frontend</strong></div>
-          <div class="d-flex align-center justify-start">
-            <div>Realms</div>
-            <div class="ms-3 mt-1">
-              <v-img width="1.8rem" height="1.8rem" aspect-ratio="1/1" :src="realmsLogo"></v-img>
-            </div>
-          </div> </v-list-item-text
-      ></v-list-item>
+        <div><strong>TPMS-Frontend</strong></div>
+        <div class="d-flex align-center justify-start">
+          <div>Realms</div>
+          <div class="ms-3 mt-1">
+            <v-img width="1.8rem" height="1.8rem" aspect-ratio="1/1" :src="realmsLogo"></v-img>
+          </div>
+        </div>
+      </v-list-item>
 
       <v-divider></v-divider>
       <v-list-item
