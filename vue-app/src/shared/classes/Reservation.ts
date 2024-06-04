@@ -1,3 +1,4 @@
+import { CloneHelper } from '@/helpers/CloneHelper'
 import { DateHelper } from '../../helpers/DateHelper'
 import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
 import type { IReservation } from '../../shared/interfaces/IReservation'
@@ -32,6 +33,7 @@ export class Reservation implements IReservation {
   averageRate: number
   guestName: string
   propertyName: string
+  cloneHelper: CloneHelper = new CloneHelper()
 
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
@@ -51,6 +53,38 @@ export class Reservation implements IReservation {
     this.averageRate = 0
     this.guestName = ''
     this.propertyName = ''
+  }
+
+  convertToReservation(reservation: IReservation) {
+    this.id = reservation.id
+    this.localID = reservation.localID
+    this.propertyID = reservation.propertyID
+    this.arrivalDate = new Date(reservation.arrivalDate)
+    this.departureDate = new Date(reservation.departureDate)
+    this.numberOfRooms = reservation.numberOfRooms
+    this.roomID = reservation.roomID
+    this.numberOfGuestsPerRoom = reservation.numberOfGuestsPerRoom
+    this.profileID = reservation.profileID
+    this.guestProfileID = reservation.guestProfileID
+    this.companyProfileID = reservation.companyProfileID
+    this.sourceProfileID = reservation.sourceProfileID
+    this.travelAgentProfileID = reservation.travelAgentProfileID
+    this.bookerProfileID = reservation.bookerProfileID
+    this.baseRateCategory = reservation.baseRateCategory
+    this.orderIndex = reservation.orderIndex
+    this.propertyAvailabilities = reservation.propertyAvailabilities
+    this.issues = reservation.issues
+    if (reservation.errors) {
+      this.errors = reservation.errors
+    }
+    this.isBookerGuest = reservation.isBookerGuest
+    this.ticketIDs = reservation.ticketIDs
+    this.tickets = reservation.tickets
+    this.totalRate = reservation.totalRate
+    this.averageRate = reservation.averageRate
+    this.guestName = reservation.guestName
+    this.propertyName = reservation.propertyName
+    return this
   }
 
   reset() {
@@ -90,5 +124,11 @@ export class Reservation implements IReservation {
     if (index > -1) {
       this.issues.splice(index, 1)
     }
+  }
+
+  clone(reservation: IReservation): IReservation {
+    this.cloneHelper.clone(reservation)
+    this.convertToReservation(reservation)
+    return reservation
   }
 }
