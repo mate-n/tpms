@@ -17,14 +17,6 @@ const goHome = () => {
   router.push('/')
 }
 
-const closeExpansionPanelReservation = () => {
-  expansionPanelReservation.value = []
-}
-
-const openExpansionPanelReservation = () => {
-  expansionPanelReservation.value = ['front-desk']
-}
-
 const expansionPanelReservation: Ref<String[]> = ref(['front-desk'])
 
 const basketDialog = ref(false)
