@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { DateHelper } from '@/helpers/DateHelper'
 import { RoomService } from '@/services/RoomService'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import type { AxiosStatic } from 'axios'
-import { ref, computed, type Ref, onMounted, inject } from 'vue'
+import { ref, type Ref, onMounted, inject } from 'vue'
 import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
 import StayDetailsForm from './StayDetailsForm.vue'
 
@@ -12,33 +11,6 @@ const axios: AxiosStatic | undefined = inject('axios')
 const roomService = new RoomService(axios)
 const reservationToBeEdited = defineModel({ required: true, type: Object as () => IReservation })
 const roomsInDropdown: Ref<IRoom[]> = ref([])
-
-const dateHelper = new DateHelper()
-
-const arrivalDateMenu = ref(false)
-const departureDateMenu = ref(false)
-
-const arrivalDateString = computed(() => {
-  return dateHelper.getDateString(reservationToBeEdited.value.arrivalDate)
-})
-
-const departureDateString = computed(() => {
-  return dateHelper.getDateString(reservationToBeEdited.value.departureDate)
-})
-const arrivalDateMin = computed(() => {
-  return dateHelper.getDateString(new Date())
-})
-
-const numberOfNights = computed(() => {
-  return dateHelper.calculateNightsBetweenDates(
-    reservationToBeEdited.value.arrivalDate,
-    reservationToBeEdited.value.departureDate
-  )
-})
-
-const departureDateMin = computed(() => {
-  return dateHelper.getDateString(reservationToBeEdited.value.arrivalDate)
-})
 
 onMounted(() => {
   roomService.getAll().then((response) => {
@@ -89,10 +61,12 @@ onMounted(() => {
           <v-container> </v-container>
         </div>
       </v-col>
+    </v-row>
+    <v-row>
       <v-col class="pr-0 profiles-card-column">
         <div class="profiles-card">
           <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Segmentation</span></v-toolbar-title>
+            <v-toolbar-title><span class="text-primary">Notes</span></v-toolbar-title>
           </v-toolbar>
           <v-divider class="profiles-card-divider"></v-divider>
           <v-container> </v-container>
@@ -152,53 +126,7 @@ onMounted(() => {
           </v-container>
         </div>
       </v-col>
-    </v-row>
-    <v-row>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Traces</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Notes</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">User Defined</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Attachments</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Billing</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
+      <v-col class="pr-0 profiles-card-column"> </v-col>
     </v-row>
   </v-container>
 </template>
