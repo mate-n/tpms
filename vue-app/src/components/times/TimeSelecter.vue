@@ -1,35 +1,28 @@
 <script setup lang="ts">
-import { DateFormatter } from '@/helpers/DateFormatter'
-import { computed, ref } from 'vue'
-
+import { VTimePicker } from 'vuetify/labs/VTimePicker'
+import { ref } from 'vue'
 const emit = defineEmits(['dateSelected'])
-const dateFormatter = new DateFormatter()
 defineProps({
   label: {
     type: String,
     required: true
   }
 })
-const date = defineModel({ required: true, type: Object as () => Date })
-
-const dateMenu = ref(false)
-const dateString = computed(() => {
-  return dateFormatter.dddotmmdotyyyy(date.value)
-})
+const time = ref('10:00')
+const timeMenu = ref(false)
 </script>
 <template>
-  <v-menu v-model="dateMenu" :close-on-content-click="false">
+  <v-menu v-model="timeMenu" :close-on-content-click="false">
     <template v-slot:activator="{ props }">
       <v-text-field
-        v-model="dateString"
+        v-model="time"
         :label="label"
-        append-inner-icon="mdi-calendar"
         variant="underlined"
         v-bind="props"
       ></v-text-field>
     </template>
     <v-card>
-      <v-date-picker :hide-header="true" v-model="date"></v-date-picker>
+      <v-time-picker v-model="time" format="24hr" step="10"></v-time-picker>
     </v-card>
   </v-menu>
 </template>
