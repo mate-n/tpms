@@ -3,7 +3,7 @@ import type { IReservation } from '@/shared/interfaces/IReservation'
 import DateSelecter from '../dates/DateSelecter.vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { computed } from 'vue'
-import { VTimePicker } from 'vuetify/labs/VTimePicker'
+import TimeSelecter from '../times/TimeSelecter.vue'
 
 const reservationToBeEdited = defineModel({ required: true, type: Object as () => IReservation })
 
@@ -76,11 +76,13 @@ const departureDateMin = computed(() => {
       </v-row>
       <v-row>
         <v-col>
-          <v-time-picker format="24hr"></v-time-picker>
-
           <div class="d-flex">
-            <v-text-field label="ETA" variant="underlined" class="me-2"></v-text-field>
-            <v-text-field label="ETD" variant="underlined"></v-text-field>
+            <div class="me-2">
+              <TimeSelecter label="ETA"></TimeSelecter>
+            </div>
+            <div>
+              <TimeSelecter label="ETD"></TimeSelecter>
+            </div>
           </div>
         </v-col>
         <v-col>
