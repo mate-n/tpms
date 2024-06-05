@@ -1,7 +1,28 @@
 <script setup lang="ts">
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import DateSelecter from '../dates/DateSelecter.vue'
+import { DateHelper } from '@/helpers/DateHelper'
+import { computed } from 'vue'
+import { VTimePicker } from 'vuetify/labs/VTimePicker'
+
 const reservationToBeEdited = defineModel({ required: true, type: Object as () => IReservation })
+
+const dateHelper = new DateHelper()
+
+const arrivalDateMin = computed(() => {
+  return dateHelper.getDateString(new Date())
+})
+
+const numberOfNights = computed(() => {
+  return dateHelper.calculateNightsBetweenDates(
+    reservationToBeEdited.value.arrivalDate,
+    reservationToBeEdited.value.departureDate
+  )
+})
+
+const departureDateMin = computed(() => {
+  return dateHelper.getDateString(reservationToBeEdited.value.arrivalDate)
+})
 </script>
 <template>
   <div class="profiles-card">
@@ -19,7 +40,17 @@ const reservationToBeEdited = defineModel({ required: true, type: Object as () =
         </v-col>
       </v-row>
       <v-row>
-        <v-col> </v-col>
+        <v-col>
+          <v-text-field
+            label="Nights"
+            v-model="numberOfNights"
+            :error-messages="
+              reservationToBeEdited.errors && reservationToBeEdited.errors['numberOfNights']
+            "
+            variant="underlined"
+            type="number"
+          ></v-text-field
+        ></v-col>
         <v-col>
           <v-text-field
             label="Guests per room"
@@ -30,6 +61,35 @@ const reservationToBeEdited = defineModel({ required: true, type: Object as () =
             variant="underlined"
             type="number"
           ></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <DateSelecter
+            v-model="reservationToBeEdited.departureDate"
+            label="Departure"
+          ></DateSelecter>
+        </v-col>
+        <v-col>
+          <v-text-field label="GTD / CXL" variant="underlined"></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <v-time-picker format="24hr"></v-time-picker>
+
+          <div class="d-flex">
+            <v-text-field label="ETA" variant="underlined" class="me-2"></v-text-field>
+            <v-text-field label="ETD" variant="underlined"></v-text-field>
+          </div>
+        </v-col>
+        <v-col>
+          <v-select
+            label="Payment Type"
+            variant="underlined"
+            :items="['Credit Card', 'Cash', 'Noncash', 'Debitor']"
+            class="me-3 required-input"
+          ></v-select>
         </v-col>
       </v-row>
     </v-container>
