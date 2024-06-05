@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const emit = defineEmits(['dateSelected'])
 const dateFormatter = new DateFormatter()
