@@ -37,4 +37,9 @@ export class DateHelper {
     const dateISOString = date.toISOString()
     return dateISOString.substring(0, dateISOString.indexOf('T'))
   }
+
+  getTimeFromDate(date: Date): string {
+    const dateISOString = date.toISOString()
+    return dateISOString.substring(dateISOString.indexOf('T') + 1, dateISOString.length - 1)
+  }
 }
