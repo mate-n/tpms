@@ -1,22 +1,11 @@
 <script setup lang="ts">
-import { RoomService } from '@/services/RoomService'
 import type { IReservation } from '@/shared/interfaces/IReservation'
-import type { IRoom } from '@/shared/interfaces/IRoom'
-import type { AxiosStatic } from 'axios'
-import { ref, type Ref, onMounted, inject } from 'vue'
 import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
 import StayDetailsForm from './StayDetailsForm.vue'
+import RoomDetailsForm from './RoomDetailsForm.vue'
+import RateDetailsForm from './RateDetailsForm.vue'
 
-const axios: AxiosStatic | undefined = inject('axios')
-const roomService = new RoomService(axios)
 const reservationToBeEdited = defineModel({ required: true, type: Object as () => IReservation })
-const roomsInDropdown: Ref<IRoom[]> = ref([])
-
-onMounted(() => {
-  roomService.getAll().then((response) => {
-    roomsInDropdown.value = response
-  })
-})
 </script>
 
 <template>
@@ -26,40 +15,10 @@ onMounted(() => {
         <StayDetailsForm v-model="reservationToBeEdited"></StayDetailsForm>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Room Details</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container>
-            <v-autocomplete
-              label="Room Type"
-              v-model="reservationToBeEdited.roomID"
-              :items="roomsInDropdown"
-              variant="underlined"
-              item-title="name"
-              item-value="id"
-            ></v-autocomplete>
-
-            <v-autocomplete
-              label="Room To Change"
-              v-model="reservationToBeEdited.roomID"
-              :items="roomsInDropdown"
-              variant="underlined"
-              item-title="name"
-              item-value="id"
-            ></v-autocomplete>
-          </v-container>
-        </div>
+        <RoomDetailsForm v-model="reservationToBeEdited"></RoomDetailsForm>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Rate Details</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
+        <RateDetailsForm v-model="reservationToBeEdited"></RateDetailsForm>
       </v-col>
     </v-row>
     <v-row>
@@ -67,15 +26,17 @@ onMounted(() => {
         <div class="profiles-card">
           <v-toolbar class="profiles-card-toolbar">
             <v-toolbar-title><span class="text-primary">Notes</span></v-toolbar-title>
+            <v-btn class="text-gray" icon> <v-icon>mdi-calendar-text-outline</v-icon></v-btn>
           </v-toolbar>
           <v-divider class="profiles-card-divider"></v-divider>
           <v-container> </v-container>
         </div>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
+        <div class="standard-card">
           <v-toolbar class="profiles-card-toolbar">
             <v-toolbar-title><span class="text-primary">Linked Profiles</span></v-toolbar-title>
+            <v-btn class="text-gray" icon> <v-icon>mdi-account-multiple-outline</v-icon></v-btn>
           </v-toolbar>
           <v-divider class="profiles-card-divider"></v-divider>
           <v-container>
@@ -126,7 +87,39 @@ onMounted(() => {
           </v-container>
         </div>
       </v-col>
-      <v-col class="pr-0 profiles-card-column"> </v-col>
+      <v-col class="pr-0 standard-card-column">
+        <div class="standard-card">
+          <v-toolbar class="profiles-card-toolbar">
+            <v-toolbar-title><span class="text-primary">Billing</span></v-toolbar-title>
+            <v-btn class="text-gray" icon> <v-icon>mdi-currency-usd</v-icon></v-btn>
+          </v-toolbar>
+
+          <v-divider class="profiles-card-divider"></v-divider>
+          <v-container class="font-size-rem-10">
+            <v-row class="text-gray">
+              <v-col> PAYMENT:</v-col>
+              <v-col class="d-flex justify-end">0.000 </v-col>
+            </v-row>
+            <v-row class="text-gray">
+              <v-col> CHARGES:</v-col>
+              <v-col class="d-flex justify-end">0.000 </v-col>
+            </v-row>
+            <v-row class="text-gray">
+              <v-col> BALANCE:</v-col>
+              <v-col class="d-flex justify-end">0.000 </v-col>
+            </v-row>
+            <v-divider class="my-2"></v-divider>
+            <v-row class="">
+              <v-col> FORECAST:</v-col>
+              <v-col class="d-flex justify-end">166,866.750</v-col>
+            </v-row>
+            <v-row class="text-primary">
+              <v-col> PRE AUTH. DUE:</v-col>
+              <v-col class="d-flex justify-end">166,866.750</v-col>
+            </v-row>
+          </v-container>
+        </div>
+      </v-col>
     </v-row>
   </v-container>
 </template>
