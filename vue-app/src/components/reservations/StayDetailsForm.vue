@@ -2,16 +2,12 @@
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import DateSelecter from '../dates/DateSelecter.vue'
 import { DateHelper } from '@/helpers/DateHelper'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import TimeSelecter from '../times/TimeSelecter.vue'
-
+import PolicyInfoCard from './PolicyInfoCard.vue'
 const reservationToBeEdited = defineModel({ required: true, type: Object as () => IReservation })
 
 const dateHelper = new DateHelper()
-
-const arrivalDateMin = computed(() => {
-  return dateHelper.getDateString(new Date())
-})
 
 const numberOfNights = computed(() => {
   return dateHelper.calculateNightsBetweenDates(
@@ -20,16 +16,13 @@ const numberOfNights = computed(() => {
   )
 })
 
-const departureDateMin = computed(() => {
-  return dateHelper.getDateString(reservationToBeEdited.value.arrivalDate)
-})
+const policyInfoDialog = ref(false)
 </script>
 <template>
-  <div class="profiles-card">
-    <v-toolbar class="profiles-card-toolbar">
+  <div class="standard-card">
+    <v-toolbar class="standard-card-toolbar">
       <v-toolbar-title><span class="text-primary">Stay Details</span></v-toolbar-title>
     </v-toolbar>
-    <v-divider class="profiles-card-divider"></v-divider>
     <v-container>
       <v-row>
         <v-col>
@@ -70,19 +63,30 @@ const departureDateMin = computed(() => {
             label="Departure"
           ></DateSelecter>
         </v-col>
-        <v-col>
+        <v-col class="d-flex">
           <v-text-field label="GTD / CXL" variant="underlined"></v-text-field>
+          <div class="d-flex align-center">
+            <v-icon @click="policyInfoDialog = true">mdi-alert-circle-outline</v-icon>
+          </div>
         </v-col>
       </v-row>
       <v-row>
         <v-col>
           <div class="d-flex">
-            <div class="me-2">
-              <TimeSelecter label="ETA"></TimeSelecter>
-            </div>
-            <div>
-              <TimeSelecter label="ETD"></TimeSelecter>
-            </div>
+            <v-row>
+              <v-col>
+                <TimeSelecter
+                  v-model="reservationToBeEdited.arrivalDate"
+                  label="ETA"
+                ></TimeSelecter>
+              </v-col>
+              <v-col>
+                <TimeSelecter
+                  v-model="reservationToBeEdited.departureDate"
+                  label="ETD"
+                ></TimeSelecter>
+              </v-col>
+            </v-row>
           </div>
         </v-col>
         <v-col>
@@ -96,4 +100,13 @@ const departureDateMin = computed(() => {
       </v-row>
     </v-container>
   </div>
+
+  <v-dialog v-model="policyInfoDialog" width="30rem" height="30rem" scrollable>
+    <v-card>
+      <PolicyInfoCard
+        v-model="reservationToBeEdited"
+        @close="policyInfoDialog = false"
+      ></PolicyInfoCard>
+    </v-card>
+  </v-dialog>
 </template>
