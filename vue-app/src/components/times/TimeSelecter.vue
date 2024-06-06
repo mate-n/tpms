@@ -1,14 +1,29 @@
 <script setup lang="ts">
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { DateFormatter } from '@/helpers/DateFormatter'
+const dateFormatter = new DateFormatter()
 const emit = defineEmits(['dateSelected'])
+const time = ref('10:00')
+
 defineProps({
   label: {
     type: String,
     required: true
   }
 })
-const time = ref('10:00')
+const date = defineModel({ required: true, type: Object as () => Date })
+
+watch(
+  date,
+  (newInput) => {
+    time.value = dateFormatter.hhsemicolonmm(newInput)
+  },
+  {
+    immediate: true
+  }
+)
+
 const timeMenu = ref(false)
 </script>
 <template>
