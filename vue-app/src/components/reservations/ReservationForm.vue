@@ -112,34 +112,68 @@ const reservationsCardDialog = ref(false)
         >{{ $t('actions.save') }}</v-btn
       >
     </div>
-    <v-tooltip text="Stationery">
+    <v-tooltip text="Reservation color">
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" icon class="profiles-icon-button">
           <v-icon>mdi-circle</v-icon>
         </v-btn>
       </template>
     </v-tooltip>
-    <v-tooltip text="Stationery">
+    <v-tooltip text="Wake-up calls">
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" icon class="profiles-icon-button">
           <v-icon>mdi-phone</v-icon>
         </v-btn>
       </template>
     </v-tooltip>
-    <v-tooltip text="Stationery">
+    <v-tooltip text="Tax Override">
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" icon class="profiles-icon-button">
           <v-icon>mdi-percent-outline</v-icon>
         </v-btn>
       </template>
     </v-tooltip>
-    <v-tooltip text="Stationery">
+    <v-tooltip text="Credit card management">
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" icon class="profiles-icon-button">
           <v-icon>mdi-credit-card-outline</v-icon>
         </v-btn>
       </template>
     </v-tooltip>
+    <v-tooltip text="Fixed Charges">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-calendar-range-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+
+    <v-tooltip text="Routing">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-hub</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+
+    <v-tooltip text="Policies">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-gavel</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+
+    <v-tooltip text="External Link">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-link</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+    <v-btn v-bind="props" icon>
+      <v-icon>mdi-dots-vertical</v-icon>
+    </v-btn>
   </v-toolbar>
 
   <ReservationCards v-model="reservationToBeEdited"></ReservationCards>
