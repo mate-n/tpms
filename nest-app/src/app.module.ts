@@ -11,6 +11,8 @@ import { ProfileCommunicationsController } from './profile-communications/v1/pro
 import { StationeriesModule } from './stationeries/v1/stationeries.module';
 import { ReservationsModule } from './reservations/v1/reservations.module';
 import { ItineraryReservationsModule } from './itinerary-reservations/v1/itinerary-reservations.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { ItineraryReservationsModule } from './itinerary-reservations/v1/itinera
     StationeriesModule,
     ReservationsModule,
     ItineraryReservationsModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [
     AppController,
