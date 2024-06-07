@@ -14,6 +14,10 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + "/dist/index.html");
 })
 
+app.get('/*', (req, res) => {
+    res.sendFile(__dirname + "/dist/index.html");
+})
+
 app.get('/hello-world', (req, res) => {
     res.send('Hello World!')
 })
