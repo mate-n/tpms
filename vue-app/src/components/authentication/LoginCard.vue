@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { AuthenticationHelper } from '@/authentication/AuthenticationHelper'
+import router from '@/router'
 import AuthenticationService from '@/services/AuthenticationService'
 import type { IAccessToken } from '@/shared/interfaces/IAccessToken'
 import type { AxiosStatic } from 'axios'
@@ -12,6 +13,7 @@ const clickOnLogin = async () => {
     authenticationHelper.setAccessToken(response.access_token)
     if (axios) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${response.access_token}`
+      router.push('/')
     }
   })
 }
