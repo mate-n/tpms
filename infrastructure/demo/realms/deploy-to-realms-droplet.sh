@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker build . -t realms --build-context root=../../../ --build-arg VITE_API_BASE_URL=http://138.68.84.157:3001/
+docker build . -t realms --build-context root=../../../ --build-arg VITE_API_BASE_URL=https://tpms-api.realms.ch/
 
 ssh tpms-user@138.68.84.157 << EOF
     docker stop realms
