@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import realmsLogo from '@/assets/images/realms-icon.webp'
-import { ref, type Ref } from 'vue'
+import { computed, onMounted, ref, type Ref } from 'vue'
 import { RouterView } from 'vue-router'
 import { useBasketItemsStore } from './stores/basketItems'
 import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
@@ -8,6 +8,10 @@ import { useUserStore } from './stores/user'
 import { Profile } from './shared/classes/Profile'
 import router from './router'
 import BasketCard from './components/baskets/BasketCard.vue'
+import { useRouter as UseRouter } from 'vue-router'
+const useRouter = UseRouter()
+const currentRouteName = computed(() => useRouter.currentRoute.value.name)
+
 const userStore = useUserStore()
 userStore.currentProfile = new Profile()
 const basketItemsStore = useBasketItemsStore()
@@ -25,6 +29,9 @@ const clickOnViewCart = () => {
   reservationsMenu.value = false
   basketDialog.value = true
 }
+const showNavigationDrawer = computed(() => {
+  return useRouter.currentRoute.value.name !== 'login'
+})
 </script>
 
 <style>
@@ -38,7 +45,12 @@ const clickOnViewCart = () => {
 
 <template>
   <v-app>
-    <v-navigation-drawer :width="330" mobile-breakpoint="xs" rail-width="55">
+    <v-navigation-drawer
+      v-model="showNavigationDrawer"
+      :width="330"
+      mobile-breakpoint="xs"
+      rail-width="55"
+    >
       <v-list-item
         height="5rem"
         prepend-icon="mdi-menu"
