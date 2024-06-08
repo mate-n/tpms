@@ -5,11 +5,21 @@ import { ReservationValidator } from '@/validators/ReservationValidator'
 import AvailabilityService from '@/services/AvailabilityService'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
-import { AvailabilityService as ProtelAvailabilityService } from '@/services/protel/AvailabilityService'
+import { CampService } from '@/services/protel/CampService'
 import type { AxiosStatic } from 'axios'
+import ProfileSearch from './profiles/ProfileSearch.vue'
+import ProfileService from '@/services/ProfileService'
+import type { IProperty } from '@/shared/interfaces/IProperty'
+import type { IReservation } from '@/shared/interfaces/IReservation'
+import type { IRoom } from '@/shared/interfaces/IRoom'
+import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPropertyAvailability'
+import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
+import type { ICamp } from '@/interfaces/protel/ICamp'
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
-const protelAvailabilityServce = new ProtelAvailabilityService()
+const campService = new CampService(axios)
 const propertyService = new PropertyService(axios)
 const profileService = new ProfileService(axios)
 const roomService = new RoomService(axios)
@@ -21,24 +31,17 @@ const props = defineProps({
   previousReservation: { type: Object as () => IReservation, required: false },
   nextReservation: { type: Object as () => IReservation, required: false }
 })
+const campsInDropdown: Ref<ICamp[]> = ref([])
 const propertiesInDropdown: Ref<IProperty[]> = ref([])
 const roomsInDropdown: Ref<IRoom[]> = ref([])
 const profilesInDropdown: Ref<IProfile[]> = ref([])
 const profileDialog = ref(false)
-const camps: Ref<ICamp[]> = ref([])
-import ProfileSearch from './profiles/ProfileSearch.vue'
-import ProfileService from '@/services/ProfileService'
-import type { IProperty } from '@/shared/interfaces/IProperty'
-import type { IReservation } from '@/shared/interfaces/IReservation'
-import type { IRoom } from '@/shared/interfaces/IRoom'
-import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPropertyAvailability'
-import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
-import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
-import type { ICamp } from '@/interfaces/protel/ICamp'
-import type { IParksAndCamps } from '@/interfaces/protel/IParksAndCamps'
 
 onBeforeMount(() => {
+  campService.findAll().then((response: ICamp[]) => {
+    campsInDropdown.value = response
+  })
+
   propertyService.getProperties().then((response: IProperty[]) => {
     propertiesInDropdown.value = response
   })
@@ -53,16 +56,6 @@ onBeforeMount(() => {
   const profileSearch: IProfileSearch = {}
   profileService.search(profileSearch).then((response: IProfile[]) => {
     profilesInDropdown.value = response
-  })
-
-  protelAvailabilityServce.getParksAndCamps().then((response: IParksAndCamps) => {
-    camps.value = []
-    response['Kgalagadi Transfrontier Park'].camps.forEach((camp) => {
-      camps.value.push(camp)
-    })
-    response['Kruger National Park'].camps.forEach((camp) => {
-      camps.value.push(camp)
-    })
   })
 })
 
@@ -161,7 +154,7 @@ watch(
     () => reservation.value.propertyID
   ],
   () => {
-    const property = propertiesInDropdown.value.find((p) => p.id === reservation.value.propertyID)
+    const property = campsInDropdown.value.find((p) => p.campid === reservation.value.propertyID)
     if (property) {
       reservation.value.propertyName = property.name
     }
@@ -191,25 +184,12 @@ const showRemoveButton = computed(() => {
   <v-container fluid class="bg-white">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100">
-        campid: string campname: string
         <v-select
           label=""
+          :items="campsInDropdown"
           v-model="reservation.propertyID"
-          :items="camps"
           item-title="campname"
           item-value="campid"
-          :error-messages="reservation.errors && reservation.errors['propertyID']"
-          @update:model-value="emitChange()"
-        ></v-select>
-        <v-icon>mdi-city</v-icon>
-      </v-col>
-      <v-col class="d-flex align-center h-100">
-        <v-select
-          label=""
-          v-model="reservation.propertyID"
-          :items="propertiesInDropdown"
-          item-title="name"
-          item-value="id"
           :error-messages="reservation.errors && reservation.errors['propertyID']"
           @update:model-value="emitChange()"
         ></v-select>
