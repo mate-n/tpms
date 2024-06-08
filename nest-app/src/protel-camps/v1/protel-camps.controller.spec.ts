@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProtelCampsController } from './protel-camps.controller';
-import { ProtelCampsService } from '../protel-camps.service';
+import { ProtelCampsService } from './protel-camps.service';
 
 describe('ProtelCampsController', () => {
   let controller: ProtelCampsController;

@@ -10,7 +10,31 @@ export class ProtelCampsService {
 
   findAll() {
     return new Promise((resolve) => {
-      console.log('Getting parks and camps');
+      this.getParks().then((result: ICamp[]) => {
+        resolve(result);
+      });
+    });
+  }
+
+  findOne(id: number) {
+    return new Promise((resolve) => {
+      this.getParks().then((results: ICamp[]) => {
+        const camp = results.find((camp) => camp.campid == id);
+        resolve(camp);
+      });
+    });
+  }
+
+  update(id: number) {
+    return `This action updates a #${id} protelCamp`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} protelCamp`;
+  }
+
+  getParks() {
+    return new Promise<ICamp[]>((resolve) => {
       this.getParksAndCamps().then((result: IParksAndCamps) => {
         const camps: ICamp[] = [];
         result['Kgalagadi Transfrontier Park'].camps.forEach((camp) => {
@@ -22,20 +46,6 @@ export class ProtelCampsService {
         resolve(camps);
       });
     });
-
-    return `This action returns all protelCamps`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} protelCamp`;
-  }
-
-  update(id: number) {
-    return `This action updates a #${id} protelCamp`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} protelCamp`;
   }
 
   getParksAndCamps() {
