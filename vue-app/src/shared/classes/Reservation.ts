@@ -1,4 +1,4 @@
-import { CloneHelper } from '@/helpers/CloneHelper'
+import { CloneHelper } from '../../helpers/CloneHelper'
 import { DateHelper } from '../../helpers/DateHelper'
 import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
 import type { IReservation } from '../../shared/interfaces/IReservation'
