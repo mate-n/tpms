@@ -20,6 +20,8 @@ import { TicketHelper } from '@/helpers/TicketHelper'
 import type { ITicket } from '@/shared/interfaces/ITicket'
 import { TicketService } from '@/services/TicketService'
 import TicketsTable from '../tickets/TicketsTable.vue'
+import { CampService } from '@/services/protel/CampService'
+import type { ICamp } from '@/shared/interfaces/ICamp'
 const ticketsService = new TicketService()
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
@@ -30,14 +32,20 @@ const property: Ref<IProperty | null> = ref(null)
 const profile: Ref<IProfile | null> = ref(null)
 const room: Ref<IRoom | null> = ref(null)
 const propertyService = new PropertyService(axios)
+const campService = new CampService(axios)
 const profileService = new ProfileService(axios)
 const roomService = new RoomService(axios)
 const dateFormatter = new DateFormatter()
 const dateHelper = new DateHelper()
+const camp: Ref<ICamp | null> = ref(null)
 onBeforeMount(() => {
   if (reservation.value.propertyID) {
     propertyService.get(reservation.value.propertyID).then((response) => {
       property.value = response
+    })
+
+    campService.findOne(reservation.value.propertyID).then((response) => {
+      camp.value = response
     })
   }
 
@@ -105,7 +113,7 @@ onMounted(() => {
     <v-card-text class="px-0">
       <div class="d-flex justify-space-between">
         <div class="ms-2 pb-3">
-          <v-icon>mdi-chevron-double-right</v-icon><strong>{{ property?.name }}</strong>
+          <v-icon>mdi-chevron-double-right</v-icon><strong>{{ camp?.campname }}</strong>
         </div>
         <div>
           <v-icon
