@@ -154,9 +154,11 @@ watch(
     () => reservation.value.propertyID
   ],
   () => {
-    const property = campsInDropdown.value.find((p) => p.campid === reservation.value.propertyID)
+    const property = campsInDropdown.value.find(
+      (c) => c.campid === reservation.value.propertyID?.toString()
+    )
     if (property) {
-      reservation.value.propertyName = property.name
+      reservation.value.propertyName = property.campname
     }
     check()
   },
