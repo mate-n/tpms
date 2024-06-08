@@ -3,7 +3,6 @@ import { VTimePicker } from 'vuetify/labs/VTimePicker'
 import { ref, watch } from 'vue'
 import { DateFormatter } from '@/helpers/DateFormatter'
 const dateFormatter = new DateFormatter()
-const emit = defineEmits(['dateSelected'])
 const time = ref('10:00')
 
 defineProps({

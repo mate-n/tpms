@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import type { IReservation } from '@/shared/interfaces/IReservation'
 import { inject, onMounted, ref } from 'vue'
 import type { IRate } from '@/shared/interfaces/IRate'
 import type { AxiosStatic } from 'axios'
 import { RateService } from '@/services/RateService'
-const reservationToBeEdited = defineModel({ required: true, type: Object as () => IReservation })
 const availableRates = ref<IRate[]>([])
 const axios: AxiosStatic | undefined = inject('axios')
 const rateService = new RateService(axios)

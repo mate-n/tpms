@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import type { IReservation } from '@/shared/interfaces/IReservation'
-
 const emits = defineEmits(['close'])
-const reservationToBeEdited = defineModel({ required: true, type: Object as () => IReservation })
 </script>
 <template>
   <div class="standard-card bg-lightgray">

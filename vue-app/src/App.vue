@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import realmsLogo from '@/assets/images/realms-icon.webp'
-import { computed, onMounted, ref, type Ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import { RouterView } from 'vue-router'
 import { useBasketItemsStore } from './stores/basketItems'
 import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
@@ -10,7 +10,6 @@ import router from './router'
 import BasketCard from './components/baskets/BasketCard.vue'
 import { useRouter as UseRouter } from 'vue-router'
 const useRouter = UseRouter()
-const currentRouteName = computed(() => useRouter.currentRoute.value.name)
 
 const userStore = useUserStore()
 userStore.currentProfile = new Profile()

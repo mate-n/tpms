@@ -89,7 +89,7 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to) => {
   const canAccess = await canUserAccess()
   if (to.name !== 'login' && !canAccess) return '/login'
 })

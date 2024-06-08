@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { computed, ref } from 'vue'
-
-const emit = defineEmits(['dateSelected'])
 const dateFormatter = new DateFormatter()
 defineProps({
   label: {

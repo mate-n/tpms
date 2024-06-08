@@ -4,7 +4,7 @@ import router from '@/router'
 import AuthenticationService from '@/services/AuthenticationService'
 import type { IAccessToken } from '@/shared/interfaces/IAccessToken'
 import type { AxiosStatic } from 'axios'
-import { inject, ref, type Ref } from 'vue'
+import { inject, ref } from 'vue'
 const authenticationHelper = new AuthenticationHelper()
 const axios: AxiosStatic | undefined = inject('axios')
 const authentificationService = new AuthenticationService(axios)
