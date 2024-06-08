@@ -20,4 +20,17 @@ export class CampService implements IService {
         })
     })
   }
+
+  findOne(id: number) {
+    return new Promise<ICamp>((resolve, reject) => {
+      this.axiosInstance
+        .get(`v1/camps/${id}`)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
 }
