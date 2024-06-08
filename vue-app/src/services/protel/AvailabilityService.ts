@@ -1,12 +1,12 @@
-import type { IParksAndCamps } from '@/interfaces/protel/IParksAndCamps'
+import type { IParksAndCamps } from '@/shared/interfaces/IParksAndCamps'
 import axios from 'axios'
 
 export class AvailabilityService {
   getParksAndCamps(): Promise<IParksAndCamps> {
-    return new Promise<any>((resolve, reject) => {
-      let data = ''
+    return new Promise<any>((resolve) => {
+      const data = ''
 
-      let config = {
+      const config = {
         method: 'post',
         maxBodyLength: Infinity,
         url: 'https://ankerws.ankerdata.co.za/getparksandcamps/index.php',

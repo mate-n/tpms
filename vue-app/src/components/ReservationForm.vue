@@ -16,7 +16,7 @@ import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPr
 import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
-import type { ICamp } from '@/interfaces/protel/ICamp'
+import type { ICamp } from '@/shared/interfaces/ICamp'
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
 const campService = new CampService(axios)
@@ -154,9 +154,7 @@ watch(
     () => reservation.value.propertyID
   ],
   () => {
-    const property = campsInDropdown.value.find(
-      (c) => c.campid === reservation.value.propertyID?.toString()
-    )
+    const property = campsInDropdown.value.find((c) => c.campid === reservation.value.propertyID)
     if (property) {
       reservation.value.propertyName = property.campname
     }
