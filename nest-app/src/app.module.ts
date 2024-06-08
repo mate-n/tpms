@@ -13,6 +13,7 @@ import { ReservationsModule } from './reservations/v1/reservations.module';
 import { ItineraryReservationsModule } from './itinerary-reservations/v1/itinerary-reservations.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ProtelCampsModule } from './protel-camps/v1/protel-camps.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { UsersModule } from './users/users.module';
     ItineraryReservationsModule,
     AuthModule,
     UsersModule,
+    ProtelCampsModule,
   ],
   controllers: [
     AppController,
