@@ -11,8 +11,6 @@ import { onBeforeMount } from 'vue'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
-import { CampService } from '@/services/protel/CampService'
-import type { ICamp } from '@/shared/interfaces/ICamp'
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
@@ -21,10 +19,8 @@ const props = defineProps({
 })
 const emits = defineEmits(['removeReservation'])
 const property: Ref<IProperty | null> = ref(null)
-const camp: Ref<ICamp | null> = ref(null)
 const room: Ref<IRoom | null> = ref(null)
 const propertyService = new PropertyService(axios)
-const campService = new CampService(axios)
 const roomService = new RoomService(axios)
 const dateFormatter = new DateFormatter()
 
@@ -32,10 +28,6 @@ onBeforeMount(() => {
   if (props.reservation.propertyID) {
     propertyService.get(props.reservation.propertyID).then((response) => {
       property.value = response
-    })
-
-    campService.findOne(props.reservation.propertyID).then((response: ICamp) => {
-      camp.value = response
     })
   }
 
@@ -73,7 +65,7 @@ const showRemoveButton = computed(() => {
         >
       </div>
       <div class="mb-1">
-        <v-icon>mdi-chevron-double-right</v-icon><strong>{{ camp?.campname }}</strong>
+        <v-icon>mdi-chevron-double-right</v-icon><strong>{{ reservation.propertyName }}</strong>
       </div>
       <v-row class="pb-0">
         <v-col class="text-gray">{{ room?.code }}</v-col>
