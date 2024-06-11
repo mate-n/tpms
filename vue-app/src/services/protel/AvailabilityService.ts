@@ -1,29 +1,24 @@
-import type { IParksAndCamps } from '@/shared/interfaces/IParksAndCamps'
-import axios from 'axios'
+import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
+import type { IService } from '@/interfaces/IService'
+import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
+import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
+import { type AxiosStatic } from 'axios'
 
-export class AvailabilityService {
-  getParksAndCamps(): Promise<IParksAndCamps> {
-    return new Promise<any>((resolve) => {
-      const data = ''
+export class AvailabilityService implements IService {
+  axiosInstance: AxiosStatic
+  constructor(axios: AxiosStatic | undefined) {
+    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
+  }
 
-      const config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: 'https://ankerws.ankerdata.co.za/getparksandcamps/index.php',
-        headers: {
-          Authorization: 'Bearer 1234567890'
-        },
-        data: data
-      }
-
-      axios
-        .request(config)
+  search(protelAvailabilityPostBody: IProtelAvailabilityPostBody): Promise<IProtelAvailability[]> {
+    return new Promise<IProtelAvailability[]>((resolve, reject) => {
+      this.axiosInstance
+        .post('v1/protel-availabilities/search', protelAvailabilityPostBody)
         .then((response: any) => {
-          console.log(JSON.stringify(response.data))
           resolve(response.data)
         })
-        .catch((error: any) => {
-          console.log(error)
+        .catch((e: any) => {
+          reject(e)
         })
     })
   }
