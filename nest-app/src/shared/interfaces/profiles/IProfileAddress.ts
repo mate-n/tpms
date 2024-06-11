@@ -1,7 +1,9 @@
 import type { IEntityWithErrors } from '../IEntityWithErrors'
 import type { IEntityWithIdentity } from '../IEntityWithIdentity'
 
-export interface IProfileAddress extends IEntityWithIdentity, IEntityWithErrors {
+export interface IProfileAddress
+  extends IEntityWithIdentity,
+    IEntityWithErrors {
   profileID: number
   typeString: string
   recipient: string

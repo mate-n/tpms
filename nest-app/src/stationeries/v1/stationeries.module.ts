@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { StationeriesService } from './stationeries.service';
-import { StationeriesController } from './stationeries.controller';
+import { Module } from '@nestjs/common'
+import { StationeriesService } from './stationeries.service'
+import { StationeriesController } from './stationeries.controller'
 
 @Module({
   controllers: [StationeriesController],

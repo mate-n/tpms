@@ -30,7 +30,10 @@ export class ProfilesFaker {
     profile.nationality = faker.location.countryCode()
     profile.companyID = faker.number.int(3)
     profile.occupation = faker.person.jobTitle()
-    profile.additionalInfoDefaultRateIDs = [faker.number.int(), faker.number.int()]
+    profile.additionalInfoDefaultRateIDs = [
+      faker.number.int(),
+      faker.number.int(),
+    ]
     profile.licensePlate = faker.vehicle.vin()
     profile.passport = faker.number.int().toString()
     profile.preferencesNote = faker.lorem.sentence()

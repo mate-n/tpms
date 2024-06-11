@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DropdownsController } from './dropdowns.controller';
+import { Test, TestingModule } from '@nestjs/testing'
+import { DropdownsController } from './dropdowns.controller'
 
 describe('DropdownsController', () => {
-  let controller: DropdownsController;
+  let controller: DropdownsController
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [DropdownsController],
-    }).compile();
+    }).compile()
 
-    controller = module.get<DropdownsController>(DropdownsController);
-  });
+    controller = module.get<DropdownsController>(DropdownsController)
+  })
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-});
+    expect(controller).toBeDefined()
+  })
+})

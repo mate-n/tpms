@@ -1,5 +1,5 @@
-import { Controller, Get } from '@nestjs/common';
-import { IRoom } from 'src/shared/interfaces/IRoom';
+import { Controller, Get } from '@nestjs/common'
+import { IRoom } from 'src/shared/interfaces/IRoom'
 
 @Controller('v1/rooms')
 export class RoomsController {
@@ -42,7 +42,7 @@ export class RoomsController {
         description: 'aufero',
         id: 95,
       },
-    ];
+    ]
   }
 
   @Get(':id')
@@ -55,6 +55,6 @@ export class RoomsController {
       name: 'Standard | King',
       description: 'antea',
       id: 37,
-    };
+    }
   }
 }
