@@ -49,8 +49,8 @@ const clickOnViewCart = () => {
       </div>
     </v-card>
     <div class="d-flex justify-end mt-3">
-      <v-btn class="me-2 text-none" @click="removeAllReservations()">Empty Cart</v-btn>
-      <v-btn class="primary-button text-none" @click="clickOnViewCart()">View Cart</v-btn>
+      <v-btn class="me-2 text-black" @click="removeAllReservations()">Empty Cart</v-btn>
+      <v-btn class="primary-button" @click="clickOnViewCart()">View Cart</v-btn>
     </div>
   </v-container>
 </template>
