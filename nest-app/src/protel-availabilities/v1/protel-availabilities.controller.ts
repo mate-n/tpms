@@ -10,6 +10,7 @@ import {
 import { ProtelAvailabilitiesService } from './protel-availabilities.service'
 import { CreateProtelAvailabilityDto } from '../dto/create-protel-availability.dto'
 import { UpdateProtelAvailabilityDto } from '../dto/update-protel-availability.dto'
+import { IProtelAvailabilityPostBody } from 'src/shared/interfaces/protel/IProtelAvailabilityPostBody'
 
 @Controller('v1/protel-availabilities')
 export class ProtelAvailabilitiesController {
