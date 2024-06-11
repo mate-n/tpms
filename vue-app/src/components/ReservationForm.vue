@@ -3,14 +3,12 @@ import { computed, inject, onBeforeMount, ref, watch, type Ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ReservationValidator } from '@/validators/ReservationValidator'
 import AvailabilityService from '@/services/AvailabilityService'
-import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
 import { CampService } from '@/services/protel/CampService'
 import type { AxiosStatic } from 'axios'
 import ProfileSearch from './profiles/ProfileSearch.vue'
 import ProfileService from '@/services/ProfileService'
 import { AvailabilityService as ProtelAvailabilityService } from '@/services/protel/AvailabilityService'
-import type { IProperty } from '@/shared/interfaces/IProperty'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPropertyAvailability'
@@ -24,7 +22,6 @@ const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
 const campService = new CampService(axios)
-const propertyService = new PropertyService(axios)
 const profileService = new ProfileService(axios)
 const roomService = new RoomService(axios)
 const protelAvailabilityService = new ProtelAvailabilityService(axios)
@@ -37,7 +34,6 @@ const props = defineProps({
   nextReservation: { type: Object as () => IReservation, required: false }
 })
 const campsInDropdown: Ref<ICamp[]> = ref([])
-const propertiesInDropdown: Ref<IProperty[]> = ref([])
 const roomsInDropdown: Ref<IRoom[]> = ref([])
 const profilesInDropdown: Ref<IProfile[]> = ref([])
 const profileDialog = ref(false)
@@ -47,13 +43,6 @@ onBeforeMount(() => {
     campsInDropdown.value = response
   })
 
-  propertyService.getProperties().then((response: IProperty[]) => {
-    propertiesInDropdown.value = response
-  })
-
-  propertyService.getLocalProperty().then((response: IProperty) => {
-    reservation.value.propertyID = response.id
-  })
   roomService.getAll().then((response: IRoom[]) => {
     roomsInDropdown.value = response
   })
@@ -63,6 +52,22 @@ onBeforeMount(() => {
     profilesInDropdown.value = response
   })
 })
+
+const getRoomsForDropdown = () => {
+  roomsInDropdown.value = []
+  for (const availability of reservation.value.protelAvailabilities) {
+    const room: IRoom = {
+      name: availability.room_type_name,
+      code: availability.room_type_code,
+      type: 0,
+      minOccupancy: 0,
+      maxOccupancy: 0,
+      description: '',
+      id: 0
+    }
+    roomsInDropdown.value.push(room)
+  }
+}
 
 const arrivalDateMenu = ref(false)
 const arrivalDateMin = computed(() => {
@@ -103,6 +108,7 @@ const departureDateString = computed(() => {
 const check = () => {
   reservationValidator.validate(reservation.value)
   if (!reservation.value.propertyID) return
+  availabilitiesLoading.value = true
   const propertyAvailabilitySearch: IPropertyAvailabilitySearch = {
     propertyID: reservation.value.propertyID,
     availabilityStart: reservation.value.arrivalDate,
@@ -130,8 +136,10 @@ const check = () => {
     accomodation_type: null
   }
   protelAvailabilityService.search(protelAvailabilityPostBody).then((response) => {
-    console.log(response)
-    reservation.value.protelAvailabilities = response
+    const protelAvailabilities = response.filter((n) => n)
+    reservation.value.protelAvailabilities = protelAvailabilities
+    availabilitiesLoading.value = false
+    getRoomsForDropdown()
   })
 }
 
@@ -196,6 +204,8 @@ const showRemoveButton = computed(() => {
 
   return true
 })
+
+const availabilitiesLoading = ref(false)
 </script>
 
 <template>
@@ -329,6 +339,11 @@ const showRemoveButton = computed(() => {
   </template>
 
   <v-container fluid>
+    <v-progress-linear
+      v-if="availabilitiesLoading"
+      color="primary"
+      indeterminate
+    ></v-progress-linear>
     <v-table>
       <thead>
         <tr class="bg-lightblue">
@@ -340,7 +355,7 @@ const showRemoveButton = computed(() => {
           >
             {{ protelAvailability.room_type_code }}
           </th>
-          <template v-if="reservation.propertyAvailabilities.length === 0">
+          <template v-if="reservation.protelAvailabilities.length === 0">
             <th v-for="i in 12" :key="i"></th>
           </template>
         </tr>
@@ -360,7 +375,7 @@ const showRemoveButton = computed(() => {
               {{ protelAvailability.availability_count }}
             </div>
           </td>
-          <template v-if="reservation.propertyAvailabilities.length === 0">
+          <template v-if="reservation.protelAvailabilities.length === 0">
             <td v-for="i in 12" :key="i" class="bg-lightgray">
               <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
                 <v-icon>mdi-circle-small</v-icon>
@@ -383,7 +398,7 @@ const showRemoveButton = computed(() => {
               </template>
             </div>
           </td>
-          <template v-if="reservation.propertyAvailabilities.length === 0">
+          <template v-if="reservation.protelAvailabilities.length === 0">
             <td v-for="i in 12" :key="i" class="bg-lightgray">
               <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
                 <v-icon>mdi-circle-small</v-icon>
