@@ -4,6 +4,7 @@ import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
 import type { IReservation } from '../../shared/interfaces/IReservation'
 import type { IPropertyAvailability } from '../../shared/interfaces/availability/IPropertyAvailability'
 import type { ITicket } from '../interfaces/ITicket'
+import type { IProtelAvailability } from '../interfaces/protel/IProtelAvailability'
 
 export class Reservation implements IReservation {
   id?: number
@@ -23,6 +24,7 @@ export class Reservation implements IReservation {
   baseRateCategory: string
   orderIndex: number
   propertyAvailabilities: IPropertyAvailability[]
+  protelAvailabilities: IProtelAvailability[]
   issues: string[]
   errors: Record<string, string>
   dateHelper: DateHelper = new DateHelper()
@@ -44,6 +46,7 @@ export class Reservation implements IReservation {
     this.baseRateCategory = ''
     this.orderIndex = 0
     this.propertyAvailabilities = []
+    this.protelAvailabilities = []
     this.issues = []
     this.errors = {}
     this.isBookerGuest = true
@@ -73,6 +76,7 @@ export class Reservation implements IReservation {
     this.baseRateCategory = reservation.baseRateCategory
     this.orderIndex = reservation.orderIndex
     this.propertyAvailabilities = reservation.propertyAvailabilities
+    this.protelAvailabilities = reservation.protelAvailabilities
     this.issues = reservation.issues
     if (reservation.errors) {
       this.errors = reservation.errors
@@ -103,6 +107,7 @@ export class Reservation implements IReservation {
     this.bookerProfileID = undefined
     this.propertyID = undefined
     this.propertyAvailabilities = []
+    this.protelAvailabilities = []
     this.issues = []
     this.errors = {}
     this.isBookerGuest = true
