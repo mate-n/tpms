@@ -15,6 +15,17 @@ export class DateFormatter {
     return this.addZeroPadding(date.getHours()) + ':' + this.addZeroPadding(date.getMinutes())
   }
 
+  yyyydashmmdashdd(dateInput: Date) {
+    const date = new Date(dateInput)
+    return (
+      date.getFullYear() +
+      '-' +
+      this.addZeroPadding(date.getMonth() + 1) +
+      '-' +
+      this.addZeroPadding(date.getDate())
+    )
+  }
+
   addZeroPadding(number: number) {
     return ('0' + number).slice(-2)
   }
