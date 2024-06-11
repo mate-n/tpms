@@ -42,11 +42,8 @@ const selectDate = (date: Date) => {
 }
 
 const addTicketsFromReservationToSelectedTickets = () => {
-  for (const ticketID of reservation.value.ticketIDs) {
-    const ticket = tickets.value.find((t) => t.TicketId === ticketID)
-    if (ticket) {
-      selectedTickets.value.push(ticket)
-    }
+  for (const ticket of reservation.value.tickets) {
+    selectedTickets.value.push(ticket)
   }
 }
 
@@ -73,8 +70,11 @@ onMounted(() => {
 })
 
 const addTicketsToReservation = () => {
-  reservation.value.ticketIDs = []
+  reservation.value.tickets = []
   for (const ticket of selectedTickets.value) {
+    if (selectedDate.value) {
+      ticket.Date = selectedDate.value
+    }
     reservation.value.ticketIDs.push(ticket.TicketId)
     reservation.value.tickets.push(ticket)
   }
