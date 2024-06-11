@@ -9,6 +9,7 @@ import { CampService } from '@/services/protel/CampService'
 import type { AxiosStatic } from 'axios'
 import ProfileSearch from './profiles/ProfileSearch.vue'
 import ProfileService from '@/services/ProfileService'
+import { AvailabilityService as ProtelAvailabilityService } from '@/services/protel/AvailabilityService'
 import type { IProperty } from '@/shared/interfaces/IProperty'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { IRoom } from '@/shared/interfaces/IRoom'
@@ -17,12 +18,16 @@ import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availabili
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
 import type { ICamp } from '@/shared/interfaces/ICamp'
+import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
+import { DateFormatter } from '@/helpers/DateFormatter'
+const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
 const campService = new CampService(axios)
 const propertyService = new PropertyService(axios)
 const profileService = new ProfileService(axios)
 const roomService = new RoomService(axios)
+const protelAvailabilityService = new ProtelAvailabilityService(axios)
 const dateHelper = new DateHelper()
 const reservationValidator = new ReservationValidator()
 const emit = defineEmits(['check', 'change', 'remove'])
@@ -115,6 +120,19 @@ const check = () => {
       reservation.value.baseRateCategory = 'Base Rate | Low Season'
       emit('check')
     })
+
+  const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
+    arrivaldate: dateFormatter.yyyydashmmdashdd(reservation.value.arrivalDate),
+    departuredate: dateFormatter.yyyydashmmdashdd(reservation.value.departureDate),
+    roomtype: 'null',
+    propertyid: reservation.value.propertyID.toString(),
+    detail: '0',
+    accomodation_type: null
+  }
+  protelAvailabilityService.search(protelAvailabilityPostBody).then((response) => {
+    console.log(response)
+    reservation.value.protelAvailabilities = response
+  })
 }
 
 const reset = () => {
@@ -316,11 +334,11 @@ const showRemoveButton = computed(() => {
         <tr class="bg-lightblue">
           <th class="" style="width: 15rem"></th>
           <th
-            v-for="propertyAvailability of reservation.propertyAvailabilities"
-            :key="propertyAvailability.room.code"
+            v-for="protelAvailability of reservation.protelAvailabilities"
+            :key="protelAvailability.transaction_id"
             class="text-center"
           >
-            {{ propertyAvailability.room.code }}
+            {{ protelAvailability.room_type_code }}
           </th>
           <template v-if="reservation.propertyAvailabilities.length === 0">
             <th v-for="i in 12" :key="i"></th>
@@ -334,12 +352,12 @@ const showRemoveButton = computed(() => {
             Availibility (incl. OB)
           </td>
           <td
-            v-for="propertyAvailability of reservation.propertyAvailabilities"
-            :key="propertyAvailability.room.code"
+            v-for="protelAvailability of reservation.protelAvailabilities"
+            :key="protelAvailability.room_type_code"
             class="bg-lightgray"
           >
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
-              {{ propertyAvailability.availabilityCount }}
+              {{ protelAvailability.availability_count }}
             </div>
           </td>
           <template v-if="reservation.propertyAvailabilities.length === 0">
@@ -355,13 +373,13 @@ const showRemoveButton = computed(() => {
             {{ reservation.baseRateCategory }}
           </td>
           <td
-            v-for="propertyAvailability of reservation.propertyAvailabilities"
-            :key="propertyAvailability.room.code"
+            v-for="protelAvailability of reservation.protelAvailabilities"
+            :key="protelAvailability.transaction_id"
             class="bg-lightgray"
           >
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
-              <template v-if="propertyAvailability.roomRates[0]">
-                {{ propertyAvailability.roomRates[0].roomRate }}
+              <template v-if="protelAvailability.rates_data[0].room_rate">
+                {{ protelAvailability.rates_data[0].room_rate }}
               </template>
             </div>
           </td>
