@@ -19,6 +19,7 @@ import type { ICamp } from '@/shared/interfaces/ICamp'
 import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import { DateFormatter } from '@/helpers/DateFormatter'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
+import ProfileSearchCard from './profiles/ProfileSearchCard.vue'
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
@@ -413,10 +414,10 @@ const selectProtelAvailability = (protelAvailability: IProtelAvailability) => {
   </v-container>
   <v-dialog v-model="profileDialog" fullscreen scrollable>
     <v-card>
-      <ProfileSearch
+      <ProfileSearchCard
         @close="closeProfileDialog()"
         @profile-selected="(profile) => profileSelected(profile)"
-      ></ProfileSearch>
+      ></ProfileSearchCard>
     </v-card>
   </v-dialog>
 </template>
