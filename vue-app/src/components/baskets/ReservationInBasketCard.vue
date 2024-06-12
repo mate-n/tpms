@@ -159,7 +159,7 @@ onMounted(() => {
             >
             <v-col>
               AVERAGE RATE<br />
-              {{ reservation.averageRate.toFixed(2) }}</v-col
+              {{ reservation.selectedProtelAvailability?.rates_data[0].room_rate }}</v-col
             >
             <v-col></v-col>
             <v-col></v-col>
