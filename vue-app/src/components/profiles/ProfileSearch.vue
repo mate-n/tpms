@@ -118,6 +118,8 @@ watch(
         variant="underlined"
         class="me-3"
       ></v-text-field>
+
+      <v-text-field label="RoomSeeker Client Code" variant="underlined" class="me-3"></v-text-field>
       <v-text-field
         v-model="profileSearch.profileID"
         label="Profile ID"
@@ -126,7 +128,7 @@ watch(
       ></v-text-field>
       <v-autocomplete
         label="Guest"
-        :items="['Guest ID', 'Guest Passport', 'Guest Mobile']"
+        :items="['ID Number', 'Passport Number', 'Mobile Number']"
         variant="underlined"
         class="me-3"
       ></v-autocomplete>
