@@ -23,9 +23,18 @@ const clickOnBook = () => {
   emits('close')
 }
 </script>
+
+<style scoped>
+.fixed-bar {
+  position: sticky;
+  position: -webkit-sticky; /* for Safari */
+  top: 0rem;
+  z-index: 2;
+}
+</style>
 <template>
   <div class="standard-dialog-card">
-    <v-toolbar class="standard-dialog-card-toolbar">
+    <v-toolbar class="standard-dialog-card-toolbar fixed-bar">
       <v-toolbar-title><span class="text-primary">Basket</span></v-toolbar-title>
       <div class="profiles-card-toolbar-button">Confirm Cart</div>
       <div class="profiles-card-toolbar-button" @click="removeAllReservations()">
