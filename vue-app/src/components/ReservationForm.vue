@@ -19,6 +19,8 @@ import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IPr
 import { DateFormatter } from '@/helpers/DateFormatter'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import ProfileSearchCard from './profiles/ProfileSearchCard.vue'
+import { ReservationHelper } from '@/helpers/ReservationHelper'
+const reservationHelper = new ReservationHelper()
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
@@ -410,6 +412,13 @@ const selectProtelAvailability = (protelAvailability: IProtelAvailability) => {
         </tr>
       </tbody>
     </v-table>
+    <div class="d-flex justify-end">
+      <v-card>
+        <v-card-text>
+          <strong>Total: </strong>{{ reservationHelper.calculateTotalRate(reservation).toFixed(2) }}
+        </v-card-text>
+      </v-card>
+    </div>
   </v-container>
   <v-dialog v-model="profileDialog" fullscreen scrollable>
     <v-card>
