@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import realmsLogo from '@/assets/images/realms-icon.webp'
-import { computed, ref, type Ref } from 'vue'
+import { computed, inject, onMounted, ref, type Ref } from 'vue'
 import { RouterView } from 'vue-router'
 import { useBasketItemsStore } from './stores/basketItems'
 import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
@@ -9,6 +9,30 @@ import { Profile } from './shared/classes/Profile'
 import router from './router'
 import BasketCard from './components/baskets/BasketCard.vue'
 import { useRouter as UseRouter } from 'vue-router'
+import { ProtelApiStatusService } from './services/protel/ProtelApiStatusService'
+import type { AxiosStatic } from 'axios'
+const axios: AxiosStatic | undefined = inject('axios')
+const protelApiStatusService = new ProtelApiStatusService(axios)
+const protelApiStatus = ref('waiting...')
+const protelApiStatusIcon = computed(() => {
+  if (protelApiStatus.value === 'waiting...') {
+    return 'mdi-clock-outline'
+  } else if (protelApiStatus.value === 'success') {
+    return 'mdi-check-circle-outline'
+  } else {
+    return 'mdi-alert-circle-outline'
+  }
+})
+const protelApiStatusColor = computed(() => {
+  if (protelApiStatus.value === 'waiting...') {
+    return 'grey'
+  } else if (protelApiStatus.value === 'success') {
+    return 'green'
+  } else {
+    return 'red'
+  }
+})
+
 const useRouter = UseRouter()
 
 const userStore = useUserStore()
@@ -30,6 +54,12 @@ const clickOnViewCart = () => {
 }
 const showNavigationDrawer = computed(() => {
   return useRouter.currentRoute.value.name !== 'login'
+})
+
+onMounted(() => {
+  protelApiStatusService.getStatus().then((response) => {
+    protelApiStatus.value = response
+  })
 })
 </script>
 
@@ -105,9 +135,15 @@ const showNavigationDrawer = computed(() => {
             <v-list-item
               color="primary"
               prepend-icon="mdi-circle-small"
-              link
               title="Itinerary Reservations"
               to="/itinerary-reservations"
+            ></v-list-item>
+            <v-divider></v-divider>
+            <v-list-item
+              :base-color="protelApiStatusColor"
+              :prepend-icon="protelApiStatusIcon"
+              title="Protel API Status"
+              :subtitle="protelApiStatus"
             ></v-list-item>
           </v-expansion-panel-text>
         </v-expansion-panel>
@@ -151,3 +187,4 @@ const showNavigationDrawer = computed(() => {
     </v-dialog>
   </v-app>
 </template>
+inject, import type { AxiosStatic } from 'axios'
