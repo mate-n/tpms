@@ -77,14 +77,16 @@ const arrivalDateMin = computed(() => {
   if (props.previousReservation) {
     return dateHelper.getDateStringForInput(props.previousReservation.departureDate)
   }
-  return dateHelper.getDateString(new Date())
+  return dateHelper.getDateStringForInput(new Date())
 })
 const arrivalDateMax = computed(() => {
-  return dateHelper.getDateStringForInput(reservation.value.departureDate)
+  const dayBeforeDeparture = dateHelper.addDays(reservation.value.departureDate, -1)
+  return dateHelper.getDateStringForInput(dayBeforeDeparture)
 })
 const departureDateMenu = ref(false)
 const departureDateMin = computed(() => {
-  return dateHelper.getDateStringForInput(reservation.value.arrivalDate)
+  const dayAfterArrival = dateHelper.addDays(reservation.value.arrivalDate, 1)
+  return dateHelper.getDateStringForInput(dayAfterArrival)
 })
 const departureDateMax = computed(() => {
   if (props.nextReservation) {
