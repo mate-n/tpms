@@ -9,6 +9,7 @@
 @import './dialogs.scss';
 @import './input.scss';
 @import './reservations.scss';
+@import './cards.scss';
 
 .border-top-bottom {
   border-top: 1px solid black;
