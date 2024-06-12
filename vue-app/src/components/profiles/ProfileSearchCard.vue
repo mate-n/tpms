@@ -94,6 +94,10 @@ watch(
   },
   { immediate: true }
 )
+
+const profileSelected = (profile: IProfile) => {
+  emit('profileSelected', profile)
+}
 </script>
 
 <style scoped>
@@ -112,7 +116,7 @@ watch(
   </v-toolbar>
   <v-divider class="profiles-card-divider"></v-divider>
 
-  <ProfileSearchVue></ProfileSearchVue>
+  <ProfileSearchVue @profile-selected="(profile) => profileSelected(profile)"></ProfileSearchVue>
 
   <v-dialog v-model="newProfileDialog" fullscreen scrollable>
     <v-card>
