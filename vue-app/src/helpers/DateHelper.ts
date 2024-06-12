@@ -10,8 +10,7 @@ export class DateHelper {
   }
 
   getDateStringForInput(date: Date): string {
-    const dateISOString = date.toISOString()
-    return dateISOString.substring(0, dateISOString.indexOf('T'))
+    return this.dateFormatter.yyyydashmmdashdd(date)
   }
 
   getDateString(inputDate: Date): string {
