@@ -84,7 +84,17 @@ const showRemoveButton = computed(() => {
       <v-divider class="mt-1"></v-divider>
       <v-row class="mt-0 pb-0">
         <v-col></v-col>
-        <v-col class="d-flex justify-end"><strong>1.934,00</strong></v-col>
+        <v-col class="">
+          <div class="mb-1 text-end">
+            {{ reservationHelper.getNumberOfNights(reservation) }} x
+            {{ reservationHelper.getRoomRate(reservation) }}
+          </div>
+          <v-divider></v-divider>
+          <div class="text-end mt-1">
+            Total:
+            <strong>{{ reservationHelper.calculateTotalRate(reservation) }}</strong>
+          </div>
+        </v-col>
       </v-row>
     </v-card-text>
   </v-card>
