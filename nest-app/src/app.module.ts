@@ -15,6 +15,7 @@ import { AuthModule } from './auth/auth.module'
 import { UsersModule } from './users/users.module'
 import { ProtelCampsModule } from './protel-camps/v1/protel-camps.module'
 import { ProtelAvailabilitiesModule } from './protel-availabilities/v1/protel-availabilities.module'
+import { ProtelStatusApiController } from './protel-status-api/protel-status-api.controller';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ProtelAvailabilitiesModule } from './protel-availabilities/v1/protel-av
     RoomsController,
     ProfileAddressesController,
     ProfileCommunicationsController,
+    ProtelStatusApiController,
   ],
   providers: [AppService, ProfileAddressesService],
 })

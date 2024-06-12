@@ -47,7 +47,6 @@ export class ProtelAvailabilitiesService {
       )
         .then((response) => response.json())
         .then((result) => {
-          console.log(result)
           resolve(result['data']['availability_data'])
         })
         .catch((error) => console.error(error))
