@@ -16,15 +16,13 @@ import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import TicketsCard from '../tickets/TicketsCard.vue'
-import { TicketHelper } from '@/helpers/TicketHelper'
-import type { ITicket } from '@/shared/interfaces/ITicket'
 import { TicketService } from '@/services/TicketService'
 import TicketsTable from '../tickets/TicketsTable.vue'
+import type { ITicket } from '@/shared/interfaces/ITicket'
 const ticketsService = new TicketService()
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
-const ticketHelper = new TicketHelper()
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 const property: Ref<IProperty | null> = ref(null)
 const profile: Ref<IProfile | null> = ref(null)
@@ -155,7 +153,9 @@ onMounted(() => {
           <v-row>
             <v-col>
               TOTAL RATE<br />
-              <strong>{{ reservation.totalRate.toFixed(2) }}</strong></v-col
+              <strong>{{
+                reservationHelper.calculateTotalRate(reservation).toFixed(2)
+              }}</strong></v-col
             >
             <v-col>
               AVERAGE RATE<br />
@@ -190,9 +190,9 @@ onMounted(() => {
         <v-row>
           <v-col>
             TOTAL<br />
-            <strong>{{
-              (reservation.totalRate + ticketHelper.getTotalPrice(reservation.tickets)).toFixed(2)
-            }}</strong></v-col
+            <strong>
+              {{ reservationHelper.calculateTotalReservationPrice(reservation).toFixed(2) }}
+            </strong></v-col
           >
           <v-col> </v-col>
           <v-col></v-col>
