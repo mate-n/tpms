@@ -18,6 +18,7 @@ import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch
 import type { ICamp } from '@/shared/interfaces/ICamp'
 import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import { DateFormatter } from '@/helpers/DateFormatter'
+import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
 const availabilityService = new AvailabilityService(axios)
@@ -61,8 +62,8 @@ const getRoomsForDropdown = () => {
       code: availability.room_type_code,
       type: 0,
       minOccupancy: 0,
-      maxOccupancy: 0,
-      description: '',
+      maxOccupancy: availability.max_occupancy,
+      description: availability.id,
       id: 0
     }
     roomsInDropdown.value.push(room)
@@ -206,6 +207,10 @@ const showRemoveButton = computed(() => {
 })
 
 const availabilitiesLoading = ref(false)
+
+const selectProtelAvailability = (protelAvailability: IProtelAvailability) => {
+  reservation.value.selectedProtelAvailability = protelAvailability
+}
 </script>
 
 <template>
@@ -285,17 +290,6 @@ const availabilitiesLoading = ref(false)
         ></v-text-field>
       </v-col>
       <v-col>
-        <v-autocomplete
-          label="Room Type"
-          v-model="reservation.roomID"
-          :items="roomsInDropdown"
-          item-title="name"
-          item-value="id"
-          :error-messages="reservation.errors && reservation.errors['roomID']"
-          @update:model-value="emitChange()"
-        ></v-autocomplete>
-      </v-col>
-      <v-col>
         <v-text-field
           label="Guests per room"
           v-model="reservation.numberOfGuestsPerRoom"
@@ -371,7 +365,15 @@ const availabilitiesLoading = ref(false)
             :key="protelAvailability.room_type_code"
             class="bg-lightgray"
           >
-            <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
+            <div
+              class="bg-white mr-3 px-5 py-2 my-2 text-center"
+              :class="{
+                'bg-primary':
+                  reservation.selectedProtelAvailability &&
+                  protelAvailability.id === reservation.selectedProtelAvailability.id
+              }"
+              @click="selectProtelAvailability(protelAvailability)"
+            >
               {{ protelAvailability.availability_count }}
             </div>
           </td>
