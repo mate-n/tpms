@@ -1,13 +1,8 @@
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import { DateHelper } from '@/helpers/DateHelper'
 import type { IValidator } from '@/shared/interfaces/IValidator'
-import type { IEntityWithErrors } from '@/shared/interfaces/IEntityWithErrors'
 
 export class ReservationValidator implements IValidator {
-  validatePromise(objectToBeValidated: IEntityWithErrors): Promise<void> {
-    console.log(objectToBeValidated)
-    throw new Error('Method not implemented.')
-  }
   private dateHelper: DateHelper = new DateHelper()
 
   validate(reservation: IReservation): void {
@@ -27,6 +22,14 @@ export class ReservationValidator implements IValidator {
   isRoomsValid(reservation: IReservation): void {
     if (reservation.numberOfRooms < 1) {
       reservation.errors!['numberOfRooms'] = 'Rooms cannot be less than 1'
+    }
+    if (
+      reservation.selectedProtelAvailability &&
+      reservation.selectedProtelAvailability.availability_count
+    ) {
+      if (reservation.numberOfRooms > reservation.selectedProtelAvailability.availability_count) {
+        reservation.errors!['numberOfRooms'] = 'Not enough rooms available for this room type'
+      }
     }
   }
 
