@@ -119,23 +119,14 @@ watch(
         class="me-3"
       ></v-text-field>
       <v-text-field
-        v-model="profileSearch.city"
-        label="City"
-        variant="underlined"
-        class="me-3"
-      ></v-text-field>
-      <v-text-field
         v-model="profileSearch.profileID"
         label="Profile ID"
         variant="underlined"
         class="me-3"
       ></v-text-field>
       <v-autocomplete
-        label="Type"
-        v-model="profileSearch.guestTypeID"
-        :items="guestTypes"
-        item-title="value"
-        item-value="id"
+        label="Guest"
+        :items="['Guest ID', 'Guest Passport', 'Guest Mobile']"
         variant="underlined"
         class="me-3"
       ></v-autocomplete>
