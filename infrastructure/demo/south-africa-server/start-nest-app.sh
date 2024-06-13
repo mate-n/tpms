@@ -1,1 +1,1 @@
-cd nest-app && npm run start
+cd nest-app/dist && node main.js
