@@ -19,11 +19,7 @@ const dateFormatter = new DateFormatter()
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 const selectedDate: Ref<Date | undefined> = ref(undefined)
 
-const availableDates: Ref<Date[]> = ref([
-  new Date(),
-  dateHelper.addDays(new Date(), 1),
-  dateHelper.addDays(new Date(), 2)
-])
+const availableDates: Ref<Date[]> = ref([])
 
 const tickets: Ref<ITicket[]> = ref([])
 
@@ -35,7 +31,17 @@ onMounted(() => {
     addTicketsFromReservationToSelectedTickets()
   })
   selectDate(reservation.value.arrivalDate)
+  setAvailableDates()
 })
+
+const setAvailableDates = () => {
+  availableDates.value = []
+  let currentDate = new Date(reservation.value.arrivalDate)
+  while (currentDate <= reservation.value.departureDate) {
+    availableDates.value.push(currentDate)
+    currentDate = dateHelper.addDays(currentDate, 1)
+  }
+}
 
 const selectDate = (date: Date) => {
   selectedDate.value = date
