@@ -103,4 +103,23 @@ onMounted(() => {
     :items="availableCountries"
     item-title="value"
   ></v-select>
+
+  <v-row>
+    <v-col>
+      <v-text-field
+        label="SA ID Number"
+        v-model="profileToBeEdited.saIDNumber"
+        variant="underlined"
+        type="number"
+      ></v-text-field>
+    </v-col>
+    <v-col>
+      <v-text-field
+        v-model="profileToBeEdited.passportNumber"
+        label="Passport Number"
+        variant="underlined"
+        type="number"
+      ></v-text-field>
+    </v-col>
+  </v-row>
 </template>
