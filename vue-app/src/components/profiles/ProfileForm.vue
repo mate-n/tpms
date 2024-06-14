@@ -20,6 +20,7 @@ import { ValidityHelper } from '@/helpers/ValidityHelper'
 import StationeryCard from '../stationeries/StationeryCard.vue'
 import ReservationsCard from '../reservations/ReservationsCard.vue'
 import ProfileGeneralForm from './ProfileGeneralForm.vue'
+import ProfileMembershipCardsCard from './ProfileMembershipCardsCard.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const profileValidator = new ProfileValidator()
@@ -161,7 +162,9 @@ const reservationsCardDialog = ref(false)
       <v-col class="pr-0 profiles-card-column">
         <ProfilePreferencesCard v-model="profileToBeEdited"></ProfilePreferencesCard>
       </v-col>
-      <v-col class="pr-0 profiles-card-column"> </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <ProfileMembershipCardsCard v-model="profileToBeEdited"></ProfileMembershipCardsCard>
+      </v-col>
     </v-row>
   </v-container>
 
