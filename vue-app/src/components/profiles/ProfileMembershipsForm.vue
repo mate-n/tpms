@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, type Ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import { inject } from 'vue'
-import type { AxiosStatic } from 'axios'
 import ProfileMembershipForm from '@/components/profiles/ProfileMembershipForm.vue'
-import type { IProfileMembershipCard } from '@/shared/interfaces/profiles/IProfileMembershipCard'
 import { ProfileMembershipCard } from '@/shared/classes/ProfileMembership'
-const axios: AxiosStatic | undefined = inject('axios')
 const emit = defineEmits(['close'])
 const profile = defineModel({ required: true, type: Object as () => IProfile })
 

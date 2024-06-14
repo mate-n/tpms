@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, watch, type Ref } from 'vue'
+import { onBeforeMount, ref, watch } from 'vue'
 import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
 import ProfileCommunicationForm from './ProfileCommunicationForm.vue'
 import { IdentityHelper } from '@/helpers/IdentityHelper'

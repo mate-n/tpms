@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { RomanNumeralConverter } from '@/helpers/RomanNumeralConverter'
+import type { IProfileMembershipCard } from '@/shared/interfaces/profiles/IProfileMembershipCard'
 
-import type { IProfileMembership } from '@/shared/interfaces/profiles/IProfileMembership'
 const romanNumeralConverter = new RomanNumeralConverter()
 defineProps({
   indexOfMembership: { type: Number, required: true }
 })
-const emits = defineEmits(['delete', 'changeMailingAddress'])
+defineEmits(['delete', 'changeMailingAddress'])
 const profileMembershipToBeEdited = defineModel({
   required: true,
-  type: Object as () => IProfileMembership
+  type: Object as () => IProfileMembershipCard
 })
 </script>
 <template>
