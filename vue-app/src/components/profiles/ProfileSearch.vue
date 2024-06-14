@@ -106,33 +106,47 @@ watch(
 <template>
   <v-container class="bg-white" fluid>
     <div class="d-flex">
-      <v-text-field
-        v-model="profileSearch.name"
-        label="Name"
-        variant="underlined"
-        class="me-3"
-      ></v-text-field>
-      <v-text-field
-        v-model="profileSearch.email"
-        label="Email"
-        variant="underlined"
-        class="me-3"
-      ></v-text-field>
-
-      <v-text-field label="RoomSeeker Client Code" variant="underlined" class="me-3"></v-text-field>
-      <v-text-field
-        v-model="profileSearch.profileID"
-        label="Profile ID"
-        variant="underlined"
-        class="me-3"
-      ></v-text-field>
-      <v-autocomplete
-        label="Guest"
-        :items="['ID Number', 'Passport Number', 'Mobile Number']"
-        variant="underlined"
-        class="me-3"
-      ></v-autocomplete>
-      <v-btn class="primary-button" @click="search()"><v-icon>mdi-magnify</v-icon>Search</v-btn>
+      <div class="flex-grow-1 flex-shrink-0">
+        <div class="d-flex">
+          <v-text-field
+            v-model="profileSearch.name"
+            label="Surname"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+          <v-text-field label="First Name" variant="underlined" class="me-3"></v-text-field>
+          <v-text-field
+            v-model="profileSearch.email"
+            label="Email"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+          <v-text-field label="Mobile" variant="underlined" class="me-3"></v-text-field>
+          <v-text-field label="SA ID Number" variant="underlined" class="me-3"></v-text-field>
+        </div>
+        <div class="d-flex">
+          <v-text-field label="Passport Number" variant="underlined" class="me-3"></v-text-field>
+          <v-text-field
+            label="RoomSeeker Client Code"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+          <v-text-field label="TPMS Profile ID" variant="underlined" class="me-3"></v-text-field>
+          <v-text-field
+            label="Loyalty Membership Number"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+          <v-text-field
+            label="Wildcard membership Number"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+        </div>
+      </div>
+      <div class="d-flex flex-grow-0 flex-shrink-1">
+        <v-btn class="primary-button" @click="search()"><v-icon>mdi-magnify</v-icon>Search</v-btn>
+      </div>
     </div>
   </v-container>
   <v-container fluid v-if="foundProfiles.length > 0" class="bg-white px-0">
