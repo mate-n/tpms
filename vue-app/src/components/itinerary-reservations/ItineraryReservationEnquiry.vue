@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from 'vue'
 import type { Ref } from 'vue'
-import ReservationForm from '@/components/ReservationFormInEnquiry.vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ItineraryReservationValidator } from '@/validators/ItineraryReservationValidator'
 import { useBasketItemsStore } from '@/stores/basketItems'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import { Reservation } from '@/shared/classes/Reservation'
+import ReservationFormInEnquiry from './ReservationFormInEnquiry.vue'
 const basketItemsStore = useBasketItemsStore()
 const dateHelper = new DateHelper()
 const itineraryReservationValidator = new ItineraryReservationValidator()
@@ -28,11 +28,13 @@ const addReservation = () => {
   }
   const newDepartureDate = dateHelper.addDays(newReservation.arrivalDate, 1)
   newReservation.departureDate = newDepartureDate
+  showBookButton.value = false
 }
 
 const onReservationChanged = () => {
   updateAllReservations()
   checkForIssues()
+  updateShowBookButton()
 }
 
 const removeReservation = (reservation: IReservation) => {
@@ -57,6 +59,15 @@ const checkForIssues = () => {
   itineraryReservationValidator.validate(reservations.value)
 }
 
+const updateShowBookButton = () => {
+  const errors = itineraryReservationValidator.getErrors(reservations.value)
+  if (errors.length > 0) {
+    showBookButton.value = false
+  } else {
+    showBookButton.value = true
+  }
+}
+
 const book = () => {
   updateOrderIndexes()
   for (const reservation of reservations.value) {
@@ -67,6 +78,8 @@ const book = () => {
 onBeforeMount(() => {
   addReservation()
 })
+
+const showBookButton = ref(false)
 </script>
 
 <template>
@@ -99,20 +112,20 @@ onBeforeMount(() => {
   </v-toolbar>
 
   <template v-for="(reservation, i) of reservations" :key="reservation.id">
-    <ReservationForm
+    <ReservationFormInEnquiry
       v-model="reservations[i]"
       @check="checkForIssues()"
       @change="onReservationChanged()"
       @remove="(reservation) => removeReservation(reservation)"
       :previous-reservation="reservations[i - 1]"
       :next-reservation="reservations[i + 1]"
-    ></ReservationForm>
+    ></ReservationFormInEnquiry>
   </template>
 
   <v-container fluid>
     <div class="d-flex justify-end mt-3">
       <v-btn class="secondary-button">Cancel</v-btn>
-      <v-btn class="ml-2 primary-button" @click="book()">Book</v-btn>
+      <v-btn class="ml-2 primary-button" v-if="showBookButton" @click="book()">Book</v-btn>
     </div>
   </v-container>
 </template>
