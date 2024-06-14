@@ -31,6 +31,12 @@
   color: black !important;
 }
 
+.primary-outline-add-button {
+  @extend .uppercase;
+  border: 2px solid map-get($main-colors, 'secondary') !important;
+  color: white !important;
+}
+
 .danger-button {
   @extend .uppercase;
   background-color: map-get($main-colors, 'danger') !important;
