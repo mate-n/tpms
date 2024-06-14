@@ -95,11 +95,24 @@ const profileSearchInput: IProfileSearch = {
         variant="underlined"
       ></v-text-field>
     </v-col>
+    <v-col> </v-col>
+  </v-row>
+
+  <v-row>
     <v-col>
       <v-text-field
-        v-model="profileToBeEdited.passport"
-        label="Passport Number"
+        label="Roomseker ID"
+        v-model="profileToBeEdited.roomSeekerClientCode"
         variant="underlined"
+        type="number"
+      ></v-text-field>
+    </v-col>
+    <v-col>
+      <v-text-field
+        v-model="profileToBeEdited.tpmsProfileID"
+        label="TPMS-Profile ID"
+        variant="underlined"
+        type="number"
       ></v-text-field>
     </v-col>
   </v-row>
