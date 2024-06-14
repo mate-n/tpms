@@ -43,10 +43,12 @@ onMounted(() => {
     salutations.value = response
   })
   profileToBeEdited.value = cloneHelper.clone(props.profileInput)
+  validate()
 })
 
 watch(props, (newInput) => {
   profileToBeEdited.value = cloneHelper.clone(newInput.profileInput)
+  validate()
 })
 
 const validate = () => {
