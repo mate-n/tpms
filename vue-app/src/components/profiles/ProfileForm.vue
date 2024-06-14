@@ -146,7 +146,7 @@ const reservationsCardDialog = ref(false)
   <v-container fluid class="bg-lightgray pt-0">
     <v-row>
       <v-col class="pr-0 profiles-card-column">
-        <ProfileContactDetailsCard :profile="profileToBeEdited"></ProfileContactDetailsCard>
+        <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
         <ProfileAddressCard :profile="profileToBeEdited"></ProfileAddressCard>
