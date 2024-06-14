@@ -1,5 +1,7 @@
 import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
 import type { IProfile } from '../../shared/interfaces/profiles/IProfile'
+import type { IProfileCommunication } from '../interfaces/profiles/IProfileCommunication'
+import type { IProfileMembershipCard } from '../interfaces/profiles/IProfileMembershipCard'
 
 export class Profile implements IProfile {
   id?: number
@@ -34,6 +36,7 @@ export class Profile implements IProfile {
 
   //Communications / Contact details
   communicationIDs: number[]
+  communications: IProfileCommunication[]
 
   //Addresses
   addressIDs: number[]
@@ -67,6 +70,7 @@ export class Profile implements IProfile {
 
   //Membership Cards
   membershipCardIDs: number[]
+  membershipCards: IProfileMembershipCard[]
 
   //Documents
   documentIDs: number[]
@@ -108,6 +112,7 @@ export class Profile implements IProfile {
 
     //Communications / Contact details
     this.communicationIDs = []
+    this.communications = []
 
     //Addresses
     this.addressIDs = []
@@ -141,6 +146,7 @@ export class Profile implements IProfile {
 
     //Membership Cards
     this.membershipCardIDs = []
+    this.membershipCards = []
 
     //Documents
     this.documentIDs = []
