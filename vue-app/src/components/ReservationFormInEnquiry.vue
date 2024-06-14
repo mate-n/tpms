@@ -81,8 +81,10 @@ const arrivalDateMin = computed(() => {
   return dateHelper.getDateStringForInput(new Date())
 })
 const arrivalDateMax = computed(() => {
-  const dayBeforeDeparture = dateHelper.addDays(reservation.value.departureDate, -1)
-  return dateHelper.getDateStringForInput(dayBeforeDeparture)
+  if (props.nextReservation) {
+    return dateHelper.getDateStringForInput(props.nextReservation.arrivalDate)
+  }
+  return false
 })
 const departureDateMenu = ref(false)
 const departureDateMin = computed(() => {
@@ -160,6 +162,13 @@ const remove = (reservation: IReservation) => {
 const emitChange = () => {
   reservationValidator.validate(reservation.value)
   emit('change')
+}
+
+const arrivalDateChange = () => {
+  if (!props.nextReservation) {
+    reservation.value.departureDate = dateHelper.addDays(reservation.value.arrivalDate, 1)
+  }
+  emitChange()
 }
 
 const openProfileDialog = () => {
@@ -257,7 +266,7 @@ const protelAvailabilityForDetails = ref<IProtelAvailability | undefined>(undefi
               v-model="reservation.arrivalDate"
               :min="arrivalDateMin"
               :max="arrivalDateMax"
-              @update:model-value="emitChange()"
+              @update:model-value="arrivalDateChange()"
             >
             </v-date-picker>
           </v-card>
