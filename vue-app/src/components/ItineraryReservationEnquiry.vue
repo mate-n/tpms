@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from 'vue'
 import type { Ref } from 'vue'
-import ReservationForm from '@/components/ReservationForm.vue'
+import ReservationForm from '@/components/ReservationFormInEnquiry.vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ItineraryReservationValidator } from '@/validators/ItineraryReservationValidator'
 import { useBasketItemsStore } from '@/stores/basketItems'
