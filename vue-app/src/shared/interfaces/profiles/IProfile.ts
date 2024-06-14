@@ -22,6 +22,12 @@ export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
   isPasserby: boolean
   department: string
   iataCode: string
+  saIDNumber: number | undefined
+  passportNumber: number | undefined
+  roomSeekerClientCode: string
+  tpmsProfileID: number | undefined
+  loyaltyMembershipNumber: number | undefined
+  wildcardMembershipNumber: number | undefined
 
   //Communications / Contact details
   communicationIDs: number[]

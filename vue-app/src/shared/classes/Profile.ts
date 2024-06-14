@@ -25,6 +25,12 @@ export class Profile implements IProfile {
   isPasserby: boolean
   department: string
   iataCode: string
+  saIDNumber: number | undefined
+  passportNumber: number | undefined
+  roomSeekerClientCode: string
+  tpmsProfileID: number | undefined
+  loyaltyMembershipNumber: number | undefined
+  wildcardMembershipNumber: number | undefined
 
   //Communications / Contact details
   communicationIDs: number[]
@@ -98,6 +104,7 @@ export class Profile implements IProfile {
     this.isPasserby = false
     this.department = ''
     this.iataCode = ''
+    this.roomSeekerClientCode = ''
 
     //Communications / Contact details
     this.communicationIDs = []
