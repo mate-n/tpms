@@ -11,6 +11,8 @@ export class ReservationValidator implements IValidator {
     this.isRoomsValid(reservation)
     this.isNightsValid(reservation)
     this.isPropertyIDValid(reservation)
+    this.isProfileIDValid(reservation)
+    this.isSelectedProtelAvailabilityValid(reservation)
   }
 
   isGuestsPerRoomValid(reservation: IReservation): void {
@@ -53,6 +55,18 @@ export class ReservationValidator implements IValidator {
   isPropertyIDValid(reservation: IReservation): void {
     if (!reservation.propertyID) {
       reservation.errors!['propertyID'] = 'Property cannot be empty'
+    }
+  }
+
+  isProfileIDValid(reservation: IReservation): void {
+    if (!reservation.profileID) {
+      reservation.errors!['profileID'] = 'Profile cannot be empty'
+    }
+  }
+
+  isSelectedProtelAvailabilityValid(reservation: IReservation): void {
+    if (!reservation.selectedProtelAvailability) {
+      reservation.errors!['selectedProtelAvailability'] = 'Room Type cannot be empty'
     }
   }
 }
