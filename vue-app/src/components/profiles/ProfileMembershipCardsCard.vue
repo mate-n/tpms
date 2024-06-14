@@ -1,5 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 
+const profileToBeEdited = defineModel({
+  required: true,
+  type: Object as () => IProfile
+})
+</script>
 <template>
   <div class="profiles-card">
     <v-toolbar class="profiles-card-toolbar">
@@ -10,24 +16,12 @@
     <v-divider class="profiles-card-divider"></v-divider>
     <v-container>
       <div class="mb-2">
-        <span class="profile-card-caption">Name of program</span><br />
-        -
+        <span class="profile-card-caption">Membership Name</span><br />
+        {{ profileToBeEdited.wildcardMembershipNumber }}
       </div>
       <div class="mb-2">
         <span class="profile-card-caption">Card Number</span><br />
-        -
-      </div>
-      <div class="mb-2">
-        <span class="profile-card-caption">Point balance</span><br />
-        -
-      </div>
-      <div class="mb-2">
-        <span class="profile-card-caption">Tier Level</span><br />
-        -
-      </div>
-      <div class="mb-2">
-        <span class="profile-card-caption">Expiration Date</span><br />
-        -
+        {{ profileToBeEdited.wildcardMembershipNumber }}
       </div>
     </v-container>
   </div>
