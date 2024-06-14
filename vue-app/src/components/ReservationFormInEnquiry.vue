@@ -20,6 +20,7 @@ import { DateFormatter } from '@/helpers/DateFormatter'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import ProfileSearchCard from './profiles/ProfileSearchCard.vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
+import RoomDetailsCard from './rooms/RoomDetailsCard.vue'
 const reservationHelper = new ReservationHelper()
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
@@ -215,6 +216,14 @@ const availabilitiesLoading = ref(false)
 const selectProtelAvailability = (protelAvailability: IProtelAvailability) => {
   reservation.value.selectedProtelAvailability = protelAvailability
 }
+
+const clickOnRoomTypeCode = (protelAvailability: IProtelAvailability) => {
+  protelAvailabilityForDetails.value = protelAvailability
+  roomTypeDialog.value = true
+}
+const roomTypeDialog = ref(false)
+
+const protelAvailabilityForDetails = ref<IProtelAvailability | undefined>(undefined)
 </script>
 
 <template>
@@ -351,7 +360,10 @@ const selectProtelAvailability = (protelAvailability: IProtelAvailability) => {
             :key="protelAvailability.transaction_id"
             class="text-center"
           >
-            {{ protelAvailability.room_type_code }}
+            <v-btn @click="clickOnRoomTypeCode(protelAvailability)">
+              {{ protelAvailability.room_type_code }}
+              <v-icon>mdi-information-outline</v-icon></v-btn
+            >
           </th>
           <template v-if="reservation.protelAvailabilities.length === 0">
             <th v-for="i in 12" :key="i"></th>
@@ -428,6 +440,16 @@ const selectProtelAvailability = (protelAvailability: IProtelAvailability) => {
         @close="closeProfileDialog()"
         @profile-selected="(profile) => profileSelected(profile)"
       ></ProfileSearchCard>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="roomTypeDialog" width="600" scrollable>
+    <v-card v-if="protelAvailabilityForDetails">
+      <RoomDetailsCard
+        :protel-availability="protelAvailabilityForDetails"
+        @close="roomTypeDialog = false"
+      >
+      </RoomDetailsCard>
     </v-card>
   </v-dialog>
 </template>
