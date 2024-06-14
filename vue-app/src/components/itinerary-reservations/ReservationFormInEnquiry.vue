@@ -18,9 +18,9 @@ import type { ICamp } from '@/shared/interfaces/ICamp'
 import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import { DateFormatter } from '@/helpers/DateFormatter'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
-import ProfileSearchCard from './profiles/ProfileSearchCard.vue'
+import ProfileSearchCard from '../profiles/ProfileSearchCard.vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
-import RoomDetailsCard from './rooms/RoomDetailsCard.vue'
+import RoomDetailsCard from '../rooms/RoomDetailsCard.vue'
 const reservationHelper = new ReservationHelper()
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
@@ -164,6 +164,11 @@ const emitChange = () => {
   emit('change')
 }
 
+const propertyChange = () => {
+  reservation.value.selectedProtelAvailability = undefined
+  emitChange()
+}
+
 const arrivalDateChange = () => {
   if (!props.nextReservation) {
     reservation.value.departureDate = dateHelper.addDays(reservation.value.arrivalDate, 1)
@@ -224,6 +229,7 @@ const availabilitiesLoading = ref(false)
 
 const selectProtelAvailability = (protelAvailability: IProtelAvailability) => {
   reservation.value.selectedProtelAvailability = protelAvailability
+  emitChange()
 }
 
 const clickOnRoomTypeCode = (protelAvailability: IProtelAvailability) => {
@@ -246,7 +252,7 @@ const protelAvailabilityForDetails = ref<IProtelAvailability | undefined>(undefi
           item-title="campname"
           item-value="campid"
           :error-messages="reservation.errors && reservation.errors['propertyID']"
-          @update:model-value="emitChange()"
+          @update:model-value="propertyChange()"
         ></v-select>
         <v-icon>mdi-city</v-icon>
       </v-col>
@@ -330,6 +336,7 @@ const protelAvailabilityForDetails = ref<IProtelAvailability | undefined>(undefi
           :item-title="(profile) => `${profile.lastName}, ${profile.firstName}`"
           :item-value="(profile) => profile.id"
           :disabled="previousReservation !== undefined"
+          :error-messages="reservation.errors && reservation.errors['profileID']"
           @update:model-value="emitChange()"
         ></v-autocomplete>
         <div class="d-flex align-center" @click="openProfileDialog()">
