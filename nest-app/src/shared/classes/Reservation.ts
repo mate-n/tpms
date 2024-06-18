@@ -3,8 +3,10 @@ import { DateHelper } from '../../helpers/DateHelper'
 import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
 import type { IReservation } from '../../shared/interfaces/IReservation'
 import type { IPropertyAvailability } from '../../shared/interfaces/availability/IPropertyAvailability'
+import type { IGuestsPerRoom } from '../interfaces/IGuestsPerRoom'
 import type { ITicket } from '../interfaces/ITicket'
 import type { IProtelAvailability } from '../interfaces/protel/IProtelAvailability'
+import { GuestsPerRoom } from './GuestsPerRoom'
 
 export class Reservation implements IReservation {
   id?: number
@@ -14,7 +16,6 @@ export class Reservation implements IReservation {
   departureDate: Date
   numberOfRooms: number
   roomID: number | undefined
-  numberOfGuestsPerRoom: number
   profileID: number | undefined
   guestProfileID: number | undefined
   companyProfileID: number | undefined
@@ -36,6 +37,7 @@ export class Reservation implements IReservation {
   averageRate: number
   guestName: string
   propertyName: string
+  guestsPerRoom: IGuestsPerRoom
   cloneHelper: CloneHelper = new CloneHelper()
 
   constructor() {
@@ -43,7 +45,6 @@ export class Reservation implements IReservation {
     this.arrivalDate = this.dateHelper.getTodayDate()
     this.departureDate = this.dateHelper.addDays(this.arrivalDate, 1)
     this.numberOfRooms = 1
-    this.numberOfGuestsPerRoom = 1
     this.baseRateCategory = ''
     this.orderIndex = 0
     this.propertyAvailabilities = []
@@ -57,6 +58,7 @@ export class Reservation implements IReservation {
     this.averageRate = 0
     this.guestName = ''
     this.propertyName = ''
+    this.guestsPerRoom = new GuestsPerRoom()
   }
 
   convertToReservation(reservation: IReservation) {
@@ -67,7 +69,6 @@ export class Reservation implements IReservation {
     this.departureDate = new Date(reservation.departureDate)
     this.numberOfRooms = reservation.numberOfRooms
     this.roomID = reservation.roomID
-    this.numberOfGuestsPerRoom = reservation.numberOfGuestsPerRoom
     this.profileID = reservation.profileID
     this.guestProfileID = reservation.guestProfileID
     this.companyProfileID = reservation.companyProfileID
@@ -90,6 +91,7 @@ export class Reservation implements IReservation {
     this.averageRate = reservation.averageRate
     this.guestName = reservation.guestName
     this.propertyName = reservation.propertyName
+    this.guestsPerRoom = reservation.guestsPerRoom
     return this
   }
 
@@ -97,7 +99,6 @@ export class Reservation implements IReservation {
     this.arrivalDate = new Date()
     this.departureDate = this.dateHelper.addDays(this.arrivalDate, 1)
     this.numberOfRooms = 1
-    this.numberOfGuestsPerRoom = 1
     this.baseRateCategory = ''
     this.orderIndex = 0
     this.roomID = undefined
@@ -117,6 +118,7 @@ export class Reservation implements IReservation {
     this.ticketIDs = []
     this.guestName = ''
     this.propertyName = ''
+    this.guestsPerRoom = new GuestsPerRoom()
   }
 
   addIssue(issue: string) {
