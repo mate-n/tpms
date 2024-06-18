@@ -12,14 +12,11 @@ export class ProfileCommunicationValidator implements IValidator {
 
   isValueValid(profileCommunicationToBeValidated: IProfileCommunication): void {
     if (profileCommunicationToBeValidated.value === '') {
-      profileCommunicationToBeValidated.errors!['value'] =
-        'Value cannot be empty'
+      profileCommunicationToBeValidated.errors!['value'] = 'Value cannot be empty'
     }
   }
 
-  isCommunicationTypeIDValid(
-    profileCommunicationToBeValidated: IProfileCommunication,
-  ): void {
+  isCommunicationTypeIDValid(profileCommunicationToBeValidated: IProfileCommunication): void {
     if (profileCommunicationToBeValidated.communicationTypeID === undefined) {
       profileCommunicationToBeValidated.errors!['communicationTypeID'] =
         'Communication type cannot be empty'
@@ -28,12 +25,9 @@ export class ProfileCommunicationValidator implements IValidator {
 
   isEmailValid(profileCommunicationToBeValidated: IProfileCommunication): void {
     if (profileCommunicationToBeValidated.communicationTypeName === 'E-Mail') {
-      const isEmailValid = this.emailRegex.test(
-        profileCommunicationToBeValidated.value,
-      )
+      const isEmailValid = this.emailRegex.test(profileCommunicationToBeValidated.value)
       if (!isEmailValid) {
-        profileCommunicationToBeValidated.errors!['value'] =
-          'Invalid email address'
+        profileCommunicationToBeValidated.errors!['value'] = 'Invalid email address'
       }
     }
   }

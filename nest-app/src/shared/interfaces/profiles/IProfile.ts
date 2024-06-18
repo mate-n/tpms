@@ -1,5 +1,7 @@
 import type { IEntityWithErrors } from '../IEntityWithErrors'
 import type { IEntityWithIdentity } from '../IEntityWithIdentity'
+import type { IProfileCommunication } from './IProfileCommunication'
+import type { IProfileMembershipCard } from './IProfileMembershipCard'
 
 export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
   //General
@@ -22,9 +24,16 @@ export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
   isPasserby: boolean
   department: string
   iataCode: string
+  saIDNumber: number | undefined
+  passportNumber: number | undefined
+  roomSeekerClientCode: string
+  tpmsProfileID: number | undefined
+  loyaltyMembershipNumber: number | undefined
+  wildcardMembershipNumber: number | undefined
 
   //Communications / Contact details
   communicationIDs: number[]
+  communications: IProfileCommunication[]
 
   //Addresses
   addressIDs: number[]
@@ -58,6 +67,7 @@ export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
 
   //Membership Cards
   membershipCardIDs: number[]
+  membershipCards: IProfileMembershipCard[]
 
   //Documents
   documentIDs: number[]

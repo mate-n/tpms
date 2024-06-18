@@ -1,8 +1,8 @@
 export interface IProtelAvailabilityPostBody {
-  arrivaldate: Date
-  departuredate: Date
+  arrivaldate: string
+  departuredate: string
   roomtype: string | null
-  propertyid: number
+  propertyid: string
   detail: string
   accomodation_type: string | null
 }

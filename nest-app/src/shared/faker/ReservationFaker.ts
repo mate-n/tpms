@@ -22,6 +22,8 @@ export class ReservationFaker {
     reservation.bookerProfileID = faker.number.int()
     reservation.orderIndex = faker.number.int()
     reservation.propertyName = faker.location.city()
+    reservation.protelAvailabilities = []
+    reservation.propertyAvailabilities = []
     return reservation
   }
 }

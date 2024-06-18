@@ -2,6 +2,7 @@ import type { IEntityWithErrors } from './IEntityWithErrors'
 import type { IEntityWithIdentity } from './IEntityWithIdentity'
 import type { ITicket } from './ITicket'
 import type { IPropertyAvailability } from './availability/IPropertyAvailability'
+import type { IProtelAvailability } from './protel/IProtelAvailability'
 
 export interface IReservation extends IEntityWithIdentity, IEntityWithErrors {
   propertyID: number | undefined
@@ -19,6 +20,8 @@ export interface IReservation extends IEntityWithIdentity, IEntityWithErrors {
   baseRateCategory: string
   orderIndex: number
   propertyAvailabilities: IPropertyAvailability[]
+  protelAvailabilities: IProtelAvailability[]
+  selectedProtelAvailability: IProtelAvailability | undefined
   issues: string[]
   isBookerGuest: boolean
   ticketIDs: number[]

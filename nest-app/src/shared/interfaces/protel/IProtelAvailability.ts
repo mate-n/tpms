@@ -9,10 +9,10 @@ export interface IProtelAvailability {
   type: string
   room_type_code: string
   default_occupancy: string
-  max_occupancy: string
+  max_occupancy: number
   availability_start: string
   availability_end: string
-  availability_count: string
+  availability_count: number
   park_name: string
   property_name: string
   room_type_name: string

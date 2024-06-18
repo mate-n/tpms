@@ -12,10 +12,7 @@ export class PropertyAvailabilityFaker {
     propertyAvailability.availabilityCount = faker.number.int(100)
     propertyAvailability.baseRateCategory = faker.lorem.word()
     propertyAvailability.room = this.roomFaker.create()
-    propertyAvailability.roomRates = [
-      this.roomRateFaker.create(),
-      this.roomRateFaker.create(),
-    ]
+    propertyAvailability.roomRates = [this.roomRateFaker.create(), this.roomRateFaker.create()]
     return propertyAvailability
   }
 }

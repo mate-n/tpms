@@ -3,5 +3,5 @@ export enum ProfileTypes {
   Company,
   Group,
   TravelAgency,
-  Source,
+  Source
 }

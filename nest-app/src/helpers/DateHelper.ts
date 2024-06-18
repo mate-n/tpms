@@ -29,4 +29,10 @@ export class DateHelper {
     const dateISOString = date.toISOString()
     return dateISOString.substring(0, dateISOString.indexOf('T'))
   }
+
+  getTodayDate(): Date {
+    const date = new Date()
+    date.setHours(0, 0, 0, 0)
+    return date
+  }
 }

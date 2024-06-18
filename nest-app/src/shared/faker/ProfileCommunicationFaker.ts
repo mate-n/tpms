@@ -11,11 +11,8 @@ export class ProfileCommunicationFaker {
       type: faker.lorem.word(),
       value: faker.phone.number(),
       primary: faker.datatype.boolean(),
-      communicationTypeID: faker.number.int(4),
+      communicationTypeID: faker.number.int(4)
     }
-    return (profileCommunication = Object.assign(
-      profileCommunication,
-      fakeData,
-    ))
+    return (profileCommunication = Object.assign(profileCommunication, fakeData))
   }
 }
