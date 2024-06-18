@@ -256,6 +256,35 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
   )
   return availabilityHelper.getTotalOfAvailabilityCount(availabilities)
 }
+
+const selectedProtelAvailabilities: Ref<IProtelAvailability[]> = ref([])
+
+const selectingAvailabilities = (availability: IProtelAvailability) => {
+  if (isMouseDown.value) {
+    selectedProtelAvailabilities.value.push(availability)
+  }
+}
+
+const isMouseDown = ref(false)
+
+window.addEventListener(
+  'mousedown',
+  function (e) {
+    console.log('mousedown')
+    isMouseDown.value = true
+  },
+  false
+)
+
+window.addEventListener(
+  'mouseup',
+  function (e) {
+    console.log('mouseup')
+    console.log(selectedProtelAvailabilities.value)
+    isMouseDown.value = false
+  },
+  false
+)
 </script>
 
 <template>
@@ -423,15 +452,25 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
             {{ room }}
           </td>
           <td v-for="date of availableDates" :key="date.toISOString()" class="bg-lightgray">
-            <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
-              {{
+            <template
+              v-for="availability of [
                 availabilityHelper.getAvailabilityByRoomTypeNameAndByDate(
                   reservation.protelAvailabilities,
                   room,
                   date
-                )?.rates_data[0].room_rate
-              }}
-            </div>
+                )
+              ]"
+              :key="availability?.id"
+            >
+              <template v-if="availability">
+                <div
+                  class="bg-white mr-3 px-5 py-2 my-2 text-center"
+                  @mouseenter="selectingAvailabilities(availability)"
+                >
+                  {{ availability?.rates_data[0].room_rate }}
+                </div>
+              </template>
+            </template>
           </td>
         </tr>
       </tbody>
