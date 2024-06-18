@@ -47,4 +47,9 @@ export class DateHelper {
     date.setHours(0, 0, 0, 0)
     return date
   }
+
+  getNameOfDay(date: Date): string {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    return days[date.getDay()]
+  }
 }
