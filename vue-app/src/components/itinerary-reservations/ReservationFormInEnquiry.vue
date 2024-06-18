@@ -22,7 +22,7 @@ import { ReservationHelper } from '@/helpers/ReservationHelper'
 import RoomDetailsCard from '../rooms/RoomDetailsCard.vue'
 import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
-import DragDemo from './DragDemo.vue'
+import ProtelAvailabilitiesSelecter from './ProtelAvailabilitiesSelecter.vue'
 const availabilityHelper = new AvailabilityHelper()
 const reservationHelper = new ReservationHelper()
 const dateFormatter = new DateFormatter()
@@ -505,5 +505,7 @@ window.addEventListener(
     </v-card>
   </v-dialog>
 
-  <DragDemo></DragDemo>
+  <ProtelAvailabilitiesSelecter
+    :protel-availabilities="reservation.protelAvailabilities"
+  ></ProtelAvailabilitiesSelecter>
 </template>
