@@ -27,7 +27,7 @@ const cloneHelper = new CloneHelper()
 const profileToBeEdited = ref<IProfile>(new Profile())
 const foundProfiles: Ref<IProfile[]> = ref([])
 const search = () => {
-  profileService.search(profileSearch.value).then((response) => {
+  profileService.findAll().then((response) => {
     foundProfiles.value = response
   })
 }

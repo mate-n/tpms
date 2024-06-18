@@ -34,7 +34,7 @@ const profileToBeEdited = ref<IProfile>(new Profile())
 const foundProfiles: Ref<IProfile[]> = ref([])
 const search = () => {
   if (profileSearch.value) {
-    profileService.search(profileSearch.value).then((response) => {
+    profileService.findAll().then((response) => {
       foundProfiles.value = response
     })
   }

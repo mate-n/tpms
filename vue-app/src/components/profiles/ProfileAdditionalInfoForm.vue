@@ -21,7 +21,7 @@ onMounted(() => {
     availableRates.value = response
   })
 
-  profileService.search({}).then((response) => {
+  profileService.findAll().then((response) => {
     companies.value = response
   })
 })
@@ -35,14 +35,16 @@ const profileSelected = (profile: IProfile) => {
 const companies: Ref<IProfile[]> = ref([])
 watch(profileToBeEdited, () => {}, { deep: true })
 
-const companyUpdateSearch = (input: any) => {
+const companyUpdateSearch = () => {
   companySearchLoading.value = true
+  /*
   const profileSearch: IProfileSearch = {
     name: input,
     guestTypeID: 3
   }
+    */
 
-  profileService.search(profileSearch).then((response) => {
+  profileService.findAll().then((response) => {
     companySearchLoading.value = false
     companies.value = response
   })

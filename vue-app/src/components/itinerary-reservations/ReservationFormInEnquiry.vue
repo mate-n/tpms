@@ -13,7 +13,6 @@ import type { IRoom } from '@/shared/interfaces/IRoom'
 import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPropertyAvailability'
 import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
 import type { ICamp } from '@/shared/interfaces/ICamp'
 import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import { DateFormatter } from '@/helpers/DateFormatter'
@@ -51,8 +50,8 @@ onBeforeMount(() => {
     roomsInDropdown.value = response
   })
 
-  const profileSearch: IProfileSearch = {}
-  profileService.search(profileSearch).then((response: IProfile[]) => {
+  //const profileSearch: IProfileSearch = {}
+  profileService.findAll().then((response: IProfile[]) => {
     profilesInDropdown.value = response
   })
 })
