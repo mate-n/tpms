@@ -21,6 +21,8 @@ import ProfileSearchCard from '../profiles/ProfileSearchCard.vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import RoomDetailsCard from '../rooms/RoomDetailsCard.vue'
 import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
+import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
+const availabilityHelper = new AvailabilityHelper()
 const reservationHelper = new ReservationHelper()
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
@@ -238,6 +240,14 @@ const clickOnRoomTypeCode = (protelAvailability: IProtelAvailability) => {
 const roomTypeDialog = ref(false)
 
 const protelAvailabilityForDetails = ref<IProtelAvailability | undefined>(undefined)
+
+const availableDates = computed(() => {
+  const dates = []
+  for (let i = 0; i < numberOfNights.value; i++) {
+    dates.push(dateHelper.addDays(reservation.value.arrivalDate, i))
+  }
+  return dates
+})
 </script>
 
 <template>
@@ -367,15 +377,9 @@ const protelAvailabilityForDetails = ref<IProtelAvailability | undefined>(undefi
       <thead>
         <tr class="bg-lightblue">
           <th class="" style="width: 15rem"></th>
-          <th
-            v-for="protelAvailability of reservation.protelAvailabilities"
-            :key="protelAvailability.transaction_id"
-            class="text-center"
-          >
-            <v-btn @click="clickOnRoomTypeCode(protelAvailability)">
-              {{ protelAvailability.room_type_code }}
-              <v-icon>mdi-information-outline</v-icon></v-btn
-            >
+          <th v-for="date of availableDates" :key="date.toISOString()" class="text-center">
+            {{ dateHelper.getNameOfDay(date) }}<br />
+            {{ dateFormatter.dddotmm(date) }}
           </th>
           <template v-if="reservation.protelAvailabilities.length === 0">
             <th v-for="i in 12" :key="i"></th>
@@ -413,28 +417,26 @@ const protelAvailabilityForDetails = ref<IProtelAvailability | undefined>(undefi
             </td>
           </template>
         </tr>
-        <tr>
-          <td class="d-flex justify-end align-center">
-            {{ reservation.baseRateCategory }}
+        <tr
+          v-for="room of availabilityHelper.getUniqueRoomTypeNames(
+            reservation.protelAvailabilities
+          )"
+          :key="room"
+        >
+          <td>
+            {{ room }}
           </td>
-          <td
-            v-for="protelAvailability of reservation.protelAvailabilities"
-            :key="protelAvailability.transaction_id"
-            class="bg-lightgray"
-          >
+          <td v-for="date of availableDates" :key="date.toISOString()" class="bg-lightgray">
             <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
-              <template v-if="protelAvailability.rates_data[0].room_rate">
-                {{ protelAvailability.rates_data[0].room_rate }}
-              </template>
+              {{
+                availabilityHelper.getAvailabilityByRoomTypeNameAndByDate(
+                  reservation.protelAvailabilities,
+                  room,
+                  date
+                )?.rates_data[0].room_rate
+              }}
             </div>
           </td>
-          <template v-if="reservation.protelAvailabilities.length === 0">
-            <td v-for="i in 12" :key="i" class="bg-lightgray">
-              <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
-                <v-icon>mdi-circle-small</v-icon>
-              </div>
-            </td>
-          </template>
         </tr>
       </tbody>
     </v-table>
