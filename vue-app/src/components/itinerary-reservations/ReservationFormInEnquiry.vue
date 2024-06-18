@@ -22,6 +22,7 @@ import { ReservationHelper } from '@/helpers/ReservationHelper'
 import RoomDetailsCard from '../rooms/RoomDetailsCard.vue'
 import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
+import DragDemo from './DragDemo.vue'
 const availabilityHelper = new AvailabilityHelper()
 const reservationHelper = new ReservationHelper()
 const dateFormatter = new DateFormatter()
@@ -267,6 +268,7 @@ const selectingAvailabilities = (availability: IProtelAvailability) => {
 
 const isMouseDown = ref(false)
 
+/*
 window.addEventListener(
   'mousedown',
   function (e) {
@@ -285,6 +287,7 @@ window.addEventListener(
   },
   false
 )
+  */
 </script>
 
 <template>
@@ -501,4 +504,6 @@ window.addEventListener(
       </RoomDetailsCard>
     </v-card>
   </v-dialog>
+
+  <DragDemo></DragDemo>
 </template>
