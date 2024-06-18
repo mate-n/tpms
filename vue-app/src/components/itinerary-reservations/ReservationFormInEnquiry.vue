@@ -20,6 +20,7 @@ import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvai
 import ProfileSearchCard from '../profiles/ProfileSearchCard.vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import RoomDetailsCard from '../rooms/RoomDetailsCard.vue'
+import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
 const reservationHelper = new ReservationHelper()
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
@@ -122,7 +123,6 @@ const check = () => {
     availabilityEnd: reservation.value.departureDate,
     numberOfRooms: reservation.value.numberOfRooms,
     roomID: reservation.value.roomID,
-    numberOfGuestsPerRoom: reservation.value.numberOfGuestsPerRoom,
     profileID: reservation.value.profileID
   }
 
@@ -192,7 +192,7 @@ watch(
   [
     () => reservation.value.roomID,
     () => reservation.value.numberOfRooms,
-    () => reservation.value.numberOfGuestsPerRoom,
+    () => reservation.value.guestsPerRoom,
     () => reservation.value.profileID,
     () => reservation.value.arrivalDate,
     () => reservation.value.departureDate,
@@ -317,13 +317,10 @@ const protelAvailabilityForDetails = ref<IProtelAvailability | undefined>(undefi
         ></v-text-field>
       </v-col>
       <v-col>
-        <v-text-field
-          label="Guests per room"
-          v-model="reservation.numberOfGuestsPerRoom"
-          :error-messages="reservation.errors && reservation.errors['numberOfGuestsPerRoom']"
-          type="number"
-          @change="emitChange()"
-        ></v-text-field>
+        <GuestsPerRoomSelecter
+          v-model="reservation.guestsPerRoom"
+          :errors="reservation.errors"
+        ></GuestsPerRoomSelecter>
       </v-col>
       <v-col class="d-flex">
         <v-autocomplete

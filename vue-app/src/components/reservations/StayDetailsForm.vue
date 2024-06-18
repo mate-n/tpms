@@ -5,7 +5,11 @@ import { DateHelper } from '@/helpers/DateHelper'
 import { computed, ref } from 'vue'
 import TimeSelecter from '../times/TimeSelecter.vue'
 import PolicyInfoCard from './PolicyInfoCard.vue'
-const reservationToBeEdited = defineModel({ required: true, type: Object as () => IReservation })
+import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
+const reservationToBeEdited = defineModel({
+  required: true,
+  type: Object as () => IReservation
+})
 
 const dateHelper = new DateHelper()
 
@@ -45,15 +49,9 @@ const policyInfoDialog = ref(false)
           ></v-text-field
         ></v-col>
         <v-col>
-          <v-text-field
-            label="Guests per room"
-            v-model="reservationToBeEdited.numberOfGuestsPerRoom"
-            :error-messages="
-              reservationToBeEdited.errors && reservationToBeEdited.errors['numberOfGuestsPerRoom']
-            "
-            variant="underlined"
-            type="number"
-          ></v-text-field>
+          <GuestsPerRoomSelecter
+            v-model="reservationToBeEdited.guestsPerRoom"
+          ></GuestsPerRoomSelecter>
         </v-col>
       </v-row>
       <v-row>
