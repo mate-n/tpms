@@ -1,7 +1,9 @@
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import { DateHelper } from './DateHelper'
+import { DateFormatter } from './DateFormatter'
 
 export class AvailabilityHelper {
+  dateFormatter = new DateFormatter()
   dateHelper = new DateHelper()
   getUniqueRoomTypeNames(availabilities: IProtelAvailability[]) {
     const uniqueRooms = new Set<string>()
@@ -9,6 +11,10 @@ export class AvailabilityHelper {
       uniqueRooms.add(availability.room_type_name)
     })
     return uniqueRooms
+  }
+
+  getAvailabilityByRoomTypeName(availabilities: IProtelAvailability[], roomTypeName: string) {
+    return availabilities.filter((availability) => availability.room_type_name === roomTypeName)
   }
 
   getAvailabilityByRoomTypeNameAndByDate(
@@ -27,6 +33,18 @@ export class AvailabilityHelper {
     return availabilities.filter((availability) =>
       this.dateHelper.isSameDay(availability.availability_start, date)
     )
+  }
+
+  groupAvailabilitiesByDate(availabilities: IProtelAvailability[]) {
+    const groupedAvailabilities: { [key: string]: IProtelAvailability[] } = {}
+    availabilities.forEach((availability) => {
+      const key = this.dateFormatter.dddotmmdotyyyy(availability.availability_start)
+      if (!groupedAvailabilities[key]) {
+        groupedAvailabilities[key] = []
+      }
+      groupedAvailabilities[key].push(availability)
+    })
+    return groupedAvailabilities
   }
 
   convertToAvailability(availability: IProtelAvailability) {
