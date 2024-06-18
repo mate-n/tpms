@@ -1,9 +1,11 @@
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import { DateHelper } from '@/helpers/DateHelper'
 import type { IValidator } from '@/shared/interfaces/IValidator'
+import { GuestsPerRoomHelper } from '@/helpers/GuestsPerRoomHelper'
 
 export class ReservationValidator implements IValidator {
   private dateHelper: DateHelper = new DateHelper()
+  private guestsPerRoomHelper: GuestsPerRoomHelper = new GuestsPerRoomHelper()
 
   validate(reservation: IReservation): void {
     reservation.errors = {}
@@ -16,8 +18,11 @@ export class ReservationValidator implements IValidator {
   }
 
   isGuestsPerRoomValid(reservation: IReservation): void {
-    if (reservation.numberOfGuestsPerRoom < 1) {
-      reservation.errors!['numberOfGuestsPerRoom'] = 'Guests per room cannot be less than 1'
+    const numberOfGuests = this.guestsPerRoomHelper.getTotalNumberOfGuests(
+      reservation.guestsPerRoom
+    )
+    if (numberOfGuests < 1) {
+      reservation.errors!['guestsPerRoom'] = 'Guests per room cannot be less than 1'
     }
   }
 
