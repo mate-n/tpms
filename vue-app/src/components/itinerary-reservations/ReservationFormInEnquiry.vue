@@ -268,26 +268,9 @@ const selectingAvailabilities = (availability: IProtelAvailability) => {
 
 const isMouseDown = ref(false)
 
-/*
-window.addEventListener(
-  'mousedown',
-  function (e) {
-    console.log('mousedown')
-    isMouseDown.value = true
-  },
-  false
-)
-
-window.addEventListener(
-  'mouseup',
-  function (e) {
-    console.log('mouseup')
-    console.log(selectedProtelAvailabilities.value)
-    isMouseDown.value = false
-  },
-  false
-)
-  */
+const getAvailabilitiesGroupedByDate = (protelAvailabilities: IProtelAvailability[]) => {
+  return availabilityHelper.groupAvailabilitiesByDate(protelAvailabilities)
+}
 </script>
 
 <template>
@@ -446,34 +429,23 @@ window.addEventListener(
           </template>
         </tr>
         <tr
-          v-for="room of availabilityHelper.getUniqueRoomTypeNames(
+          v-for="roomTypeName of availabilityHelper.getUniqueRoomTypeNames(
             reservation.protelAvailabilities
           )"
-          :key="room"
+          :key="roomTypeName"
         >
           <td>
-            {{ room }}
+            {{ roomTypeName }}
           </td>
-          <td v-for="date of availableDates" :key="date.toISOString()" class="bg-lightgray">
-            <template
-              v-for="availability of [
-                availabilityHelper.getAvailabilityByRoomTypeNameAndByDate(
+          <td>
+            <ProtelAvailabilitiesSelecter
+              :protel-availabilities="
+                availabilityHelper.getAvailabilityByRoomTypeName(
                   reservation.protelAvailabilities,
-                  room,
-                  date
+                  roomTypeName
                 )
-              ]"
-              :key="availability?.id"
-            >
-              <template v-if="availability">
-                <div
-                  class="bg-white mr-3 px-5 py-2 my-2 text-center"
-                  @mouseenter="selectingAvailabilities(availability)"
-                >
-                  {{ availability?.rates_data[0].room_rate }}
-                </div>
-              </template>
-            </template>
+              "
+            ></ProtelAvailabilitiesSelecter>
           </td>
         </tr>
       </tbody>
@@ -504,8 +476,4 @@ window.addEventListener(
       </RoomDetailsCard>
     </v-card>
   </v-dialog>
-
-  <ProtelAvailabilitiesSelecter
-    :protel-availabilities="reservation.protelAvailabilities"
-  ></ProtelAvailabilitiesSelecter>
 </template>
