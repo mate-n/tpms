@@ -23,9 +23,25 @@ export class AvailabilityHelper {
     )
   }
 
+  getAvailabilitiesByDate(availabilities: IProtelAvailability[], date: Date) {
+    return availabilities.filter((availability) =>
+      this.dateHelper.isSameDay(availability.availability_start, date)
+    )
+  }
+
   convertToAvailability(availability: IProtelAvailability) {
-    availability.date_time = new Date(availability.date_time)
-    availability.availability_start = new Date(availability.availability_start)
-    availability.availability_end = new Date(availability.availability_end)
+    if (availability) {
+      availability.date_time = new Date(availability.date_time)
+      availability.availability_start = new Date(availability.availability_start)
+      availability.availability_end = new Date(availability.availability_end)
+    }
+  }
+
+  getTotalOfAvailabilityCount(availabilities: IProtelAvailability[]) {
+    let total = 0
+    availabilities.forEach((availability) => {
+      total += +availability.availability_count
+    })
+    return total
   }
 }
