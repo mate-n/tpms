@@ -248,6 +248,14 @@ const availableDates = computed(() => {
   }
   return dates
 })
+
+const getTotalOfAvailabilityCountOnDate = (date: Date) => {
+  const availabilities = availabilityHelper.getAvailabilitiesByDate(
+    reservation.value.protelAvailabilities,
+    date
+  )
+  return availabilityHelper.getTotalOfAvailabilityCount(availabilities)
+}
 </script>
 
 <template>
@@ -392,21 +400,9 @@ const availableDates = computed(() => {
             <v-icon class="text-primary">mdi-plus</v-icon>
             Availibility (incl. OB)
           </td>
-          <td
-            v-for="protelAvailability of reservation.protelAvailabilities"
-            :key="protelAvailability.room_type_code"
-            class="bg-lightgray"
-          >
-            <div
-              class="bg-white mr-3 px-5 py-2 my-2 text-center"
-              :class="{
-                'bg-primary':
-                  reservation.selectedProtelAvailability &&
-                  protelAvailability.id === reservation.selectedProtelAvailability.id
-              }"
-              @click="selectProtelAvailability(protelAvailability)"
-            >
-              {{ protelAvailability.availability_count }}
+          <td v-for="date of availableDates" :key="date.toISOString()" class="bg-lightgray">
+            <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
+              {{ getTotalOfAvailabilityCountOnDate(date) }}
             </div>
           </td>
           <template v-if="reservation.protelAvailabilities.length === 0">
