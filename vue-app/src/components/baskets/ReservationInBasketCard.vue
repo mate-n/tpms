@@ -19,6 +19,7 @@ import TicketsCard from '../tickets/TicketsCard.vue'
 import { TicketService } from '@/services/TicketService'
 import TicketsTable from '../tickets/TicketsTable.vue'
 import type { ITicket } from '@/shared/interfaces/ITicket'
+import { GuestsPerRoomHelper } from '@/helpers/GuestsPerRoomHelper'
 const ticketsService = new TicketService()
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
@@ -32,6 +33,7 @@ const profileService = new ProfileService(axios)
 const roomService = new RoomService(axios)
 const dateFormatter = new DateFormatter()
 const dateHelper = new DateHelper()
+const guestsPerRoomHelper = new GuestsPerRoomHelper()
 onBeforeMount(() => {
   if (reservation.value.propertyID) {
     propertyService.get(reservation.value.propertyID).then((response) => {
@@ -129,7 +131,7 @@ onMounted(() => {
             <v-col><span class="standard-caption">Nights</span><br />{{ numberOfNights }}</v-col>
             <v-col
               ><span class="standard-caption">Guests per room</span><br />{{
-                reservation.numberOfGuestsPerRoom
+                guestsPerRoomHelper.getTotalNumberOfGuests(reservation.guestsPerRoom)
               }}
             </v-col>
             <v-col><span class="standard-caption">Email</span><br />{{ profile?.email }}</v-col>
