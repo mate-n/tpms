@@ -161,8 +161,8 @@ onMounted(() => {
             >
             <v-col>
               AVERAGE RATE<br />
-              {{ reservation.selectedProtelAvailability?.rates_data[0].room_rate }}</v-col
-            >
+              {{ reservationHelper.getAverageRoomRate(reservation.selectedProtelAvailabilities) }}
+            </v-col>
             <v-col></v-col>
             <v-col></v-col>
             <v-col class="d-flex"> </v-col>
