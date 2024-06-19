@@ -38,12 +38,20 @@ const emit = defineEmits(['check', 'change', 'remove'])
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 const props = defineProps({
   previousReservation: { type: Object as () => IReservation, required: false },
-  nextReservation: { type: Object as () => IReservation, required: false }
+  nextReservation: { type: Object as () => IReservation, required: false },
+  collapseExpansion: { type: Number, required: false }
 })
 const campsInDropdown: Ref<ICamp[]> = ref([])
 const roomsInDropdown: Ref<IRoom[]> = ref([])
 const profilesInDropdown: Ref<IProfile[]> = ref([])
 const profileDialog = ref(false)
+
+watch(
+  () => props.collapseExpansion,
+  () => {
+    expansionModel.value = []
+  }
+)
 
 onBeforeMount(() => {
   campService.findAll().then((response: ICamp[]) => {
@@ -156,6 +164,10 @@ const reset = () => {
   reservation.value.reset()
 }
 
+const edit = () => {
+  expansionModel.value = ['availabilities']
+}
+
 const remove = (reservation: IReservation) => {
   emit('remove', reservation)
 }
@@ -257,6 +269,8 @@ const updateSelectedProtelAvailabilities = (
   reservation.value.selectedProtelAvailabilities.push(...availabilities)
   emitChange()
 }
+
+const expansionModel = ref<string[] | null>(['availabilities'])
 </script>
 
 <template>
@@ -359,6 +373,8 @@ const updateSelectedProtelAvailabilities = (
         </div>
       </v-col>
       <v-col class="d-flex justify-space-between">
+        <v-btn class="secondary-button mr-3" @click="edit()">Edit</v-btn>
+
         <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
         <v-btn class="danger-button" @click="remove(reservation)" v-if="showRemoveButton">
           Remove
@@ -382,80 +398,87 @@ const updateSelectedProtelAvailabilities = (
       color="primary"
       indeterminate
     ></v-progress-linear>
-    <v-table>
-      <thead>
-        <tr class="bg-lightblue">
-          <th class="" style="width: 15rem"></th>
+    <v-expansion-panels class="mb-2 mt-2" v-model="expansionModel">
+      <v-expansion-panel title="Availabilities" value="availabilities">
+        <v-expansion-panel-text>
+          <v-table>
+            <thead>
+              <tr class="bg-lightblue">
+                <th class="" style="width: 15rem"></th>
 
-          <th class="d-flex">
-            <div
-              v-for="date of availableDates"
-              :key="date.toISOString()"
-              class="text-center availability-box-width"
-            >
-              {{ dateHelper.getNameOfDay(date) }}<br />
-              {{ dateFormatter.dddotmm(date) }}
-            </div>
-          </th>
+                <th class="d-flex">
+                  <div
+                    v-for="date of availableDates"
+                    :key="date.toISOString()"
+                    class="text-center availability-box-width"
+                  >
+                    {{ dateHelper.getNameOfDay(date) }}<br />
+                    {{ dateFormatter.dddotmm(date) }}
+                  </div>
+                </th>
 
-          <template v-if="reservation.protelAvailabilities.length === 0">
-            <th v-for="i in 12" :key="i"></th>
-          </template>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="d-flex justify-space-between align-center">
-            <v-icon class="text-primary">mdi-plus</v-icon>
-            Availibility (incl. OB)
-          </td>
-          <td class="bg-lightgray">
-            <div class="d-flex">
-              <div
-                v-for="date of availableDates"
-                :key="date.toISOString()"
-                class="text-center availability-box-width"
+                <template v-if="reservation.protelAvailabilities.length === 0">
+                  <th v-for="i in 12" :key="i"></th>
+                </template>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="d-flex justify-space-between align-center">
+                  <v-icon class="text-primary">mdi-plus</v-icon>
+                  Availibility (incl. OB)
+                </td>
+                <td class="bg-lightgray">
+                  <div class="d-flex">
+                    <div
+                      v-for="date of availableDates"
+                      :key="date.toISOString()"
+                      class="text-center availability-box-width"
+                    >
+                      <div class="availability-inner-box">
+                        {{ getTotalOfAvailabilityCountOnDate(date) }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <template v-if="reservation.protelAvailabilities.length === 0">
+                  <td v-for="i in 12" :key="i" class="bg-lightgray">
+                    <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
+                      <v-icon>mdi-circle-small</v-icon>
+                    </div>
+                  </td>
+                </template>
+              </tr>
+              <tr
+                v-for="roomTypeName of availabilityHelper.getUniqueRoomTypeNames(
+                  reservation.protelAvailabilities
+                )"
+                :key="roomTypeName"
               >
-                <div class="availability-inner-box">
-                  {{ getTotalOfAvailabilityCountOnDate(date) }}
-                </div>
-              </div>
-            </div>
-          </td>
-          <template v-if="reservation.protelAvailabilities.length === 0">
-            <td v-for="i in 12" :key="i" class="bg-lightgray">
-              <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
-                <v-icon>mdi-circle-small</v-icon>
-              </div>
-            </td>
-          </template>
-        </tr>
-        <tr
-          v-for="roomTypeName of availabilityHelper.getUniqueRoomTypeNames(
-            reservation.protelAvailabilities
-          )"
-          :key="roomTypeName"
-        >
-          <td>
-            {{ roomTypeName }}
-          </td>
-          <td class="bg-lightgray">
-            <ProtelAvailabilitiesSelecter
-              :protel-availabilities="
-                availabilityHelper.getAvailabilityByRoomTypeName(
-                  reservation.protelAvailabilities,
-                  roomTypeName
-                )
-              "
-              :guests-per-room="reservation.guestsPerRoom"
-              @selected-protel-availabilities="
-                (availabilities) => updateSelectedProtelAvailabilities(availabilities, roomTypeName)
-              "
-            ></ProtelAvailabilitiesSelecter>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
+                <td>
+                  {{ roomTypeName }}
+                </td>
+                <td class="bg-lightgray">
+                  <ProtelAvailabilitiesSelecter
+                    :protel-availabilities="
+                      availabilityHelper.getAvailabilityByRoomTypeName(
+                        reservation.protelAvailabilities,
+                        roomTypeName
+                      )
+                    "
+                    :guests-per-room="reservation.guestsPerRoom"
+                    @selected-protel-availabilities="
+                      (availabilities) =>
+                        updateSelectedProtelAvailabilities(availabilities, roomTypeName)
+                    "
+                  ></ProtelAvailabilitiesSelecter>
+                </td>
+              </tr>
+            </tbody> </v-table
+        ></v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
     <div class="d-flex justify-end">
       <v-card>
         <v-card-text>
