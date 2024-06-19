@@ -14,7 +14,6 @@ export class ReservationValidator implements IValidator {
     this.isNightsValid(reservation)
     this.isPropertyIDValid(reservation)
     this.isProfileIDValid(reservation)
-    this.isSelectedProtelAvailabilityValid(reservation)
   }
 
   isGuestsPerRoomValid(reservation: IReservation): void {
@@ -30,11 +29,9 @@ export class ReservationValidator implements IValidator {
     if (reservation.numberOfRooms < 1) {
       reservation.errors!['numberOfRooms'] = 'Rooms cannot be less than 1'
     }
-    if (
-      reservation.selectedProtelAvailability &&
-      reservation.selectedProtelAvailability.availability_count
-    ) {
-      if (reservation.numberOfRooms > reservation.selectedProtelAvailability.availability_count) {
+
+    for (const availability of reservation.selectedProtelAvailabilities) {
+      if (availability.availability_count < reservation.numberOfRooms) {
         reservation.errors!['numberOfRooms'] = 'Not enough rooms available for this room type'
       }
     }
@@ -66,12 +63,6 @@ export class ReservationValidator implements IValidator {
   isProfileIDValid(reservation: IReservation): void {
     if (!reservation.profileID) {
       reservation.errors!['profileID'] = 'Profile cannot be empty'
-    }
-  }
-
-  isSelectedProtelAvailabilityValid(reservation: IReservation): void {
-    if (!reservation.selectedProtelAvailability) {
-      reservation.errors!['selectedProtelAvailability'] = 'Room Type cannot be empty'
     }
   }
 }
