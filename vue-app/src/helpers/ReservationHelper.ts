@@ -2,10 +2,12 @@ import type { IReservation } from '@/shared/interfaces/IReservation'
 import { TicketHelper } from './TicketHelper'
 import { DateHelper } from './DateHelper'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
+import { RatesHelper } from './RatesHelper'
 
 export class ReservationHelper {
   dateHelper = new DateHelper()
   ticketHelper = new TicketHelper()
+  ratesHelper = new RatesHelper()
   isReservationFirstOrLastOfArray(reservation: IReservation, reservations: IReservation[]) {
     const reservationWithLowestOrderIndex = reservations.reduce(
       (acc, curr) => (curr.orderIndex < acc.orderIndex ? curr : acc),
@@ -29,11 +31,22 @@ export class ReservationHelper {
     return numberOfNights
   }
 
+  calculateSumOfAllAvailabilities(reservation: IReservation): number {
+    let sum = 0
+    for (const protelAvailability of reservation.selectedProtelAvailabilities) {
+      sum += this.ratesHelper.calculateActualRate(
+        protelAvailability.rates_data[0],
+        reservation.guestsPerRoom
+      )
+    }
+    return sum
+  }
+
   calculateTotalRate(reservation: IReservation): number {
     let roomRate = 0
 
     for (const protelAvailability of reservation.selectedProtelAvailabilities) {
-      roomRate += parseFloat(protelAvailability.rates_data[0].room_rate)
+      roomRate += protelAvailability.rates_data[0].room_rate
     }
 
     return roomRate
@@ -49,7 +62,7 @@ export class ReservationHelper {
   getRoomRate(reservation: IReservation): number {
     let roomRate = 0
     for (const protelAvailability of reservation.protelAvailabilities) {
-      roomRate += parseFloat(protelAvailability.rates_data[0].room_rate)
+      roomRate += protelAvailability.rates_data[0].room_rate
     }
     return roomRate
   }
@@ -66,8 +79,12 @@ export class ReservationHelper {
   getAverageRoomRate(availabilities: IProtelAvailability[]): number {
     let total = 0
     for (const availability of availabilities) {
-      total += parseFloat(availability.rates_data[0].room_rate)
+      total += availability.rates_data[0].room_rate
     }
     return total / availabilities.length
+  }
+
+  doAllReservationsHaveProfileID(reservations: IReservation[]): boolean {
+    return reservations.every((reservation) => reservation.profileID !== undefined)
   }
 }
