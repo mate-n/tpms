@@ -19,10 +19,3 @@ export interface IProtelAvailability {
   features: string
   rates_data: IRatesData[]
 }
-
-interface IRatesData {
-  rates_code: string
-  occupancy: string
-  room_rate: string
-  add_on_child1: string
-}
