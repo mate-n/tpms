@@ -172,7 +172,7 @@ const propertyChange = () => {
 
 const arrivalDateChange = () => {
   if (!props.nextReservation) {
-    reservation.value.departureDate = dateHelper.addDays(reservation.value.arrivalDate, 1)
+    reservation.value.departureDate = dateHelper.addDays(reservation.value.arrivalDate, 2)
   }
   emitChange()
 }
@@ -248,8 +248,13 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
   return availabilityHelper.getTotalOfAvailabilityCount(availabilities)
 }
 
-const selectedProtelAvailabilities = (availabilities: IProtelAvailability[]) => {
-  reservation.value.selectedProtelAvailabilities = availabilities
+const updateSelectedProtelAvailabilities = (
+  availabilities: IProtelAvailability[],
+  roomTypeName: string
+) => {
+  reservation.value.selectedProtelAvailabilities =
+    reservation.value.selectedProtelAvailabilities.filter((a) => a.room_type_name !== roomTypeName)
+  reservation.value.selectedProtelAvailabilities.push(...availabilities)
   emitChange()
 }
 </script>
@@ -444,7 +449,7 @@ const selectedProtelAvailabilities = (availabilities: IProtelAvailability[]) => 
               "
               :guests-per-room="reservation.guestsPerRoom"
               @selected-protel-availabilities="
-                (availabilities) => selectedProtelAvailabilities(availabilities)
+                (availabilities) => updateSelectedProtelAvailabilities(availabilities, roomTypeName)
               "
             ></ProtelAvailabilitiesSelecter>
           </td>
