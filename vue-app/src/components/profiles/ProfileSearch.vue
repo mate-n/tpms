@@ -100,8 +100,8 @@ const profileSearch = defineModel({ required: false, type: Object as () => IProf
       <div class="flex-grow-1 flex-shrink-0">
         <div class="d-flex">
           <v-text-field
-            v-model="profileSearch.surName"
-            label="Surname"
+            v-model="profileSearch.lastName"
+            label="Last Name"
             variant="underlined"
             class="me-3"
           ></v-text-field>
@@ -157,7 +157,7 @@ const profileSearch = defineModel({ required: false, type: Object as () => IProf
           ></v-text-field>
           <v-text-field
             v-model="profileSearch.wildcardMembershipNumber"
-            label="Wildcard membership Number"
+            label="Wildcard Membership Number"
             variant="underlined"
             class="me-3"
           ></v-text-field>

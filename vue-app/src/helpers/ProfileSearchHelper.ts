@@ -7,7 +7,7 @@ import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch
 export class ProfileSearchHelper {
   convertToProfile(profileSearch: IProfileSearch): IProfile {
     const profile = new Profile()
-    if (profileSearch.surName) profile.lastName = profileSearch.surName
+    if (profileSearch.lastName) profile.lastName = profileSearch.lastName
     if (profileSearch.firstName) profile.firstName = profileSearch.firstName
     if (profileSearch.email) {
       const communication = new ProfileCommunication()
@@ -31,19 +31,6 @@ export class ProfileSearchHelper {
     if (profileSearch.roomSeekerClientCode)
       profile.roomSeekerClientCode = profileSearch.roomSeekerClientCode
     if (profileSearch.tpmsProfileID) profile.tpmsProfileID = profileSearch.tpmsProfileID
-    if (profileSearch.loyaltyMembershipNumber) {
-      const loyaltyMembership = new ProfileMembershipCard()
-      loyaltyMembership.membershipName = 'Loyalty'
-      loyaltyMembership.cardNumber = profileSearch.loyaltyMembershipNumber
-      profile.membershipCards.push(loyaltyMembership)
-    }
-    if (profileSearch.wildcardMembershipNumber) {
-      const wildcardmembership = new ProfileMembershipCard()
-      wildcardmembership.membershipName = 'Wildcard'
-      wildcardmembership.cardNumber = profileSearch.wildcardMembershipNumber
-      profile.membershipCards.push(wildcardmembership)
-    }
-
     return profile
   }
 }
