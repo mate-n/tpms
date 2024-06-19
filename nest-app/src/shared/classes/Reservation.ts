@@ -26,7 +26,7 @@ export class Reservation implements IReservation {
   orderIndex: number
   propertyAvailabilities: IPropertyAvailability[]
   protelAvailabilities: IProtelAvailability[]
-  selectedProtelAvailability: IProtelAvailability | undefined
+  selectedProtelAvailabilities: IProtelAvailability[]
   issues: string[]
   errors: Record<string, string>
   dateHelper: DateHelper = new DateHelper()
@@ -43,12 +43,13 @@ export class Reservation implements IReservation {
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
     this.arrivalDate = this.dateHelper.getTodayDate()
-    this.departureDate = this.dateHelper.addDays(this.arrivalDate, 1)
+    this.departureDate = this.dateHelper.addDays(this.arrivalDate, 2)
     this.numberOfRooms = 1
     this.baseRateCategory = ''
     this.orderIndex = 0
     this.propertyAvailabilities = []
     this.protelAvailabilities = []
+    this.selectedProtelAvailabilities = []
     this.issues = []
     this.errors = {}
     this.isBookerGuest = true
@@ -79,7 +80,7 @@ export class Reservation implements IReservation {
     this.orderIndex = reservation.orderIndex
     this.propertyAvailabilities = reservation.propertyAvailabilities
     this.protelAvailabilities = reservation.protelAvailabilities
-    this.selectedProtelAvailability = reservation.selectedProtelAvailability
+    this.selectedProtelAvailabilities = reservation.selectedProtelAvailabilities
     this.issues = reservation.issues
     if (reservation.errors) {
       this.errors = reservation.errors
@@ -111,7 +112,7 @@ export class Reservation implements IReservation {
     this.propertyID = undefined
     this.propertyAvailabilities = []
     this.protelAvailabilities = []
-    this.selectedProtelAvailability = undefined
+    this.selectedProtelAvailabilities = []
     this.issues = []
     this.errors = {}
     this.isBookerGuest = true

@@ -2,7 +2,7 @@ import type { ISearch } from '../ISearch'
 
 export interface IProfileSearch extends ISearch {
   name?: string
-  surName?: string
+  lastName?: string
   firstName?: string
   email?: string
   mobile?: string
