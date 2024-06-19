@@ -1,6 +1,7 @@
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import { TicketHelper } from './TicketHelper'
 import { DateHelper } from './DateHelper'
+import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 
 export class ReservationHelper {
   dateHelper = new DateHelper()
@@ -29,13 +30,13 @@ export class ReservationHelper {
   }
 
   calculateTotalRate(reservation: IReservation): number {
-    const numberOfNights = this.getNumberOfNights(reservation)
     let roomRate = 0
-    if (reservation.selectedProtelAvailability) {
-      roomRate = parseFloat(reservation.selectedProtelAvailability.rates_data[0].room_rate)
+
+    for (const protelAvailability of reservation.selectedProtelAvailabilities) {
+      roomRate += parseFloat(protelAvailability.rates_data[0].room_rate)
     }
 
-    return roomRate * numberOfNights
+    return roomRate
   }
 
   calculateTotalReservationPrice(reservation: IReservation): number {
@@ -47,8 +48,8 @@ export class ReservationHelper {
 
   getRoomRate(reservation: IReservation): number {
     let roomRate = 0
-    if (reservation.selectedProtelAvailability) {
-      roomRate = parseFloat(reservation.selectedProtelAvailability.rates_data[0].room_rate)
+    for (const protelAvailability of reservation.protelAvailabilities) {
+      roomRate += parseFloat(protelAvailability.rates_data[0].room_rate)
     }
     return roomRate
   }
@@ -60,5 +61,13 @@ export class ReservationHelper {
       total += roomRate + this.ticketHelper.getTotalPrice(reservation.tickets)
     }
     return total
+  }
+
+  getAverageRoomRate(availabilities: IProtelAvailability[]): number {
+    let total = 0
+    for (const availability of availabilities) {
+      total += parseFloat(availability.rates_data[0].room_rate)
+    }
+    return total / availabilities.length
   }
 }
