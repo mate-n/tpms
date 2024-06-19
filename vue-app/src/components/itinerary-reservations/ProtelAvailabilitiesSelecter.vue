@@ -2,7 +2,7 @@
 import { DateHelper } from '@/helpers/DateHelper'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
-import { computed, nextTick, onMounted, ref, watch, type Ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
 const selectedProtelAvailabilitySelectables = computed(() =>
   protelAvailabilitySelectables.value.filter((p) => p.selected)
@@ -63,10 +63,7 @@ const mouseDownOnRightHandle = (e: MouseEvent) => {
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
 
-    emits(
-      'selectedProtelAvailabilities',
-      protelAvailabilitySelectables.value.map((p) => p.availability)
-    )
+    afterMouseUp()
   }
 
   document.addEventListener('mousemove', handleMouseMove)
@@ -100,10 +97,7 @@ const mouseDownOnLeftHandle = (e: MouseEvent) => {
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
 
-    emits(
-      'selectedProtelAvailabilities',
-      protelAvailabilitySelectables.value.map((p) => p.availability)
-    )
+    afterMouseUp()
   }
 
   document.addEventListener('mousemove', handleMouseMove)
@@ -135,14 +129,24 @@ const mouseDownCenterHandle = (e: MouseEvent) => {
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
 
-    emits(
-      'selectedProtelAvailabilities',
-      protelAvailabilitySelectables.value.map((p) => p.availability)
-    )
+    afterMouseUp()
   }
 
   document.addEventListener('mousemove', handleMouseMove)
   document.addEventListener('mouseup', handleMouseUp)
+}
+
+const afterMouseUp = () => {
+  if (selectedProtelAvailabilitySelectables.value.length < 2) {
+    showSelectBar.value = false
+    if (overlayDiv.value) overlayDiv.value.style.width = '100px'
+    protelAvailabilitySelectables.value.forEach((p) => (p.selected = false))
+  }
+
+  emits(
+    'selectedProtelAvailabilities',
+    protelAvailabilitySelectables.value.map((p) => p.availability)
+  )
 }
 
 onMounted(() => {
@@ -251,7 +255,7 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
   height: 2rem;
   width: 50px;
   background-color: #5cb4ef;
-  opacity: 0.95;
+  opacity: 0.9;
   margin-top: 0.6rem;
 }
 .resizer {
@@ -328,17 +332,10 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
           availabilitySelectable.element = el
         }
       "
-      class="text-center border-primary rounded"
-      style="width: 6rem"
+      class="text-center border-primary rounded availability-box-width"
       @click="addSelectBar(availabilitySelectable)"
     >
-      <div
-        class="mr-3 px-5 py-2 my-2 text-center"
-        :class="{
-          'bg-white': availabilitySelectable.selected,
-          'bg-white': !availabilitySelectable.selected
-        }"
-      >
+      <div class="mr-3 px-5 py-2 my-2 text-center availability-inner-box">
         {{ availabilitySelectable.availability?.rates_data[0]?.room_rate }}
       </div>
     </div>
