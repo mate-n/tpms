@@ -68,12 +68,15 @@ const updateShowBookButton = () => {
   }
 }
 
-const clickOnAdd = () => {
+const clickOnAmend = () => {
+  closeExpansionPanels.value++
   updateOrderIndexes()
   for (const reservation of reservations.value) {
     basketItemsStore.addReservation(reservation)
   }
 }
+
+const closeExpansionPanels = ref(0)
 
 onBeforeMount(() => {
   addReservation()
@@ -119,13 +122,14 @@ const showBookButton = ref(false)
       @remove="(reservation) => removeReservation(reservation)"
       :previous-reservation="reservations[i - 1]"
       :next-reservation="reservations[i + 1]"
+      :collapse-expansion="closeExpansionPanels"
     ></ReservationFormInEnquiry>
   </template>
 
   <v-container fluid>
     <div class="d-flex justify-end mt-3">
       <v-btn class="secondary-button">Cancel</v-btn>
-      <v-btn class="ml-2 primary-button" v-if="showBookButton" @click="clickOnAdd()">Amend</v-btn>
+      <v-btn class="ml-2 primary-button" v-if="showBookButton" @click="clickOnAmend()">Amend</v-btn>
     </div>
   </v-container>
 </template>
