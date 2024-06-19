@@ -1,3 +1,5 @@
+import type { IRatesData } from './IRatesData'
+
 export interface IProtelAvailability {
   id: string
   transaction_id: string
@@ -18,11 +20,4 @@ export interface IProtelAvailability {
   room_type_name: string
   features: string
   rates_data: IRatesData[]
-}
-
-interface IRatesData {
-  rates_code: string
-  occupancy: string
-  room_rate: string
-  add_on_child1: string
 }
