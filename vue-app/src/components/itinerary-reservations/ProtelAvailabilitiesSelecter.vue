@@ -7,6 +7,8 @@ import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/I
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 const ratesHelper = new RatesHelper()
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
+const showSelectBar = ref(false)
+
 const selectedProtelAvailabilitySelectables = computed(() =>
   protelAvailabilitySelectables.value.filter((p) => p.selected)
 )
@@ -19,6 +21,8 @@ const props = defineProps({
 watch(
   props,
   () => {
+    showSelectBar.value = false
+
     protelAvailabilitySelectables.value = []
     for (const protelAvailability of props.protelAvailabilities) {
       protelAvailabilitySelectables.value.push({
@@ -229,8 +233,6 @@ const numberOfNights = computed(() => {
 
   return isNaN(nights) ? 0 : nights
 })
-
-const showSelectBar = ref(false)
 
 const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectable) => {
   showSelectBar.value = true
