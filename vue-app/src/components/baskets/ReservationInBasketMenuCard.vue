@@ -11,6 +11,10 @@ import { onBeforeMount } from 'vue'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
+import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
+import { RatesHelper } from '@/helpers/RatesHelper'
+const ratesHelper = new RatesHelper()
+const availabilityHelper = new AvailabilityHelper()
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
@@ -25,6 +29,7 @@ const roomService = new RoomService(axios)
 const dateFormatter = new DateFormatter()
 
 onBeforeMount(() => {
+  console.log('props.reservation', props.reservation)
   if (props.reservation.propertyID) {
     propertyService.get(props.reservation.propertyID).then((response) => {
       property.value = response
@@ -86,8 +91,20 @@ const showRemoveButton = computed(() => {
         <v-col></v-col>
         <v-col class="">
           <div class="mb-1 text-end">
-            {{ reservationHelper.getNumberOfNights(reservation) }} x
-            {{ reservationHelper.getRoomRate(reservation) }}
+            <div
+              v-for="availabilityGroup of availabilityHelper.groupAvailabilitiesByRoomType(
+                reservation.selectedProtelAvailabilities
+              )"
+              :key="availabilityGroup[0].room_type_name"
+            >
+              {{ availabilityGroup.length }} x
+              {{
+                ratesHelper.calculateActualRate(
+                  availabilityGroup[0].rates_data[0],
+                  reservation.guestsPerRoom
+                )
+              }}
+            </div>
           </div>
           <v-divider></v-divider>
           <div class="text-end mt-1">
