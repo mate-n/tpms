@@ -54,7 +54,6 @@ onBeforeMount(() => {
     roomsInDropdown.value = response
   })
 
-  //const profileSearch: IProfileSearch = {}
   profileService.findAll().then((response: IProfile[]) => {
     profilesInDropdown.value = response
   })
@@ -229,10 +228,6 @@ const showRemoveButton = computed(() => {
 
 const availabilitiesLoading = ref(false)
 
-const clickOnRoomTypeCode = (protelAvailability: IProtelAvailability) => {
-  protelAvailabilityForDetails.value = protelAvailability
-  roomTypeDialog.value = true
-}
 const roomTypeDialog = ref(false)
 
 const protelAvailabilityForDetails = ref<IProtelAvailability | undefined>(undefined)
@@ -447,6 +442,7 @@ const selectedProtelAvailabilities = (availabilities: IProtelAvailability[]) => 
                   roomTypeName
                 )
               "
+              :guests-per-room="reservation.guestsPerRoom"
               @selected-protel-availabilities="
                 (availabilities) => selectedProtelAvailabilities(availabilities)
               "
@@ -458,7 +454,8 @@ const selectedProtelAvailabilities = (availabilities: IProtelAvailability[]) => 
     <div class="d-flex justify-end">
       <v-card>
         <v-card-text>
-          <strong>Total: </strong>{{ reservationHelper.calculateTotalRate(reservation).toFixed(2) }}
+          <strong>Total: </strong
+          >{{ reservationHelper.calculateSumOfAllAvailabilities(reservation) }}
         </v-card-text>
       </v-card>
     </div>
