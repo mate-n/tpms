@@ -4,7 +4,7 @@ import { DateHelper } from '@/helpers/DateHelper'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
 import { useBasketItemsStore } from '@/stores/basketItems'
-import { computed, onMounted, ref, type Ref } from 'vue'
+import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import { onBeforeMount } from 'vue'
 import ConservationFeesCard from './ConservationFeesCard.vue'
 import type { IProperty } from '@/shared/interfaces/IProperty'
@@ -20,6 +20,9 @@ import { TicketService } from '@/services/TicketService'
 import TicketsTable from '../tickets/TicketsTable.vue'
 import type { ITicket } from '@/shared/interfaces/ITicket'
 import { GuestsPerRoomHelper } from '@/helpers/GuestsPerRoomHelper'
+import ProfileSearchCard from '../profiles/ProfileSearchCard.vue'
+import { ProfileHelper } from '@/helpers/ProfileHelper'
+const profileHelper = new ProfileHelper()
 const ticketsService = new TicketService()
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
@@ -34,6 +37,8 @@ const roomService = new RoomService(axios)
 const dateFormatter = new DateFormatter()
 const dateHelper = new DateHelper()
 const guestsPerRoomHelper = new GuestsPerRoomHelper()
+const profileDialog = ref(false)
+
 onBeforeMount(() => {
   if (reservation.value.propertyID) {
     propertyService.get(reservation.value.propertyID).then((response) => {
@@ -98,14 +103,66 @@ onMounted(() => {
     }
   })
 })
+const profilesInDropdown: Ref<IProfile[]> = ref([])
+onBeforeMount(() => {
+  profileService.findAll().then((response: IProfile[]) => {
+    profilesInDropdown.value = response
+  })
+})
+
+const profileSelected = (selectedProfile: IProfile) => {
+  changeProfileOfReservations(selectedProfile)
+  profileDialog.value = false
+}
+
+const emitChange = () => {
+  if (reservation.value.profileID) {
+    profileService.get(reservation.value.profileID).then((response) => {
+      changeProfileOfReservations(response)
+    })
+  }
+}
+const changeProfileOfReservations = (newProfile: IProfile) => {
+  profile.value = newProfile
+  profileHelper.changeProfile(reservation.value, newProfile)
+  basketItemsStore.reservations.forEach((reservation) => {
+    profileHelper.changeProfile(reservation, newProfile)
+  })
+}
+
+watch(
+  () => reservation.value.profileID,
+  (newValue) => {
+    if (newValue) {
+      profileService.get(newValue).then((response) => {
+        profile.value = response
+      })
+    }
+  }
+)
 </script>
 
 <template>
   <v-card class="mb-5">
     <v-card-text class="px-0">
-      <div class="d-flex justify-space-between">
+      <div class="d-flex justify-space-between align-center">
         <div class="ms-2 pb-3">
           <v-icon>mdi-chevron-double-right</v-icon><strong>{{ reservation.propertyName }}</strong>
+        </div>
+        <div class="d-flex align-center" style="min-width: 50%">
+          <v-autocomplete
+            label="Guest"
+            placeholder="Last Name | First Name"
+            hint="Last Name | First Name"
+            v-model="reservation.profileID"
+            :items="profilesInDropdown"
+            :item-title="(profile) => `${profile.lastName}, ${profile.firstName}`"
+            :item-value="(profile) => profile.id"
+            @update:model-value="emitChange()"
+          ></v-autocomplete>
+          <div class="d-flex align-center" @click="profileDialog = true">
+            <v-icon>mdi-magnify</v-icon>
+          </div>
         </div>
         <div>
           <v-icon
@@ -217,6 +274,15 @@ onMounted(() => {
         @close="ticketsCardDialog = false"
         @add-tickets-to-reservation="addTicketsToReservation()"
       />
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="profileDialog" fullscreen scrollable>
+    <v-card>
+      <ProfileSearchCard
+        @close="profileDialog = false"
+        @profile-selected="(profile) => profileSelected(profile)"
+      ></ProfileSearchCard>
     </v-card>
   </v-dialog>
 </template>
