@@ -68,7 +68,7 @@ const updateShowBookButton = () => {
   }
 }
 
-const clickOnAmend = () => {
+const clickOnBook = () => {
   closeExpansionPanels.value++
   updateOrderIndexes()
   for (const reservation of reservations.value) {
@@ -129,7 +129,7 @@ const showBookButton = ref(false)
   <v-container fluid>
     <div class="d-flex justify-end mt-3">
       <v-btn class="secondary-button">Cancel</v-btn>
-      <v-btn class="ml-2 primary-button" v-if="showBookButton" @click="clickOnAmend()">Amend</v-btn>
+      <v-btn class="ml-2 primary-button" v-if="showBookButton" @click="clickOnBook()">Book</v-btn>
     </div>
   </v-container>
 </template>
