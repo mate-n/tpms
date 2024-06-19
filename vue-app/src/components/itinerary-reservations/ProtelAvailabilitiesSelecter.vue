@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { DateHelper } from '@/helpers/DateHelper'
+import { RatesHelper } from '@/helpers/RatesHelper'
+import type { IGuestsPerRoom } from '@/shared/interfaces/IGuestsPerRoom'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
+const ratesHelper = new RatesHelper()
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
 const selectedProtelAvailabilitySelectables = computed(() =>
   protelAvailabilitySelectables.value.filter((p) => p.selected)
 )
 const dateHelper = new DateHelper()
 const props = defineProps({
-  protelAvailabilities: { type: Object as () => IProtelAvailability[], required: true }
+  protelAvailabilities: { type: Object as () => IProtelAvailability[], required: true },
+  guestsPerRoom: { type: Object as () => IGuestsPerRoom, required: true }
 })
 
 watch(
@@ -59,11 +63,9 @@ const mouseDownOnRightHandle = (e: MouseEvent) => {
 
   const handleMouseUp = () => {
     setSelectedProtelAvailabilities()
-
+    afterMouseUp()
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
-
-    afterMouseUp()
   }
 
   document.addEventListener('mousemove', handleMouseMove)
@@ -94,10 +96,9 @@ const mouseDownOnLeftHandle = (e: MouseEvent) => {
 
   const handleMouseUp = () => {
     setSelectedProtelAvailabilities()
+    afterMouseUp()
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
-
-    afterMouseUp()
   }
 
   document.addEventListener('mousemove', handleMouseMove)
@@ -126,10 +127,9 @@ const mouseDownCenterHandle = (e: MouseEvent) => {
 
   const handleMouseUp = () => {
     setSelectedProtelAvailabilities()
+    afterMouseUp()
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
-
-    afterMouseUp()
   }
 
   document.addEventListener('mousemove', handleMouseMove)
@@ -142,11 +142,6 @@ const afterMouseUp = () => {
     if (overlayDiv.value) overlayDiv.value.style.width = '100px'
     protelAvailabilitySelectables.value.forEach((p) => (p.selected = false))
   }
-
-  emits(
-    'selectedProtelAvailabilities',
-    protelAvailabilitySelectables.value.map((p) => p.availability)
-  )
 }
 
 onMounted(() => {
@@ -167,7 +162,10 @@ const setSelectedProtelAvailabilities = () => {
       selectable.selected = true
     }
   }
-
+  emits(
+    'selectedProtelAvailabilities',
+    protelAvailabilitySelectables.value.map((p) => p.availability)
+  )
   updateWidthOfOverlay()
 }
 
@@ -336,7 +334,12 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
       @click="addSelectBar(availabilitySelectable)"
     >
       <div class="mr-3 px-5 py-2 my-2 text-center availability-inner-box">
-        {{ availabilitySelectable.availability?.rates_data[0]?.room_rate }}
+        {{
+          ratesHelper.calculateActualRate(
+            availabilitySelectable.availability?.rates_data[0],
+            guestsPerRoom
+          )
+        }}
       </div>
     </div>
   </div>
