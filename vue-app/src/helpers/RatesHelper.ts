@@ -5,7 +5,7 @@ export class RatesHelper {
   calculateActualRate(ratesData: IRatesData, guestsPerRoom: IGuestsPerRoom) {
     let actualRate = 0
     const occupantUnits = Math.ceil(guestsPerRoom.numberOfAdults / ratesData.occupancy)
-    actualRate += ratesData.room_rate * occupantUnits
+    actualRate += parseFloat(ratesData.room_rate) * occupantUnits
     actualRate += ratesData.add_on_child1 * guestsPerRoom.numberOfChildren
     return actualRate
   }
