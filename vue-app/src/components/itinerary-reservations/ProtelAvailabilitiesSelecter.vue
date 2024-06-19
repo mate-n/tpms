@@ -136,13 +136,7 @@ const mouseDownCenterHandle = (e: MouseEvent) => {
   document.addEventListener('mouseup', handleMouseUp)
 }
 
-const afterMouseUp = () => {
-  if (selectedProtelAvailabilitySelectables.value.length < 2) {
-    showSelectBar.value = false
-    if (overlayDiv.value) overlayDiv.value.style.width = '100px'
-    protelAvailabilitySelectables.value.forEach((p) => (p.selected = false))
-  }
-}
+const afterMouseUp = () => {}
 
 onMounted(() => {
   if (!overlayDiv.value) return
@@ -162,9 +156,16 @@ const setSelectedProtelAvailabilities = () => {
       selectable.selected = true
     }
   }
+
+  if (selectedProtelAvailabilitySelectables.value.length < 2) {
+    showSelectBar.value = false
+    if (overlayDiv.value) overlayDiv.value.style.width = '100px'
+    protelAvailabilitySelectables.value.forEach((p) => (p.selected = false))
+  }
+
   emits(
     'selectedProtelAvailabilities',
-    protelAvailabilitySelectables.value.map((p) => p.availability)
+    selectedProtelAvailabilitySelectables.value.map((p) => p.availability)
   )
   updateWidthOfOverlay()
 }
