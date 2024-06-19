@@ -46,7 +46,10 @@ export class ReservationHelper {
     let roomRate = 0
 
     for (const protelAvailability of reservation.selectedProtelAvailabilities) {
-      roomRate += protelAvailability.rates_data[0].room_rate
+      roomRate += this.ratesHelper.calculateActualRate(
+        protelAvailability.rates_data[0],
+        reservation.guestsPerRoom
+      )
     }
 
     return roomRate
@@ -62,7 +65,7 @@ export class ReservationHelper {
   getRoomRate(reservation: IReservation): number {
     let roomRate = 0
     for (const protelAvailability of reservation.protelAvailabilities) {
-      roomRate += protelAvailability.rates_data[0].room_rate
+      roomRate += parseFloat(protelAvailability.rates_data[0].room_rate)
     }
     return roomRate
   }
@@ -79,7 +82,7 @@ export class ReservationHelper {
   getAverageRoomRate(availabilities: IProtelAvailability[]): number {
     let total = 0
     for (const availability of availabilities) {
-      total += availability.rates_data[0].room_rate
+      total += parseFloat(availability.rates_data[0].room_rate)
     }
     return total / availabilities.length
   }
