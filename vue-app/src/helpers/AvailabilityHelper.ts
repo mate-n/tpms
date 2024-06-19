@@ -47,6 +47,18 @@ export class AvailabilityHelper {
     return groupedAvailabilities
   }
 
+  groupAvailabilitiesByRoomType(availabilities: IProtelAvailability[]) {
+    const groupedAvailabilities: { [key: string]: IProtelAvailability[] } = {}
+    availabilities.forEach((availability) => {
+      const key = availability.room_type_name
+      if (!groupedAvailabilities[key]) {
+        groupedAvailabilities[key] = []
+      }
+      groupedAvailabilities[key].push(availability)
+    })
+    return groupedAvailabilities
+  }
+
   convertToAvailability(availability: IProtelAvailability) {
     if (availability) {
       availability.date_time = new Date(availability.date_time)
