@@ -167,7 +167,7 @@ const emitChange = () => {
 }
 
 const propertyChange = () => {
-  reservation.value.selectedProtelAvailability = undefined
+  reservation.value.selectedProtelAvailabilities = []
   emitChange()
 }
 
@@ -229,11 +229,6 @@ const showRemoveButton = computed(() => {
 
 const availabilitiesLoading = ref(false)
 
-const selectProtelAvailability = (protelAvailability: IProtelAvailability) => {
-  reservation.value.selectedProtelAvailability = protelAvailability
-  emitChange()
-}
-
 const clickOnRoomTypeCode = (protelAvailability: IProtelAvailability) => {
   protelAvailabilityForDetails.value = protelAvailability
   roomTypeDialog.value = true
@@ -258,18 +253,9 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
   return availabilityHelper.getTotalOfAvailabilityCount(availabilities)
 }
 
-const selectedProtelAvailabilities: Ref<IProtelAvailability[]> = ref([])
-
-const selectingAvailabilities = (availability: IProtelAvailability) => {
-  if (isMouseDown.value) {
-    selectedProtelAvailabilities.value.push(availability)
-  }
-}
-
-const isMouseDown = ref(false)
-
-const getAvailabilitiesGroupedByDate = (protelAvailabilities: IProtelAvailability[]) => {
-  return availabilityHelper.groupAvailabilitiesByDate(protelAvailabilities)
+const selectedProtelAvailabilities = (availabilities: IProtelAvailability[]) => {
+  reservation.value.selectedProtelAvailabilities = availabilities
+  emitChange()
 }
 </script>
 
@@ -400,10 +386,18 @@ const getAvailabilitiesGroupedByDate = (protelAvailabilities: IProtelAvailabilit
       <thead>
         <tr class="bg-lightblue">
           <th class="" style="width: 15rem"></th>
-          <th v-for="date of availableDates" :key="date.toISOString()" class="text-center">
-            {{ dateHelper.getNameOfDay(date) }}<br />
-            {{ dateFormatter.dddotmm(date) }}
+
+          <th class="d-flex">
+            <div
+              v-for="date of availableDates"
+              :key="date.toISOString()"
+              class="text-center availability-box-width"
+            >
+              {{ dateHelper.getNameOfDay(date) }}<br />
+              {{ dateFormatter.dddotmm(date) }}
+            </div>
           </th>
+
           <template v-if="reservation.protelAvailabilities.length === 0">
             <th v-for="i in 12" :key="i"></th>
           </template>
@@ -415,9 +409,17 @@ const getAvailabilitiesGroupedByDate = (protelAvailabilities: IProtelAvailabilit
             <v-icon class="text-primary">mdi-plus</v-icon>
             Availibility (incl. OB)
           </td>
-          <td v-for="date of availableDates" :key="date.toISOString()" class="bg-lightgray">
-            <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
-              {{ getTotalOfAvailabilityCountOnDate(date) }}
+          <td class="bg-lightgray">
+            <div class="d-flex">
+              <div
+                v-for="date of availableDates"
+                :key="date.toISOString()"
+                class="text-center availability-box-width"
+              >
+                <div class="availability-inner-box">
+                  {{ getTotalOfAvailabilityCountOnDate(date) }}
+                </div>
+              </div>
             </div>
           </td>
           <template v-if="reservation.protelAvailabilities.length === 0">
@@ -437,13 +439,16 @@ const getAvailabilitiesGroupedByDate = (protelAvailabilities: IProtelAvailabilit
           <td>
             {{ roomTypeName }}
           </td>
-          <td>
+          <td class="bg-lightgray">
             <ProtelAvailabilitiesSelecter
               :protel-availabilities="
                 availabilityHelper.getAvailabilityByRoomTypeName(
                   reservation.protelAvailabilities,
                   roomTypeName
                 )
+              "
+              @selected-protel-availabilities="
+                (availabilities) => selectedProtelAvailabilities(availabilities)
               "
             ></ProtelAvailabilitiesSelecter>
           </td>
