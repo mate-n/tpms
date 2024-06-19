@@ -26,7 +26,7 @@ const addReservation = () => {
     newReservation.arrivalDate = lastReservation.departureDate
     newReservation.profileID = selectedProfile.value
   }
-  const newDepartureDate = dateHelper.addDays(newReservation.arrivalDate, 1)
+  const newDepartureDate = dateHelper.addDays(newReservation.arrivalDate, 2)
   newReservation.departureDate = newDepartureDate
   showBookButton.value = false
 }
