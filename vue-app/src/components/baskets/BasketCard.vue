@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useBasketItemsStore } from '@/stores/basketItems'
 import ReservationInBasketCard from './ReservationInBasketCard.vue'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import router from '@/router'
 const basketItemsStore = useBasketItemsStore()
@@ -18,17 +18,38 @@ const totalPrice = computed(() => {
 })
 
 const clickOnBook = () => {
-  router.push('/itinerary-reservations/1')
-
-  emits('close')
+  checkIfBookingIsPossible()
 }
+
+const allowBook = computed(() => {
+  return (
+    basketItemsStore.reservations.length > 0 &&
+    reservationHelper.doAllReservationsHaveProfileID(basketItemsStore.reservations)
+  )
+})
+
+const checkIfBookingIsPossible = () => {
+  if (!allowBook.value) {
+    errors.value = []
+
+    errors.value.push('Please add a profile to the reservation before booking.')
+    errorsDialog.value = true
+  } else {
+    errors.value = []
+    router.push('/itinerary-reservations/1')
+    emits('close')
+  }
+}
+
+const errors = ref<string[]>([])
+const errorsDialog = ref(false)
 </script>
 
 <template>
   <div class="standard-dialog-card">
     <v-toolbar class="standard-dialog-card-toolbar fixed-toolbar">
       <v-toolbar-title><span class="text-primary">Basket</span></v-toolbar-title>
-      <div class="profiles-card-toolbar-button">Confirm Cart</div>
+      <div @click="clickOnBook()" class="profiles-card-toolbar-button">Confirm Cart</div>
       <div class="profiles-card-toolbar-button" @click="removeAllReservations()">
         <v-icon size="large">mdi-timer-sand-empty</v-icon> Empty Cart
       </div>
@@ -51,14 +72,27 @@ const clickOnBook = () => {
         </v-card>
         <div></div>
 
-        <v-btn
-          v-if="basketItemsStore.reservations.length > 0"
-          style="background-color: green; color: white"
-          elevation="4"
-          @click="clickOnBook()"
+        <v-btn style="background-color: green; color: white" elevation="4" @click="clickOnBook()"
           >BOOK</v-btn
         >
       </div>
     </v-container>
   </div>
+
+  <v-dialog v-model="errorsDialog" width="500">
+    <v-card>
+      <v-toolbar class="standard-dialog-card-toolbar">
+        <v-toolbar-title><span class="text-primary">Errors</span></v-toolbar-title>
+        <div class="standard-card-toolbar-button rounded-te" @click="errorsDialog = false">
+          <v-icon size="large">mdi-close</v-icon>
+        </div>
+      </v-toolbar>
+      <v-divider class="standard-card-divider"></v-divider>
+      <v-card-text>
+        <ul>
+          <li v-for="error in errors" :key="error">{{ error }}</li>
+        </ul>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 </template>
