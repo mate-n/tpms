@@ -43,7 +43,7 @@ export class Reservation implements IReservation {
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
     this.arrivalDate = this.dateHelper.getTodayDate()
-    this.departureDate = this.dateHelper.addDays(this.arrivalDate, 1)
+    this.departureDate = this.dateHelper.addDays(this.arrivalDate, 2)
     this.numberOfRooms = 1
     this.baseRateCategory = ''
     this.orderIndex = 0
