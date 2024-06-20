@@ -1,49 +1,44 @@
 <script setup lang="ts">
+import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import { RatesHelper } from '@/helpers/RatesHelper'
-import type { IGuestsPerRoom } from '@/shared/interfaces/IGuestsPerRoom'
+import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { ISelectBar } from '@/shared/interfaces/ISelectBar'
-import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
-import { computed, nextTick, ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 const ratesHelper = new RatesHelper()
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
-const showSelectBar = ref(false)
-
 const selectBars = ref<ISelectBar[]>([])
+const availabilityHelper = new AvailabilityHelper()
 
-const selectedProtelAvailabilitySelectables = computed(() => {
-  const selectedAvailabilities = []
-  for (const selectBar of selectBars.value) {
-    for (const selectable of selectBar.protelAvailabilitySelectables) {
-      selectedAvailabilities.push(selectable)
-    }
-  }
-  return selectedAvailabilities
-})
 const props = defineProps({
-  protelAvailabilities: { type: Object as () => IProtelAvailability[], required: true },
-  guestsPerRoom: { type: Object as () => IGuestsPerRoom, required: true }
+  roomTypeName: { type: String, required: true }
 })
+
+const reservation = defineModel({ required: true, type: Object as () => IReservation })
 
 watch(
-  props,
-  () => {
-    showSelectBar.value = false
-
+  reservation,
+  async () => {
     protelAvailabilitySelectables.value = []
-    for (const protelAvailability of props.protelAvailabilities) {
+    const newAvailabilities = availabilityHelper.getAvailabilityByRoomTypeName(
+      reservation.value.protelAvailabilities,
+      props.roomTypeName
+    )
+
+    for (const protelAvailability of newAvailabilities) {
       protelAvailabilitySelectables.value.push({
         availability: protelAvailability,
         selected: false
       })
     }
+    await nextTick()
+    addSelectBars()
   },
   {
-    immediate: true
+    immediate: true,
+    deep: true
   }
 )
-
-const emits = defineEmits(['selectedProtelAvailabilities'])
 
 const mouseDownOnLeftHandleOfSelectbar = (e: MouseEvent, selectBar: ISelectBar) => {
   const startPositionOfMouse = {
@@ -136,10 +131,24 @@ const castSelect = () => {
       }
     }
   }
-  emits(
-    'selectedProtelAvailabilities',
-    selectedProtelAvailabilitySelectables.value.map((p) => p.availability)
-  )
+
+  updateSelectedProtelAvailabilities()
+}
+
+const updateSelectedProtelAvailabilities = () => {
+  reservation.value.selectedProtelAvailabilities =
+    reservation.value.selectedProtelAvailabilities.filter(
+      (a) => a.room_type_name !== props.roomTypeName
+    )
+
+  const availabilities = getSelectedProtelAvailabilitiesFromSelectBars()
+  reservation.value.selectedProtelAvailabilities.push(...availabilities)
+}
+
+const getSelectedProtelAvailabilitiesFromSelectBars = () => {
+  return selectBars.value
+    .map((s) => s.protelAvailabilitySelectables.map((p) => p.availability))
+    .flat()
 }
 
 const isSelectableInsideSelectbar = (
@@ -223,6 +232,16 @@ const checkIfSelectBarAlreadyExists = (availabilitySelectable: IProtelAvailabili
     }
   }
   return false
+}
+
+const addSelectBars = async () => {
+  for (const availability of reservation.value.selectedProtelAvailabilities) {
+    const availabilitySelectable = protelAvailabilitySelectables.value.find(
+      (p) => p.availability.id === availability.id
+    )
+    if (!availabilitySelectable) continue
+    await addSelectBar(availabilitySelectable)
+  }
 }
 
 const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectable) => {
@@ -346,7 +365,7 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
         {{
           ratesHelper.calculateActualRate(
             availabilitySelectable.availability?.rates_data[0],
-            guestsPerRoom
+            reservation.guestsPerRoom
           )
         }}
       </div>
