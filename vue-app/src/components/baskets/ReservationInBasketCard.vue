@@ -218,7 +218,11 @@ watch(
             >
             <v-col>
               AVERAGE RATE<br />
-              {{ reservationHelper.getAverageRoomRate(reservation.selectedProtelAvailabilities) }}
+              {{
+                reservationHelper.getAverageRoomRate(
+                  reservation.selectedProtelAvailabilityGroups.map((s) => s.availabilities).flat()
+                )
+              }}
             </v-col>
             <v-col></v-col>
             <v-col></v-col>

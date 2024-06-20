@@ -93,7 +93,9 @@ const showRemoveButton = computed(() => {
           <div class="mb-1 text-end">
             <div
               v-for="availabilityGroup of availabilityHelper.groupAvailabilitiesByRoomType(
-                reservation.selectedProtelAvailabilities
+                reservation.selectedProtelAvailabilityGroups
+                  .map((group) => group.availabilities)
+                  .flat()
               )"
               :key="availabilityGroup[0].room_type_name"
             >
