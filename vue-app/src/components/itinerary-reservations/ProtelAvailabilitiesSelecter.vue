@@ -4,6 +4,7 @@ import { DateHelper } from '@/helpers/DateHelper'
 import { RatesHelper } from '@/helpers/RatesHelper'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { ISelectBar } from '@/shared/interfaces/ISelectBar'
+import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
 import { nextTick, ref, watch } from 'vue'
 const ratesHelper = new RatesHelper()
@@ -242,6 +243,8 @@ const isDateOccupied = (date: Date) => {
 }
 
 const addSelectBars = async () => {
+  //sandro.raess
+  //selectBars.value = []
   for (const availability of reservation.value.selectedProtelAvailabilities) {
     const availabilitySelectable = protelAvailabilitySelectables.value.find(
       (p) => p.availability.id === availability.id
@@ -252,16 +255,21 @@ const addSelectBars = async () => {
 }
 
 const isItImpossibleToAddSelectBar = (availabilitySelectable: IProtelAvailabilitySelectable) => {
-  return (
-    doesSelectBarAlreadyExists(availabilitySelectable) ||
-    isDateOccupied(availabilitySelectable.availability.availability_start)
-  )
+  return doesSelectBarAlreadyExists(availabilitySelectable)
+}
+
+const removeAvailabilities = (availabilitiesToBeRemoved: IProtelAvailability[]) => {
+  for (const availability of availabilitiesToBeRemoved) {
+    reservation.value.selectedProtelAvailabilities =
+      reservation.value.selectedProtelAvailabilities.filter((a) => a.id !== availability.id)
+  }
 }
 
 const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectable) => {
   if (isItImpossibleToAddSelectBar(availabilitySelectable)) {
     return
   }
+
   const availabilityElement = availabilitySelectable.element
   const availabilityElementHalfWidth = availabilityElement.getBoundingClientRect().width / 2
 
