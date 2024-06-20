@@ -152,6 +152,7 @@ const check = () => {
     detail: '0',
     accomodation_type: null
   }
+  reservation.value.selectedProtelAvailabilities = []
   protelAvailabilityService.search(protelAvailabilityPostBody).then((response) => {
     const protelAvailabilities = response.filter((n) => n)
     reservation.value.protelAvailabilities = protelAvailabilities
