@@ -1,5 +1,6 @@
+import type { IProtelAvailabilitySelectable } from './protel/IProtelAvailabilitySelectable'
 export interface ISelectBar {
-  startX: number
-  endX: number
+  id: number
   element?: any
+  protelAvailabilitySelectables: IProtelAvailabilitySelectable[]
 }
