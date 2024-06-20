@@ -11,9 +11,15 @@ const showSelectBar = ref(false)
 
 const selectBars = ref<ISelectBar[]>([])
 
-const selectedProtelAvailabilitySelectables = computed(() =>
-  protelAvailabilitySelectables.value.filter((p) => p.selected)
-)
+const selectedProtelAvailabilitySelectables = computed(() => {
+  const selectedAvailabilities = []
+  for (const selectBar of selectBars.value) {
+    for (const selectable of selectBar.protelAvailabilitySelectables) {
+      selectedAvailabilities.push(selectable)
+    }
+  }
+  return selectedAvailabilities
+})
 const props = defineProps({
   protelAvailabilities: { type: Object as () => IProtelAvailability[], required: true },
   guestsPerRoom: { type: Object as () => IGuestsPerRoom, required: true }
@@ -237,18 +243,6 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
   newSelectBar.element.style.left = xDifference + availabilityElementHalfWidth + 'px'
   newSelectBar.element.style.width = availabilityElement.getBoundingClientRect().width + 'px'
   castSelect()
-  /*
-  showSelectBar.value = true
-  if (!overlayDiv.value) return
-  await nextTick()
-  overlayDiv.value.style.left = 0 + 'px'
-  const difference = availabilityElement.getBoundingClientRect().x - overlayDiv.value.getBoundingClientRect().x
-  overlayDiv.value.style.left = difference + availabilityElementHalfWidth + 'px'
-  overlayDivStartX.value = availabilityElement.getBoundingClientRect().x
-  overlayDivEndX.value =
-    overlayDiv.value.getBoundingClientRect().x + overlayDiv.value.getBoundingClientRect().width
-  setSelectedProtelAvailabilities()
-  */
 }
 </script>
 <style scoped>
