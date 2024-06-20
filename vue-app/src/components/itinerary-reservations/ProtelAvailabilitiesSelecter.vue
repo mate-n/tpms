@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
+import { DateHelper } from '@/helpers/DateHelper'
 import { RatesHelper } from '@/helpers/RatesHelper'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { ISelectBar } from '@/shared/interfaces/ISelectBar'
@@ -9,7 +10,7 @@ const ratesHelper = new RatesHelper()
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
 const selectBars = ref<ISelectBar[]>([])
 const availabilityHelper = new AvailabilityHelper()
-
+const dateHelper = new DateHelper()
 const props = defineProps({
   roomTypeName: { type: String, required: true }
 })
@@ -219,7 +220,7 @@ const lineUpSelectBarToFirstAvailability = (selectBar: ISelectBar) => {
   selectBar.element.style.left = newLeft + 'px'
 }
 
-const checkIfSelectBarAlreadyExists = (availabilitySelectable: IProtelAvailabilitySelectable) => {
+const doesSelectBarAlreadyExists = (availabilitySelectable: IProtelAvailabilitySelectable) => {
   for (const selectBar of selectBars.value) {
     const startX = selectBar.element.getBoundingClientRect().x
     const endX =
@@ -234,6 +235,12 @@ const checkIfSelectBarAlreadyExists = (availabilitySelectable: IProtelAvailabili
   return false
 }
 
+const isDateOccupied = (date: Date) => {
+  return reservation.value.selectedProtelAvailabilities.some((a) =>
+    dateHelper.isSameDay(a.availability_start, date)
+  )
+}
+
 const addSelectBars = async () => {
   for (const availability of reservation.value.selectedProtelAvailabilities) {
     const availabilitySelectable = protelAvailabilitySelectables.value.find(
@@ -244,8 +251,15 @@ const addSelectBars = async () => {
   }
 }
 
+const isItImpossibleToAddSelectBar = (availabilitySelectable: IProtelAvailabilitySelectable) => {
+  return (
+    doesSelectBarAlreadyExists(availabilitySelectable) ||
+    isDateOccupied(availabilitySelectable.availability.availability_start)
+  )
+}
+
 const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectable) => {
-  if (checkIfSelectBarAlreadyExists(availabilitySelectable)) {
+  if (isItImpossibleToAddSelectBar(availabilitySelectable)) {
     return
   }
   const availabilityElement = availabilitySelectable.element
@@ -358,7 +372,7 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
       <div
         class="mr-3 px-5 py-2 my-2 text-center availability-inner-box"
         :class="{
-          'bg-lime-lighten-5': availabilitySelectable.selected,
+          'bg-red': availabilitySelectable.selected,
           'bg-light': !availabilitySelectable.selected
         }"
       >
