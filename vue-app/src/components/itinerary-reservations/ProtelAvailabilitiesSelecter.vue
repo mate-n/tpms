@@ -1,38 +1,43 @@
 <script setup lang="ts">
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
-import { DateHelper } from '@/helpers/DateHelper'
+import { ProtelAvailabilitiesSelecterHelper } from '@/helpers/ProtelAvailabilitiesSelecterHelper'
 import { RatesHelper } from '@/helpers/RatesHelper'
+import { ProtelAvailabilityGroup } from '@/shared/classes/ProtelAvailabilityGroup'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { ISelectBar } from '@/shared/interfaces/ISelectBar'
-import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
+import type { IProtelAvailabilityGroup } from '@/shared/interfaces/protel/IProtelAvailabilityGroup'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
 import { nextTick, ref, watch } from 'vue'
+const protelAvailabilitiesSelecterHelper = new ProtelAvailabilitiesSelecterHelper()
 const ratesHelper = new RatesHelper()
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
 const selectBars = ref<ISelectBar[]>([])
 const availabilityHelper = new AvailabilityHelper()
-const dateHelper = new DateHelper()
 const props = defineProps({
   roomTypeName: { type: String, required: true }
 })
 
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 
+const updateProtelAvailabilitySelectables = () => {
+  protelAvailabilitySelectables.value = []
+  const newAvailabilities = availabilityHelper.getAvailabilityByRoomTypeName(
+    reservation.value.protelAvailabilities,
+    props.roomTypeName
+  )
+
+  for (const protelAvailability of newAvailabilities) {
+    protelAvailabilitySelectables.value.push({
+      availability: protelAvailability,
+      selected: false
+    })
+  }
+}
+
 watch(
   reservation,
   async () => {
-    protelAvailabilitySelectables.value = []
-    const newAvailabilities = availabilityHelper.getAvailabilityByRoomTypeName(
-      reservation.value.protelAvailabilities,
-      props.roomTypeName
-    )
-
-    for (const protelAvailability of newAvailabilities) {
-      protelAvailabilitySelectables.value.push({
-        availability: protelAvailability,
-        selected: false
-      })
-    }
+    updateProtelAvailabilitySelectables()
     await nextTick()
     addSelectBars()
   },
@@ -124,33 +129,32 @@ const afterMouseUp = () => {
 
 const castSelect = () => {
   protelAvailabilitySelectables.value.forEach((p) => (p.selected = false))
-  selectBars.value.forEach((s) => (s.protelAvailabilitySelectables = []))
+  selectBars.value.forEach((s) => (s.protelAvailabilityGroup.availabilities = []))
   for (const selectable of protelAvailabilitySelectables.value) {
     for (const selectBar of selectBars.value) {
       if (isSelectableInsideSelectbar(selectable, selectBar)) {
         selectable.selected = true
-        selectBar.protelAvailabilitySelectables.push(selectable)
+        selectBar.protelAvailabilityGroup.availabilities.push(selectable.availability)
       }
     }
   }
 
-  updateSelectedProtelAvailabilities()
+  updateSelectedProtelAvailabilityGroups()
 }
 
-const updateSelectedProtelAvailabilities = () => {
-  reservation.value.selectedProtelAvailabilities =
-    reservation.value.selectedProtelAvailabilities.filter(
-      (a) => a.room_type_name !== props.roomTypeName
-    )
+const updateSelectedProtelAvailabilityGroups = () => {
+  for (const selectBar of selectBars.value) {
+    reservation.value.selectedProtelAvailabilityGroups =
+      reservation.value.selectedProtelAvailabilityGroups.filter(
+        (a) => a.id !== selectBar.protelAvailabilityGroup.id
+      )
 
-  const availabilities = getSelectedProtelAvailabilitiesFromSelectBars()
-  reservation.value.selectedProtelAvailabilities.push(...availabilities)
-}
-
-const getSelectedProtelAvailabilitiesFromSelectBars = () => {
-  return selectBars.value
-    .map((s) => s.protelAvailabilitySelectables.map((p) => p.availability))
-    .flat()
+    if (selectBar.protelAvailabilityGroup.availabilities.length === 0) {
+      selectBars.value = selectBars.value.filter((s) => s.id !== selectBar.id)
+    } else {
+      reservation.value.selectedProtelAvailabilityGroups.push(selectBar.protelAvailabilityGroup)
+    }
+  }
 }
 
 const isSelectableInsideSelectbar = (
@@ -166,7 +170,7 @@ const isSelectableInsideSelectbar = (
 }
 
 const lineUpSelectBarToCenters = (selectBar: ISelectBar) => {
-  if (selectBar.protelAvailabilitySelectables.length === 0) {
+  if (selectBar.protelAvailabilityGroup.availabilities.length === 0) {
     selectBars.value = selectBars.value.filter((s) => s.id !== selectBar.id)
     return
   }
@@ -176,11 +180,13 @@ const lineUpSelectBarToCenters = (selectBar: ISelectBar) => {
 }
 
 const lineUpSelectBarToLastAvailability = (selectBar: ISelectBar) => {
-  const selectableWithTheHighestX = selectBar.protelAvailabilitySelectables.reduce(
-    (prev, current) =>
-      prev.element.getBoundingClientRect().x > current.element.getBoundingClientRect().x
-        ? prev
-        : current
+  const correspondingProtelAvailabilitySelectable =
+    protelAvailabilitiesSelecterHelper.getCorrespondingProtelAvailabilitySelectables(
+      protelAvailabilitySelectables.value,
+      selectBar.protelAvailabilityGroup
+    )
+  const selectableWithTheHighestX = protelAvailabilitiesSelecterHelper.getSelectableWithHighestX(
+    correspondingProtelAvailabilitySelectable
   )
 
   const nextSelectableAfterSelectableWithHighestX = protelAvailabilitySelectables.value.find(
@@ -204,11 +210,14 @@ const lineUpSelectBarToLastAvailability = (selectBar: ISelectBar) => {
 }
 
 const lineUpSelectBarToFirstAvailability = (selectBar: ISelectBar) => {
-  const selectableWithTheLowestX = selectBar.protelAvailabilitySelectables.reduce(
-    (prev, current) =>
-      prev.element.getBoundingClientRect().x < current.element.getBoundingClientRect().x
-        ? prev
-        : current
+  const correspondingProtelAvailabilitySelectable =
+    protelAvailabilitiesSelecterHelper.getCorrespondingProtelAvailabilitySelectables(
+      protelAvailabilitySelectables.value,
+      selectBar.protelAvailabilityGroup
+    )
+
+  const selectableWithTheLowestX = protelAvailabilitiesSelecterHelper.getSelectableWithLowestX(
+    correspondingProtelAvailabilitySelectable
   )
 
   const diff =
@@ -221,64 +230,117 @@ const lineUpSelectBarToFirstAvailability = (selectBar: ISelectBar) => {
   selectBar.element.style.left = newLeft + 'px'
 }
 
-const doesSelectBarAlreadyExists = (availabilitySelectable: IProtelAvailabilitySelectable) => {
-  for (const selectBar of selectBars.value) {
-    const startX = selectBar.element.getBoundingClientRect().x
-    const endX =
-      selectBar.element.getBoundingClientRect().x + selectBar.element.getBoundingClientRect().width
-    const element = availabilitySelectable.element
-    const elementStartX = element.getBoundingClientRect().x
-    const elementEndX = element.getBoundingClientRect().x + element.getBoundingClientRect().width
-    if (startX < elementEndX && endX > elementStartX) {
-      return true
-    }
+const doesSelectBarAlreadyExist = (availabilityGroup: IProtelAvailabilityGroup) => {
+  const foundSelectBar = selectBars.value.find(
+    (s) => s.protelAvailabilityGroup.id === availabilityGroup.id
+  )
+  if (foundSelectBar) {
+    return true
   }
   return false
 }
 
-const isDateOccupied = (date: Date) => {
-  return reservation.value.selectedProtelAvailabilities.some((a) =>
-    dateHelper.isSameDay(a.availability_start, date)
-  )
-}
-
 const addSelectBars = async () => {
-  //sandro.raess
-  //selectBars.value = []
-  for (const availability of reservation.value.selectedProtelAvailabilities) {
-    const availabilitySelectable = protelAvailabilitySelectables.value.find(
-      (p) => p.availability.id === availability.id
-    )
-    if (!availabilitySelectable) continue
-    await addSelectBar(availabilitySelectable)
+  selectBars.value = []
+  for (const availabilityGroup of reservation.value.selectedProtelAvailabilityGroups) {
+    if (!doesSelectBarAlreadyExist(availabilityGroup)) {
+      if (availabilityGroup.roomTypeName === props.roomTypeName) {
+        await addSelectBarForAvailabilityGroup(availabilityGroup)
+      }
+    }
   }
 }
 
-const isItImpossibleToAddSelectBar = (availabilitySelectable: IProtelAvailabilitySelectable) => {
-  return doesSelectBarAlreadyExists(availabilitySelectable)
+const addSelectBarForAvailabilityGroup = async (availabilityGroup: IProtelAvailabilityGroup) => {
+  const newSelectBar: ISelectBar = {
+    id: new Date().getTime(),
+    protelAvailabilityGroup: availabilityGroup
+  }
+  selectBars.value.push(newSelectBar)
+  await nextTick()
+
+  const correspondingProtelAvailabilitySelectable =
+    protelAvailabilitiesSelecterHelper.getCorrespondingProtelAvailabilitySelectables(
+      protelAvailabilitySelectables.value,
+      availabilityGroup
+    )
+
+  const selectableWithTheLowestX = protelAvailabilitiesSelecterHelper.getSelectableWithLowestX(
+    correspondingProtelAvailabilitySelectable
+  )
+
+  const availabilityElement = selectableWithTheLowestX.element
+  const availabilityElementHalfWidth = availabilityElement.getBoundingClientRect().width / 2
+
+  const xDifference =
+    availabilityElement.getBoundingClientRect().x - newSelectBar.element.getBoundingClientRect().x
+  newSelectBar.element.style.left = xDifference + availabilityElementHalfWidth + 'px'
+  newSelectBar.element.style.width = availabilityElement.getBoundingClientRect().width + 'px'
+
+  const selectableWithTheHighestX = protelAvailabilitiesSelecterHelper.getSelectableWithHighestX(
+    correspondingProtelAvailabilitySelectable
+  )
+
+  const nextSelectableAfterSelectableWithHighestX = protelAvailabilitySelectables.value.find(
+    (p) =>
+      p.element.getBoundingClientRect().x >
+      selectableWithTheHighestX.element.getBoundingClientRect().x
+  )
+
+  if (!nextSelectableAfterSelectableWithHighestX) return
+
+  const diff =
+    newSelectBar.element.getBoundingClientRect().x +
+    newSelectBar.element.getBoundingClientRect().width -
+    nextSelectableAfterSelectableWithHighestX.element.getBoundingClientRect().x
+
+  const newWidth =
+    newSelectBar.element.getBoundingClientRect().width -
+    diff +
+    nextSelectableAfterSelectableWithHighestX.element.getBoundingClientRect().width / 2
+
+  newSelectBar.element.style.width = newWidth + 'px'
 }
 
-const removeAvailabilities = (availabilitiesToBeRemoved: IProtelAvailability[]) => {
-  for (const availability of availabilitiesToBeRemoved) {
-    reservation.value.selectedProtelAvailabilities =
-      reservation.value.selectedProtelAvailabilities.filter((a) => a.id !== availability.id)
+const removeGroupsFromReservation = (groupsToBeRemoved: IProtelAvailabilityGroup[]) => {
+  for (const group of groupsToBeRemoved) {
+    reservation.value.selectedProtelAvailabilityGroups =
+      reservation.value.selectedProtelAvailabilityGroups.filter((g) => g.id !== group.id)
+  }
+}
+
+const removeGroupsThatConflictOnDate = (availabilitySelectable: IProtelAvailabilitySelectable) => {
+  const isDateOccupied = protelAvailabilitiesSelecterHelper.isDateOccupied(
+    availabilitySelectable.availability.availability_start,
+    reservation.value.selectedProtelAvailabilityGroups
+  )
+
+  if (isDateOccupied) {
+    const groupsToBeRemoved =
+      protelAvailabilitiesSelecterHelper.getProtelAvailabilityGroupsThatHaveAvailabilityOnDate(
+        availabilitySelectable.availability.availability_start,
+        reservation.value.selectedProtelAvailabilityGroups
+      )
+
+    removeGroupsFromReservation(groupsToBeRemoved)
   }
 }
 
 const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectable) => {
-  if (isItImpossibleToAddSelectBar(availabilitySelectable)) {
-    return
+  removeGroupsThatConflictOnDate(availabilitySelectable)
+
+  const newProtelAvailabilityGroup = new ProtelAvailabilityGroup()
+  newProtelAvailabilityGroup.roomTypeName = props.roomTypeName
+  const newSelectBar: ISelectBar = {
+    id: new Date().getTime(),
+    protelAvailabilityGroup: newProtelAvailabilityGroup
   }
+  selectBars.value.push(newSelectBar)
+  await nextTick()
 
   const availabilityElement = availabilitySelectable.element
   const availabilityElementHalfWidth = availabilityElement.getBoundingClientRect().width / 2
 
-  const newSelectBar: ISelectBar = {
-    id: new Date().getTime(),
-    protelAvailabilitySelectables: []
-  }
-  selectBars.value.push(newSelectBar)
-  await nextTick()
   const xDifference =
     availabilityElement.getBoundingClientRect().x - newSelectBar.element.getBoundingClientRect().x
   newSelectBar.element.style.left = xDifference + availabilityElementHalfWidth + 'px'
@@ -353,7 +415,7 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
             class="flex-grow-1 text-center"
             @mousedown="mouseDownOnCenterHandleOfSelectbar($event, selectBar)"
           >
-            {{ selectBar.protelAvailabilitySelectables.length }}
+            {{ selectBar.protelAvailabilityGroup.availabilities.length }}
           </div>
           <div @mousedown="mouseDownOnRightHandleOfSelectbar($event, selectBar)">
             <v-icon color="white">mdi-menu-right</v-icon>
@@ -380,7 +442,7 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
       <div
         class="mr-3 px-5 py-2 my-2 text-center availability-inner-box"
         :class="{
-          'bg-red': availabilitySelectable.selected,
+          'bg-yellow': availabilitySelectable.selected,
           'bg-light': !availabilitySelectable.selected
         }"
       >
