@@ -29,7 +29,9 @@ export class ReservationValidator implements IValidator {
       reservation.errors!['numberOfRooms'] = 'Rooms cannot be less than 1'
     }
 
-    for (const availability of reservation.selectedProtelAvailabilities) {
+    for (const availability of reservation.selectedProtelAvailabilityGroups
+      .map((s) => s.availabilities)
+      .flat()) {
       if (availability.availability_count < reservation.numberOfRooms) {
         reservation.errors!['numberOfRooms'] = 'Not enough rooms available for this room type'
       }
