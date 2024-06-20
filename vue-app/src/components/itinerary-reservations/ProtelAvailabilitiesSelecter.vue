@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { DateHelper } from '@/helpers/DateHelper'
 import { RatesHelper } from '@/helpers/RatesHelper'
 import type { IGuestsPerRoom } from '@/shared/interfaces/IGuestsPerRoom'
+import type { ISelectBar } from '@/shared/interfaces/ISelectBar'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 const ratesHelper = new RatesHelper()
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
 const showSelectBar = ref(false)
 
+const selectBars = ref<ISelectBar[]>([])
+
 const selectedProtelAvailabilitySelectables = computed(() =>
   protelAvailabilitySelectables.value.filter((p) => p.selected)
 )
-const dateHelper = new DateHelper()
 const props = defineProps({
   protelAvailabilities: { type: Object as () => IProtelAvailability[], required: true },
   guestsPerRoom: { type: Object as () => IGuestsPerRoom, required: true }
@@ -38,215 +39,216 @@ watch(
 
 const emits = defineEmits(['selectedProtelAvailabilities'])
 
-const overlayDivEndX = ref<number>(0)
-const overlayDivStartX = ref<number>(0)
-
-const leftHandle = ref<HTMLDivElement | null>(null)
-const rightHandle = ref<HTMLDivElement | null>(null)
-const overlayDiv = ref<HTMLDivElement | null>(null as HTMLDivElement | null)
-
-const mouseDownOnRightHandle = (e: MouseEvent) => {
-  if (!overlayDiv.value) return
-
-  const startPos = {
+const mouseDownOnLeftHandleOfSelectbar = (e: MouseEvent, selectBar: ISelectBar) => {
+  const startPositionOfMouse = {
     x: e.clientX,
     y: e.clientY
   }
 
-  const w = parseInt(overlayDiv.value.style.width, 10)
+  const leftPositionOfSelectBar = parseInt(selectBar.element.style.left)
+  const widthOfSelectBar = parseInt(selectBar.element.style.width, 10)
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!overlayDiv.value) return
-    overlayDivStartX.value = overlayDiv.value.getBoundingClientRect().x
-    overlayDivEndX.value =
-      overlayDiv.value.getBoundingClientRect().x + overlayDiv.value.getBoundingClientRect().width
+  const handleMouseMoveOnLeftHandle = (e: MouseEvent) => {
+    const dx = e.clientX - startPositionOfMouse.x
 
-    const dx = e.clientX - startPos.x
-    overlayDiv.value.style.width = `${w + dx}px`
+    selectBar.element.style.left = `${leftPositionOfSelectBar + dx}px`
+    selectBar.element.style.width = `${widthOfSelectBar - dx}px`
   }
 
   const handleMouseUp = () => {
-    setSelectedProtelAvailabilities()
     afterMouseUp()
-    document.removeEventListener('mousemove', handleMouseMove)
+    lineUpSelectBarToCenters(selectBar)
+    document.removeEventListener('mousemove', handleMouseMoveOnLeftHandle)
     document.removeEventListener('mouseup', handleMouseUp)
   }
 
-  document.addEventListener('mousemove', handleMouseMove)
+  document.addEventListener('mousemove', handleMouseMoveOnLeftHandle)
   document.addEventListener('mouseup', handleMouseUp)
 }
 
-const mouseDownOnLeftHandle = (e: MouseEvent) => {
-  if (!overlayDiv.value) return
-
-  const startPos = {
+const mouseDownOnRightHandleOfSelectbar = (e: MouseEvent, selectBar: ISelectBar) => {
+  const startPositionOfMouse = {
     x: e.clientX,
     y: e.clientY
   }
 
-  const startX = parseInt(overlayDiv.value.style.left)
-  const w = parseInt(overlayDiv.value.style.width, 10)
+  const widthOfSelectBar = parseInt(selectBar.element.style.width, 10)
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!overlayDiv.value) return
-    overlayDivStartX.value = overlayDiv.value.getBoundingClientRect().x
-    overlayDivEndX.value =
-      overlayDiv.value.getBoundingClientRect().x + overlayDiv.value.getBoundingClientRect().width
-
-    const dx = e.clientX - startPos.x
-    overlayDiv.value.style.left = `${startX + dx}px`
-    overlayDiv.value.style.width = `${w - dx}px`
+  const handleMouseMoveOnRightHandle = (e: MouseEvent) => {
+    const dx = e.clientX - startPositionOfMouse.x
+    selectBar.element.style.width = `${widthOfSelectBar + dx}px`
   }
 
   const handleMouseUp = () => {
-    setSelectedProtelAvailabilities()
     afterMouseUp()
-    document.removeEventListener('mousemove', handleMouseMove)
+    lineUpSelectBarToCenters(selectBar)
+    document.removeEventListener('mousemove', handleMouseMoveOnRightHandle)
     document.removeEventListener('mouseup', handleMouseUp)
   }
 
-  document.addEventListener('mousemove', handleMouseMove)
+  document.addEventListener('mousemove', handleMouseMoveOnRightHandle)
   document.addEventListener('mouseup', handleMouseUp)
 }
 
-const mouseDownCenterHandle = (e: MouseEvent) => {
-  if (!overlayDiv.value) return
-
-  const startPos = {
+const mouseDownOnCenterHandleOfSelectbar = (e: MouseEvent, selectBar: ISelectBar) => {
+  const startPositionOfMouse = {
     x: e.clientX,
     y: e.clientY
   }
 
-  const startX = parseInt(overlayDiv.value.style.left)
+  const leftPositionOfSelectBar = parseInt(selectBar.element.style.left)
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!overlayDiv.value) return
-    overlayDivStartX.value = overlayDiv.value.getBoundingClientRect().x
-    overlayDivEndX.value =
-      overlayDiv.value.getBoundingClientRect().x + overlayDiv.value.getBoundingClientRect().width
+  const handleMouseMoveOnCenterHandle = (e: MouseEvent) => {
+    const dx = e.clientX - startPositionOfMouse.x
 
-    const dx = e.clientX - startPos.x
-    overlayDiv.value.style.left = `${startX + dx}px`
+    selectBar.element.style.left = `${leftPositionOfSelectBar + dx}px`
   }
 
   const handleMouseUp = () => {
-    setSelectedProtelAvailabilities()
     afterMouseUp()
-    document.removeEventListener('mousemove', handleMouseMove)
+    lineUpSelectBarToCenters(selectBar)
+    document.removeEventListener('mousemove', handleMouseMoveOnCenterHandle)
     document.removeEventListener('mouseup', handleMouseUp)
   }
 
-  document.addEventListener('mousemove', handleMouseMove)
+  document.addEventListener('mousemove', handleMouseMoveOnCenterHandle)
   document.addEventListener('mouseup', handleMouseUp)
 }
 
-const afterMouseUp = () => {}
+const afterMouseUp = () => {
+  castSelect()
+}
 
-onMounted(() => {
-  if (!overlayDiv.value) return
-  overlayDiv.value.style.left = '10px'
-  overlayDiv.value.style.width = '100px'
-})
-
-const setSelectedProtelAvailabilities = () => {
+const castSelect = () => {
   protelAvailabilitySelectables.value.forEach((p) => (p.selected = false))
-
+  selectBars.value.forEach((s) => (s.protelAvailabilitySelectables = []))
   for (const selectable of protelAvailabilitySelectables.value) {
-    const itemStartX = selectable.element.getBoundingClientRect().x
-    const itemEndX =
-      selectable.element.getBoundingClientRect().x +
-      selectable.element.getBoundingClientRect().width
-    if (overlayDivStartX.value < itemEndX && overlayDivEndX.value > itemStartX) {
-      selectable.selected = true
+    for (const selectBar of selectBars.value) {
+      if (isSelectableInsideSelectbar(selectable, selectBar)) {
+        selectable.selected = true
+        selectBar.protelAvailabilitySelectables.push(selectable)
+      }
     }
   }
-
-  if (selectedProtelAvailabilitySelectables.value.length < 2) {
-    showSelectBar.value = false
-    if (overlayDiv.value) overlayDiv.value.style.width = '100px'
-    protelAvailabilitySelectables.value.forEach((p) => (p.selected = false))
-  }
-
   emits(
     'selectedProtelAvailabilities',
     selectedProtelAvailabilitySelectables.value.map((p) => p.availability)
   )
-  updateWidthOfOverlay()
 }
 
-const getSelectedWithHighestX = () => {
-  let highestX = 0
-  let highestSelectable = selectedProtelAvailabilitySelectables.value[0]
-  for (const selectable of selectedProtelAvailabilitySelectables.value) {
-    if (selectable.element.getBoundingClientRect().x > highestX) {
-      highestX = selectable.element.getBoundingClientRect().x
-      highestSelectable = selectable
-    }
+const isSelectableInsideSelectbar = (
+  selectable: IProtelAvailabilitySelectable,
+  selectBar: ISelectBar
+) => {
+  const selectableEndX =
+    selectable.element.getBoundingClientRect().x + selectable.element.getBoundingClientRect().width
+  const selectBarStartX = selectBar.element.getBoundingClientRect().x
+  const selectBarEndX =
+    selectBar.element.getBoundingClientRect().x + selectBar.element.getBoundingClientRect().width
+  return selectableEndX < selectBarEndX && selectableEndX > selectBarStartX
+}
+
+const lineUpSelectBarToCenters = (selectBar: ISelectBar) => {
+  if (selectBar.protelAvailabilitySelectables.length === 0) {
+    selectBars.value = selectBars.value.filter((s) => s.id !== selectBar.id)
+    return
   }
-  return highestSelectable
+
+  lineUpSelectBarToFirstAvailability(selectBar)
+  lineUpSelectBarToLastAvailability(selectBar)
 }
 
-const getSelectedWithLowestX = () => {
-  let lowestX = Infinity
-  let lowestSelectable = selectedProtelAvailabilitySelectables.value[0]
-  for (const selectable of selectedProtelAvailabilitySelectables.value) {
-    if (selectable.element.getBoundingClientRect().x < lowestX) {
-      lowestX = selectable.element.getBoundingClientRect().x
-      lowestSelectable = selectable
-    }
-  }
-  return lowestSelectable
-}
-
-const updateWidthOfOverlay = () => {
-  const lastSelectable = getSelectedWithHighestX()
-  if (!overlayDiv.value) return
-  const overlayDivWidth = overlayDiv.value.getBoundingClientRect().width
-  const overlayDivEndX =
-    overlayDiv.value.getBoundingClientRect().x + overlayDiv.value.getBoundingClientRect().width
-
-  const difference = overlayDivEndX - lastSelectable.element.getBoundingClientRect().x
-  const newOverlayDivWidth =
-    overlayDivWidth - difference + lastSelectable.element.getBoundingClientRect().width / 2
-  overlayDiv.value.style.width = newOverlayDivWidth + 'px'
-
-  const firstSelectable = getSelectedWithLowestX()
-  if (firstSelectable) {
-    const selectableLeftX = firstSelectable.element.getBoundingClientRect().x
-    const diff = overlayDiv.value.getBoundingClientRect().x - selectableLeftX
-    const newLeft =
-      parseInt(overlayDiv.value.style.left) -
-      diff +
-      firstSelectable.element.getBoundingClientRect().width / 2
-    overlayDiv.value.style.left = newLeft + 'px'
-  }
-}
-
-const numberOfNights = computed(() => {
-  const selectedProtelAvailabilities = protelAvailabilitySelectables.value.filter((p) => p.selected)
-
-  const nights = dateHelper.calculateNightsBetweenDates(
-    selectedProtelAvailabilities[0]?.availability?.availability_start,
-    selectedProtelAvailabilities[selectedProtelAvailabilities.length - 1]?.availability
-      ?.availability_end
+const lineUpSelectBarToLastAvailability = (selectBar: ISelectBar) => {
+  const selectableWithTheHighestX = selectBar.protelAvailabilitySelectables.reduce(
+    (prev, current) =>
+      prev.element.getBoundingClientRect().x > current.element.getBoundingClientRect().x
+        ? prev
+        : current
   )
 
-  return isNaN(nights) ? 0 : nights
-})
+  const nextSelectableAfterSelectableWithHighestX = protelAvailabilitySelectables.value.find(
+    (p) =>
+      p.element.getBoundingClientRect().x >
+      selectableWithTheHighestX.element.getBoundingClientRect().x
+  )
+
+  if (!nextSelectableAfterSelectableWithHighestX) return
+  const diff =
+    selectBar.element.getBoundingClientRect().x +
+    selectBar.element.getBoundingClientRect().width -
+    nextSelectableAfterSelectableWithHighestX.element.getBoundingClientRect().x
+
+  const newWidth =
+    selectBar.element.getBoundingClientRect().width -
+    diff +
+    nextSelectableAfterSelectableWithHighestX.element.getBoundingClientRect().width / 2
+
+  selectBar.element.style.width = newWidth + 'px'
+}
+
+const lineUpSelectBarToFirstAvailability = (selectBar: ISelectBar) => {
+  const selectableWithTheLowestX = selectBar.protelAvailabilitySelectables.reduce(
+    (prev, current) =>
+      prev.element.getBoundingClientRect().x < current.element.getBoundingClientRect().x
+        ? prev
+        : current
+  )
+
+  const diff =
+    selectBar.element.getBoundingClientRect().x -
+    selectableWithTheLowestX.element.getBoundingClientRect().x
+  const newLeft =
+    parseInt(selectBar.element.style.left) -
+    diff +
+    selectableWithTheLowestX.element.getBoundingClientRect().width / 2
+  selectBar.element.style.left = newLeft + 'px'
+}
+
+const checkIfSelectBarAlreadyExists = (availabilitySelectable: IProtelAvailabilitySelectable) => {
+  for (const selectBar of selectBars.value) {
+    const startX = selectBar.element.getBoundingClientRect().x
+    const endX =
+      selectBar.element.getBoundingClientRect().x + selectBar.element.getBoundingClientRect().width
+    const element = availabilitySelectable.element
+    const elementStartX = element.getBoundingClientRect().x
+    const elementEndX = element.getBoundingClientRect().x + element.getBoundingClientRect().width
+    if (startX < elementEndX && endX > elementStartX) {
+      return true
+    }
+  }
+  return false
+}
 
 const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectable) => {
+  if (checkIfSelectBarAlreadyExists(availabilitySelectable)) {
+    return
+  }
+  const availabilityElement = availabilitySelectable.element
+  const availabilityElementHalfWidth = availabilityElement.getBoundingClientRect().width / 2
+
+  const newSelectBar: ISelectBar = {
+    id: new Date().getTime(),
+    protelAvailabilitySelectables: []
+  }
+  selectBars.value.push(newSelectBar)
+  await nextTick()
+  const xDifference =
+    availabilityElement.getBoundingClientRect().x - newSelectBar.element.getBoundingClientRect().x
+  newSelectBar.element.style.left = xDifference + availabilityElementHalfWidth + 'px'
+  newSelectBar.element.style.width = availabilityElement.getBoundingClientRect().width + 'px'
+  castSelect()
+  /*
   showSelectBar.value = true
   if (!overlayDiv.value) return
   await nextTick()
-  const ref = availabilitySelectable.element
   overlayDiv.value.style.left = 0 + 'px'
-  const difference = ref.getBoundingClientRect().x - overlayDiv.value.getBoundingClientRect().x
-  const width = ref.getBoundingClientRect().width / 2
-  overlayDiv.value.style.left = difference + width + 'px'
-  overlayDivStartX.value = ref.getBoundingClientRect().x
+  const difference = availabilityElement.getBoundingClientRect().x - overlayDiv.value.getBoundingClientRect().x
+  overlayDiv.value.style.left = difference + availabilityElementHalfWidth + 'px'
+  overlayDivStartX.value = availabilityElement.getBoundingClientRect().x
   overlayDivEndX.value =
     overlayDiv.value.getBoundingClientRect().x + overlayDiv.value.getBoundingClientRect().width
   setSelectedProtelAvailabilities()
+  */
 }
 </script>
 <style scoped>
@@ -294,40 +296,44 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
 </style>
 <template>
   <div class="d-flex" style="position: relative">
-    <div
-      v-show="showSelectBar"
-      class="resizable text-white"
-      ref="overlayDiv"
-      style="position: absolute"
-    >
+    <template v-for="selectBar of selectBars" :key="selectBar.id">
       <div
-        class="resizer resizer--l"
-        ref="leftHandle"
-        @mousedown="mouseDownOnLeftHandle($event)"
-      ></div>
-      <div class="d-flex align-center justify-space-between h-100 w-100">
-        <div @mousedown="mouseDownOnLeftHandle($event)">
-          <v-icon color="white">mdi-menu-left</v-icon>
+        class="resizable text-white"
+        style="position: absolute"
+        :ref="
+          (el) => {
+            selectBar.element = el
+          }
+        "
+      >
+        <div
+          class="resizer resizer--l"
+          @mousedown="mouseDownOnLeftHandleOfSelectbar($event, selectBar)"
+        ></div>
+        <div class="d-flex align-center justify-space-between h-100 w-100">
+          <div @mousedown="mouseDownOnLeftHandleOfSelectbar($event, selectBar)">
+            <v-icon color="white">mdi-menu-left</v-icon>
+          </div>
+          <div
+            class="flex-grow-1 text-center"
+            @mousedown="mouseDownOnCenterHandleOfSelectbar($event, selectBar)"
+          >
+            {{ selectBar.protelAvailabilitySelectables.length }}
+          </div>
+          <div @mousedown="mouseDownOnRightHandleOfSelectbar($event, selectBar)">
+            <v-icon color="white">mdi-menu-right</v-icon>
+          </div>
         </div>
-        <div class="flex-grow-1 text-center" @mousedown="mouseDownCenterHandle($event)">
-          {{ numberOfNights }}
-        </div>
-        <div @mousedown="mouseDownOnRightHandle($event)">
-          <v-icon color="white">mdi-menu-right</v-icon>
-        </div>
-      </div>
 
-      <div
-        class="resizer resizer--r"
-        ref="rightHandle"
-        @mousedown="mouseDownOnRightHandle($event)"
-      ></div>
-      <div class="resizer resizer--b" />
-    </div>
+        <div
+          class="resizer resizer--r"
+          @mousedown="mouseDownOnRightHandleOfSelectbar($event, selectBar)"
+        ></div>
+      </div>
+    </template>
     <div
       v-for="availabilitySelectable of protelAvailabilitySelectables"
       :key="availabilitySelectable.availability.id"
-      refx="itemRefs"
       :ref="
         (el) => {
           availabilitySelectable.element = el
@@ -336,7 +342,13 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
       class="text-center border-primary rounded availability-box-width"
       @click="addSelectBar(availabilitySelectable)"
     >
-      <div class="mr-3 px-5 py-2 my-2 text-center availability-inner-box">
+      <div
+        class="mr-3 px-5 py-2 my-2 text-center availability-inner-box"
+        :class="{
+          'bg-lime-lighten-5': availabilitySelectable.selected,
+          'bg-light': !availabilitySelectable.selected
+        }"
+      >
         {{
           ratesHelper.calculateActualRate(
             availabilitySelectable.availability?.rates_data[0],
