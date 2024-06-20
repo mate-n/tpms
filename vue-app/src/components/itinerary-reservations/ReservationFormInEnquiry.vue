@@ -461,17 +461,8 @@ const expansionModel = ref<string[] | null>(['availabilities'])
                 </td>
                 <td class="bg-lightgray">
                   <ProtelAvailabilitiesSelecter
-                    :protel-availabilities="
-                      availabilityHelper.getAvailabilityByRoomTypeName(
-                        reservation.protelAvailabilities,
-                        roomTypeName
-                      )
-                    "
-                    :guests-per-room="reservation.guestsPerRoom"
-                    @selected-protel-availabilities="
-                      (availabilities) =>
-                        updateSelectedProtelAvailabilities(availabilities, roomTypeName)
-                    "
+                    v-model="reservation"
+                    :room-type-name="roomTypeName"
                   ></ProtelAvailabilitiesSelecter>
                 </td>
               </tr>
