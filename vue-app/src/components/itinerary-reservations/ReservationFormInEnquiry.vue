@@ -261,16 +261,6 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
   return availabilityHelper.getTotalOfAvailabilityCount(availabilities)
 }
 
-const updateSelectedProtelAvailabilities = (
-  availabilities: IProtelAvailability[],
-  roomTypeName: string
-) => {
-  reservation.value.selectedProtelAvailabilities =
-    reservation.value.selectedProtelAvailabilities.filter((a) => a.room_type_name !== roomTypeName)
-  reservation.value.selectedProtelAvailabilities.push(...availabilities)
-  emitChange()
-}
-
 const expansionModel = ref<string[] | null>(['availabilities'])
 </script>
 
