@@ -5,6 +5,7 @@ import { RatesHelper } from '@/helpers/RatesHelper'
 import { ProtelAvailabilityGroup } from '@/shared/classes/ProtelAvailabilityGroup'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { ISelectBar } from '@/shared/interfaces/ISelectBar'
+import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilityGroup } from '@/shared/interfaces/protel/IProtelAvailabilityGroup'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
 import { nextTick, ref, watch } from 'vue'
@@ -64,7 +65,7 @@ const mouseDownOnLeftHandleOfSelectbar = (e: MouseEvent, selectBar: ISelectBar) 
   }
 
   const handleMouseUp = () => {
-    afterMouseUp()
+    afterMouseUp(selectBar)
     lineUpSelectBarToCenters(selectBar)
     document.removeEventListener('mousemove', handleMouseMoveOnLeftHandle)
     document.removeEventListener('mouseup', handleMouseUp)
@@ -88,7 +89,7 @@ const mouseDownOnRightHandleOfSelectbar = (e: MouseEvent, selectBar: ISelectBar)
   }
 
   const handleMouseUp = () => {
-    afterMouseUp()
+    afterMouseUp(selectBar)
     lineUpSelectBarToCenters(selectBar)
     document.removeEventListener('mousemove', handleMouseMoveOnRightHandle)
     document.removeEventListener('mouseup', handleMouseUp)
@@ -113,7 +114,7 @@ const mouseDownOnCenterHandleOfSelectbar = (e: MouseEvent, selectBar: ISelectBar
   }
 
   const handleMouseUp = () => {
-    afterMouseUp()
+    afterMouseUp(selectBar)
     lineUpSelectBarToCenters(selectBar)
     document.removeEventListener('mousemove', handleMouseMoveOnCenterHandle)
     document.removeEventListener('mouseup', handleMouseUp)
@@ -123,8 +124,9 @@ const mouseDownOnCenterHandleOfSelectbar = (e: MouseEvent, selectBar: ISelectBar
   document.addEventListener('mouseup', handleMouseUp)
 }
 
-const afterMouseUp = () => {
+const afterMouseUp = (selectBar: ISelectBar) => {
   castSelect()
+  removeOtherGroupsThatConflictOnDates(selectBar.protelAvailabilityGroup.availabilities)
 }
 
 const castSelect = () => {
@@ -309,25 +311,33 @@ const removeGroupsFromReservation = (groupsToBeRemoved: IProtelAvailabilityGroup
   }
 }
 
-const removeGroupsThatConflictOnDate = (availabilitySelectable: IProtelAvailabilitySelectable) => {
+const removeOtherGroupsThatConflictOnDates = (availabilities: IProtelAvailability[]) => {
+  for (const availability of availabilities) {
+    removeOtherGroupsThatConflictOnDate(availability)
+  }
+}
+
+const removeOtherGroupsThatConflictOnDate = (availability: IProtelAvailability) => {
   const isDateOccupied = protelAvailabilitiesSelecterHelper.isDateOccupied(
-    availabilitySelectable.availability.availability_start,
+    availability.availability_start,
     reservation.value.selectedProtelAvailabilityGroups
   )
 
   if (isDateOccupied) {
-    const groupsToBeRemoved =
+    let groupsToBeRemoved =
       protelAvailabilitiesSelecterHelper.getProtelAvailabilityGroupsThatHaveAvailabilityOnDate(
-        availabilitySelectable.availability.availability_start,
+        availability.availability_start,
         reservation.value.selectedProtelAvailabilityGroups
       )
+
+    groupsToBeRemoved = groupsToBeRemoved.filter((g) => g.roomTypeName !== props.roomTypeName)
 
     removeGroupsFromReservation(groupsToBeRemoved)
   }
 }
 
 const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectable) => {
-  removeGroupsThatConflictOnDate(availabilitySelectable)
+  removeOtherGroupsThatConflictOnDate(availabilitySelectable.availability)
 
   const newProtelAvailabilityGroup = new ProtelAvailabilityGroup()
   newProtelAvailabilityGroup.roomTypeName = props.roomTypeName
