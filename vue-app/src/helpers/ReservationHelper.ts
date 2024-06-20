@@ -33,7 +33,9 @@ export class ReservationHelper {
 
   calculateSumOfAllAvailabilities(reservation: IReservation): number {
     let sum = 0
-    for (const protelAvailability of reservation.selectedProtelAvailabilities) {
+    for (const protelAvailability of reservation.selectedProtelAvailabilityGroups
+      .map((s) => s.availabilities)
+      .flat()) {
       sum += this.ratesHelper.calculateActualRate(
         protelAvailability.rates_data[0],
         reservation.guestsPerRoom
@@ -45,7 +47,9 @@ export class ReservationHelper {
   calculateTotalRate(reservation: IReservation): number {
     let roomRate = 0
 
-    for (const protelAvailability of reservation.selectedProtelAvailabilities) {
+    for (const protelAvailability of reservation.selectedProtelAvailabilityGroups
+      .map((s) => s.availabilities)
+      .flat()) {
       roomRate += this.ratesHelper.calculateActualRate(
         protelAvailability.rates_data[0],
         reservation.guestsPerRoom
