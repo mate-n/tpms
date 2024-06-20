@@ -74,4 +74,66 @@ export class AvailabilityHelper {
     })
     return total
   }
+
+  getConsecutiveAvailabilitiesOnDate(availabilitiesInput: IProtelAvailability[], dateInput: Date) {
+    const availabilities: IProtelAvailability[] = []
+    const availabilityOnSameDay = availabilitiesInput.find((availability) =>
+      this.dateHelper.isSameDay(availability.availability_start, dateInput)
+    )
+    if (availabilityOnSameDay) {
+      availabilities.push(availabilityOnSameDay)
+    } else {
+      return []
+    }
+
+    let currentDate = new Date(dateInput)
+
+    while (this.isThereAnAvailabilityOnTheDayBefore(availabilitiesInput, currentDate)) {
+      const availability = availabilitiesInput.find((availability) =>
+        this.dateHelper.isSameDay(
+          availability.availability_start,
+          this.dateHelper.addDays(currentDate, -1)
+        )
+      )
+      if (availability) {
+        availabilities.unshift(availability)
+        currentDate = this.dateHelper.addDays(currentDate, -1)
+      } else {
+        break
+      }
+    }
+
+    currentDate = new Date(dateInput)
+
+    while (this.isThereAnAvailabilityOnTheDayAfter(availabilitiesInput, currentDate)) {
+      const availability = availabilitiesInput.find((availability) =>
+        this.dateHelper.isSameDay(
+          availability.availability_start,
+          this.dateHelper.addDays(currentDate, 1)
+        )
+      )
+      if (availability) {
+        availabilities.push(availability)
+        currentDate = this.dateHelper.addDays(currentDate, 1)
+      } else {
+        break
+      }
+    }
+
+    return availabilities
+  }
+
+  isThereAnAvailabilityOnTheDayBefore = (availabilities: IProtelAvailability[], date: Date) => {
+    const dayBefore = this.dateHelper.addDays(date, -1)
+    return availabilities.some((availability) =>
+      this.dateHelper.isSameDay(availability.availability_start, dayBefore)
+    )
+  }
+
+  isThereAnAvailabilityOnTheDayAfter = (availabilities: IProtelAvailability[], date: Date) => {
+    const dayAfter = this.dateHelper.addDays(date, 1)
+    return availabilities.some((availability) =>
+      this.dateHelper.isSameDay(availability.availability_start, dayAfter)
+    )
+  }
 }
