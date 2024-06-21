@@ -29,7 +29,6 @@ const roomService = new RoomService(axios)
 const dateFormatter = new DateFormatter()
 
 onBeforeMount(() => {
-  console.log('props.reservation', props.reservation)
   if (props.reservation.propertyID) {
     propertyService.get(props.reservation.propertyID).then((response) => {
       property.value = response
