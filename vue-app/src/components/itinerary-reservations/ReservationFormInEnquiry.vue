@@ -16,7 +16,6 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { ICamp } from '@/shared/interfaces/ICamp'
 import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import { DateFormatter } from '@/helpers/DateFormatter'
-import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import ProfileSearchCard from '../profiles/ProfileSearchCard.vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import RoomDetailsCard from '../rooms/RoomDetailsCard.vue'
@@ -165,10 +164,6 @@ const reset = () => {
   reservation.value.reset()
 }
 
-const edit = () => {
-  expansionModel.value = ['availabilities']
-}
-
 const remove = (reservation: IReservation) => {
   emit('remove', reservation)
 }
@@ -242,9 +237,6 @@ const showRemoveButton = computed(() => {
 const availabilitiesLoading = ref(false)
 
 const roomTypeDialog = ref(false)
-
-const protelAvailabilityForDetails = ref<IProtelAvailability | undefined>(undefined)
-
 const availableDates = computed(() => {
   const dates = []
   for (let i = 0; i < numberOfNights.value; i++) {
@@ -364,8 +356,6 @@ const expansionModel = ref<string[] | null>(['availabilities'])
         </div>
       </v-col>
       <v-col class="d-flex justify-space-between">
-        <v-btn class="secondary-button mr-3" @click="edit()">Edit</v-btn>
-
         <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
         <v-btn class="danger-button" @click="remove(reservation)" v-if="showRemoveButton">
           Remove
