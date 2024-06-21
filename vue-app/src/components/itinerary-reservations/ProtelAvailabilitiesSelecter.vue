@@ -15,16 +15,16 @@ const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
 const selectBars = ref<ISelectBar[]>([])
 const availabilityHelper = new AvailabilityHelper()
 const props = defineProps({
-  roomTypeName: { type: String, required: true }
+  roomTypeCode: { type: String, required: true }
 })
 
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 
 const updateProtelAvailabilitySelectables = () => {
   protelAvailabilitySelectables.value = []
-  const newAvailabilities = availabilityHelper.getAvailabilityByRoomTypeName(
+  const newAvailabilities = availabilityHelper.getAvailabilityByRoomTypeCode(
     reservation.value.protelAvailabilities,
-    props.roomTypeName
+    props.roomTypeCode
   )
 
   for (const protelAvailability of newAvailabilities) {
@@ -246,7 +246,7 @@ const addSelectBars = async () => {
   selectBars.value = []
   for (const availabilityGroup of reservation.value.selectedProtelAvailabilityGroups) {
     if (!doesSelectBarAlreadyExist(availabilityGroup)) {
-      if (availabilityGroup.roomTypeName === props.roomTypeName) {
+      if (availabilityGroup.roomTypeCode === props.roomTypeCode) {
         await addSelectBarForAvailabilityGroup(availabilityGroup)
       }
     }
@@ -330,7 +330,7 @@ const removeOtherGroupsThatConflictOnDate = (availability: IProtelAvailability) 
         reservation.value.selectedProtelAvailabilityGroups
       )
 
-    groupsToBeRemoved = groupsToBeRemoved.filter((g) => g.roomTypeName !== props.roomTypeName)
+    groupsToBeRemoved = groupsToBeRemoved.filter((g) => g.roomTypeCode !== props.roomTypeCode)
 
     removeGroupsFromReservation(groupsToBeRemoved)
   }
@@ -340,7 +340,7 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
   removeOtherGroupsThatConflictOnDate(availabilitySelectable.availability)
 
   const newProtelAvailabilityGroup = new ProtelAvailabilityGroup()
-  newProtelAvailabilityGroup.roomTypeName = props.roomTypeName
+  newProtelAvailabilityGroup.roomTypeCode = props.roomTypeCode
   const newSelectBar: ISelectBar = {
     id: new Date().getTime(),
     protelAvailabilityGroup: newProtelAvailabilityGroup
