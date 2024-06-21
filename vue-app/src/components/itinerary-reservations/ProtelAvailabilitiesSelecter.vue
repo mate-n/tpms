@@ -362,7 +362,7 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
 .resizable {
   position: relative;
   border-radius: 0.25rem;
-  height: 2rem;
+  height: 3rem;
   width: 50px;
   background-color: #5cb4ef;
   opacity: 0.9;
@@ -379,7 +379,7 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
   top: 50%;
   transform: translate(50%, -50%);
 
-  height: 2rem;
+  height: 3rem;
   width: 0.25rem;
 }
 
@@ -390,7 +390,7 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
   top: 50%;
   transform: translate(-50%, -50%);
 
-  height: 2rem;
+  height: 3rem;
   width: 0.25rem;
 }
 
@@ -418,7 +418,10 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
           @mousedown="mouseDownOnLeftHandleOfSelectbar($event, selectBar)"
         ></div>
         <div class="d-flex align-center justify-space-between h-100 w-100">
-          <div @mousedown="mouseDownOnLeftHandleOfSelectbar($event, selectBar)">
+          <div
+            class="h-100 d-flex align-center"
+            @mousedown="mouseDownOnLeftHandleOfSelectbar($event, selectBar)"
+          >
             <v-icon color="white">mdi-menu-left</v-icon>
           </div>
           <div
@@ -427,7 +430,10 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
           >
             {{ selectBar.protelAvailabilityGroup.availabilities.length }}
           </div>
-          <div @mousedown="mouseDownOnRightHandleOfSelectbar($event, selectBar)">
+          <div
+            class="h-100 d-flex align-center"
+            @mousedown="mouseDownOnRightHandleOfSelectbar($event, selectBar)"
+          >
             <v-icon color="white">mdi-menu-right</v-icon>
           </div>
         </div>
@@ -456,6 +462,8 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
           'bg-light': !availabilitySelectable.selected
         }"
       >
+        {{ availabilitySelectable.availability.availability_count }}
+        <hr />
         <template v-if="availabilitySelectable.availability?.rates_data">
           {{
             ratesHelper.calculateActualRate(
