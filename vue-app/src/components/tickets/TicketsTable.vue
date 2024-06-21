@@ -40,12 +40,11 @@ onMounted(() => {
   <v-table class="tickets-table border-0" density="compact">
     <thead class="border-0">
       <tr>
-        <th>Amount</th>
-        <th>Item</th>
         <th v-if="showDate">Date</th>
-
-        <th>Price</th>
-        <th>Sub-Total</th>
+        <th>QTY</th>
+        <th>Item</th>
+        <th>Unit Price</th>
+        <th>Total</th>
         <th v-if="showButtons"></th>
       </tr>
     </thead>
@@ -53,11 +52,12 @@ onMounted(() => {
     <tbody class="border-0">
       <template v-if="!collsapsed">
         <tr v-for="group in ticketsGrouped" :key="group[1][0].TicketId">
-          <td>{{ group[1].length }} x</td>
-          <td>{{ group[1][0].Name }}</td>
           <td v-if="showDate">
             {{ dateFormatter.dddotmmdotyyyy(group[1][0].Date) }}
           </td>
+          <td>{{ group[1].length }} x</td>
+          <td>{{ group[1][0].Name }}</td>
+
           <td>{{ group[1][0].Price }}</td>
           <td>
             {{ (group[1].length * group[1][0].Price).toFixed(2) }}
