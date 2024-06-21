@@ -3,6 +3,7 @@ import { CreateProtelAvailabilityDto } from '../dto/create-protel-availability.d
 import { UpdateProtelAvailabilityDto } from '../dto/update-protel-availability.dto'
 import { IProtelAvailability } from 'src/shared/interfaces/protel/IProtelAvailability'
 import { IProtelAvailabilityPostBody } from 'src/shared/interfaces/protel/IProtelAvailabilityPostBody'
+import { ProtelAvailabilitiesGenerator } from './protel-availabilities-generator'
 
 @Injectable()
 export class ProtelAvailabilitiesService {
@@ -11,7 +12,13 @@ export class ProtelAvailabilitiesService {
   }
 
   findAll(protelAvailabilityPostBody: IProtelAvailabilityPostBody) {
-    return this.getAvailabilities(protelAvailabilityPostBody)
+    //return this.getAvailabilities(protelAvailabilityPostBody)
+    const generator = new ProtelAvailabilitiesGenerator()
+    const protelAvailabilities = generator.generateAvailabilities(
+      protelAvailabilityPostBody.arrivaldate,
+      protelAvailabilityPostBody.departuredate,
+    )
+    return protelAvailabilities
   }
 
   findOne(id: number) {
