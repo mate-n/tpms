@@ -6,11 +6,11 @@ export interface IParksAndCamps {
 }
 
 export interface KrugerNationalPark {
-  parkid: string
+  parknid: string
   camps: ICamp[]
 }
 
 export interface KgalagadiTransfrontierPark {
-  parkid: string
+  parknid: string
   camps: ICamp[]
 }

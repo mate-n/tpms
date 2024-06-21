@@ -6,6 +6,7 @@ import type { IPropertyAvailability } from '../../shared/interfaces/availability
 import type { IGuestsPerRoom } from '../interfaces/IGuestsPerRoom'
 import type { ITicket } from '../interfaces/ITicket'
 import type { IProtelAvailability } from '../interfaces/protel/IProtelAvailability'
+import type { IProtelAvailabilityGroup } from '../interfaces/protel/IProtelAvailabilityGroup'
 import { GuestsPerRoom } from './GuestsPerRoom'
 
 export class Reservation implements IReservation {
@@ -26,7 +27,7 @@ export class Reservation implements IReservation {
   orderIndex: number
   propertyAvailabilities: IPropertyAvailability[]
   protelAvailabilities: IProtelAvailability[]
-  selectedProtelAvailabilities: IProtelAvailability[]
+  selectedProtelAvailabilityGroups: IProtelAvailabilityGroup[]
   issues: string[]
   errors: Record<string, string>
   dateHelper: DateHelper = new DateHelper()
@@ -49,7 +50,7 @@ export class Reservation implements IReservation {
     this.orderIndex = 0
     this.propertyAvailabilities = []
     this.protelAvailabilities = []
-    this.selectedProtelAvailabilities = []
+    this.selectedProtelAvailabilityGroups = []
     this.issues = []
     this.errors = {}
     this.isBookerGuest = true
@@ -80,7 +81,7 @@ export class Reservation implements IReservation {
     this.orderIndex = reservation.orderIndex
     this.propertyAvailabilities = reservation.propertyAvailabilities
     this.protelAvailabilities = reservation.protelAvailabilities
-    this.selectedProtelAvailabilities = reservation.selectedProtelAvailabilities
+    this.selectedProtelAvailabilityGroups = reservation.selectedProtelAvailabilityGroups
     this.issues = reservation.issues
     if (reservation.errors) {
       this.errors = reservation.errors
@@ -112,7 +113,7 @@ export class Reservation implements IReservation {
     this.propertyID = undefined
     this.propertyAvailabilities = []
     this.protelAvailabilities = []
-    this.selectedProtelAvailabilities = []
+    this.selectedProtelAvailabilityGroups = []
     this.issues = []
     this.errors = {}
     this.isBookerGuest = true
