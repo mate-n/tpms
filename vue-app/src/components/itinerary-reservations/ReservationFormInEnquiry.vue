@@ -114,6 +114,14 @@ const numberOfNights = computed(() => {
   )
 })
 
+const nightsOverviewString = computed(() => {
+  const selectedNights = reservation.value.selectedProtelAvailabilityGroups
+    .map((n) => n.availabilities)
+    .flat().length
+
+  return `${selectedNights} / ${numberOfNights.value}`
+})
+
 const arrivalDateString = computed(() => {
   return dateHelper.getDateString(reservation.value.arrivalDate)
 })
@@ -296,8 +304,7 @@ const expansionModel = ref<string[] | null>(['availabilities'])
       <v-col>
         <v-text-field
           label="Nights"
-          :model-value="numberOfNights"
-          type="number"
+          :model-value="nightsOverviewString"
           :error-messages="reservation.errors && reservation.errors['nights']"
           :readonly="true"
         ></v-text-field>
