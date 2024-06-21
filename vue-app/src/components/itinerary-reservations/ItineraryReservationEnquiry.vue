@@ -69,7 +69,7 @@ const updateShowBookButton = () => {
   }
 }
 
-const clickOnBook = () => {
+const clickOnAddToCart = () => {
   closeExpansionPanels.value++
   updateOrderIndexes()
   for (const reservation of reservations.value) {
@@ -136,7 +136,9 @@ const basketDialog = ref(false)
   <v-container fluid>
     <div class="d-flex justify-end mt-3">
       <v-btn class="secondary-button" @click="clickOnViewCart()">View Cart</v-btn>
-      <v-btn class="ml-2 primary-button" v-if="showBookButton" @click="clickOnBook()">Book</v-btn>
+      <v-btn class="ml-2 primary-button" v-if="showBookButton" @click="clickOnAddToCart()"
+        >Add to Cart</v-btn
+      >
     </div>
   </v-container>
 
