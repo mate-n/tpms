@@ -265,12 +265,6 @@ const expansionModel = ref<string[] | null>(['availabilities'])
 </script>
 
 <template>
-  <div v-for="group of reservation.selectedProtelAvailabilityGroups" :key="group.id">
-    {{ group.id }}
-    <div v-for="availability of group.availabilities" :key="availability.id">
-      {{ availability.id }}
-    </div>
-  </div>
   <v-container fluid class="bg-white">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100">
