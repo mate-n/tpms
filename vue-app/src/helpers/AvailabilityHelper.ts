@@ -13,6 +13,30 @@ export class AvailabilityHelper {
     return uniqueRooms
   }
 
+  getUniqueRoomTypeCodes(availabilities: IProtelAvailability[]) {
+    const uniqueCodes = new Set<string>()
+    availabilities.forEach((availability) => {
+      uniqueCodes.add(availability.room_type_code)
+    })
+    return uniqueCodes
+  }
+
+  getAvailabilityByRoomTypeCode(availabilities: IProtelAvailability[], roomTypeCode: string) {
+    return availabilities.filter((availability) => availability.room_type_code === roomTypeCode)
+  }
+
+  getAvailabilityByRoomTypeCodeAndByDate(
+    availabilities: IProtelAvailability[],
+    roomTypeCode: string,
+    date: Date
+  ) {
+    return availabilities.find(
+      (availability) =>
+        availability.room_type_name === roomTypeCode &&
+        this.dateHelper.isSameDay(availability.availability_start, date)
+    )
+  }
+
   getAvailabilityByRoomTypeName(availabilities: IProtelAvailability[], roomTypeName: string) {
     return availabilities.filter((availability) => availability.room_type_name === roomTypeName)
   }
