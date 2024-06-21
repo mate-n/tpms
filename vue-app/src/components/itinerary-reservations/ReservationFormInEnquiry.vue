@@ -441,18 +441,18 @@ const expansionModel = ref<string[] | null>(['availabilities'])
                 </template>
               </tr>
               <tr
-                v-for="roomTypeName of availabilityHelper.getUniqueRoomTypeNames(
+                v-for="roomTypeCode of availabilityHelper.getUniqueRoomTypeCodes(
                   reservation.protelAvailabilities
                 )"
-                :key="roomTypeName"
+                :key="roomTypeCode"
               >
                 <td>
-                  {{ roomTypeName }}
+                  {{ roomTypeCode }}
                 </td>
                 <td class="bg-lightgray">
                   <ProtelAvailabilitiesSelecter
                     v-model="reservation"
-                    :room-type-name="roomTypeName"
+                    :room-type-code="roomTypeCode"
                   ></ProtelAvailabilitiesSelecter>
                 </td>
               </tr>
