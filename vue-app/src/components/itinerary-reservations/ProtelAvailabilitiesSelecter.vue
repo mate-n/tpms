@@ -456,12 +456,14 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
           'bg-light': !availabilitySelectable.selected
         }"
       >
-        {{
-          ratesHelper.calculateActualRate(
-            availabilitySelectable.availability?.rates_data[0],
-            reservation.guestsPerRoom
-          )
-        }}
+        <template v-if="availabilitySelectable.availability?.rates_data">
+          {{
+            ratesHelper.calculateActualRate(
+              availabilitySelectable.availability?.rates_data[0],
+              reservation.guestsPerRoom
+            )
+          }}
+        </template>
       </div>
     </div>
   </div>
