@@ -8,6 +8,10 @@ export class ProtelCampsService {
     return 'This action adds a new protelCamp'
   }
 
+  findAllForMultiSelect() {
+    return 'new multi select list.'
+  }
+
   findAll() {
     return new Promise((resolve) => {
       this.getParks().then((result: ICamp[]) => {
@@ -16,7 +20,7 @@ export class ProtelCampsService {
     })
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return new Promise((resolve) => {
       this.getParks().then((results: ICamp[]) => {
         const camp = results.find((camp) => camp.campid == id)

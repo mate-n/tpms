@@ -1,42 +1,44 @@
-const parksAndCamps = {
+import { IParksAndCamps } from 'src/shared/interfaces/IParksAndCamps'
+
+const parksAndCamps: IParksAndCamps = {
   'Kruger National Park': {
-    parkid: '1',
+    parknid: '1',
     camps: [
       {
-        campid: '3599',
+        campid: 3599,
         campname: 'Skukuza Rest Camp',
       },
       {
-        campid: '3600',
+        campid: 3600,
         campname: 'Lower Sabie Rest Camp',
       },
     ],
   },
   'Kgalagadi Transfrontier Park': {
-    parkid: '2',
+    parknid: '2',
     camps: [
       {
-        campid: '19315',
+        campid: 19315,
         campname: 'Mata Mata',
       },
       {
-        campid: '19317',
+        campid: 19317,
         campname: 'Kieliekrankie Wilderness Camp',
       },
       {
-        campid: '19321',
+        campid: 19321,
         campname: 'Gharagab Wilderness Camp',
       },
       {
-        campid: '19325',
+        campid: 19325,
         campname: 'Twee Riveren',
       },
       {
-        campid: '19335',
+        campid: 19335,
         campname: 'Grootkolk Wilderness Camp',
       },
       {
-        campid: '19337',
+        campid: 19337,
         campname: 'Kalahari Tent Camp',
       },
     ],
