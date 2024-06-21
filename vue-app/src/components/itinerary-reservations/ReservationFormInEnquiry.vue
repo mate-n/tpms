@@ -239,7 +239,7 @@ const availabilitiesLoading = ref(false)
 const roomTypeDialog = ref(false)
 const availableDates = computed(() => {
   const dates = []
-  for (let i = 0; i < numberOfNights.value; i++) {
+  for (let i = 0; i < numberOfNights.value + 1; i++) {
     dates.push(dateHelper.addDays(reservation.value.arrivalDate, i))
   }
   return dates
