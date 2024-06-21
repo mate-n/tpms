@@ -4,11 +4,11 @@ import type { IProtelAvailabilityGroup } from '../interfaces/protel/IProtelAvail
 export class ProtelAvailabilityGroup implements IProtelAvailabilityGroup {
   id: number
   availabilities: IProtelAvailability[]
-  roomTypeName: string
+  roomTypeCode: string
 
   constructor() {
     this.id = new Date().getTime()
     this.availabilities = []
-    this.roomTypeName = ''
+    this.roomTypeCode = ''
   }
 }
