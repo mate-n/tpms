@@ -262,6 +262,12 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
 }
 
 const expansionModel = ref<string[] | null>(['availabilities'])
+
+const showRoomsInProtelAvailabilitiesSelecter = ref(false)
+
+const clickOnPlusButtonInAvailability = () => {
+  showRoomsInProtelAvailabilitiesSelecter.value = !showRoomsInProtelAvailabilitiesSelecter.value
+}
 </script>
 
 <template>
@@ -413,7 +419,9 @@ const expansionModel = ref<string[] | null>(['availabilities'])
             <tbody>
               <tr>
                 <td class="d-flex justify-space-between align-center">
-                  <v-icon class="text-primary">mdi-plus</v-icon>
+                  <v-icon class="text-primary" @click="clickOnPlusButtonInAvailability()"
+                    >mdi-plus</v-icon
+                  >
                   Availibility (incl. OB)
                 </td>
                 <td class="bg-lightgray">
@@ -443,7 +451,7 @@ const expansionModel = ref<string[] | null>(['availabilities'])
                 )"
                 :key="roomTypeCode"
               >
-                <td>
+                <td v-if="showRoomsInProtelAvailabilitiesSelecter">
                   <div class="d-flex justify-space-between">
                     <div>{{ roomTypeCode }}</div>
                     <div>
@@ -453,7 +461,7 @@ const expansionModel = ref<string[] | null>(['availabilities'])
                     </div>
                   </div>
                 </td>
-                <td class="bg-lightgray">
+                <td class="bg-lightgray" v-if="showRoomsInProtelAvailabilitiesSelecter">
                   <ProtelAvailabilitiesSelecter
                     v-model="reservation"
                     :room-type-code="roomTypeCode"
