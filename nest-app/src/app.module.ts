@@ -17,6 +17,8 @@ import { ProtelCampsModule } from './protel-camps/v1/protel-camps.module'
 import { ProtelAvailabilitiesModule } from './protel-availabilities/v1/protel-availabilities.module'
 import { ProtelStatusApiController } from './protel-status-api/protel-status-api.controller'
 import { ProtelProfilesModule } from './protel-profiles/v1/protel-profiles.module'
+import { ProtelRegionsModule } from './protel-regions/v1/protel-regions.module'
+import { ProtelParksModule } from './protel-parks/v1/protel-parks.module'
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { ProtelProfilesModule } from './protel-profiles/v1/protel-profiles.modul
     ProtelCampsModule,
     ProtelAvailabilitiesModule,
     ProtelProfilesModule,
+    ProtelRegionsModule,
+    ProtelParksModule,
   ],
   controllers: [
     AppController,
