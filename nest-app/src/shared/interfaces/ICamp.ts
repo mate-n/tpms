@@ -1,4 +1,4 @@
 export interface ICamp {
-  campid: number
+  campid: string
   campname: string
 }

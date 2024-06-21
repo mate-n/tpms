@@ -17,7 +17,7 @@ export class ProtelCampsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.protelCampsService.findOne(+id)
+    return this.protelCampsService.findOne(id)
   }
 
   @Patch(':id')

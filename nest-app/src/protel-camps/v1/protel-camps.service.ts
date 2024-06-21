@@ -16,7 +16,7 @@ export class ProtelCampsService {
     })
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return new Promise((resolve) => {
       this.getParks().then((results: ICamp[]) => {
         const camp = results.find((camp) => camp.campid == id)
