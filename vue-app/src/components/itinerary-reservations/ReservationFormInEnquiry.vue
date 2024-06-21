@@ -263,7 +263,7 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
 
 const expansionModel = ref<string[] | null>(['availabilities'])
 
-const showRoomsInProtelAvailabilitiesSelecter = ref(false)
+const showRoomsInProtelAvailabilitiesSelecter = ref(true)
 
 const clickOnPlusButtonInAvailability = () => {
   showRoomsInProtelAvailabilitiesSelecter.value = !showRoomsInProtelAvailabilitiesSelecter.value
