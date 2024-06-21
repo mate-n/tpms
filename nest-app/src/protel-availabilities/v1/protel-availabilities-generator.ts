@@ -9,12 +9,12 @@ export class ProtelAvailabilitiesGenerator {
       const availabilityStartString =
         this.generateDateStringForAvailability(currentDate)
 
-      const room_rate = Math.floor(Math.random() * 1000) + 1000
-      for (const roomTypeCode of this.listOfRoomTypeCodes) {
+      for (const roomRateWithRoomTypeCode of this
+        .listOfRoomRateWithRoomTypeCodes) {
         const availability = this.generateAvailability(
-          roomTypeCode,
+          roomRateWithRoomTypeCode.room_type_code,
           availabilityStartString,
-          room_rate.toString(),
+          roomRateWithRoomTypeCode.room_rate.toString(),
         )
         availabilities.push(availability)
       }
@@ -32,7 +32,14 @@ export class ProtelAvailabilitiesGenerator {
     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} 00:00:00`
   }
 
-  listOfRoomTypeCodes = ['CK6', 'CK6P', 'FA2Z', 'FA2/4A', 'FA2/4ZA', 'FA3']
+  listOfRoomRateWithRoomTypeCodes: RoomRateWithRoomTypeCode[] = [
+    { room_rate: 1000, room_type_code: 'CK6' },
+    { room_rate: 1500, room_type_code: 'CK6P' },
+    { room_rate: 2000, room_type_code: 'FA2Z' },
+    { room_rate: 2500, room_type_code: 'FA2/4A' },
+    { room_rate: 3000, room_type_code: 'FA2/4ZA' },
+    { room_rate: 3500, room_type_code: 'FA3' },
+  ]
 
   generateAvailability(
     room_type_code: string,
@@ -53,7 +60,7 @@ export class ProtelAvailabilitiesGenerator {
       max_occupancy: '4',
       availability_start: availability_start, //'2025-03-13 00:00:00',
       availability_end: availability_start, //'2025-03-13 00:00:00',
-      availability_count: '6',
+      availability_count: Math.floor(Math.random() * 10) + 1,
       park_name: 'Kgalagadi Transfrontier National Park',
       property_name: 'Twee Riveren',
       room_type_name: 'acc',
@@ -68,4 +75,9 @@ export class ProtelAvailabilitiesGenerator {
       ],
     }
   }
+}
+
+interface RoomRateWithRoomTypeCode {
+  room_rate: number
+  room_type_code: string
 }
