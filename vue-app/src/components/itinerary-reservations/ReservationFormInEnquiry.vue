@@ -447,7 +447,14 @@ const expansionModel = ref<string[] | null>(['availabilities'])
                 :key="roomTypeCode"
               >
                 <td>
-                  {{ roomTypeCode }}
+                  <div class="d-flex justify-space-between">
+                    <div>{{ roomTypeCode }}</div>
+                    <div>
+                      <v-btn @click="roomTypeDialog = true" variant="text" icon size="x-small">
+                        <v-icon>mdi-information-outline</v-icon>
+                      </v-btn>
+                    </div>
+                  </div>
                 </td>
                 <td class="bg-lightgray">
                   <ProtelAvailabilitiesSelecter
@@ -480,12 +487,6 @@ const expansionModel = ref<string[] | null>(['availabilities'])
   </v-dialog>
 
   <v-dialog v-model="roomTypeDialog" width="600" scrollable>
-    <v-card v-if="protelAvailabilityForDetails">
-      <RoomDetailsCard
-        :protel-availability="protelAvailabilityForDetails"
-        @close="roomTypeDialog = false"
-      >
-      </RoomDetailsCard>
-    </v-card>
+    <RoomDetailsCard @close="roomTypeDialog = false"> </RoomDetailsCard>
   </v-dialog>
 </template>
