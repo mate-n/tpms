@@ -7,6 +7,7 @@ import { useBasketItemsStore } from '@/stores/basketItems'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import { Reservation } from '@/shared/classes/Reservation'
 import ReservationFormInEnquiry from './ReservationFormInEnquiry.vue'
+import BasketCard from '@/components/baskets/BasketCard.vue'
 const basketItemsStore = useBasketItemsStore()
 const dateHelper = new DateHelper()
 const itineraryReservationValidator = new ItineraryReservationValidator()
@@ -83,6 +84,12 @@ onBeforeMount(() => {
 })
 
 const showBookButton = ref(false)
+
+const clickOnViewCart = () => {
+  basketDialog.value = true
+}
+
+const basketDialog = ref(false)
 </script>
 
 <template>
@@ -128,8 +135,14 @@ const showBookButton = ref(false)
 
   <v-container fluid>
     <div class="d-flex justify-end mt-3">
-      <v-btn class="secondary-button">Cancel</v-btn>
+      <v-btn class="secondary-button" @click="clickOnViewCart()">View Cart</v-btn>
       <v-btn class="ml-2 primary-button" v-if="showBookButton" @click="clickOnBook()">Book</v-btn>
     </div>
   </v-container>
+
+  <v-dialog v-model="basketDialog" scrollable auto>
+    <v-card>
+      <BasketCard @close="basketDialog = false"></BasketCard>
+    </v-card>
+  </v-dialog>
 </template>
