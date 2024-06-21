@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { ICamp } from 'src/shared/interfaces/ICamp'
 import { IParksAndCamps } from 'src/shared/interfaces/IParksAndCamps'
-
+import parksAndCamps from '../mock-data/parksAndCamps'
 @Injectable()
 export class ProtelCampsService {
   create() {
@@ -49,6 +49,12 @@ export class ProtelCampsService {
   }
 
   getParksAndCamps() {
+    return new Promise<IParksAndCamps>((resolve) => {
+      resolve(parksAndCamps)
+    })
+  }
+
+  getParksAndCampsOld() {
     return new Promise<IParksAndCamps>((resolve) => {
       const myHeaders = new Headers()
       myHeaders.append('Authorization', 'Bearer 1234567890')
