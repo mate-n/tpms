@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ProtelRegionsController } from './protel-regions.controller'
-import { ProtelRegionsService } from '../protel-regions.service'
+import { ProtelRegionsService } from './protel-regions.service'
 
 describe('ProtelRegionsController', () => {
   let controller: ProtelRegionsController

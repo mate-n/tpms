@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { CreateProtelRegionDto } from '../dto/create-protel-region.dto'
 import { UpdateProtelRegionDto } from '../dto/update-protel-region.dto'
+import { IProtelRegion } from 'src/shared/interfaces/protel/IProtelRegion'
 
 @Injectable()
 export class ProtelRegionsService {
@@ -8,7 +9,7 @@ export class ProtelRegionsService {
     return 'This action adds a new protelRegion'
   }
 
-  findAll() {
+  findAll(): IProtelRegion[] {
     return this.regions
   }
 
@@ -24,12 +25,24 @@ export class ProtelRegionsService {
     return `This action removes a #${id} protelRegion`
   }
 
-  regions = [
-    'Arid Region',
-    'Cape Cluster Region',
-    'Frontier Region',
-    'Garden Route Region',
-    'Kruger Region',
-    'Northern Region',
+  regions: IProtelRegion[] = [
+    {
+      name: 'Arid Region',
+    },
+    {
+      name: 'Cape Cluster Region',
+    },
+    {
+      name: 'Frontier Region',
+    },
+    {
+      name: 'Garden Route Region',
+    },
+    {
+      name: 'Kruger Region',
+    },
+    {
+      name: 'Northern Region',
+    },
   ]
 }

@@ -11,7 +11,7 @@ import { ProtelRegionsService } from './protel-regions.service'
 import { CreateProtelRegionDto } from '../dto/create-protel-region.dto'
 import { UpdateProtelRegionDto } from '../dto/update-protel-region.dto'
 
-@Controller('protel-regions')
+@Controller('v1/protel-regions')
 export class ProtelRegionsController {
   constructor(private readonly protelRegionsService: ProtelRegionsService) {}
 
