@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import { DateHelper } from '@/helpers/DateHelper'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
 import { ProtelAvailabilitiesSelecterHelper } from '@/helpers/ProtelAvailabilitiesSelecterHelper'
 import { RatesHelper } from '@/helpers/RatesHelper'
 import { ProtelAvailabilityGroup } from '@/shared/classes/ProtelAvailabilityGroup'
@@ -13,6 +14,7 @@ import { nextTick, ref, watch } from 'vue'
 const dateHelper = new DateHelper()
 const protelAvailabilitiesSelecterHelper = new ProtelAvailabilitiesSelecterHelper()
 const ratesHelper = new RatesHelper()
+const priceFormatter = new PriceFormatter()
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
 const selectBars = ref<ISelectBar[]>([])
 const availabilityHelper = new AvailabilityHelper()
@@ -492,22 +494,27 @@ const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectabl
       @click="addSelectBar(availabilitySelectable)"
     >
       <div
-        class="mr-3 px-5 py-2 my-2 text-center availability-inner-box"
+        class="mr-3 my-2 text-center"
         :class="{
           'bg-yellow': availabilitySelectable.selected,
           'bg-light': !availabilitySelectable.selected
         }"
       >
-        {{ availabilitySelectable.availability.availability_count }}
-        <hr />
-        <template v-if="availabilitySelectable.availability?.rates_data">
-          {{
-            ratesHelper.calculateActualRate(
-              availabilitySelectable.availability?.rates_data[0],
-              reservation.guestsPerRoom
-            )
-          }}
-        </template>
+        <div class="bg-white py-1" style="margin-bottom: 0.2rem">
+          {{ availabilitySelectable.availability.availability_count }}
+        </div>
+        <div class="bg-white py-1">
+          <template v-if="availabilitySelectable.availability?.rates_data">
+            {{
+              priceFormatter.formatPrice(
+                ratesHelper.calculateActualRate(
+                  availabilitySelectable.availability?.rates_data[0],
+                  reservation.guestsPerRoom
+                )
+              )
+            }}
+          </template>
+        </div>
       </div>
     </div>
   </div>
