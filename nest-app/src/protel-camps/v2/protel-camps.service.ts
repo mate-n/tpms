@@ -2,14 +2,11 @@ import { Injectable } from '@nestjs/common'
 import { ICamp } from 'src/shared/interfaces/ICamp'
 import { IParksAndCamps } from 'src/shared/interfaces/IParksAndCamps'
 import parksAndCamps from '../mock-data/parksAndCamps'
+import { IProtelCamp } from 'src/shared/interfaces/protel/IProtelCamp'
 @Injectable()
 export class ProtelCampsService {
   create() {
     return 'This action adds a new protelCamp'
-  }
-
-  findAllForMultiSelect() {
-    return 'new multi select list.'
   }
 
   findAll() {
@@ -84,4 +81,115 @@ export class ProtelCampsService {
         .catch((error) => console.error(error))
     })
   }
+
+  camps: IProtelCamp[] = [
+    {
+      name: 'Augrabies Rest Camp',
+      parkName: 'Augrabies Falls National Park',
+    },
+    {
+      name: 'Bitterpan Wilderness Camp',
+      parkName: 'Kgalagadi Transfrontier National Park',
+    },
+    {
+      name: 'Gharagab Wilderness Camp',
+      parkName: 'Kgalagadi Transfrontier National Park',
+    },
+    {
+      name: 'Grootkolk Wilderness Camp',
+      parkName: 'Kgalagadi Transfrontier National Park',
+    },
+    {
+      name: 'Kalahari Tent Camp',
+      parkName: 'Kgalagadi Transfrontier National Park',
+    },
+    {
+      name: 'Kieliekrankie Wilderness Camp',
+      parkName: 'Kgalagadi Transfrontier National Park',
+    },
+    {
+      name: 'Mata Mata Rest Camp',
+      parkName: 'Kgalagadi Transfrontier National Park',
+    },
+    {
+      name: 'Nossob Rest Camp',
+      parkName: 'Kgalagadi Transfrontier National Park',
+    },
+    {
+      name: 'Twee Rivieren Rest Camp',
+      parkName: 'Kgalagadi Transfrontier National Park',
+    },
+    {
+      name: 'Urikaruus Wilderness Camp',
+      parkName: 'Kgalagadi Transfrontier National Park',
+    },
+    {
+      name: 'Haak en Steek Rest Camp',
+      parkName: 'Mokala National Park',
+    },
+    {
+      name: 'Lilydale Rest Camp',
+      parkName: 'Mokala National Park',
+    },
+    {
+      name: 'Mosu Lodge',
+      parkName: 'Mokala National Park',
+    },
+    {
+      name: 'Motswedi Camp Site',
+      parkName: 'Mokala National Park',
+    },
+    {
+      name: 'Groenrivier Rest Camp',
+      parkName: 'Namaqua National Park',
+    },
+    {
+      name: 'Skilpad Rest Camp',
+      parkName: 'Namaqua National Park',
+    },
+    {
+      name: 'De Hoop Camp Site',
+      parkName: 'Richtersveld National Park',
+    },
+    {
+      name: 'Gannakouriep Wilderness Camp',
+      parkName: 'Richtersveld National Park',
+    },
+    {
+      name: 'Kokerboomkloof Camp Site',
+      parkName: 'Richtersveld National Park',
+    },
+    {
+      name: 'Potjiespram Camp Site',
+      parkName: 'Richtersveld National Park',
+    },
+    {
+      name: 'Richtersberg Camp Site',
+      parkName: 'Richtersveld National Park',
+    },
+    {
+      name: 'Sendelingsdrif Rest Camp',
+      parkName: 'Richtersveld National Park',
+    },
+    {
+      name: 'Tatasberg Wilderness Camp',
+      parkName: 'Richtersveld National Park',
+    },
+    {
+      name: 'Rierfontein Rest Camp',
+      parkName: 'Agulhas National Park',
+    },
+    {
+      name: 'Rhenosterkop Rest Camp',
+      parkName: 'Agulhas National Park',
+    },
+    {
+      name: 'Bergplaas Rest Camp',
+      parkName: 'Agulhas National Park',
+    },
+    {
+      name: 'Agulhas Rest Camp',
+      parkName: 'Agulhas National Park',
+    },
+  ]
 }
