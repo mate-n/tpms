@@ -6,4 +6,4 @@ import { ProtelCampsController } from './protel-camps.controller'
   controllers: [ProtelCampsController],
   providers: [ProtelCampsService],
 })
-export class ProtelCampsModule {}
+export class ProtelCampsModuleV2 {}

@@ -1,9 +1,23 @@
-import { Controller, Get, Post, Patch, Param, Delete } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Delete,
+  Body,
+} from '@nestjs/common'
 import { ProtelCampsService } from './protel-camps.service'
+import { IProtelCampSearch } from 'src/shared/interfaces/protel/IProtelCampSearch'
 
 @Controller('v2/protel-camps')
 export class ProtelCampsController {
   constructor(private readonly protelCampsService: ProtelCampsService) {}
+
+  @Post('search')
+  search(@Body() protelCampSearch: IProtelCampSearch) {
+    return this.protelCampsService.search(protelCampSearch)
+  }
 
   @Post()
   create() {

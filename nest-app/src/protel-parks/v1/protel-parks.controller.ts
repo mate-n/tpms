@@ -16,7 +16,6 @@ export class ProtelParksController {
 
   @Post('search')
   search(@Body() protelParkSearch: IProtelParkSearch) {
-    console.log('search', protelParkSearch)
     return this.protelParksService.search(protelParkSearch)
   }
 
