@@ -336,7 +336,21 @@ const removeOtherGroupsThatConflictOnDate = (availability: IProtelAvailability) 
   }
 }
 
+const isThereAlreadySelectBar = (availabilitySelectable: IProtelAvailabilitySelectable) => {
+  for (const selectBar of selectBars.value) {
+    for (const availability of selectBar.protelAvailabilityGroup.availabilities) {
+      if (availability.id === availabilitySelectable.availability.id) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectable) => {
+  if (isThereAlreadySelectBar(availabilitySelectable)) {
+    return
+  }
   removeOtherGroupsThatConflictOnDate(availabilitySelectable.availability)
 
   const newProtelAvailabilityGroup = new ProtelAvailabilityGroup()
