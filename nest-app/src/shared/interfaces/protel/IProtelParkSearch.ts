@@ -1,3 +1,3 @@
 export interface IProtelParkSearch {
-  regionName: string
+  regionNames: string[]
 }
