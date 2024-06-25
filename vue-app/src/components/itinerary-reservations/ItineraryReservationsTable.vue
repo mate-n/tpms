@@ -7,20 +7,23 @@ const dateFormatter = new DateFormatter()
 const availableTableDataHeaders = ref([
   { key: 'id', title: 'ID', selected: true },
   { key: 'startPropertyName', title: 'START', selected: true },
-  { key: 'startDate', title: 'DATE', selected: true },
+  { key: 'arrivalDate', title: 'DATE', selected: true },
   { key: 'endPropertyName', title: 'END', selected: true },
-  { key: 'endDate', title: 'DATE', selected: true },
+  { key: 'departureDate', title: 'DATE', selected: true },
 
   { key: 'action', title: 'ACTION', selected: true }
 ])
 
 defineProps({
-  itineraryReservations: { type: Object as () => IItineraryReservation[], required: true }
+  itineraryReservations: {
+    type: Object as () => IItineraryReservation[],
+    required: true
+  }
 })
 const changeColumnsDialog = ref(false)
 
 const isSpecialColumn = (header: string) => {
-  return ['collapse', 'startDate', 'endDate', 'action', 'settings'].includes(header)
+  return ['collapse', 'arrivalDate', 'departureDate', 'action', 'settings'].includes(header)
 }
 
 const editItineraryReservation = (itineraryReservation: IItineraryReservation) => {
@@ -50,11 +53,11 @@ const editItineraryReservation = (itineraryReservation: IItineraryReservation) =
             <template v-if="!isSpecialColumn(header.key)">
               {{ row.item[header.key as keyof IItineraryReservation] }}
             </template>
-            <template v-if="header.key === 'startDate'">
-              {{ dateFormatter.dddotmmdotyyyy(row.item['startDate']) }}
+            <template v-if="header.key === 'arrivalDate'">
+              {{ dateFormatter.dddotmmdotyyyy(row.item['arrivalDate']) }}
             </template>
-            <template v-if="header.key === 'endDate'">
-              {{ dateFormatter.dddotmmdotyyyy(row.item['endDate']) }}
+            <template v-if="header.key === 'departureDate'">
+              {{ dateFormatter.dddotmmdotyyyy(row.item['departureDate']) }}
             </template>
           </div>
           <div v-if="!row.item.hasOwnProperty(header.key)">
