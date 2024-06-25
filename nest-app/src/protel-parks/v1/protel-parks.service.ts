@@ -1,9 +1,17 @@
 import { Injectable } from '@nestjs/common'
 
 import { IProtelPark } from 'src/shared/interfaces/protel/IProtelPark'
+import { IProtelParkSearch } from 'src/shared/interfaces/protel/IProtelParkSearch'
 
 @Injectable()
 export class ProtelParksService {
+  search(search: IProtelParkSearch) {
+    const parks = this.parks.filter((park) => {
+      return park.regionName === search.regionName
+    })
+    return parks
+  }
+
   create() {
     return 'This action adds a new protelPark'
   }

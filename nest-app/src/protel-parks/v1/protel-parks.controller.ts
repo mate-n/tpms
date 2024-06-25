@@ -1,9 +1,24 @@
-import { Controller, Get, Post, Patch, Param, Delete } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Delete,
+  Body,
+} from '@nestjs/common'
 import { ProtelParksService } from './protel-parks.service'
+import { IProtelParkSearch } from 'src/shared/interfaces/protel/IProtelParkSearch'
 
-@Controller('protel-parks')
+@Controller('v1/protel-parks')
 export class ProtelParksController {
   constructor(private readonly protelParksService: ProtelParksService) {}
+
+  @Post('search')
+  search(@Body() protelParkSearch: IProtelParkSearch) {
+    console.log('search', protelParkSearch)
+    return this.protelParksService.search(protelParkSearch)
+  }
 
   @Post()
   create() {
