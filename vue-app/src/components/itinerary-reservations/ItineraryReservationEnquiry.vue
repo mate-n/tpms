@@ -205,7 +205,7 @@ const addReservationToCamp = (camp: IProtelCamp) => {
 </script>
 
 <template>
-  <v-container fluid class="bg-protelblue text-white itinerary-reservation-fixed-div-1">
+  <v-container fluid class="bg-protelblue text-white itinerary-reservation-fixed-div">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100">
         <v-autocomplete
@@ -244,9 +244,7 @@ const addReservationToCamp = (camp: IProtelCamp) => {
         ></v-autocomplete>
       </v-col>
     </v-row>
-  </v-container>
 
-  <v-container fluid class="bg-protelblue text-white itinerary-reservation-fixed-div-2">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100">
         <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
