@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, inject, onBeforeMount, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ItineraryReservationValidator } from '@/validators/ItineraryReservationValidator'
@@ -8,10 +8,21 @@ import type { IReservation } from '@/shared/interfaces/IReservation'
 import { Reservation } from '@/shared/classes/Reservation'
 import ReservationFormInEnquiry from './ReservationFormInEnquiry.vue'
 import BasketCard from '@/components/baskets/BasketCard.vue'
+import type { IProtelRegion } from '@/shared/interfaces/protel/IProtelRegion'
+import type { AxiosStatic } from 'axios'
+import { ProtelRegionService } from '@/services/protel/ProtelRegionService'
+import { ProtelParkService } from '@/services/protel/ProtelParkService'
+import type { IProtelPark } from '@/shared/interfaces/protel/IProtelPark'
+import type { IProtelParkSearch } from '@/shared/interfaces/protel/IProtelParkSearch'
+const regions: Ref<IProtelRegion[]> = ref([])
+const parks: Ref<IProtelPark[]> = ref([])
 const basketItemsStore = useBasketItemsStore()
 const dateHelper = new DateHelper()
 const itineraryReservationValidator = new ItineraryReservationValidator()
 const reservations: Ref<IReservation[]> = ref([])
+const axios: AxiosStatic | undefined = inject('axios')
+const protelRegionService = new ProtelRegionService(axios)
+const protelParkService = new ProtelParkService(axios)
 
 const updateOrderIndexes = () => {
   reservations.value.forEach((reservation, index) => {
@@ -81,7 +92,30 @@ const closeExpansionPanels = ref(0)
 
 onBeforeMount(() => {
   addReservation()
+  getRegions()
+  getParks()
 })
+
+const getRegions = () => {
+  protelRegionService.findAll().then((res) => {
+    regions.value = res
+  })
+}
+
+const getParks = () => {
+  if (selectedRegions.value.length === 0) {
+    protelParkService.findAll().then((res) => {
+      parks.value = res
+    })
+  } else {
+    const protelParkSearch: IProtelParkSearch = {
+      regionNames: selectedRegions.value.map((region) => region.name)
+    }
+    protelParkService.search(protelParkSearch).then((res) => {
+      parks.value = res
+    })
+  }
+}
 
 const showBookButton = ref(false)
 
@@ -90,14 +124,54 @@ const clickOnViewCart = () => {
 }
 
 const basketDialog = ref(false)
+const selectedRegions = ref<IProtelRegion[]>([])
+
+watch(
+  selectedRegions,
+  () => {
+    getParks()
+  },
+  {
+    deep: true
+  }
+)
 </script>
 
 <template>
-  <v-toolbar
-    class="bg-primary text-white d-flex justify-space-between"
-    :title="$t('general.itineraryReservationEnquiry')"
-    app
-  >
+  <v-toolbar title=" " class="py-1 bg-primary text-white d-flex justify-space-between">
+    <div class="my-2">
+      <v-autocomplete
+        v-model="selectedRegions"
+        clearable
+        chips
+        label="Regions"
+        :items="regions"
+        item-title="name"
+        return-object
+        multiple
+      ></v-autocomplete>
+    </div>
+    <div class="my-2">
+      <v-autocomplete
+        clearable
+        chips
+        label="Parks"
+        :items="parks"
+        item-title="name"
+        multiple
+      ></v-autocomplete>
+    </div>
+
+    <div class="my-2">
+      <v-autocomplete
+        clearable
+        chips
+        label="Camps"
+        :items="regions"
+        item-title="name"
+        multiple
+      ></v-autocomplete>
+    </div>
     <v-menu>
       <template v-slot:activator="{ props, isActive }">
         <v-btn class="bg-white" v-bind="props">
