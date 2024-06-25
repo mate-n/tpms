@@ -12,7 +12,8 @@ const customLightTheme: ThemeDefinition = {
   dark: false,
   colors: {
     primary: '#006221',
-    background: '#f5f5f5'
+    background: '#f5f5f5',
+    protelBlue: '#459BE5'
   }
 }
 
