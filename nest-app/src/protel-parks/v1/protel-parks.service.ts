@@ -7,7 +7,7 @@ import { IProtelParkSearch } from 'src/shared/interfaces/protel/IProtelParkSearc
 export class ProtelParksService {
   search(search: IProtelParkSearch) {
     const parks = this.parks.filter((park) => {
-      return park.regionName === search.regionName
+      return search.regionNames.includes(park.regionName)
     })
     return parks
   }
