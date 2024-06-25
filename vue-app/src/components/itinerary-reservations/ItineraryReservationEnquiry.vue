@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeMount, ref, watch } from 'vue'
 import type { Ref } from 'vue'
-import { DateHelper } from '@/helpers/DateHelper'
 import { ItineraryReservationValidator } from '@/validators/ItineraryReservationValidator'
 import { useBasketItemsStore } from '@/stores/basketItems'
-import type { IReservation } from '@/shared/interfaces/IReservation'
 import { Reservation } from '@/shared/classes/Reservation'
 import ReservationFormInEnquiry from './ReservationFormInEnquiry.vue'
 import BasketCard from '@/components/baskets/BasketCard.vue'
@@ -17,26 +15,30 @@ import type { IProtelParkSearch } from '@/shared/interfaces/protel/IProtelParkSe
 import { ProtelCampService } from '@/services/protel/ProtelCampService'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 import type { IProtelCampSearch } from '@/shared/interfaces/protel/IProtelCampSearch'
+import DateSelecter from '@/components/dates/DateSelecter.vue'
+import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
+import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
 const regions: Ref<IProtelRegion[]> = ref([])
 const parks: Ref<IProtelPark[]> = ref([])
 const camps: Ref<IProtelCamp[]> = ref([])
 const basketItemsStore = useBasketItemsStore()
-const dateHelper = new DateHelper()
 const itineraryReservationValidator = new ItineraryReservationValidator()
-const reservations: Ref<IReservation[]> = ref([])
 const axios: AxiosStatic | undefined = inject('axios')
 const protelRegionService = new ProtelRegionService(axios)
 const protelParkService = new ProtelParkService(axios)
 const protelCampService = new ProtelCampService(axios)
+const itineraryReservation = ref(new ItineraryReservation())
 
 const updateOrderIndexes = () => {
-  reservations.value.forEach((reservation, index) => {
+  itineraryReservation.value.reservations.forEach((reservation, index) => {
     reservation.orderIndex = index
   })
 }
 
+/*
 const addReservation = () => {
-  const lastReservation = reservations.value[reservations.value.length - 1]
+  const lastReservation =
+    itineraryReservation.value.reservations[itineraryReservation.value.reservations.length - 1]
   const newReservation = new Reservation()
   reservations.value.push(newReservation)
   if (lastReservation) {
@@ -47,6 +49,7 @@ const addReservation = () => {
   newReservation.departureDate = newDepartureDate
   showBookButton.value = false
 }
+  */
 
 const onReservationChanged = () => {
   updateAllReservations()
@@ -54,30 +57,32 @@ const onReservationChanged = () => {
   updateShowBookButton()
 }
 
+/*
 const removeReservation = (reservation: IReservation) => {
   const index = reservations.value.indexOf(reservation)
   reservations.value.splice(index, 1)
   updateAllReservations()
   checkForIssues()
 }
+  */
 
 const selectedProfile = computed(() => {
-  if (reservations.value.length === 0) return 0
-  return reservations.value[0].profileID
+  if (itineraryReservation.value.reservations.length === 0) return 0
+  return itineraryReservation.value.reservations[0].profileID
 })
 
 const updateAllReservations = () => {
-  for (const reservation of reservations.value) {
+  for (const reservation of itineraryReservation.value.reservations) {
     reservation.profileID = selectedProfile.value
   }
 }
 
 const checkForIssues = () => {
-  itineraryReservationValidator.validate(reservations.value)
+  itineraryReservationValidator.validate(itineraryReservation.value.reservations)
 }
 
 const updateShowBookButton = () => {
-  const errors = itineraryReservationValidator.getErrors(reservations.value)
+  const errors = itineraryReservationValidator.getErrors(itineraryReservation.value.reservations)
   if (errors.length > 0) {
     showBookButton.value = false
   } else {
@@ -88,7 +93,7 @@ const updateShowBookButton = () => {
 const clickOnAddToCart = () => {
   closeExpansionPanels.value++
   updateOrderIndexes()
-  for (const reservation of reservations.value) {
+  for (const reservation of itineraryReservation.value.reservations) {
     basketItemsStore.addReservation(reservation)
   }
 }
@@ -96,7 +101,7 @@ const clickOnAddToCart = () => {
 const closeExpansionPanels = ref(0)
 
 onBeforeMount(() => {
-  addReservation()
+  //addReservation()
   getRegions()
   getParks()
   getCamps()
@@ -109,13 +114,13 @@ const getRegions = () => {
 }
 
 const getParks = () => {
-  if (selectedRegions.value.length === 0) {
+  if (itineraryReservation.value.selectedRegions.length === 0) {
     protelParkService.findAll().then((res) => {
       parks.value = res
     })
   } else {
     const protelParkSearch: IProtelParkSearch = {
-      regionNames: selectedRegions.value.map((region) => region.name)
+      regionNames: itineraryReservation.value.selectedRegions.map((region) => region.name)
     }
     protelParkService.search(protelParkSearch).then((res) => {
       parks.value = res
@@ -124,13 +129,13 @@ const getParks = () => {
 }
 
 const getCamps = () => {
-  if (selectedParks.value.length === 0) {
+  if (itineraryReservation.value.selectedParks.length === 0) {
     protelCampService.findAll().then((res) => {
       camps.value = res
     })
   } else {
     const protelCampSearch: IProtelCampSearch = {
-      parkNames: selectedParks.value.map((park) => park.name)
+      parkNames: itineraryReservation.value.selectedParks.map((park) => park.name)
     }
     protelCampService.search(protelCampSearch).then((res) => {
       camps.value = res
@@ -145,101 +150,140 @@ const clickOnViewCart = () => {
 }
 
 const basketDialog = ref(false)
-const selectedRegions = ref<IProtelRegion[]>([])
-const selectedParks = ref<IProtelPark[]>([])
-const selectedCamps = ref<IProtelCamp[]>([])
+
 watch(
-  selectedRegions,
+  [() => itineraryReservation.value.selectedRegions],
   () => {
     getParks()
-    selectedCamps.value = []
   },
-  {
-    deep: true
-  }
+  { deep: true }
 )
 
 watch(
-  selectedParks,
+  [() => itineraryReservation.value.selectedParks],
   () => {
     getCamps()
   },
-  {
-    deep: true
-  }
+  { deep: true }
 )
+
+watch(
+  [() => itineraryReservation.value.selectedCamps],
+  () => {
+    updateReservations()
+  },
+  { deep: true }
+)
+
+const updateReservations = () => {
+  filterOutLeftOverReservations()
+  addReservationToCamps()
+}
+
+const filterOutLeftOverReservations = () => {
+  for (const reservation of itineraryReservation.value.reservations) {
+    const foundCamp = itineraryReservation.value.selectedCamps.find(
+      (camp) => camp.name === reservation.propertyName
+    )
+    if (!foundCamp) {
+      const index = itineraryReservation.value.reservations.indexOf(reservation)
+      itineraryReservation.value.reservations.splice(index, 1)
+    }
+  }
+}
+
+const addReservationToCamps = () => {
+  for (const camp of itineraryReservation.value.selectedCamps) {
+    const foundReservation = itineraryReservation.value.reservations.find(
+      (reservation) => reservation.propertyName === camp.name
+    )
+    if (!foundReservation) {
+      addReservationToCamp(camp)
+    }
+  }
+}
+
+const addReservationToCamp = (camp: IProtelCamp) => {
+  const reservation = new Reservation()
+  reservation.propertyName = camp.name
+  reservation.profileID = selectedProfile.value
+  reservation.propertyID = 1
+  reservation.arrivalDate = itineraryReservation.value.arrivalDate
+  reservation.departureDate = itineraryReservation.value.departureDate
+  itineraryReservation.value.reservations.push(reservation)
+}
 </script>
 
 <template>
-  <v-toolbar title=" " class="py-1 bg-primary text-white d-flex justify-space-between">
-    <div class="my-2">
-      <v-autocomplete
-        v-model="selectedRegions"
-        clearable
-        chips
-        label="Regions"
-        :items="regions"
-        item-title="name"
-        return-object
-        multiple
-      ></v-autocomplete>
-    </div>
-    <div class="my-2">
-      <v-autocomplete
-        v-model="selectedParks"
-        clearable
-        chips
-        label="Parks"
-        :items="parks"
-        item-title="name"
-        return-object
-        multiple
-      ></v-autocomplete>
-    </div>
+  <v-container fluid class="bg-protelblue text-white">
+    <v-row class="d-flex align-center">
+      <v-col class="d-flex align-center h-100">
+        <v-autocomplete
+          v-model="itineraryReservation.selectedRegions"
+          clearable
+          chips
+          label="Regions"
+          :items="regions"
+          item-title="name"
+          return-object
+          multiple
+        ></v-autocomplete>
+      </v-col>
+      <v-col class="d-flex align-center h-100">
+        <v-autocomplete
+          v-model="itineraryReservation.selectedParks"
+          clearable
+          chips
+          label="Parks"
+          :items="parks"
+          item-title="name"
+          return-object
+          multiple
+        ></v-autocomplete>
+      </v-col>
+      <v-col class="d-flex align-center h-100">
+        <v-autocomplete
+          v-model="itineraryReservation.selectedCamps"
+          clearable
+          chips
+          label="Camps"
+          :items="camps"
+          item-title="name"
+          return-object
+          multiple
+        ></v-autocomplete>
+      </v-col>
+    </v-row>
+  </v-container>
 
-    <div class="my-2">
-      <v-autocomplete
-        v-model="selectedCamps"
-        clearable
-        chips
-        label="Camps"
-        :items="camps"
-        item-title="name"
-        return-object
-        multiple
-      ></v-autocomplete>
-    </div>
-    <v-menu>
-      <template v-slot:activator="{ props, isActive }">
-        <v-btn class="bg-white" v-bind="props">
-          {{ $t('general.addReservation') }}
-          <v-icon v-if="isActive" icon="mdi-chevron-up"></v-icon>
-          <v-icon v-if="!isActive" icon="mdi-chevron-down"></v-icon>
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-item @click="addReservation()">
-          <v-list-item-title class="d-flex justify-space-between">
-            New <v-icon>mdi-playlist-check</v-icon>
-          </v-list-item-title>
-        </v-list-item>
-        <v-list-item disabled class="bg-lightgray">
-          <v-list-item-title class="d-flex justify-space-between">
-            Existing <v-icon>mdi-playlist-plus</v-icon>
-          </v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-  </v-toolbar>
+  <v-container fluid class="bg-protelblue text-white">
+    <v-row class="d-flex align-center">
+      <v-col class="d-flex align-center h-100">
+        <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
+      </v-col>
+      <v-col class="d-flex align-center h-100">
+        <DateSelecter v-model="itineraryReservation.departureDate" label="Departure"></DateSelecter>
+      </v-col>
+      <v-col>
+        <ProfileSearchField
+          label="Guest"
+          icon-name="mdi-account-circle-outline"
+          :profile-search-input="{
+            guestTypeID: 4
+          }"
+          v-model="itineraryReservation.guestProfileID"
+        ></ProfileSearchField>
+      </v-col>
+    </v-row>
+  </v-container>
 
-  <template v-for="(reservation, i) of reservations" :key="reservation.id">
+  <template v-for="(reservation, i) of itineraryReservation.reservations" :key="reservation.id">
     <ReservationFormInEnquiry
-      v-model="reservations[i]"
+      v-model="itineraryReservation.reservations[i]"
       @check="checkForIssues()"
       @change="onReservationChanged()"
-      @remove="(reservation) => removeReservation(reservation)"
-      :previous-reservation="reservations[i - 1]"
-      :next-reservation="reservations[i + 1]"
+      :previous-reservation="itineraryReservation.reservations[i - 1]"
+      :next-reservation="itineraryReservation.reservations[i + 1]"
       :collapse-expansion="closeExpansionPanels"
     ></ReservationFormInEnquiry>
   </template>
