@@ -6,7 +6,6 @@ docker build . -t realms --build-context root=../../../ \
 
 ssh tpms-user@41.76.108.121 << EOF
     docker stop realms
-    docker image rm realms
 EOF
 
 docker save realms | bzip2 | ssh tpms-user@41.76.108.121 docker load
