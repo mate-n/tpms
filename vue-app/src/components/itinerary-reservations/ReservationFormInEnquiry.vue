@@ -185,20 +185,11 @@ const emitChange = () => {
   emit('change')
 }
 
-const propertyChange = () => {
-  reservation.value.selectedProtelAvailabilityGroups = []
-  emitChange()
-}
-
 const arrivalDateChange = () => {
   if (!props.nextReservation) {
     reservation.value.departureDate = dateHelper.addDays(reservation.value.arrivalDate, 2)
   }
   emitChange()
-}
-
-const openProfileDialog = () => {
-  profileDialog.value = true
 }
 
 const closeProfileDialog = () => {
@@ -229,22 +220,6 @@ watch(
   },
   { deep: true }
 )
-
-const showRemoveButton = computed(() => {
-  if (!props.previousReservation && !props.nextReservation) {
-    return false
-  }
-
-  if (!props.previousReservation && props.nextReservation) {
-    return true
-  }
-
-  if (props.nextReservation) {
-    return false
-  }
-
-  return true
-})
 
 const availabilitiesLoading = ref(false)
 
