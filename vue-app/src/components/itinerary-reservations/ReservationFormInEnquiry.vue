@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeMount, ref, watch, type Ref } from 'vue'
+import { computed, inject, onBeforeMount, onMounted, ref, watch, type Ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ReservationValidator } from '@/validators/ReservationValidator'
 import AvailabilityService from '@/services/AvailabilityService'
@@ -64,6 +64,10 @@ onBeforeMount(() => {
   profileService.findAll().then((response: IProfile[]) => {
     profilesInDropdown.value = response
   })
+})
+
+onMounted(() => {
+  check()
 })
 
 const getRoomsForDropdown = () => {
@@ -274,18 +278,11 @@ const clickOnPlusButtonInAvailability = () => {
   <v-container fluid class="bg-white">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100">
-        <v-select
-          label=""
-          :items="campsInDropdown"
-          v-model="reservation.propertyID"
-          item-title="campname"
-          item-value="campid"
-          :error-messages="reservation.errors && reservation.errors['propertyID']"
-          @update:model-value="propertyChange()"
-        ></v-select>
-        <v-icon>mdi-city</v-icon>
+        <h3>
+          <strong>{{ reservation.propertyName }}</strong>
+        </h3>
       </v-col>
-      <v-col>
+      <v-col v-if="false">
         <v-menu v-model="arrivalDateMenu" :close-on-content-click="false">
           <template v-slot:activator="{ props }">
             <v-text-field
@@ -315,7 +312,7 @@ const clickOnPlusButtonInAvailability = () => {
           :readonly="true"
         ></v-text-field>
       </v-col>
-      <v-col>
+      <v-col v-if="false">
         <v-menu v-model="departureDateMenu" :close-on-content-click="false">
           <template v-slot:activator="{ props }">
             <v-text-field
@@ -351,28 +348,10 @@ const clickOnPlusButtonInAvailability = () => {
           :errors="reservation.errors"
         ></GuestsPerRoomSelecter>
       </v-col>
-      <v-col class="d-flex">
-        <v-autocomplete
-          label="Guest"
-          placeholder="Last Name | First Name"
-          hint="Last Name | First Name"
-          v-model="reservation.profileID"
-          :items="profilesInDropdown"
-          :item-title="(profile: IProfile) => `${profile.lastName}, ${profile.firstName}`"
-          :item-value="(profile: IProfile) => profile.id"
-          :disabled="previousReservation !== undefined"
-          :error-messages="reservation.errors && reservation.errors['profileID']"
-          @update:model-value="emitChange()"
-        ></v-autocomplete>
-        <div class="d-flex align-center" @click="openProfileDialog()">
-          <v-icon>mdi-magnify</v-icon>
-        </div>
-      </v-col>
+
       <v-col class="d-flex justify-space-between">
         <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
-        <v-btn class="danger-button" @click="remove(reservation)" v-if="showRemoveButton">
-          Remove
-        </v-btn>
+        <v-btn class="danger-button" @click="remove(reservation)" v-if="false"> Remove </v-btn>
       </v-col>
     </v-row>
   </v-container>
