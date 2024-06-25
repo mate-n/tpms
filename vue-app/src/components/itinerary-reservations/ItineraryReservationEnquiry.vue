@@ -14,8 +14,12 @@ import { ProtelRegionService } from '@/services/protel/ProtelRegionService'
 import { ProtelParkService } from '@/services/protel/ProtelParkService'
 import type { IProtelPark } from '@/shared/interfaces/protel/IProtelPark'
 import type { IProtelParkSearch } from '@/shared/interfaces/protel/IProtelParkSearch'
+import { ProtelCampService } from '@/services/protel/ProtelCampService'
+import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
+import type { IProtelCampSearch } from '@/shared/interfaces/protel/IProtelCampSearch'
 const regions: Ref<IProtelRegion[]> = ref([])
 const parks: Ref<IProtelPark[]> = ref([])
+const camps: Ref<IProtelCamp[]> = ref([])
 const basketItemsStore = useBasketItemsStore()
 const dateHelper = new DateHelper()
 const itineraryReservationValidator = new ItineraryReservationValidator()
@@ -23,6 +27,7 @@ const reservations: Ref<IReservation[]> = ref([])
 const axios: AxiosStatic | undefined = inject('axios')
 const protelRegionService = new ProtelRegionService(axios)
 const protelParkService = new ProtelParkService(axios)
+const protelCampService = new ProtelCampService(axios)
 
 const updateOrderIndexes = () => {
   reservations.value.forEach((reservation, index) => {
@@ -94,6 +99,7 @@ onBeforeMount(() => {
   addReservation()
   getRegions()
   getParks()
+  getCamps()
 })
 
 const getRegions = () => {
@@ -117,6 +123,21 @@ const getParks = () => {
   }
 }
 
+const getCamps = () => {
+  if (selectedParks.value.length === 0) {
+    protelCampService.findAll().then((res) => {
+      camps.value = res
+    })
+  } else {
+    const protelCampSearch: IProtelCampSearch = {
+      parkNames: selectedParks.value.map((park) => park.name)
+    }
+    protelCampService.search(protelCampSearch).then((res) => {
+      camps.value = res
+    })
+  }
+}
+
 const showBookButton = ref(false)
 
 const clickOnViewCart = () => {
@@ -125,11 +146,23 @@ const clickOnViewCart = () => {
 
 const basketDialog = ref(false)
 const selectedRegions = ref<IProtelRegion[]>([])
-
+const selectedParks = ref<IProtelPark[]>([])
+const selectedCamps = ref<IProtelCamp[]>([])
 watch(
   selectedRegions,
   () => {
     getParks()
+    selectedCamps.value = []
+  },
+  {
+    deep: true
+  }
+)
+
+watch(
+  selectedParks,
+  () => {
+    getCamps()
   },
   {
     deep: true
@@ -153,22 +186,26 @@ watch(
     </div>
     <div class="my-2">
       <v-autocomplete
+        v-model="selectedParks"
         clearable
         chips
         label="Parks"
         :items="parks"
         item-title="name"
+        return-object
         multiple
       ></v-autocomplete>
     </div>
 
     <div class="my-2">
       <v-autocomplete
+        v-model="selectedCamps"
         clearable
         chips
         label="Camps"
-        :items="regions"
+        :items="camps"
         item-title="name"
+        return-object
         multiple
       ></v-autocomplete>
     </div>
