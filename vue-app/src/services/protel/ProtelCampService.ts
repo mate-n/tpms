@@ -13,7 +13,7 @@ export class ProtelCampService implements IService {
   findAll() {
     return new Promise<IProtelCamp[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/protel-camps')
+        .get('v2/protel-camps')
         .then((response: any) => {
           resolve(response.data)
         })
@@ -26,7 +26,7 @@ export class ProtelCampService implements IService {
   search(protelParkSearch: IProtelCampSearch) {
     return new Promise<IProtelCamp[]>((resolve, reject) => {
       this.axiosInstance
-        .post('v1/protel-camps/search', protelParkSearch)
+        .post('v2/protel-camps/search', protelParkSearch)
         .then((response: any) => {
           resolve(response.data)
         })
