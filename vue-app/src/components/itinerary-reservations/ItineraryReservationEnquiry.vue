@@ -149,9 +149,25 @@ watch(
   { deep: true }
 )
 
+watch(
+  [() => itineraryReservation.value.arrivalDate, () => itineraryReservation.value.departureDate],
+  () => {
+    updateReservations()
+  },
+  { deep: true }
+)
+
+const updatePropertiesOfReservations = () => {
+  for (const reservation of itineraryReservation.value.reservations) {
+    reservation.arrivalDate = itineraryReservation.value.arrivalDate
+    reservation.departureDate = itineraryReservation.value.departureDate
+  }
+}
+
 const updateReservations = () => {
   filterOutLeftOverReservations()
   addReservationToCamps()
+  updatePropertiesOfReservations()
 }
 
 const filterOutLeftOverReservations = () => {
