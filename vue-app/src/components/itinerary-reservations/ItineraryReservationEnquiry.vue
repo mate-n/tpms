@@ -35,36 +35,11 @@ const updateOrderIndexes = () => {
   })
 }
 
-/*
-const addReservation = () => {
-  const lastReservation =
-    itineraryReservation.value.reservations[itineraryReservation.value.reservations.length - 1]
-  const newReservation = new Reservation()
-  reservations.value.push(newReservation)
-  if (lastReservation) {
-    newReservation.arrivalDate = lastReservation.departureDate
-    newReservation.profileID = selectedProfile.value
-  }
-  const newDepartureDate = dateHelper.addDays(newReservation.arrivalDate, 2)
-  newReservation.departureDate = newDepartureDate
-  showBookButton.value = false
-}
-  */
-
 const onReservationChanged = () => {
   updateAllReservations()
   checkForIssues()
   updateShowBookButton()
 }
-
-/*
-const removeReservation = (reservation: IReservation) => {
-  const index = reservations.value.indexOf(reservation)
-  reservations.value.splice(index, 1)
-  updateAllReservations()
-  checkForIssues()
-}
-  */
 
 const selectedProfile = computed(() => {
   if (itineraryReservation.value.reservations.length === 0) return 0
@@ -101,7 +76,6 @@ const clickOnAddToCart = () => {
 const closeExpansionPanels = ref(0)
 
 onBeforeMount(() => {
-  //addReservation()
   getRegions()
   getParks()
   getCamps()
@@ -215,7 +189,7 @@ const addReservationToCamp = (camp: IProtelCamp) => {
 </script>
 
 <template>
-  <v-container fluid class="bg-protelblue text-white">
+  <v-container fluid class="bg-protelblue text-white itinerary-reservation-fixed-div-1">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100">
         <v-autocomplete
@@ -256,7 +230,7 @@ const addReservationToCamp = (camp: IProtelCamp) => {
     </v-row>
   </v-container>
 
-  <v-container fluid class="bg-protelblue text-white">
+  <v-container fluid class="bg-protelblue text-white itinerary-reservation-fixed-div-2">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100">
         <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
@@ -290,10 +264,10 @@ const addReservationToCamp = (camp: IProtelCamp) => {
 
   <v-container fluid>
     <div class="d-flex justify-end mt-3">
-      <v-btn class="secondary-button" @click="clickOnViewCart()">View Cart</v-btn>
-      <v-btn class="ml-2 primary-button" v-if="showBookButton" @click="clickOnAddToCart()"
-        >Add to Cart</v-btn
-      >
+      <v-btn class="secondary-button me-2">Cancel</v-btn>
+
+      <v-btn class="secondary-button me-2" @click="clickOnViewCart()">View Cart</v-btn>
+      <v-btn class="primary-button" @click="clickOnAddToCart()">Add to Cart</v-btn>
     </div>
   </v-container>
 
