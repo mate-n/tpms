@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
+import { DateHelper } from '@/helpers/DateHelper'
 import { ProtelAvailabilitiesSelecterHelper } from '@/helpers/ProtelAvailabilitiesSelecterHelper'
 import { RatesHelper } from '@/helpers/RatesHelper'
 import { ProtelAvailabilityGroup } from '@/shared/classes/ProtelAvailabilityGroup'
@@ -9,6 +10,7 @@ import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvai
 import type { IProtelAvailabilityGroup } from '@/shared/interfaces/protel/IProtelAvailabilityGroup'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
 import { nextTick, ref, watch } from 'vue'
+const dateHelper = new DateHelper()
 const protelAvailabilitiesSelecterHelper = new ProtelAvailabilitiesSelecterHelper()
 const ratesHelper = new RatesHelper()
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
@@ -134,14 +136,23 @@ const castSelect = () => {
   selectBars.value.forEach((s) => (s.protelAvailabilityGroup.availabilities = []))
   for (const selectable of protelAvailabilitySelectables.value) {
     for (const selectBar of selectBars.value) {
-      if (isSelectableInsideSelectbar(selectable, selectBar)) {
+      if (canAvailabilityBeSelected(selectable, selectBar)) {
         selectable.selected = true
         selectBar.protelAvailabilityGroup.availabilities.push(selectable.availability)
       }
     }
   }
-
   updateSelectedProtelAvailabilityGroups()
+}
+
+const canAvailabilityBeSelected = (
+  selectable: IProtelAvailabilitySelectable,
+  selectBar: ISelectBar
+) => {
+  return (
+    isSelectableInsideSelectbar(selectable, selectBar) &&
+    !isAvailabilityOnLastDate(selectable.availability)
+  )
 }
 
 const updateSelectedProtelAvailabilityGroups = () => {
@@ -347,8 +358,19 @@ const isThereAlreadySelectBar = (availabilitySelectable: IProtelAvailabilitySele
   return false
 }
 
+const isAvailabilityOnLastDate = (availability: IProtelAvailability) => {
+  return dateHelper.isSameDay(availability.availability_start, reservation.value.departureDate)
+}
+
+const checkIfSelectBarCanBePlaced = (availabilitySelectable: IProtelAvailabilitySelectable) => {
+  return (
+    isThereAlreadySelectBar(availabilitySelectable) ||
+    isAvailabilityOnLastDate(availabilitySelectable.availability)
+  )
+}
+
 const addSelectBar = async (availabilitySelectable: IProtelAvailabilitySelectable) => {
-  if (isThereAlreadySelectBar(availabilitySelectable)) {
+  if (checkIfSelectBarCanBePlaced(availabilitySelectable)) {
     return
   }
   removeOtherGroupsThatConflictOnDate(availabilitySelectable.availability)
