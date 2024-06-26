@@ -22,6 +22,8 @@ import type { ITicket } from '@/shared/interfaces/ITicket'
 import { GuestsPerRoomHelper } from '@/helpers/GuestsPerRoomHelper'
 import ProfileSearchCard from '../profiles/ProfileSearchCard.vue'
 import { ProfileHelper } from '@/helpers/ProfileHelper'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
+const priceFormatter = new PriceFormatter()
 const profileHelper = new ProfileHelper()
 const ticketsService = new TicketService()
 const axios: AxiosStatic | undefined = inject('axios')
@@ -213,14 +215,16 @@ watch(
             <v-col>
               TOTAL RATE<br />
               <strong>{{
-                reservationHelper.calculateTotalRate(reservation).toFixed(2)
+                priceFormatter.formatPrice(reservationHelper.calculateTotalRate(reservation))
               }}</strong></v-col
             >
             <v-col>
               AVERAGE RATE<br />
               {{
-                reservationHelper.getAverageRoomRate(
-                  reservation.selectedProtelAvailabilityGroups.map((s) => s.availabilities).flat()
+                priceFormatter.formatPrice(
+                  reservationHelper.getAverageRoomRate(
+                    reservation.selectedProtelAvailabilityGroups.map((s) => s.availabilities).flat()
+                  )
                 )
               }}
             </v-col>
@@ -254,7 +258,11 @@ watch(
           <v-col>
             TOTAL<br />
             <strong>
-              {{ reservationHelper.calculateTotalReservationPrice(reservation).toFixed(2) }}
+              {{
+                priceFormatter.formatPrice(
+                  reservationHelper.calculateTotalReservationPrice(reservation)
+                )
+              }}
             </strong></v-col
           >
           <v-col> </v-col>
