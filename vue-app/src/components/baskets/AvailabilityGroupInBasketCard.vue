@@ -1,21 +1,76 @@
 <script setup lang="ts">
 import { AvailabilityGroupHelper } from '@/helpers/AvailabilityGroupHelper'
+import { DateFormatter } from '@/helpers/DateFormatter'
+import { RatesHelper } from '@/helpers/RatesHelper'
+import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
 import type { IProtelAvailabilityGroup } from '@/shared/interfaces/protel/IProtelAvailabilityGroup'
-import { onBeforeMount } from 'vue'
+import { computed, onBeforeMount } from 'vue'
+const dateFormatter = new DateFormatter()
+const ratesHelper = new RatesHelper()
 const availabilityGroupHelper = new AvailabilityGroupHelper()
 const props = defineProps({
-  availabilityGroup: { type: Object as () => IProtelAvailabilityGroup, required: true }
+  availabilityGroup: { type: Object as () => IProtelAvailabilityGroup, required: true },
+  guestsPerRoom: { type: Object as () => GuestsPerRoom, required: true }
 })
 onBeforeMount(() => {
   availabilityGroupHelper.sortByDate(props.availabilityGroup)
 })
+
+const arrivalDate = computed(() => {
+  return availabilityGroupHelper.getArrivalDate(props.availabilityGroup)
+})
+
+const departureDate = computed(() => {
+  return availabilityGroupHelper.getDepartureDate(props.availabilityGroup)
+})
 </script>
 
 <template>
-  <div v-for="availability of availabilityGroup.availabilities" :key="availability.id">
-    <div>
-      <div>{{ availability.availability_count }}</div>
-      <div>{{ availability.id }}</div>
-    </div>
-  </div>
+  <v-card min-width="350" class="mb-2">
+    <v-card-text class="pt-0 px-2">
+      <div class="d-flex justify-end">
+        <v-btn variant="text" size="x-small" icon><v-icon size="medium">mdi-close</v-icon></v-btn>
+      </div>
+      <div class="mb-1">
+        <v-icon>mdi-chevron-double-right</v-icon
+        ><strong>{{ availabilityGroup.availabilities[0].property_name }}</strong>
+      </div>
+      <v-row class="pb-0">
+        <v-col class="text-gray"> {{ availabilityGroup.roomTypeCode }} </v-col>
+        <v-col class="d-flex justify-end"
+          ><v-icon>mdi-arrow-right </v-icon>{{ dateFormatter.dddotmmdotyyyy(arrivalDate) }}
+        </v-col>
+      </v-row>
+      <v-row class="mt-0 pb-0">
+        <v-col class="text-gray">Base Rate | Low Season</v-col>
+        <v-col class="d-flex justify-end"
+          ><v-icon>mdi-arrow-left </v-icon>{{ dateFormatter.dddotmmdotyyyy(departureDate) }}
+        </v-col>
+      </v-row>
+      <v-divider class="mt-1"></v-divider>
+      <v-row class="mt-0 pb-0">
+        <v-col></v-col>
+        <v-col class="">
+          <div class="mb-1 text-end">
+            <div v-for="availabilityGroup of [availabilityGroup]" :key="availabilityGroup.id">
+              {{ availabilityGroup.availabilities.length }} x
+              {{
+                ratesHelper.calculateActualRate(
+                  availabilityGroup.availabilities[0].rates_data[0],
+                  guestsPerRoom
+                )
+              }}
+            </div>
+          </div>
+          <v-divider></v-divider>
+          <div class="text-end mt-1">
+            Total:
+            <strong
+              >{{ availabilityGroupHelper.calculateTotalRate(availabilityGroup, guestsPerRoom) }}
+            </strong>
+          </div>
+        </v-col>
+      </v-row>
+    </v-card-text>
+  </v-card>
 </template>
