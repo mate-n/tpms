@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { AvailabilityGroupHelper } from '@/helpers/AvailabilityGroupHelper'
 import { DateFormatter } from '@/helpers/DateFormatter'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
 import { RatesHelper } from '@/helpers/RatesHelper'
 import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
 import type { IProtelAvailabilityGroup } from '@/shared/interfaces/protel/IProtelAvailabilityGroup'
 import { computed, onBeforeMount } from 'vue'
+const priceFormatter = new PriceFormatter()
+const emit = defineEmits(['remove'])
 const dateFormatter = new DateFormatter()
 const ratesHelper = new RatesHelper()
 const availabilityGroupHelper = new AvailabilityGroupHelper()
@@ -29,7 +32,9 @@ const departureDate = computed(() => {
   <v-card min-width="350" class="mb-2">
     <v-card-text class="pt-0 px-2">
       <div class="d-flex justify-end">
-        <v-btn variant="text" size="x-small" icon><v-icon size="medium">mdi-close</v-icon></v-btn>
+        <v-btn variant="text" size="x-small" icon @click="emit('remove')"
+          ><v-icon size="medium">mdi-close</v-icon></v-btn
+        >
       </div>
       <div class="mb-1">
         <v-icon>mdi-chevron-double-right</v-icon
@@ -54,9 +59,11 @@ const departureDate = computed(() => {
           <div class="mb-1 text-end" v-if="availabilityGroup">
             {{ availabilityGroup.availabilities.length }} x
             {{
-              ratesHelper.calculateActualRate(
-                availabilityGroup.availabilities[0].rates_data[0],
-                guestsPerRoom
+              priceFormatter.formatPrice(
+                ratesHelper.calculateActualRate(
+                  availabilityGroup.availabilities[0].rates_data[0],
+                  guestsPerRoom
+                )
               )
             }}
           </div>
@@ -64,7 +71,11 @@ const departureDate = computed(() => {
           <div class="text-end mt-1">
             Total:
             <strong
-              >{{ availabilityGroupHelper.calculateTotalRate(availabilityGroup, guestsPerRoom) }}
+              >{{
+                priceFormatter.formatPrice(
+                  availabilityGroupHelper.calculateTotalRate(availabilityGroup, guestsPerRoom)
+                )
+              }}
             </strong>
           </div>
         </v-col>
