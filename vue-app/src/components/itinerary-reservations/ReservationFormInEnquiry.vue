@@ -168,6 +168,9 @@ const check = () => {
   reservation.value.selectedProtelAvailabilityGroups = []
   protelAvailabilityService.search(protelAvailabilityPostBody).then((response) => {
     const protelAvailabilities = response.filter((n) => n)
+    for (const protelAvailability of protelAvailabilities) {
+      protelAvailability.property_name = reservation.value.propertyName
+    }
     reservation.value.protelAvailabilities = protelAvailabilities
     availabilitiesLoading.value = false
     getRoomsForDropdown()
