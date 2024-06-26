@@ -51,16 +51,14 @@ const departureDate = computed(() => {
       <v-row class="mt-0 pb-0">
         <v-col></v-col>
         <v-col class="">
-          <div class="mb-1 text-end">
-            <div v-for="availabilityGroup of [availabilityGroup]" :key="availabilityGroup.id">
-              {{ availabilityGroup.availabilities.length }} x
-              {{
-                ratesHelper.calculateActualRate(
-                  availabilityGroup.availabilities[0].rates_data[0],
-                  guestsPerRoom
-                )
-              }}
-            </div>
+          <div class="mb-1 text-end" v-if="availabilityGroup">
+            {{ availabilityGroup.availabilities.length }} x
+            {{
+              ratesHelper.calculateActualRate(
+                availabilityGroup.availabilities[0].rates_data[0],
+                guestsPerRoom
+              )
+            }}
           </div>
           <v-divider></v-divider>
           <div class="text-end mt-1">
