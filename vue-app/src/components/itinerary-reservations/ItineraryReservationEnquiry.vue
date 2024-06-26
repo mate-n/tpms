@@ -320,6 +320,7 @@ const clearSelectedCamps = () => {
       :previous-reservation="itineraryReservation.reservations[i - 1]"
       :next-reservation="itineraryReservation.reservations[i + 1]"
       :collapse-expansion="closeExpansionPanels"
+      :itinerary-reservation="itineraryReservation"
     ></ReservationFormInEnquiry>
   </template>
 
