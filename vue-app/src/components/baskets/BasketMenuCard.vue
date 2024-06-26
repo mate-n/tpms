@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useBasketItemsStore } from '@/stores/basketItems'
 import { computed } from 'vue'
-import ReservationInBasketMenuCard from './ReservationInBasketMenuCard.vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import { AvailabilityGroupHelper } from '@/helpers/AvailabilityGroupHelper'
 import AvailabilityGroupInBasketCard from './AvailabilityGroupInBasketCard.vue'
