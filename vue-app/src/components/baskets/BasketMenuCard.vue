@@ -4,6 +4,8 @@ import { computed } from 'vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import { AvailabilityGroupHelper } from '@/helpers/AvailabilityGroupHelper'
 import AvailabilityGroupInBasketCard from './AvailabilityGroupInBasketCard.vue'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
+const priceFormatter = new PriceFormatter()
 const availabilityGroupHelper = new AvailabilityGroupHelper()
 const reservationHelper = new ReservationHelper()
 const emit = defineEmits(['close', 'clickOnViewCart'])
@@ -52,7 +54,7 @@ const availabilityGroupsOfReservations = computed(() => {
       <div>
         <p><strong>Total: </strong></p>
         <p class="text-end">
-          <strong>{{ totalPrice }}</strong>
+          <strong>{{ priceFormatter.formatPrice(totalPrice) }}</strong>
         </p>
       </div>
     </v-card>
