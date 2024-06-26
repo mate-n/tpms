@@ -61,6 +61,12 @@ onMounted(() => {
     protelApiStatus.value = response
   })
 })
+
+const numberDisplayedOnCart = computed(() => {
+  return basketItemsStore.reservations
+    .map((reservation) => reservation.selectedProtelAvailabilityGroups.length)
+    .reduce((a, b) => a + b, 0)
+})
 </script>
 
 <style>
@@ -163,9 +169,9 @@ onMounted(() => {
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" icon>
             <v-badge
-              :content="basketItemsStore.reservations.length"
+              :content="numberDisplayedOnCart"
               color="primary"
-              :model-value="basketItemsStore.reservations.length > 0"
+              :model-value="numberDisplayedOnCart > 0"
             >
               <v-icon icon="mdi-cart-outline" size="x-large"></v-icon>
             </v-badge>
