@@ -22,6 +22,8 @@ import RoomDetailsCard from '../rooms/RoomDetailsCard.vue'
 import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import ProtelAvailabilitiesSelecter from './ProtelAvailabilitiesSelecter.vue'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
+const priceFormatter = new PriceFormatter()
 const availabilityHelper = new AvailabilityHelper()
 const reservationHelper = new ReservationHelper()
 const dateFormatter = new DateFormatter()
@@ -173,7 +175,7 @@ const check = () => {
 }
 
 const reset = () => {
-  reservation.value.reset()
+  reservation.value.resetInItineraryReservation()
 }
 
 const remove = (reservation: IReservation) => {
@@ -242,11 +244,15 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
 
 const expansionModel = ref<string[] | null>(['availabilities'])
 
-const showRoomsInProtelAvailabilitiesSelecter = ref(true)
+const showRoomsInProtelAvailabilitiesSelecter = ref(false)
 
 const clickOnPlusButtonInAvailability = () => {
   showRoomsInProtelAvailabilitiesSelecter.value = !showRoomsInProtelAvailabilitiesSelecter.value
 }
+
+const availabilityIcon = computed(() => {
+  return showRoomsInProtelAvailabilitiesSelecter.value ? 'mdi-chevron-up' : 'mdi-chevron-down'
+})
 </script>
 
 <template>
@@ -327,6 +333,14 @@ const clickOnPlusButtonInAvailability = () => {
       <v-col class="d-flex justify-space-between">
         <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
         <v-btn class="danger-button" @click="remove(reservation)" v-if="false"> Remove </v-btn>
+        <v-btn>
+          <strong>Total: </strong
+          >{{
+            priceFormatter.formatPrice(
+              reservationHelper.calculateSumOfAllAvailabilities(reservation)
+            )
+          }}</v-btn
+        >
       </v-col>
     </v-row>
   </v-container>
@@ -373,9 +387,12 @@ const clickOnPlusButtonInAvailability = () => {
             <tbody>
               <tr>
                 <td class="d-flex justify-space-between align-center">
-                  <v-icon class="text-primary" @click="clickOnPlusButtonInAvailability()"
-                    >mdi-plus</v-icon
+                  <v-btn variant="text" icon @click="clickOnPlusButtonInAvailability()">
+                    <v-icon class="text-primary">
+                      {{ availabilityIcon }}
+                    </v-icon></v-btn
                   >
+
                   Availibility (incl. OB)
                 </td>
                 <td class="bg-lightgray">
@@ -426,15 +443,6 @@ const clickOnPlusButtonInAvailability = () => {
         ></v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
-
-    <div class="d-flex justify-end">
-      <v-card>
-        <v-card-text>
-          <strong>Total: </strong
-          >{{ reservationHelper.calculateSumOfAllAvailabilities(reservation) }}
-        </v-card-text>
-      </v-card>
-    </div>
   </v-container>
   <v-dialog v-model="profileDialog" fullscreen scrollable>
     <v-card>
