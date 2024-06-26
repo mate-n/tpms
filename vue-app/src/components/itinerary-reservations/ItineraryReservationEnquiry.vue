@@ -218,6 +218,36 @@ const autoSelectCamps = (newValues: IProtelPark[], oldValues: IProtelPark[]) => 
     }
   }
 }
+
+const travelDistanceShown = ref(false)
+const travelDistanceWarningDialog = ref(false)
+
+const isTravelDistanceTooFar = () => {
+  const isTweeRivierenSelected = itineraryReservation.value.selectedCamps.some(
+    (camp) => camp.name === 'Twee Rivieren Rest Camp'
+  )
+
+  const isGharagabSelected = itineraryReservation.value.selectedCamps.some(
+    (camp) => camp.name === 'Gharagab Wilderness Camp'
+  )
+
+  if (isTweeRivierenSelected && isGharagabSelected) {
+    return true
+  }
+  return false
+}
+
+const checkTravelDistance = () => {
+  if (isTravelDistanceTooFar() && !travelDistanceShown.value) {
+    travelDistanceShown.value = true
+    travelDistanceWarningDialog.value = true
+  }
+}
+
+const clearSelectedCamps = () => {
+  itineraryReservation.value.selectedCamps = []
+  travelDistanceWarningDialog.value = false
+}
 </script>
 
 <template>
@@ -257,6 +287,7 @@ const autoSelectCamps = (newValues: IProtelPark[], oldValues: IProtelPark[]) => 
           item-title="name"
           return-object
           multiple
+          @update:model-value="checkTravelDistance()"
         ></v-autocomplete>
       </v-col>
     </v-row>
@@ -304,6 +335,33 @@ const autoSelectCamps = (newValues: IProtelPark[], oldValues: IProtelPark[]) => 
   <v-dialog v-model="basketDialog" scrollable auto>
     <v-card>
       <BasketCard @close="basketDialog = false"></BasketCard>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="travelDistanceWarningDialog" scrollable>
+    <v-toolbar class="standard-dialog-card-toolbar fixed-toolbar">
+      <v-toolbar-title><span class="text-primary">Warning</span></v-toolbar-title>
+      <div
+        class="profiles-card-toolbar-button rounded-te"
+        @click="travelDistanceWarningDialog = false"
+      >
+        <v-icon size="large">mdi-close</v-icon>
+      </div>
+    </v-toolbar>
+    <v-divider class="profiles-card-divider"></v-divider>
+    <v-card class="rounded-t-0">
+      <v-card-text>
+        <div class="mb-3">Travel Distance is too far.</div>
+        <div>Continue anyway?</div>
+
+        <div class="d-flex justify-end">
+          <v-btn @click="clearSelectedCamps()" class="me-2">Cancel</v-btn>
+
+          <v-btn class="primary-button" @click="travelDistanceWarningDialog = false"
+            >Continue</v-btn
+          >
+        </div>
+      </v-card-text>
     </v-card>
   </v-dialog>
 </template>
