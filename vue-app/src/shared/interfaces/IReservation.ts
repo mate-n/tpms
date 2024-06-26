@@ -33,6 +33,7 @@ export interface IReservation extends IEntityWithIdentity, IEntityWithErrors {
   propertyName: string
   guestsPerRoom: IGuestsPerRoom
   reset(): void
+  resetInItineraryReservation(): void
   addIssue(issue: string): void
   removeIssue(issue: string): void
 }

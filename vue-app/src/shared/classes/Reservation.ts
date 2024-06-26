@@ -123,6 +123,32 @@ export class Reservation implements IReservation {
     this.guestsPerRoom = new GuestsPerRoom()
   }
 
+  resetInItineraryReservation() {
+    this.arrivalDate = new Date()
+    this.departureDate = this.dateHelper.addDays(this.arrivalDate, 1)
+    this.numberOfRooms = 1
+    this.baseRateCategory = ''
+    this.orderIndex = 0
+    this.roomID = undefined
+    this.profileID = undefined
+    this.guestProfileID = undefined
+    this.companyProfileID = undefined
+    this.sourceProfileID = undefined
+    this.travelAgentProfileID = undefined
+    this.bookerProfileID = undefined
+    //this.propertyID = undefined
+    this.propertyAvailabilities = []
+    this.protelAvailabilities = []
+    this.selectedProtelAvailabilityGroups = []
+    this.issues = []
+    this.errors = {}
+    this.isBookerGuest = true
+    this.ticketIDs = []
+    this.guestName = ''
+    //this.propertyName = ''
+    this.guestsPerRoom = new GuestsPerRoom()
+  }
+
   addIssue(issue: string) {
     const foundIssue = this.issues.find((i) => i === issue)
     if (foundIssue) {
