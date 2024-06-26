@@ -4,6 +4,8 @@ import ReservationInBasketCard from './ReservationInBasketCard.vue'
 import { computed, ref } from 'vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import router from '@/router'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
+const priceFormatter = new PriceFormatter()
 const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
 const emits = defineEmits(['close'])
@@ -66,7 +68,7 @@ const errorsDialog = ref(false)
         <v-card class="me-2">
           <v-card-text>
             <p>
-              <strong>Total: {{ totalPrice.toFixed(2) }}</strong>
+              <strong>Total: {{ priceFormatter.formatPrice(totalPrice) }}</strong>
             </p>
           </v-card-text>
         </v-card>
