@@ -156,8 +156,8 @@ watch(
             hint="Last Name | First Name"
             v-model="reservation.profileID"
             :items="profilesInDropdown"
-            :item-title="(profile) => `${profile.lastName}, ${profile.firstName}`"
-            :item-value="(profile) => profile.id"
+            :item-title="(profile: IProfile) => `${profile.lastName}, ${profile.firstName}`"
+            :item-value="(profile: IProfile) => profile.id"
             @update:model-value="emitChange()"
           ></v-autocomplete>
           <div class="d-flex align-center" @click="profileDialog = true">
