@@ -265,6 +265,19 @@ const addReservationToCamp = (camp: IProtelCamp) => {
     </v-row>
   </v-container>
 
+  <template v-if="itineraryReservation.reservations.length === 0">
+    <div class="d-flex justify-center my-5">
+      <v-card>
+        <v-card-text>
+          <div class="d-flex justify-center my-5">
+            <v-icon size="x-large">mdi-arrow-up-bold-outline</v-icon>
+          </div>
+          <div class="font-size-rem-15">Please select camps</div>
+        </v-card-text>
+      </v-card>
+    </div>
+  </template>
+
   <template v-for="(reservation, i) of itineraryReservation.reservations" :key="reservation.id">
     <ReservationFormInEnquiry
       v-model="itineraryReservation.reservations[i]"
