@@ -18,9 +18,9 @@ import type { IProtelCampSearch } from '@/shared/interfaces/protel/IProtelCampSe
 import DateSelecter from '@/components/dates/DateSelecter.vue'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
 import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
-const regions: Ref<IProtelRegion[]> = ref([])
-const parks: Ref<IProtelPark[]> = ref([])
-const camps: Ref<IProtelCamp[]> = ref([])
+const regionsInDropdown: Ref<IProtelRegion[]> = ref([])
+const parksInDropdown: Ref<IProtelPark[]> = ref([])
+const campsInDropdown: Ref<IProtelCamp[]> = ref([])
 const basketItemsStore = useBasketItemsStore()
 const itineraryReservationValidator = new ItineraryReservationValidator()
 const axios: AxiosStatic | undefined = inject('axios')
@@ -83,38 +83,42 @@ onBeforeMount(() => {
 
 const getRegions = () => {
   protelRegionService.findAll().then((res) => {
-    regions.value = res
+    regionsInDropdown.value = res
   })
 }
 
 const getParks = () => {
   if (itineraryReservation.value.selectedRegions.length === 0) {
     protelParkService.findAll().then((res) => {
-      parks.value = res
+      parksInDropdown.value = res
     })
   } else {
     const protelParkSearch: IProtelParkSearch = {
       regionNames: itineraryReservation.value.selectedRegions.map((region) => region.name)
     }
     protelParkService.search(protelParkSearch).then((res) => {
-      parks.value = res
+      parksInDropdown.value = res
     })
   }
 }
 
 const getCamps = () => {
-  if (itineraryReservation.value.selectedParks.length === 0) {
-    protelCampService.findAll().then((res) => {
-      camps.value = res
-    })
-  } else {
-    const protelCampSearch: IProtelCampSearch = {
-      parkNames: itineraryReservation.value.selectedParks.map((park) => park.name)
+  return new Promise<void>((resolve) => {
+    if (itineraryReservation.value.selectedParks.length === 0) {
+      protelCampService.findAll().then((res) => {
+        campsInDropdown.value = res
+        resolve()
+      })
+    } else {
+      const protelCampSearch: IProtelCampSearch = {
+        parkNames: itineraryReservation.value.selectedParks.map((park) => park.name)
+      }
+      protelCampService.search(protelCampSearch).then((res) => {
+        campsInDropdown.value = res
+        resolve()
+      })
     }
-    protelCampService.search(protelCampSearch).then((res) => {
-      camps.value = res
-    })
-  }
+  })
 }
 
 const showBookButton = ref(false)
@@ -134,9 +138,11 @@ watch(
 )
 
 watch(
-  [() => itineraryReservation.value.selectedParks],
-  () => {
-    getCamps()
+  () => itineraryReservation.value.selectedParks,
+  (newValues, oldValue) => {
+    getCamps().then(() => {
+      autoSelectCamps(newValues, oldValue)
+    })
   },
   { deep: true }
 )
@@ -202,42 +208,52 @@ const addReservationToCamp = (camp: IProtelCamp) => {
   reservation.departureDate = itineraryReservation.value.departureDate
   itineraryReservation.value.reservations.push(reservation)
 }
+
+const autoSelectCamps = (newValues: IProtelPark[], oldValues: IProtelPark[]) => {
+  const freshlyAddedProtelParks = newValues.filter((newPark) => !oldValues.includes(newPark))
+  for (const park of freshlyAddedProtelParks) {
+    const foundCamps = campsInDropdown.value.filter((camp) => camp.parkName === park.name)
+    if (foundCamps) {
+      itineraryReservation.value.selectedCamps.push(...foundCamps)
+    }
+  }
+}
 </script>
 
 <template>
   <v-container fluid class="bg-protelblue text-white itinerary-reservation-fixed-div">
     <v-row class="d-flex align-center">
-      <v-col class="d-flex align-center h-100">
+      <v-col class="d-flex align-center h-100" cols="3">
         <v-autocomplete
           v-model="itineraryReservation.selectedRegions"
           clearable
           chips
           label="Regions"
-          :items="regions"
+          :items="regionsInDropdown"
           item-title="name"
           return-object
           multiple
         ></v-autocomplete>
       </v-col>
-      <v-col class="d-flex align-center h-100">
+      <v-col class="d-flex align-center h-100" cols="3">
         <v-autocomplete
           v-model="itineraryReservation.selectedParks"
           clearable
           chips
           label="Parks"
-          :items="parks"
+          :items="parksInDropdown"
           item-title="name"
           return-object
           multiple
         ></v-autocomplete>
       </v-col>
-      <v-col class="d-flex align-center h-100">
+      <v-col class="d-flex align-center h-100" cols="6">
         <v-autocomplete
           v-model="itineraryReservation.selectedCamps"
           clearable
           chips
           label="Camps"
-          :items="camps"
+          :items="campsInDropdown"
           item-title="name"
           return-object
           multiple
