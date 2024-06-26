@@ -23,6 +23,7 @@ import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import ProtelAvailabilitiesSelecter from './ProtelAvailabilitiesSelecter.vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
+import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 const priceFormatter = new PriceFormatter()
 const availabilityHelper = new AvailabilityHelper()
 const reservationHelper = new ReservationHelper()
@@ -40,7 +41,8 @@ const reservation = defineModel({ required: true, type: Object as () => IReserva
 const props = defineProps({
   previousReservation: { type: Object as () => IReservation, required: false },
   nextReservation: { type: Object as () => IReservation, required: false },
-  collapseExpansion: { type: Number, required: false }
+  collapseExpansion: { type: Number, required: false },
+  itineraryReservation: { type: Object as () => IItineraryReservation, required: true }
 })
 const campsInDropdown: Ref<ICamp[]> = ref([])
 const roomsInDropdown: Ref<IRoom[]> = ref([])
@@ -256,6 +258,31 @@ const clickOnPlusButtonInAvailability = () => {
 const availabilityIcon = computed(() => {
   return showRoomsInProtelAvailabilitiesSelecter.value ? 'mdi-chevron-up' : 'mdi-chevron-down'
 })
+
+const isDateOccupiedInReservation = (date: Date) => {
+  for (const availabilityGroup of reservation.value.selectedProtelAvailabilityGroups) {
+    for (const availability of availabilityGroup.availabilities) {
+      if (dateHelper.isSameDay(date, availability.availability_start)) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
+const isDateOccupiedByOtherReservations = (date: Date) => {
+  if (isDateOccupiedInReservation(date)) return false
+  for (const reservation of props.itineraryReservation.reservations) {
+    for (const availabilityGroup of reservation.selectedProtelAvailabilityGroups) {
+      for (const availability of availabilityGroup.availabilities) {
+        if (dateHelper.isSameDay(date, availability.availability_start)) {
+          return true
+        }
+      }
+    }
+  }
+  return false
+}
 </script>
 
 <template>
@@ -404,6 +431,10 @@ const availabilityIcon = computed(() => {
                       v-for="date of availableDates"
                       :key="date.toISOString()"
                       class="text-center availability-box-width"
+                      :class="{
+                        'bg-light-blue-lighten-4': isDateOccupiedInReservation(date),
+                        'bg-orange-lighten-4': isDateOccupiedByOtherReservations(date)
+                      }"
                     >
                       <div class="availability-inner-box">
                         {{ getTotalOfAvailabilityCountOnDate(date) }}
