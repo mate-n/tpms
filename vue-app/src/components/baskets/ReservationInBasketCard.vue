@@ -282,6 +282,9 @@ watch(
   <v-dialog v-model="ticketsCardDialog" fullscreen scrollable>
     <v-card>
       <TicketsCard
+        :arrival-date="reservation.arrivalDate"
+        :departure-date="reservation.departureDate"
+        :property-name="reservation.propertyName"
         v-model="reservation"
         @close="ticketsCardDialog = false"
         @add-tickets-to-reservation="addTicketsToReservation()"
