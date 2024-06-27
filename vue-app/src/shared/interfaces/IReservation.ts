@@ -1,12 +1,18 @@
 import type { IEntityWithErrors } from './IEntityWithErrors'
 import type { IEntityWithIdentity } from './IEntityWithIdentity'
+import type { IEntityWithProfile } from './IEntityWithProfile'
+import type { IEntityWithTickets } from './IEntityWithTickets'
 import type { IGuestsPerRoom } from './IGuestsPerRoom'
 import type { ITicket } from './ITicket'
 import type { IPropertyAvailability } from './availability/IPropertyAvailability'
 import type { IProtelAvailability } from './protel/IProtelAvailability'
 import type { IProtelAvailabilityGroup } from './protel/IProtelAvailabilityGroup'
 
-export interface IReservation extends IEntityWithIdentity, IEntityWithErrors {
+export interface IReservation
+  extends IEntityWithIdentity,
+    IEntityWithErrors,
+    IEntityWithTickets,
+    IEntityWithProfile {
   propertyID: number | undefined
   arrivalDate: Date
   departureDate: Date
@@ -29,7 +35,6 @@ export interface IReservation extends IEntityWithIdentity, IEntityWithErrors {
   tickets: ITicket[]
   totalRate: number
   averageRate: number
-  guestName: string
   propertyName: string
   guestsPerRoom: IGuestsPerRoom
   reset(): void

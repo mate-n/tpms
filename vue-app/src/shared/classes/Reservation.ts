@@ -18,6 +18,7 @@ export class Reservation implements IReservation {
   numberOfRooms: number
   roomID: number | undefined
   profileID: number | undefined
+  profileName: string | undefined
   guestProfileID: number | undefined
   companyProfileID: number | undefined
   sourceProfileID: number | undefined
@@ -91,7 +92,7 @@ export class Reservation implements IReservation {
     this.tickets = reservation.tickets
     this.totalRate = reservation.totalRate
     this.averageRate = reservation.averageRate
-    this.guestName = reservation.guestName
+    this.profileName = reservation.profileName
     this.propertyName = reservation.propertyName
     this.guestsPerRoom = reservation.guestsPerRoom
     return this
