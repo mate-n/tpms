@@ -167,6 +167,7 @@ const updateSelectedProtelAvailabilityGroups = () => {
     if (selectBar.protelAvailabilityGroup.availabilities.length === 0) {
       selectBars.value = selectBars.value.filter((s) => s.id !== selectBar.id)
     } else {
+      selectBar.protelAvailabilityGroup.guestsPerRoom = reservation.value.guestsPerRoom
       reservation.value.selectedProtelAvailabilityGroups.push(selectBar.protelAvailabilityGroup)
     }
   }
