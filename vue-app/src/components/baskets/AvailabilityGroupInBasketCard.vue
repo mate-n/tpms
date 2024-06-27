@@ -8,7 +8,7 @@ import ProfileService from '@/services/ProfileService'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProtelAvailabilityGroup } from '@/shared/interfaces/protel/IProtelAvailabilityGroup'
 import type { AxiosStatic } from 'axios'
-import { computed, inject, onBeforeMount, ref, type Ref } from 'vue'
+import { computed, inject, onBeforeMount, ref, watch, type Ref } from 'vue'
 import TicketsTable from '../tickets/TicketsTable.vue'
 import TicketsCard from '../tickets/TicketsCard.vue'
 import ProfileSearchCard from '../profiles/ProfileSearchCard.vue'
@@ -95,6 +95,17 @@ const changeProfileOfReservations = (newProfile: IProfile) => {
     profileHelper.changeProfile(availabilityGroupOfOtherReservation, newProfile)
   }
 }
+
+watch(
+  () => availabilityGroup.value.profileID,
+  (newValue) => {
+    if (newValue) {
+      profileService.get(newValue).then((response) => {
+        profile.value = response
+      })
+    }
+  }
+)
 </script>
 
 <template>
@@ -108,6 +119,7 @@ const changeProfileOfReservations = (newProfile: IProfile) => {
         <div class="d-flex align-center" style="min-width: 50%">
           <v-autocomplete
             label="Guest"
+            v-model="availabilityGroup.profileID"
             placeholder="Last Name | First Name"
             hint="Last Name | First Name"
             :items="profilesInDropdown"
