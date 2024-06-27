@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useBasketItemsStore } from '@/stores/basketItems'
-import ReservationInBasketCard from './ReservationInBasketCard.vue'
 import { computed, ref } from 'vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import router from '@/router'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
+import { AvailabilityGroupHelper } from '@/helpers/AvailabilityGroupHelper'
+import AvailabilityGroupInBasketCard from './AvailabilityGroupInBasketCard.vue'
+const availabilityGroupHelper = new AvailabilityGroupHelper()
 const priceFormatter = new PriceFormatter()
 const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
@@ -16,7 +18,7 @@ const removeAllReservations = () => {
 }
 
 const totalPrice = computed(() => {
-  return reservationHelper.getTotalPrice(basketItemsStore.reservations)
+  return availabilityGroupHelper.calculateTotalPrice(availabilityGroups.value)
 })
 
 const clickOnBook = () => {
@@ -39,8 +41,6 @@ const checkIfBookingIsPossible = () => {
   } else {
     errors.value = []
     itineraryConfirmedDialog.value = true
-    //router.push('/itinerary-reservations/1')
-    //emits('close')
   }
 }
 
@@ -52,6 +52,12 @@ const clickOnOkInConfirmedDialog = () => {
   router.push('/itinerary-reservations')
   emits('close')
 }
+
+const availabilityGroups = computed(() => {
+  return availabilityGroupHelper.getAvailabilityGroupsFromReservations(
+    basketItemsStore.reservations
+  )
+})
 </script>
 
 <template>
@@ -68,9 +74,10 @@ const clickOnOkInConfirmedDialog = () => {
     </v-toolbar>
     <v-divider class="profiles-card-divider"></v-divider>
     <v-container fluid class="bg-lightgray">
-      <div v-for="(reservation, index) in basketItemsStore.reservations" :key="reservation.id">
-        <ReservationInBasketCard v-model="basketItemsStore.reservations[index]" />
+      <div v-for="(availabilityGroup, index) of availabilityGroups" :key="availabilityGroup.id">
+        <AvailabilityGroupInBasketCard v-model="availabilityGroups[index]" />
       </div>
+
       <div class="d-flex justify-end align-center">
         <v-card class="me-2">
           <v-card-text>
