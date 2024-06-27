@@ -3,8 +3,8 @@ import { useBasketItemsStore } from '@/stores/basketItems'
 import { computed } from 'vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import { AvailabilityGroupHelper } from '@/helpers/AvailabilityGroupHelper'
-import AvailabilityGroupInBasketCard from './AvailabilityGroupInBasketCard.vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
+import AvailabilityGroupInBasketMenuCard from './AvailabilityGroupInBasketMenuCard.vue'
 const priceFormatter = new PriceFormatter()
 const availabilityGroupHelper = new AvailabilityGroupHelper()
 const reservationHelper = new ReservationHelper()
@@ -43,12 +43,12 @@ const availabilityGroupsOfReservations = computed(() => {
 <template>
   <v-container class="bg-lightgray pa-1 rounded">
     <div style="overflow-y: auto; max-height: 90vh">
-      <AvailabilityGroupInBasketCard
+      <AvailabilityGroupInBasketMenuCard
         v-for="availabilityGroup in availabilityGroupsOfReservations"
         :key="availabilityGroup.id"
         :availabilityGroup="availabilityGroup"
         :guestsPerRoom="basketItemsStore.reservations[0].guestsPerRoom"
-      ></AvailabilityGroupInBasketCard>
+      ></AvailabilityGroupInBasketMenuCard>
     </div>
     <v-card min-width="350" class="mb-2 px-2">
       <div>
