@@ -73,7 +73,7 @@ const departureDate = computed(() => {
             <strong
               >{{
                 priceFormatter.formatPrice(
-                  availabilityGroupHelper.calculateTotalRate(availabilityGroup, guestsPerRoom)
+                  availabilityGroupHelper.calculateTotalRate(availabilityGroup)
                 )
               }}
             </strong>
