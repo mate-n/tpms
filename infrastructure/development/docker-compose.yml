@@ -12,6 +12,22 @@ services:
       - .env
     ports:
       - "${PORT_FRONTEND}:8080"
+  backend-middleware-mongo-db:
+    image: mongo:latest
+    env_file:
+      - .env
+  backend-middleware:
+    build:
+      context: ../../backend-middleware
+      dockerfile: Dockerfile
+    volumes:
+      - ../../backend-middleware/src:/app/src
+    env_file:
+      - .env
+    ports:
+      - "${PORT_MIDDLEWARE}:8080"
+    depends_on:
+      - backend-middleware-mongo-db
   nest:
     build:
       context: ../../nest-app
