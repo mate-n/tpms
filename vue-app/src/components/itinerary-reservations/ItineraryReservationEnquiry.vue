@@ -68,9 +68,7 @@ const updateShowBookButton = () => {
 const clickOnAddToCart = () => {
   closeExpansionPanels.value++
   updateOrderIndexes()
-  for (const reservation of itineraryReservation.value.reservations) {
-    basketItemsStore.addReservation(reservation)
-  }
+  basketItemsStore.addReservations(itineraryReservation.value.reservations)
 }
 
 const closeExpansionPanels = ref(0)
