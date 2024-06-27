@@ -1,9 +1,9 @@
-import type { IReservation } from '@/shared/interfaces/IReservation'
+import type { IEntityWithProfile } from '@/shared/interfaces/IEntityWithProfile'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 
 export class ProfileHelper {
-  changeProfile(reservation: IReservation, profile: IProfile) {
-    reservation.profileID = profile.id
-    reservation.guestName = profile.name
+  changeProfile(entityWithProfile: IEntityWithProfile, profile: IProfile) {
+    entityWithProfile.profileID = profile.id
+    entityWithProfile.profileName = profile.name
   }
 }
