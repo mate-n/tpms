@@ -81,7 +81,8 @@ export class Reservation implements IReservation {
     this.orderIndex = reservation.orderIndex
     this.propertyAvailabilities = reservation.propertyAvailabilities
     this.protelAvailabilities = reservation.protelAvailabilities
-    this.selectedProtelAvailabilityGroups = reservation.selectedProtelAvailabilityGroups
+    this.selectedProtelAvailabilityGroups =
+      reservation.selectedProtelAvailabilityGroups
     this.issues = reservation.issues
     if (reservation.errors) {
       this.errors = reservation.errors
