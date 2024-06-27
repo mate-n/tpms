@@ -2,9 +2,10 @@ import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { IProtelAvailabilityGroup } from '@/shared/interfaces/protel/IProtelAvailabilityGroup'
 import { DateHelper } from './DateHelper'
 import { RatesHelper } from './RatesHelper'
-import type { IGuestsPerRoom } from '@/shared/interfaces/IGuestsPerRoom'
+import { TicketHelper } from './TicketHelper'
 
 export class AvailabilityGroupHelper {
+  ticketHelper = new TicketHelper()
   dateHelper = new DateHelper()
   ratesHelper = new RatesHelper()
   sortByDate(availabilityGroup: IProtelAvailabilityGroup) {
@@ -49,19 +50,36 @@ export class AvailabilityGroupHelper {
     return this.dateHelper.addDays(departureDate, 1)
   }
 
-  calculateTotalRate(
-    availabilityGroup: IProtelAvailabilityGroup,
-    guestsPerRoom: IGuestsPerRoom
-  ): number {
+  calculateTotalRate(availabilityGroup: IProtelAvailabilityGroup): number {
     let roomRate = 0
 
     for (const protelAvailability of availabilityGroup.availabilities) {
       roomRate += this.ratesHelper.calculateActualRate(
         protelAvailability.rates_data[0],
-        guestsPerRoom
+        availabilityGroup.guestsPerRoom
       )
     }
 
     return roomRate
+  }
+
+  calculateAverageRate(availabilityGroup: IProtelAvailabilityGroup): number {
+    return this.calculateTotalRate(availabilityGroup) / availabilityGroup.availabilities.length
+  }
+
+  calculateTotalReservationPrice(availabilityGroup: IProtelAvailabilityGroup): number {
+    let totalPrice = 0
+    totalPrice += this.calculateTotalRate(availabilityGroup)
+    totalPrice += this.ticketHelper.getTotalPrice(availabilityGroup.tickets)
+    return totalPrice
+  }
+
+  calculateTotalPrice(availabilityGroups: IProtelAvailabilityGroup[]): number {
+    let total = 0
+    for (const availabilityGroup of availabilityGroups) {
+      const roomRate = this.calculateTotalRate(availabilityGroup)
+      total += roomRate + this.ticketHelper.getTotalPrice(availabilityGroup.tickets)
+    }
+    return total
   }
 }
