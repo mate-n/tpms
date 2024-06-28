@@ -4,7 +4,7 @@ import type { IProtelRegion } from '@/shared/interfaces/protel/IProtelRegion'
 import type { AxiosStatic } from 'axios'
 
 export class RegionService implements IService {
-  axiosInstance: AxiosStatic
+  axiosInstance: any
   constructor(axios: AxiosStatic | undefined) {
     this.axiosInstance = AxiosInstanceFactory2.createAxiosInstance(axios)
   }
@@ -12,7 +12,7 @@ export class RegionService implements IService {
   findAll() {
     return new Promise<IProtelRegion[]>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/protel-regions')
+        .get('api/v1/regions')
         .then((response: any) => {
           resolve(response.data)
         })
