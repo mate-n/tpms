@@ -1,3 +1,4 @@
+name: tpms-frontend-development
 services:
   vue:
     build:
