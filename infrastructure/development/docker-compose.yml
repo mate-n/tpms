@@ -12,8 +12,10 @@ services:
       - .env
     ports:
       - "${PORT_FRONTEND}:8080"
-  backend-middleware-mongo-db:
-    image: mongo:latest
+  backend-middleware-mongodb:
+    image: "mongo"
+    volumes:
+      - mongodata:/data/db
     env_file:
       - .env
   backend-middleware:
@@ -27,7 +29,7 @@ services:
     ports:
       - "${PORT_MIDDLEWARE}:8080"
     depends_on:
-      - backend-middleware-mongo-db
+      - backend-middleware-mongodb
   nest:
     build:
       context: ../../nest-app
@@ -46,3 +48,6 @@ services:
     profiles:
       - development
     user: "${UID}:${GID}"
+
+volumes:
+  mongodata:
