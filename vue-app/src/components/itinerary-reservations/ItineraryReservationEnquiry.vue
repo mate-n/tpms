@@ -87,12 +87,15 @@ const getRegions = () => {
 
 const getParks = () => {
   parkService.findAll().then((res) => {
+    console.log(res)
     allParks.value = res
     parksInDropdown.value = res
   })
 }
 
 const updateParks = () => {
+  itineraryReservation.value.selectedParks = []
+  itineraryReservation.value.selectedCamps = []
   const selectedRegions = itineraryReservation.value.selectedRegions
   if (selectedRegions.length === 0) {
     parksInDropdown.value = allParks.value
@@ -103,9 +106,23 @@ const updateParks = () => {
   }
 }
 
+const updateCamps = () => {
+  itineraryReservation.value.selectedCamps = []
+
+  const selectedParks = itineraryReservation.value.selectedParks
+  if (selectedParks.length === 0) {
+    campsInDropdown.value = allCamps.value
+  } else {
+    campsInDropdown.value = allCamps.value.filter((camp) =>
+      selectedParks.map((park) => park.id).includes(camp.parkID)
+    )
+  }
+}
+
 const getCamps = () => {
   return new Promise<void>((resolve) => {
     campService.findAll().then((res) => {
+      console.log(res)
       allCamps.value = res
       campsInDropdown.value = res
       resolve()
@@ -131,10 +148,8 @@ watch(
 
 watch(
   () => itineraryReservation.value.selectedParks,
-  (newValues, oldValue) => {
-    getCamps().then(() => {
-      autoSelectCamps(newValues, oldValue)
-    })
+  () => {
+    updateCamps()
   },
   { deep: true }
 )
@@ -201,22 +216,12 @@ const addReservationToCamp = (camp: IProtelCamp) => {
   itineraryReservation.value.reservations.push(reservation)
 }
 
-const autoSelectCamps = (newValues: IProtelPark[], oldValues: IProtelPark[]) => {
-  const freshlyAddedProtelParks = newValues.filter((newPark) => !oldValues.includes(newPark))
-  for (const park of freshlyAddedProtelParks) {
-    const foundCamps = campsInDropdown.value.filter((camp) => camp.parkName === park.name)
-    if (foundCamps) {
-      itineraryReservation.value.selectedCamps.push(...foundCamps)
-    }
-  }
-}
-
 const travelDistanceShown = ref(false)
 const travelDistanceWarningDialog = ref(false)
 
 const isTravelDistanceTooFar = () => {
   const isTweeRivierenSelected = itineraryReservation.value.selectedCamps.some(
-    (camp) => camp.name === 'Twee Rivieren Rest Camp'
+    (camp) => camp.name === 'Twee Riveren'
   )
 
   const isGharagabSelected = itineraryReservation.value.selectedCamps.some(
