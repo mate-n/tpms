@@ -46,7 +46,6 @@ const i18n = createI18n({
   messages
 })
 
-// AxiosInstanceProvider
 import axiosInstanceProvider from './plugins/AxiosInstanceProvider'
 import axiosInstanceProvider2 from './plugins/AxiosInstanceProvider2'
 
