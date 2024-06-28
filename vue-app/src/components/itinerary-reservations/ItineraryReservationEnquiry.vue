@@ -8,25 +8,25 @@ import ReservationFormInEnquiry from './ReservationFormInEnquiry.vue'
 import BasketCard from '@/components/baskets/BasketCard.vue'
 import type { IProtelRegion } from '@/shared/interfaces/protel/IProtelRegion'
 import type { AxiosStatic } from 'axios'
-import { ProtelRegionService } from '@/services/protel/ProtelRegionService'
-import { ProtelParkService } from '@/services/protel/ProtelParkService'
 import type { IProtelPark } from '@/shared/interfaces/protel/IProtelPark'
-import type { IProtelParkSearch } from '@/shared/interfaces/protel/IProtelParkSearch'
-import { ProtelCampService } from '@/services/protel/ProtelCampService'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
-import type { IProtelCampSearch } from '@/shared/interfaces/protel/IProtelCampSearch'
 import DateSelecter from '@/components/dates/DateSelecter.vue'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
 import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
+import { RegionService } from '@/services/backend-middleware/RegionService'
+import { ParkService } from '@/services/backend-middleware/ParkService'
+import { CampService } from '@/services/backend-middleware/CampService'
 const regionsInDropdown: Ref<IProtelRegion[]> = ref([])
+const allParks: Ref<IProtelPark[]> = ref([])
 const parksInDropdown: Ref<IProtelPark[]> = ref([])
+const allCamps: Ref<IProtelCamp[]> = ref([])
 const campsInDropdown: Ref<IProtelCamp[]> = ref([])
 const basketItemsStore = useBasketItemsStore()
 const itineraryReservationValidator = new ItineraryReservationValidator()
-const axios: AxiosStatic | undefined = inject('axios')
-const protelRegionService = new ProtelRegionService(axios)
-const protelParkService = new ProtelParkService(axios)
-const protelCampService = new ProtelCampService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const regionService = new RegionService(axios2)
+const parkService = new ParkService(axios2)
+const campService = new CampService(axios2)
 const itineraryReservation = ref(new ItineraryReservation())
 
 const updateOrderIndexes = () => {
@@ -80,42 +80,36 @@ onBeforeMount(() => {
 })
 
 const getRegions = () => {
-  protelRegionService.findAll().then((res) => {
+  regionService.findAll().then((res) => {
     regionsInDropdown.value = res
   })
 }
 
 const getParks = () => {
-  if (itineraryReservation.value.selectedRegions.length === 0) {
-    protelParkService.findAll().then((res) => {
-      parksInDropdown.value = res
-    })
+  parkService.findAll().then((res) => {
+    allParks.value = res
+    parksInDropdown.value = res
+  })
+}
+
+const updateParks = () => {
+  const selectedRegions = itineraryReservation.value.selectedRegions
+  if (selectedRegions.length === 0) {
+    parksInDropdown.value = allParks.value
   } else {
-    const protelParkSearch: IProtelParkSearch = {
-      regionNames: itineraryReservation.value.selectedRegions.map((region) => region.name)
-    }
-    protelParkService.search(protelParkSearch).then((res) => {
-      parksInDropdown.value = res
-    })
+    parksInDropdown.value = allParks.value.filter((park) =>
+      selectedRegions.map((region) => region.name).includes(park.regionName)
+    )
   }
 }
 
 const getCamps = () => {
   return new Promise<void>((resolve) => {
-    if (itineraryReservation.value.selectedParks.length === 0) {
-      protelCampService.findAll().then((res) => {
-        campsInDropdown.value = res
-        resolve()
-      })
-    } else {
-      const protelCampSearch: IProtelCampSearch = {
-        parkNames: itineraryReservation.value.selectedParks.map((park) => park.name)
-      }
-      protelCampService.search(protelCampSearch).then((res) => {
-        campsInDropdown.value = res
-        resolve()
-      })
-    }
+    campService.findAll().then((res) => {
+      allCamps.value = res
+      campsInDropdown.value = res
+      resolve()
+    })
   })
 }
 
@@ -130,7 +124,7 @@ const basketDialog = ref(false)
 watch(
   [() => itineraryReservation.value.selectedRegions],
   () => {
-    getParks()
+    updateParks()
   },
   { deep: true }
 )
