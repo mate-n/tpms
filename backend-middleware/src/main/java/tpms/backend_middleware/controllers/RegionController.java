@@ -10,7 +10,7 @@ import tpms.backend_middleware.models.Region;
 import tpms.backend_middleware.repositories.RegionRepository;
 
 @RestController()
-@RequestMapping(path = "/api/regions", produces = "application/json")
+@RequestMapping(path = "/api/v1/regions", produces = "application/json")
 @CrossOrigin("*")
 public class RegionController {
     private final RegionRepository repository;

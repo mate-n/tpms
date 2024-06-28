@@ -10,7 +10,7 @@ import tpms.backend_middleware.models.Park;
 import tpms.backend_middleware.repositories.ParkRepository;
 
 @RestController()
-@RequestMapping(path = "/api/parks", produces = "application/json")
+@RequestMapping(path = "/api/v1/parks", produces = "application/json")
 @CrossOrigin("*")
 public class ParkController {
 

@@ -10,7 +10,7 @@ import tpms.backend_middleware.models.Camp;
 import tpms.backend_middleware.repositories.CampRepository;
 
 @RestController()
-@RequestMapping(path = "/api/camps", produces = "application/json")
+@RequestMapping(path = "/api/v1/camps", produces = "application/json")
 @CrossOrigin("*")
 public class CampController {
     private final CampRepository repository;
