@@ -1,21 +1,16 @@
 package tpms.backend_middleware.services;
 
-import java.util.Locale;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.node.ValueNode;
 import java.util.Scanner;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Map;
-
-import org.springframework.boot.origin.SystemEnvironmentOrigin;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import tpms.backend_middleware.models.Camp;
 import tpms.backend_middleware.models.Park;
 import tpms.backend_middleware.models.Region;
 
@@ -55,20 +50,16 @@ public class ParksAndCampsService {
         var jsonString = getParksAndCamps();
 
         ObjectMapper mapper = new ObjectMapper();
-        // Map<String, Object> map = mapper.readValue(jsonString, Map.class);
         JsonNode root = mapper.readTree(jsonString);
         for (String regionName : regionNames) {
             JsonNode region = root.get(regionName);
             for (JsonNode parkJsonNode : region) {
                 Park park = new Park();
                 park.setRegionName(regionName);
-                System.out.println("xxxxxxxxxxxxxxxxxxx");
-                System.out.println(parkJsonNode.fields());
                 Iterator<String> itr = region.fieldNames();
                 String parkName = "";
                 while (itr.hasNext()) {
                     String key_field = itr.next();
-                    System.out.println(key_field);
                     parkName = key_field;
                 }
                 park.setName(parkName);
@@ -82,4 +73,42 @@ public class ParksAndCampsService {
         return parks;
     }
 
+    public Iterable<Camp> getCamps() throws IOException {
+        ArrayList<Camp> camps = new ArrayList<Camp>();
+
+        var jsonString = getParksAndCamps();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(jsonString);
+        for (String regionName : regionNames) {
+            JsonNode region = root.get(regionName);
+            for (JsonNode parkJsonNode : region) {
+                Park park = new Park();
+                park.setRegionName(regionName);
+                Iterator<String> itr = region.fieldNames();
+                String parkName = "";
+                while (itr.hasNext()) {
+                    String key_field = itr.next();
+                    parkName = key_field;
+                }
+                park.setName(parkName);
+                var parkID = new Scanner(parkJsonNode.get("parkid").toString()).useDelimiter("[^\\d]+").next();
+
+                for (JsonNode campJsonNode : parkJsonNode.get("camps")) {
+                    System.out.println("inside");
+                    var campName = campJsonNode.get("campname").toString();
+                    campName = campName.replaceAll("[^a-zA-Z0-9]", " ");
+                    var campID = new Scanner(campJsonNode.get("campid").toString()).useDelimiter("[^\\d]+").next();
+
+                    Camp camp = new Camp();
+                    camp.setParkID(parkID);
+                    camp.setName(campName);
+                    camp.setId(campID);
+                    camps.add(camp);
+                }
+            }
+
+        }
+        return camps;
+    }
 }
