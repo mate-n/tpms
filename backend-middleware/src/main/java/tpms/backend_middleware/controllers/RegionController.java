@@ -7,28 +7,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tpms.backend_middleware.models.Region;
-import tpms.backend_middleware.repositories.RegionRepository;
+import tpms.backend_middleware.services.ParksAndCampsService;
 
 @RestController()
 @RequestMapping(path = "/api/v1/regions", produces = "application/json")
 @CrossOrigin("*")
 public class RegionController {
-    private final RegionRepository repository;
-
     @Autowired
-    public RegionController(RegionRepository repository) {
-        this.repository = repository;
+    RegionController() {
     }
 
     @GetMapping
     public Iterable<Region> index() {
-        return repository.findAll();
-    }
-
-    @GetMapping(path = "/createnew")
-    public Region save() {
-        Region region = new Region();
-        return repository.save(region);
+        ParksAndCampsService parksAndCampsService = new ParksAndCampsService();
+        try {
+            return parksAndCampsService.getRegions();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }
