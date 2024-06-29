@@ -7,23 +7,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tpms.backend_middleware.models.Park;
-import tpms.backend_middleware.repositories.ParkRepository;
+import tpms.backend_middleware.services.ParksAndCampsService;
 
 @RestController()
 @RequestMapping(path = "/api/v1/parks", produces = "application/json")
 @CrossOrigin("*")
 public class ParkController {
 
-    private final ParkRepository repository;
-
     @Autowired
-    public ParkController(ParkRepository repository) {
-        this.repository = repository;
+    ParkController() {
     }
 
     @GetMapping
     public Iterable<Park> index() {
-        return repository.findAll();
+        ParksAndCampsService parksAndCampsService = new ParksAndCampsService();
+        try {
+            return parksAndCampsService.getParks();
+        } catch (Exception e) {
+            return null;
+        }
     }
-
 }
