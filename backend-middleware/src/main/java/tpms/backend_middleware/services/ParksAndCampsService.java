@@ -51,25 +51,28 @@ public class ParksAndCampsService {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(jsonString);
-        for (String regionName : regionNames) {
-            JsonNode region = root.get(regionName);
-            for (JsonNode parkJsonNode : region) {
-                Park park = new Park();
-                park.setRegionName(regionName);
-                Iterator<String> itr = region.fieldNames();
-                String parkName = "";
+        Iterator<String> regionIterator = root.fieldNames();
+
+        while (regionIterator.hasNext()) {
+            String key_field = regionIterator.next();
+            String regionName = key_field;
+            Region region = new Region();
+            region.setName(regionName);
+            for (JsonNode parkJsonNode : root.get(regionName)) {
+                Iterator<String> itr = root.get(regionName).fieldNames();
                 while (itr.hasNext()) {
-                    String key_field = itr.next();
-                    parkName = key_field;
+                    String key_field2 = itr.next();
+                    String parkName = key_field2;
+                    Park park = new Park();
+                    park.setRegionName(regionName);
+                    park.setName(parkName);
+                    var parkID = new Scanner(parkJsonNode.get("parkid").toString()).useDelimiter("[^\\d]+").next();
+                    park.setId(parkID);
+                    parks.add(park);
                 }
-                park.setName(parkName);
-                var parkID = new Scanner(parkJsonNode.get("parkid").toString()).useDelimiter("[^\\d]+").next();
-
-                park.setId(parkID);
-                parks.add(park);
             }
-
         }
+
         return parks;
     }
 
@@ -95,7 +98,6 @@ public class ParksAndCampsService {
                 var parkID = new Scanner(parkJsonNode.get("parkid").toString()).useDelimiter("[^\\d]+").next();
 
                 for (JsonNode campJsonNode : parkJsonNode.get("camps")) {
-                    System.out.println("inside");
                     var campName = campJsonNode.get("campname").toString();
                     campName = campName.replaceAll("[^a-zA-Z0-9]", " ");
                     var campID = new Scanner(campJsonNode.get("campid").toString()).useDelimiter("[^\\d]+").next();
