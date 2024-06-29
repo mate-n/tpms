@@ -2,6 +2,8 @@ name: tpms-frontend-development
 services:
   realms:
     image: "realms"
+    env_file:
+      - .env
     ports:
       - "8000:8000"
       - "8001:8001"
