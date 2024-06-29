@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import tpms.backend_middleware.models.Camp;
 import tpms.backend_middleware.models.Park;
 import tpms.backend_middleware.models.Region;
 import tpms.backend_middleware.services.ParksAndCampsService;
@@ -49,6 +50,16 @@ public class ParksAndCampsController {
         ParksAndCampsService parksAndCampsService = new ParksAndCampsService();
         try {
             return parksAndCampsService.getParks();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @GetMapping(path = "/getcamps")
+    public Iterable<Camp> getCamps() {
+        ParksAndCampsService parksAndCampsService = new ParksAndCampsService();
+        try {
+            return parksAndCampsService.getCamps();
         } catch (Exception e) {
             return null;
         }
