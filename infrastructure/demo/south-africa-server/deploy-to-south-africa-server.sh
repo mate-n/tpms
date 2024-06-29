@@ -2,7 +2,13 @@
 
 docker build . -t realms --build-context root=../../../ \
     --build-arg VITE_API_BASE_URL=https://tpms-api.realms.ch/ \
-    --build-arg BACKEND_PORT=8001
+    --build-arg VITE_API_BASE_URL2=https://tpms-api2.realms.ch/ \
+    --build-arg BACKEND_PORT=8001 \
+    --build-arg MIDDLEWARE_PORT=8002
+
+#docker build . -t realms --build-context root=../../../ \
+#    --build-arg VITE_API_BASE_URL=https://tpms-api.realms.ch/ \
+#    --build-arg BACKEND_PORT=8001
 
 ssh tpms-user@41.76.108.121 << EOF
     docker stop realms
