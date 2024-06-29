@@ -1,0 +1,19 @@
+name: tpms-frontend-development
+services:
+  realms:
+    image: "realms"
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8002:8002"
+    depends_on:
+      - backend-middleware-mongodb
+  backend-middleware-mongodb:
+    image: "mongo"
+    volumes:
+      - mongodata:/data/db
+    env_file:
+      - .env
+
+volumes:
+  mongodata:
