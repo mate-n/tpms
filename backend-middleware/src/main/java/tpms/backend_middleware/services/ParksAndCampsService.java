@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.*;
 import java.util.Scanner;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import okhttp3.OkHttpClient;
@@ -15,12 +14,6 @@ import tpms.backend_middleware.models.Park;
 import tpms.backend_middleware.models.Region;
 
 public class ParksAndCampsService {
-
-    ArrayList<String> regionNames = new ArrayList<String>(
-            Arrays.asList("Kruger",
-                    "Arid",
-                    "Frontier",
-                    "Northern"));
 
     public String getParksAndCamps() throws IOException {
 
@@ -34,9 +27,16 @@ public class ParksAndCampsService {
         return response.body().string();
     }
 
-    public Iterable<Region> getRegions() {
+    public Iterable<Region> getRegions() throws IOException {
         Iterable<Region> regions = new ArrayList<Region>();
-        for (String regionName : regionNames) {
+        var jsonString = getParksAndCamps();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(jsonString);
+        Iterator<String> regionIterator = root.fieldNames();
+        while (regionIterator.hasNext()) {
+            String key_field = regionIterator.next();
+            String regionName = key_field;
             Region region = new Region();
             region.setName(regionName);
             ((ArrayList<Region>) regions).add(region);
@@ -65,9 +65,8 @@ public class ParksAndCampsService {
                 Park park = new Park();
                 park.setRegionName(regionName);
                 park.setName(parkName);
-                // var parkID = new
-                // Scanner(parkJsonNode.get("parkid").toString()).useDelimiter("[^\\d]+").next();
                 var parkIDString = root.get(regionName).get(parkName).get("parkid").toString();
+                @SuppressWarnings("resource")
                 var parkID = new Scanner(parkIDString).useDelimiter("[^\\d]+").next();
                 park.setId(parkID);
                 parks.add(park);
@@ -85,23 +84,28 @@ public class ParksAndCampsService {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(jsonString);
-        for (String regionName : regionNames) {
-            JsonNode region = root.get(regionName);
-            for (JsonNode parkJsonNode : region) {
+        Iterator<String> regionIterator = root.fieldNames();
+
+        while (regionIterator.hasNext()) {
+            String key_field = regionIterator.next();
+            String regionName = key_field;
+            Region region = new Region();
+            region.setName(regionName);
+            Iterator<String> itr = root.get(regionName).fieldNames();
+            while (itr.hasNext()) {
+                String key_field2 = itr.next();
+                String parkName = key_field2;
                 Park park = new Park();
                 park.setRegionName(regionName);
-                Iterator<String> itr = region.fieldNames();
-                String parkName = "";
-                while (itr.hasNext()) {
-                    String key_field = itr.next();
-                    parkName = key_field;
-                }
                 park.setName(parkName);
-                var parkID = new Scanner(parkJsonNode.get("parkid").toString()).useDelimiter("[^\\d]+").next();
-
-                for (JsonNode campJsonNode : parkJsonNode.get("camps")) {
+                var parkIDString = root.get(regionName).get(parkName).get("parkid").toString();
+                @SuppressWarnings("resource")
+                var parkID = new Scanner(parkIDString).useDelimiter("[^\\d]+").next();
+                park.setId(parkID);
+                for (JsonNode campJsonNode : root.get(regionName).get(parkName).get("camps")) {
                     var campName = campJsonNode.get("campname").toString();
                     campName = campName.replaceAll("[^a-zA-Z0-9]", " ");
+                    @SuppressWarnings("resource")
                     var campID = new Scanner(campJsonNode.get("campid").toString()).useDelimiter("[^\\d]+").next();
 
                     Camp camp = new Camp();
@@ -113,6 +117,7 @@ public class ParksAndCampsService {
             }
 
         }
+
         return camps;
     }
 }
