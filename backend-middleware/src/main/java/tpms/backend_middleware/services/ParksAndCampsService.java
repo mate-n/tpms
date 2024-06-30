@@ -58,19 +58,21 @@ public class ParksAndCampsService {
             String regionName = key_field;
             Region region = new Region();
             region.setName(regionName);
-            for (JsonNode parkJsonNode : root.get(regionName)) {
-                Iterator<String> itr = root.get(regionName).fieldNames();
-                while (itr.hasNext()) {
-                    String key_field2 = itr.next();
-                    String parkName = key_field2;
-                    Park park = new Park();
-                    park.setRegionName(regionName);
-                    park.setName(parkName);
-                    var parkID = new Scanner(parkJsonNode.get("parkid").toString()).useDelimiter("[^\\d]+").next();
-                    park.setId(parkID);
-                    parks.add(park);
-                }
+            Iterator<String> itr = root.get(regionName).fieldNames();
+            while (itr.hasNext()) {
+                String key_field2 = itr.next();
+                String parkName = key_field2;
+                Park park = new Park();
+                park.setRegionName(regionName);
+                park.setName(parkName);
+                // var parkID = new
+                // Scanner(parkJsonNode.get("parkid").toString()).useDelimiter("[^\\d]+").next();
+                var parkIDString = root.get(regionName).get(parkName).get("parkid").toString();
+                var parkID = new Scanner(parkIDString).useDelimiter("[^\\d]+").next();
+                park.setId(parkID);
+                parks.add(park);
             }
+
         }
 
         return parks;
