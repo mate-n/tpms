@@ -1,4 +1,4 @@
-package tpms.backend_middleware.controllers;
+package tpms.backend_middleware.controllers.fake;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -6,24 +6,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import tpms.backend_middleware.models.Park;
-import tpms.backend_middleware.repositories.ParkRepository;
+import tpms.backend_middleware.models.Camp;
+import tpms.backend_middleware.repositories.CampRepository;
 
 @RestController()
-@RequestMapping(path = "/fake/api/v1/parks", produces = "application/json")
+@RequestMapping(path = "/fake/api/v1/camps", produces = "application/json")
 @CrossOrigin("*")
-public class FakeParkController {
-
-    private final ParkRepository repository;
+public class FakeCampController {
+    private final CampRepository repository;
 
     @Autowired
-    public FakeParkController(ParkRepository repository) {
+    public FakeCampController(CampRepository repository) {
         this.repository = repository;
     }
 
     @GetMapping
-    public Iterable<Park> index() {
+    public Iterable<Camp> index() {
         return repository.findAll();
     }
-
 }
