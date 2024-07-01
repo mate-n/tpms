@@ -18,6 +18,7 @@ docker save realms | bzip2 | pv | ssh tpms-user@41.76.108.121 docker load
 
 
 ssh tpms-user@41.76.108.121 << EOF
-    cd infrastructure/demo/south-africa-server/
+    cd tpms-frontend/infrastructure/demo/south-africa-server/
     docker compose up -d
+    docker system prune -f
 EOF
