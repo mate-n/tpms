@@ -12,10 +12,12 @@ export class AvailabilityService implements IService {
     this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
   }
 
-  search(protelAvailabilityPostBody: IProtelAvailabilityPostBody): Promise<IProtelAvailability[]> {
+  getAvailabilities(
+    protelAvailabilityPostBody: IProtelAvailabilityPostBody
+  ): Promise<IProtelAvailability[]> {
     return new Promise<IProtelAvailability[]>((resolve, reject) => {
       this.axiosInstance
-        .post('api/v1/protel-availabilities/search', protelAvailabilityPostBody)
+        .post('api/v1/availabilities', protelAvailabilityPostBody)
         .then((response: any) => {
           const availabilities = response.data
 
