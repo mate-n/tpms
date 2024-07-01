@@ -2,17 +2,19 @@ package tpms.backend_middleware.controllers.fake;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
+import java.time.LocalDate;
 
+import tpms.backend_middleware.classes.AvailabilityPostBody;
 import tpms.backend_middleware.models.Availability;
 import tpms.backend_middleware.services.AvailabilityGenerator;
 
 @RestController()
-@RequestMapping(path = "/fake/api/v1/availabilities", produces = "application/json")
+@RequestMapping(path = "/fake/api/v1/availabilities", produces = "application/json", consumes = "application/json")
 @CrossOrigin("*")
 public class FakeAvailabilityController {
 
@@ -20,12 +22,12 @@ public class FakeAvailabilityController {
     FakeAvailabilityController() {
     }
 
-    @GetMapping
-    public Iterable<Availability> index() {
+    @PostMapping
+    public Iterable<Availability> index(@RequestBody AvailabilityPostBody availabilityPostBody) {
         AvailabilityGenerator availabilityGenerator = new AvailabilityGenerator();
-        Date startDate = new Date();
-        Date endDate = new Date();
-        endDate.setTime(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+        LocalDate startDate = LocalDate.parse(availabilityPostBody.arrivaldate);
+        LocalDate endDate = LocalDate.parse(availabilityPostBody.departuredate);
         return availabilityGenerator.generateAvailabilities(startDate, endDate);
     }
+
 }
