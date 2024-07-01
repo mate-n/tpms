@@ -1,13 +1,13 @@
 package tpms.backend_middleware.services;
 
+import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.time.format.DateTimeFormatter;
 
 import tpms.backend_middleware.classes.RoomRateWithRoomTypeCode;
 import tpms.backend_middleware.models.Availability;
 import tpms.backend_middleware.models.Rate;
-
-import java.util.Date;
 
 public class AvailabilityGenerator {
 
@@ -24,11 +24,11 @@ public class AvailabilityGenerator {
         }
     };
 
-    public ArrayList<Availability> generateAvailabilities(Date startDate, Date endDate) {
+    public ArrayList<Availability> generateAvailabilities(LocalDate startDate, LocalDate endDate) {
 
         ArrayList<Availability> availabilities = new ArrayList<Availability>();
-        Date currentDate = new Date(startDate.getTime());
-        while (currentDate.compareTo(endDate) <= 0) {
+        LocalDate currentDate = LocalDate.from(startDate);
+        while (currentDate.compareTo(endDate) < 0) {
             for (int i = 0; i < listOfRoomRateWithRoomTypeCodes.size(); i++) {
                 Availability availability = this.generateAvailability(
                         this.listOfRoomRateWithRoomTypeCodes.get(i).room_type_code,
@@ -36,24 +36,23 @@ public class AvailabilityGenerator {
                         Integer.toString(this.listOfRoomRateWithRoomTypeCodes.get(i).room_rate));
                 availabilities.add(availability);
             }
-            currentDate.setTime(currentDate.getTime() + 24 * 60 * 60 * 1000);
+            currentDate = currentDate.plusDays(1);
         }
         return availabilities;
     }
 
-    public Availability generateAvailability(String roomTypeCode, Date date, String roomRate) {
+    public Availability generateAvailability(String roomTypeCode, LocalDate date, String roomRate) {
         Availability availability = new Availability();
         availability.room_type_code = roomTypeCode;
-
-        availability.date_time = date.toInstant().toString();
+        availability.date_time = date.toString();
         availability.rates_data = new ArrayList<>();
+        availability.availability_count = "5";
         Rate rate = new Rate();
         rate.rates_code = "RACK";
         rate.occupancy = "3";
         rate.room_rate = roomRate;
-        rate.add_on_child1 = "";
+        rate.add_on_child1 = "0";
         availability.rates_data.add(rate);
         return availability;
     }
-
 }
