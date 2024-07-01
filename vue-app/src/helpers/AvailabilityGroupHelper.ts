@@ -44,7 +44,6 @@ export class AvailabilityGroupHelper {
     for (const availability of availabilityGroup.availabilities) {
       if (availability.availability_start.getTime() > departureDate.getTime()) {
         departureDate = availability.availability_start
-        console.log(departureDate)
       }
     }
     return this.dateHelper.addDays(departureDate, 1)
