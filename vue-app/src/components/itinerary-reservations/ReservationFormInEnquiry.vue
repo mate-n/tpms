@@ -2,16 +2,12 @@
 import { computed, inject, onBeforeMount, onMounted, ref, watch, type Ref } from 'vue'
 import { DateHelper } from '@/helpers/DateHelper'
 import { ReservationValidator } from '@/validators/ReservationValidator'
-import AvailabilityService from '@/services/AvailabilityService'
 import { RoomService } from '@/services/RoomService'
 import { CampService } from '@/services/protel/CampService'
 import type { AxiosStatic } from 'axios'
 import ProfileService from '@/services/ProfileService'
-import { AvailabilityService as ProtelAvailabilityService } from '@/services/protel/AvailabilityService'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { IRoom } from '@/shared/interfaces/IRoom'
-import type { IPropertyAvailability } from '@/shared/interfaces/availability/IPropertyAvailability'
-import type { IPropertyAvailabilitySearch } from '@/shared/interfaces/availability/IPropertyAvailabilitySearch'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { ICamp } from '@/shared/interfaces/ICamp'
 import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
@@ -24,16 +20,17 @@ import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import ProtelAvailabilitiesSelecter from './ProtelAvailabilitiesSelecter.vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
+import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
 const priceFormatter = new PriceFormatter()
 const availabilityHelper = new AvailabilityHelper()
 const reservationHelper = new ReservationHelper()
 const dateFormatter = new DateFormatter()
 const axios: AxiosStatic | undefined = inject('axios')
-const availabilityService = new AvailabilityService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+
 const campService = new CampService(axios)
 const profileService = new ProfileService(axios)
 const roomService = new RoomService(axios)
-const protelAvailabilityService = new ProtelAvailabilityService(axios)
 const dateHelper = new DateHelper()
 const reservationValidator = new ReservationValidator()
 const emit = defineEmits(['check', 'change', 'remove'])
@@ -48,6 +45,7 @@ const campsInDropdown: Ref<ICamp[]> = ref([])
 const roomsInDropdown: Ref<IRoom[]> = ref([])
 const profilesInDropdown: Ref<IProfile[]> = ref([])
 const profileDialog = ref(false)
+const availabilityService = new AvailabilityService(axios2)
 
 watch(
   () => props.collapseExpansion,
@@ -142,33 +140,18 @@ const check = () => {
   reservationValidator.validate(reservation.value)
   if (!reservation.value.propertyID) return
   availabilitiesLoading.value = true
-  const propertyAvailabilitySearch: IPropertyAvailabilitySearch = {
-    propertyID: reservation.value.propertyID,
-    availabilityStart: reservation.value.arrivalDate,
-    availabilityEnd: reservation.value.departureDate,
-    numberOfRooms: reservation.value.numberOfRooms,
-    roomID: reservation.value.roomID,
-    profileID: reservation.value.profileID
-  }
 
-  availabilityService
-    .getAvailabilitiesByPropertyID(propertyAvailabilitySearch)
-    .then((response: IPropertyAvailability[]) => {
-      reservation.value.propertyAvailabilities = response
-      reservation.value.baseRateCategory = 'Base Rate | Low Season'
-      emit('check')
-    })
-
+  const departureDatePlusOne = dateHelper.addDays(reservation.value.departureDate, 1)
   const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
     arrivaldate: dateFormatter.yyyydashmmdashdd(reservation.value.arrivalDate),
-    departuredate: dateFormatter.yyyydashmmdashdd(reservation.value.departureDate),
+    departuredate: dateFormatter.yyyydashmmdashdd(departureDatePlusOne),
     roomtype: 'null',
     propertyid: reservation.value.propertyID.toString(),
     detail: '0',
     accomodation_type: null
   }
   reservation.value.selectedProtelAvailabilityGroups = []
-  protelAvailabilityService.search(protelAvailabilityPostBody).then((response) => {
+  availabilityService.getAvailabilities(protelAvailabilityPostBody).then((response) => {
     const protelAvailabilities = response.filter((n) => n)
     for (const protelAvailability of protelAvailabilities) {
       protelAvailability.property_name = reservation.value.propertyName
