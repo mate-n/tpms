@@ -14,7 +14,7 @@ ssh tpms-user@41.76.108.121 << EOF
     docker compose down
 EOF
 
-docker save realms | bzip2 | ssh tpms-user@41.76.108.121 docker load
+docker save realms | bzip2 | pv | ssh tpms-user@41.76.108.121 docker load
 
 
 ssh tpms-user@41.76.108.121 << EOF
