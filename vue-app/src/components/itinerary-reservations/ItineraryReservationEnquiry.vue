@@ -87,7 +87,6 @@ const getRegions = () => {
 
 const getParks = () => {
   parkService.findAll().then((res) => {
-    console.log(res)
     allParks.value = res
     parksInDropdown.value = res
   })
@@ -117,12 +116,13 @@ const updateCamps = () => {
       selectedParks.map((park) => park.id).includes(camp.parkID)
     )
   }
+
+  itineraryReservation.value.selectedCamps = campsInDropdown.value
 }
 
 const getCamps = () => {
   return new Promise<void>((resolve) => {
     campService.findAll().then((res) => {
-      console.log(res)
       allCamps.value = res
       campsInDropdown.value = res
       resolve()
