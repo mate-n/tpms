@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, watch, type Ref } from 'vue'
+import { onBeforeMount, ref, watch } from 'vue'
 import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
 import ProfileCommunicationForm from './ProfileCommunicationForm.vue'
 import { IdentityHelper } from '@/helpers/IdentityHelper'
@@ -13,12 +13,10 @@ const validityHelper = new ValidityHelper()
 const axios: AxiosStatic | undefined = inject('axios')
 const identityHelper = new IdentityHelper()
 const emit = defineEmits(['close'])
-const profileCommunications: Ref<IProfileCommunication[]> = ref([])
-const props = defineProps({
-  profile: { type: Object as () => IProfile, required: true }
-})
+const profile = defineModel({ required: true, type: Object as () => IProfile })
+
 watch(
-  profileCommunications,
+  profile.value.communications,
   () => {
     showSaveButton.value = areAllProfileCommunicationsAreValid()
   },
@@ -26,12 +24,12 @@ watch(
 )
 const showSaveButton = ref(false)
 const areAllProfileCommunicationsAreValid = () => {
-  return profileCommunications.value.every((profileCommunication) =>
+  return profile.value.communications.every((profileCommunication) =>
     validityHelper.isValid(profileCommunication)
   )
 }
 const addProfileCommunication = () => {
-  profileCommunications.value.push(new ProfileCommunication())
+  profile.value.communications.push(new ProfileCommunication())
 }
 const profileCommunicationService = new ProfileCommunicationService(axios)
 
@@ -42,7 +40,7 @@ onBeforeMount(() => {
 const saveProfileCommunications = () => {
   const promisesToSaveProfileCommunications: Promise<void>[] = []
 
-  profileCommunications.value.forEach((profileCommunication) => {
+  profile.value.communications.forEach((profileCommunication) => {
     const promiseToSaveProfileCommunication = new Promise<void>((innerResolve) => {
       profileCommunicationService.createOrUpdate(profileCommunication).then(() => {
         innerResolve()
@@ -56,39 +54,21 @@ const saveProfileCommunications = () => {
   })
 }
 
-const getProfileCommunications = () => {
-  return new Promise<void>((resolve) => {
-    if (props.profile.id) {
-      profileCommunicationService.getAllByProfileID(props.profile.id).then((response) => {
-        profileCommunications.value = response
-        resolve()
-      })
-    } else {
-      resolve()
-    }
-  })
-}
-
 const reloadProfileCommunications = () => {
-  getProfileCommunications().then(() => {
-    if (profileCommunications.value.length === 0) {
-      addProfileCommunication()
-    }
-    showSaveButton.value = false
-  })
+  showSaveButton.value = false
 }
 
 const deleteProfileCommunication = (profileCommunication: IProfileCommunication) => {
   profileCommunicationService.delete(profileCommunication)
 
-  profileCommunications.value = profileCommunications.value.filter(
+  profile.value.communications = profile.value.communications.filter(
     (innerProfileCommunication) =>
       !identityHelper.isSame(innerProfileCommunication, profileCommunication)
   )
 }
 
 const changeCommunicationType = (profileCommunication: IProfileCommunication) => {
-  const foundProfileCommunicationWithSameType = profileCommunications.value.filter(
+  const foundProfileCommunicationWithSameType = profile.value.communications.filter(
     (innerProfileCommunication) =>
       innerProfileCommunication.communicationTypeID === profileCommunication.communicationTypeID
   )
@@ -99,7 +79,7 @@ const changeCommunicationType = (profileCommunication: IProfileCommunication) =>
 }
 
 const changePrimary = (profileCommunication: IProfileCommunication) => {
-  const foundProfileCommunicationWithSameType = profileCommunications.value.filter(
+  const foundProfileCommunicationWithSameType = profile.value.communications.filter(
     (innerProfileCommunication) =>
       innerProfileCommunication.communicationTypeID === profileCommunication.communicationTypeID
   )
@@ -128,12 +108,12 @@ const changePrimary = (profileCommunication: IProfileCommunication) => {
   </v-toolbar>
   <v-container fluid class="profiles-card-container">
     <div
-      v-for="(profileCommunication, index) in profileCommunications"
+      v-for="(profileCommunication, index) in profile.communications"
       :key="profileCommunication.id"
     >
       <div class="bg-white mb-2">
         <ProfileCommunicationForm
-          v-model="profileCommunications[index]"
+          v-model="profile.communications[index]"
           @change-communication-type="
             (profileCommunication) => changeCommunicationType(profileCommunication)
           "

@@ -13,6 +13,7 @@ import { DateFormatter } from '@/helpers/DateFormatter'
 import { RoomService } from '@/services/RoomService'
 import type { IRate } from '@/shared/interfaces/IRate'
 import { RateService } from '@/services/RateService'
+import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const roomService = new RoomService(axios)
@@ -182,16 +183,9 @@ watch(
                 ></v-text-field
               ></v-col>
             </v-row>
-            <v-text-field
-              label="Guests per room"
-              v-model="reservationToBeEdited.numberOfGuestsPerRoom"
-              :error-messages="
-                reservationToBeEdited.errors &&
-                reservationToBeEdited.errors['numberOfGuestsPerRoom']
-              "
-              variant="underlined"
-              type="number"
-            ></v-text-field>
+            <GuestsPerRoomSelecter
+              v-model="reservationToBeEdited.guestsPerRoom"
+            ></GuestsPerRoomSelecter>
           </v-card>
           <v-card class="pa-3 mt-3 elevation-0"
             ><h3>Associated Profiles</h3>
@@ -369,7 +363,6 @@ watch(
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">Adults</span> <br />
-                {{ reservationToBeEdited.numberOfGuestsPerRoom }}
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">Children</span> <br />

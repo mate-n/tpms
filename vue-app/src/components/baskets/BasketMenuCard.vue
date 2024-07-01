@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { useBasketItemsStore } from '@/stores/basketItems'
 import { computed } from 'vue'
-import ReservationInBasketMenuCard from './ReservationInBasketMenuCard.vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
+import { AvailabilityGroupHelper } from '@/helpers/AvailabilityGroupHelper'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
+import AvailabilityGroupInBasketMenuCard from './AvailabilityGroupInBasketMenuCard.vue'
+const priceFormatter = new PriceFormatter()
+const availabilityGroupHelper = new AvailabilityGroupHelper()
 const reservationHelper = new ReservationHelper()
 const emit = defineEmits(['close', 'clickOnViewCart'])
 const basketItemsStore = useBasketItemsStore()
@@ -29,28 +33,34 @@ const totalPrice = computed(() => {
 const clickOnViewCart = () => {
   emit('clickOnViewCart')
 }
+
+const availabilityGroupsOfReservations = computed(() => {
+  return availabilityGroupHelper.getAvailabilityGroupsFromReservations(
+    basketItemsStore.reservations
+  )
+})
 </script>
 <template>
   <v-container class="bg-lightgray pa-1 rounded">
     <div style="overflow-y: auto; max-height: 90vh">
-      <ReservationInBasketMenuCard
-        v-for="reservation in basketItemsStore.reservations"
-        :key="reservation.id"
-        :reservation="reservation"
-        @remove-reservation="removeReservation()"
-      />
+      <AvailabilityGroupInBasketMenuCard
+        v-for="availabilityGroup in availabilityGroupsOfReservations"
+        :key="availabilityGroup.id"
+        :availabilityGroup="availabilityGroup"
+        :guestsPerRoom="basketItemsStore.reservations[0].guestsPerRoom"
+      ></AvailabilityGroupInBasketMenuCard>
     </div>
     <v-card min-width="350" class="mb-2 px-2">
       <div>
         <p><strong>Total: </strong></p>
         <p class="text-end">
-          <strong>{{ totalPrice }}</strong>
+          <strong>{{ priceFormatter.formatPrice(totalPrice) }}</strong>
         </p>
       </div>
     </v-card>
     <div class="d-flex justify-end mt-3">
-      <v-btn class="me-2 text-none" @click="removeAllReservations()">Empty Cart</v-btn>
-      <v-btn class="primary-button text-none" @click="clickOnViewCart()">View Cart</v-btn>
+      <v-btn class="me-2 text-black" @click="removeAllReservations()">Empty Cart</v-btn>
+      <v-btn class="primary-button" @click="clickOnViewCart()">View Cart</v-btn>
     </div>
   </v-container>
 </template>

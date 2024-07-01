@@ -35,12 +35,14 @@ const props = defineProps({
   }
 })
 
-const profileSearchUpdate = (input: any) => {
+const profileSearchUpdate = () => {
+  /*
   const profileSearch: IProfileSearch = {
     name: input
   }
+    */
 
-  profileService.search(profileSearch).then((response) => {
+  profileService.findAll().then((response) => {
     profileSearchResults.value = response
   })
 }

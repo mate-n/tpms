@@ -100,6 +100,9 @@ const ticketsCardDialog = ref(false)
     <v-card>
       <TicketsCard
         v-model="reservation"
+        :arrival-date="reservation.arrivalDate"
+        :departure-date="reservation.departureDate"
+        :property-name="reservation.propertyName"
         @close="ticketsCardDialog = false"
         @add-tickets-to-reservation="ticketsCardDialog = false"
       />

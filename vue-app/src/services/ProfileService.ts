@@ -14,7 +14,7 @@ class ProfileService implements IService {
   get(id: number) {
     return new Promise<IProfile>((resolve, reject) => {
       this.axiosInstance
-        .get('v1/profiles/' + id)
+        .get('v1/protel-profiles/' + id)
         .then((response: any) => {
           resolve(response.data)
         })
@@ -54,6 +54,19 @@ class ProfileService implements IService {
     return new Promise<IProfilePreferencesPatchBody>((resolve, reject) => {
       this.axiosInstance
         .patch('v1/profiles', profilePreferencesPatchBody)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
+
+  findAll() {
+    return new Promise<IProfile[]>((resolve, reject) => {
+      this.axiosInstance
+        .get('v1/protel-profiles')
         .then((response: any) => {
           resolve(response.data)
         })

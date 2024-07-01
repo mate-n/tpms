@@ -11,6 +11,10 @@ import { onBeforeMount } from 'vue'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
+import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
+import { RatesHelper } from '@/helpers/RatesHelper'
+const ratesHelper = new RatesHelper()
+const availabilityHelper = new AvailabilityHelper()
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
@@ -65,7 +69,7 @@ const showRemoveButton = computed(() => {
         >
       </div>
       <div class="mb-1">
-        <v-icon>mdi-chevron-double-right</v-icon><strong>{{ property?.name }}</strong>
+        <v-icon>mdi-chevron-double-right</v-icon><strong>{{ reservation.propertyName }}</strong>
       </div>
       <v-row class="pb-0">
         <v-col class="text-gray">{{ room?.code }}</v-col>
@@ -84,7 +88,31 @@ const showRemoveButton = computed(() => {
       <v-divider class="mt-1"></v-divider>
       <v-row class="mt-0 pb-0">
         <v-col></v-col>
-        <v-col class="d-flex justify-end"><strong>1.934,00</strong></v-col>
+        <v-col class="">
+          <div class="mb-1 text-end">
+            <div
+              v-for="availabilityGroup of availabilityHelper.groupAvailabilitiesByRoomType(
+                reservation.selectedProtelAvailabilityGroups
+                  .map((group) => group.availabilities)
+                  .flat()
+              )"
+              :key="availabilityGroup[0].room_type_name"
+            >
+              {{ availabilityGroup.length }} x
+              {{
+                ratesHelper.calculateActualRate(
+                  availabilityGroup[0].rates_data[0],
+                  reservation.guestsPerRoom
+                )
+              }}
+            </div>
+          </div>
+          <v-divider></v-divider>
+          <div class="text-end mt-1">
+            Total:
+            <strong>{{ reservationHelper.calculateTotalRate(reservation) }}</strong>
+          </div>
+        </v-col>
       </v-row>
     </v-card-text>
   </v-card>

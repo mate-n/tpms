@@ -9,4 +9,3 @@ const newProfile = ref<IProfile>(new Profile())
 <template>
   <NewProfile :profile-input="newProfile" />
 </template>
-@/shared/interfaces/profiles/IProfile

@@ -12,7 +12,8 @@ const customLightTheme: ThemeDefinition = {
   dark: false,
   colors: {
     primary: '#006221',
-    background: '#f5f5f5'
+    background: '#f5f5f5',
+    protelBlue: '#459BE5'
   }
 }
 
@@ -45,8 +46,8 @@ const i18n = createI18n({
   messages
 })
 
-// AxiosInstanceProvider
 import axiosInstanceProvider from './plugins/AxiosInstanceProvider'
+import axiosInstanceProvider2 from './plugins/AxiosInstanceProvider2'
 
 const app = createApp(App)
 app.use(createPinia())
@@ -54,4 +55,5 @@ app.use(router)
 app.use(vuetify)
 app.use(i18n)
 app.use(axiosInstanceProvider)
+app.use(axiosInstanceProvider2)
 app.mount('#app')

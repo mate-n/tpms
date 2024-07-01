@@ -1,29 +1,23 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { DateHelper } from '@/helpers/DateHelper'
-import { PropertyService } from '@/services/PropertyService'
 import { TicketService } from '@/services/TicketService'
-import type { IProperty } from '@/shared/interfaces/IProperty'
-import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { ITicket } from '@/shared/interfaces/ITicket'
-import type { AxiosStatic } from 'axios'
 import type { Ref } from 'vue'
-import { inject, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import TicketsTable from '@/components/tickets/TicketsTable.vue'
-const axios: AxiosStatic | undefined = inject('axios')
-const propertyService = new PropertyService(axios)
+import type { IEntityWithTickets } from '@/shared/interfaces/IEntityWithTickets'
 const dateHelper = new DateHelper()
 const ticketsService = new TicketService()
 const emits = defineEmits(['close', 'addTicketsToReservation'])
 const dateFormatter = new DateFormatter()
-const reservation = defineModel({ required: true, type: Object as () => IReservation })
+const entityWithTickets = defineModel({
+  required: true,
+  type: Object as () => IEntityWithTickets
+})
 const selectedDate: Ref<Date | undefined> = ref(undefined)
 
-const availableDates: Ref<Date[]> = ref([
-  new Date(),
-  dateHelper.addDays(new Date(), 1),
-  dateHelper.addDays(new Date(), 2)
-])
+const availableDates: Ref<Date[]> = ref([])
 
 const tickets: Ref<ITicket[]> = ref([])
 
@@ -34,19 +28,32 @@ onMounted(() => {
     tickets.value = data
     addTicketsFromReservationToSelectedTickets()
   })
-  selectDate(reservation.value.arrivalDate)
+  selectDate(props.arrivalDate)
+  setAvailableDates()
 })
+
+const props = defineProps({
+  arrivalDate: { type: Object as () => Date, required: true },
+  departureDate: { type: Object as () => Date, required: true },
+  propertyName: { type: String, required: true }
+})
+
+const setAvailableDates = () => {
+  availableDates.value = []
+  let currentDate = new Date(props.arrivalDate)
+  while (currentDate <= props.departureDate) {
+    availableDates.value.push(currentDate)
+    currentDate = dateHelper.addDays(currentDate, 1)
+  }
+}
 
 const selectDate = (date: Date) => {
   selectedDate.value = date
 }
 
 const addTicketsFromReservationToSelectedTickets = () => {
-  for (const ticketID of reservation.value.ticketIDs) {
-    const ticket = tickets.value.find((t) => t.TicketId === ticketID)
-    if (ticket) {
-      selectedTickets.value.push(ticket)
-    }
+  for (const ticket of entityWithTickets.value.tickets) {
+    selectedTickets.value.push(ticket)
   }
 }
 
@@ -63,20 +70,13 @@ const removeTicket = (ticket: ITicket) => {
   }
 }
 
-const property: Ref<IProperty | undefined> = ref(undefined)
-
-onMounted(() => {
-  if (!reservation.value.propertyID) return
-  propertyService.get(reservation.value.propertyID).then((response) => {
-    property.value = response
-  })
-})
-
 const addTicketsToReservation = () => {
-  reservation.value.ticketIDs = []
+  entityWithTickets.value.tickets = []
   for (const ticket of selectedTickets.value) {
-    reservation.value.ticketIDs.push(ticket.TicketId)
-    reservation.value.tickets.push(ticket)
+    if (selectedDate.value) {
+      ticket.Date = selectedDate.value
+    }
+    entityWithTickets.value.tickets.push(ticket)
   }
   emits('addTicketsToReservation')
 }
@@ -88,9 +88,9 @@ const showSaveButton = ref(false)
   <div class="standard-dialog-card bg-lightgray">
     <v-toolbar class="standard-dialog-card-toolbar">
       <v-toolbar-title
-        ><span class="text-primary">Tickets</span> - {{ property?.name }} -
-        {{ dateFormatter.dddotmmdotyyyy(reservation.arrivalDate) }} -
-        {{ dateFormatter.dddotmmdotyyyy(reservation.departureDate) }}</v-toolbar-title
+        ><span class="text-primary">Tickets</span> - {{ propertyName }} -
+        {{ dateFormatter.dddotmmdotyyyy(arrivalDate) }} -
+        {{ dateFormatter.dddotmmdotyyyy(departureDate) }}</v-toolbar-title
       >
       <div
         v-if="showSaveButton"

@@ -20,6 +20,7 @@ import { ValidityHelper } from '@/helpers/ValidityHelper'
 import StationeryCard from '../stationeries/StationeryCard.vue'
 import ReservationsCard from '../reservations/ReservationsCard.vue'
 import ProfileGeneralForm from './ProfileGeneralForm.vue'
+import ProfileMembershipCardsCard from './ProfileMembershipCardsCard.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const profileValidator = new ProfileValidator()
@@ -43,10 +44,12 @@ onMounted(() => {
     salutations.value = response
   })
   profileToBeEdited.value = cloneHelper.clone(props.profileInput)
+  validate()
 })
 
 watch(props, (newInput) => {
   profileToBeEdited.value = cloneHelper.clone(newInput.profileInput)
+  validate()
 })
 
 const validate = () => {
@@ -143,7 +146,7 @@ const reservationsCardDialog = ref(false)
   <v-container fluid class="bg-lightgray pt-0">
     <v-row>
       <v-col class="pr-0 profiles-card-column">
-        <ProfileContactDetailsCard :profile="profileToBeEdited"></ProfileContactDetailsCard>
+        <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
         <ProfileAddressCard :profile="profileToBeEdited"></ProfileAddressCard>
@@ -159,7 +162,9 @@ const reservationsCardDialog = ref(false)
       <v-col class="pr-0 profiles-card-column">
         <ProfilePreferencesCard v-model="profileToBeEdited"></ProfilePreferencesCard>
       </v-col>
-      <v-col class="pr-0 profiles-card-column"> </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <ProfileMembershipCardsCard v-model="profileToBeEdited"></ProfileMembershipCardsCard>
+      </v-col>
     </v-row>
   </v-container>
 

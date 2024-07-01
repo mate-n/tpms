@@ -7,15 +7,22 @@ import ReservationsView from '@/views/ReservationsView.vue'
 import EditReservationView from '@/views/EditReservationView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import ItineraryReservationsView from '@/views/ItineraryReservationsView.vue'
-import EditItineraryReservationView from '@/views/EditItineraryReservationView.vue'
 import ProfilesView from '@/views/ProfilesView.vue'
+import EditItineraryReservationView from '@/views/EditItineraryReservationView.vue'
+import LoginView from '@/views/LoginView.vue'
+import type { AxiosStatic } from 'axios'
+import { inject } from 'vue'
+import AuthenticationService from '@/services/AuthenticationService'
+const axios: AxiosStatic | undefined = inject('axios')
+const authentificationService = new AuthenticationService(axios)
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
       name: 'home',
-      component: ItineraryReservationEnquiryView
+      component: DashboardView
     },
     {
       path: '/itinerary-reservation-enquiry',
@@ -70,11 +77,30 @@ const router = createRouter({
       component: DashboardView
     },
     {
+      path: '/login',
+      name: 'login',
+      component: LoginView
+    },
+    {
       path: '/about',
       name: 'about',
       component: () => import('../views/AboutView.vue')
     }
   ]
 })
+
+router.beforeEach(async (to) => {
+  const canAccess = await canUserAccess()
+  if (to.name !== 'login' && !canAccess) return '/login'
+})
+
+async function canUserAccess() {
+  try {
+    const response = await authentificationService.isLoggedIn()
+    return response
+  } catch (error) {
+    return false
+  }
+}
 
 export default router

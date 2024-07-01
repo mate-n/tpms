@@ -1,0 +1,476 @@
+<script setup lang="ts">
+import { computed, inject, onBeforeMount, onMounted, ref, watch, type Ref } from 'vue'
+import { DateHelper } from '@/helpers/DateHelper'
+import { ReservationValidator } from '@/validators/ReservationValidator'
+import { RoomService } from '@/services/RoomService'
+import { CampService } from '@/services/protel/CampService'
+import type { AxiosStatic } from 'axios'
+import ProfileService from '@/services/ProfileService'
+import type { IReservation } from '@/shared/interfaces/IReservation'
+import type { IRoom } from '@/shared/interfaces/IRoom'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import type { ICamp } from '@/shared/interfaces/ICamp'
+import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
+import { DateFormatter } from '@/helpers/DateFormatter'
+import ProfileSearchCard from '../profiles/ProfileSearchCard.vue'
+import { ReservationHelper } from '@/helpers/ReservationHelper'
+import RoomDetailsCard from '../rooms/RoomDetailsCard.vue'
+import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
+import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
+import ProtelAvailabilitiesSelecter from './ProtelAvailabilitiesSelecter.vue'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
+import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
+import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
+const priceFormatter = new PriceFormatter()
+const availabilityHelper = new AvailabilityHelper()
+const reservationHelper = new ReservationHelper()
+const dateFormatter = new DateFormatter()
+const axios: AxiosStatic | undefined = inject('axios')
+const axios2: AxiosStatic | undefined = inject('axios2')
+
+const campService = new CampService(axios)
+const profileService = new ProfileService(axios)
+const roomService = new RoomService(axios)
+const dateHelper = new DateHelper()
+const reservationValidator = new ReservationValidator()
+const emit = defineEmits(['check', 'change', 'remove'])
+const reservation = defineModel({ required: true, type: Object as () => IReservation })
+const props = defineProps({
+  previousReservation: { type: Object as () => IReservation, required: false },
+  nextReservation: { type: Object as () => IReservation, required: false },
+  collapseExpansion: { type: Number, required: false },
+  itineraryReservation: { type: Object as () => IItineraryReservation, required: true }
+})
+const campsInDropdown: Ref<ICamp[]> = ref([])
+const roomsInDropdown: Ref<IRoom[]> = ref([])
+const profilesInDropdown: Ref<IProfile[]> = ref([])
+const profileDialog = ref(false)
+const availabilityService = new AvailabilityService(axios2)
+
+watch(
+  () => props.collapseExpansion,
+  () => {
+    expansionModel.value = []
+  }
+)
+
+onBeforeMount(() => {
+  campService.findAll().then((response: ICamp[]) => {
+    campsInDropdown.value = response
+  })
+
+  roomService.getAll().then((response: IRoom[]) => {
+    roomsInDropdown.value = response
+  })
+
+  profileService.findAll().then((response: IProfile[]) => {
+    profilesInDropdown.value = response
+  })
+})
+
+onMounted(() => {
+  check()
+})
+
+const getRoomsForDropdown = () => {
+  roomsInDropdown.value = []
+  for (const availability of reservation.value.protelAvailabilities) {
+    const room: IRoom = {
+      name: availability.room_type_name,
+      code: availability.room_type_code,
+      type: 0,
+      minOccupancy: 0,
+      maxOccupancy: availability.max_occupancy,
+      description: availability.id,
+      id: 0
+    }
+    roomsInDropdown.value.push(room)
+  }
+}
+
+const arrivalDateMenu = ref(false)
+const arrivalDateMin = computed(() => {
+  if (props.previousReservation) {
+    return dateHelper.getDateStringForInput(props.previousReservation.departureDate)
+  }
+  return dateHelper.getDateStringForInput(new Date())
+})
+const arrivalDateMax = computed(() => {
+  if (props.nextReservation) {
+    return dateHelper.getDateStringForInput(props.nextReservation.arrivalDate)
+  }
+  return false
+})
+const departureDateMenu = ref(false)
+const departureDateMin = computed(() => {
+  const dayAfterArrival = dateHelper.addDays(reservation.value.arrivalDate, 1)
+  return dateHelper.getDateStringForInput(dayAfterArrival)
+})
+const departureDateMax = computed(() => {
+  if (props.nextReservation) {
+    return dateHelper.getDateStringForInput(props.nextReservation.arrivalDate)
+  }
+  return false
+})
+
+const numberOfNights = computed(() => {
+  return dateHelper.calculateNightsBetweenDates(
+    reservation.value.arrivalDate,
+    reservation.value.departureDate
+  )
+})
+
+const nightsOverviewString = computed(() => {
+  const selectedNights = reservation.value.selectedProtelAvailabilityGroups
+    .map((n) => n.availabilities)
+    .flat().length
+
+  return `${selectedNights} / ${numberOfNights.value}`
+})
+
+const arrivalDateString = computed(() => {
+  return dateHelper.getDateString(reservation.value.arrivalDate)
+})
+
+const departureDateString = computed(() => {
+  return dateHelper.getDateString(reservation.value.departureDate)
+})
+
+const check = () => {
+  reservationValidator.validate(reservation.value)
+  if (!reservation.value.propertyID) return
+  availabilitiesLoading.value = true
+
+  const departureDatePlusOne = dateHelper.addDays(reservation.value.departureDate, 1)
+  const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
+    arrivaldate: dateFormatter.yyyydashmmdashdd(reservation.value.arrivalDate),
+    departuredate: dateFormatter.yyyydashmmdashdd(departureDatePlusOne),
+    roomtype: 'null',
+    propertyid: reservation.value.propertyID.toString(),
+    detail: '0',
+    accomodation_type: null
+  }
+  reservation.value.selectedProtelAvailabilityGroups = []
+  availabilityService.getAvailabilities(protelAvailabilityPostBody).then((response) => {
+    const protelAvailabilities = response.filter((n) => n)
+    for (const protelAvailability of protelAvailabilities) {
+      protelAvailability.property_name = reservation.value.propertyName
+    }
+    reservation.value.protelAvailabilities = protelAvailabilities
+    availabilitiesLoading.value = false
+    getRoomsForDropdown()
+  })
+}
+
+const reset = () => {
+  reservation.value.resetInItineraryReservation()
+}
+
+const remove = (reservation: IReservation) => {
+  emit('remove', reservation)
+}
+
+const emitChange = () => {
+  reservationValidator.validate(reservation.value)
+  emit('change')
+}
+
+const arrivalDateChange = () => {
+  if (!props.nextReservation) {
+    reservation.value.departureDate = dateHelper.addDays(reservation.value.arrivalDate, 2)
+  }
+  emitChange()
+}
+
+const closeProfileDialog = () => {
+  profileDialog.value = false
+}
+
+const profileSelected = (profile: IProfile) => {
+  reservation.value.profileID = profile.id
+  closeProfileDialog()
+}
+
+watch(
+  [
+    () => reservation.value.roomID,
+    () => reservation.value.numberOfRooms,
+    () => reservation.value.guestsPerRoom,
+    () => reservation.value.profileID,
+    () => reservation.value.arrivalDate,
+    () => reservation.value.departureDate,
+    () => reservation.value.propertyID
+  ],
+  () => {
+    const property = campsInDropdown.value.find((c) => c.campid === reservation.value.propertyID)
+    if (property) {
+      reservation.value.propertyName = property.campname
+    }
+    check()
+  },
+  { deep: true }
+)
+
+const availabilitiesLoading = ref(false)
+
+const roomTypeDialog = ref(false)
+const availableDates = computed(() => {
+  const dates = []
+  for (let i = 0; i < numberOfNights.value + 1; i++) {
+    dates.push(dateHelper.addDays(reservation.value.arrivalDate, i))
+  }
+  return dates
+})
+
+const getTotalOfAvailabilityCountOnDate = (date: Date) => {
+  const availabilities = availabilityHelper.getAvailabilitiesByDate(
+    reservation.value.protelAvailabilities,
+    date
+  )
+  return availabilityHelper.getTotalOfAvailabilityCount(availabilities)
+}
+
+const expansionModel = ref<string[] | null>(['availabilities'])
+
+const showRoomsInProtelAvailabilitiesSelecter = ref(false)
+
+const clickOnPlusButtonInAvailability = () => {
+  showRoomsInProtelAvailabilitiesSelecter.value = !showRoomsInProtelAvailabilitiesSelecter.value
+}
+
+const availabilityIcon = computed(() => {
+  return showRoomsInProtelAvailabilitiesSelecter.value ? 'mdi-chevron-up' : 'mdi-chevron-down'
+})
+
+const isDateOccupiedInReservation = (date: Date) => {
+  for (const availabilityGroup of reservation.value.selectedProtelAvailabilityGroups) {
+    for (const availability of availabilityGroup.availabilities) {
+      if (dateHelper.isSameDay(date, availability.availability_start)) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
+const isDateOccupiedByOtherReservations = (date: Date) => {
+  if (isDateOccupiedInReservation(date)) return false
+  for (const reservation of props.itineraryReservation.reservations) {
+    for (const availabilityGroup of reservation.selectedProtelAvailabilityGroups) {
+      for (const availability of availabilityGroup.availabilities) {
+        if (dateHelper.isSameDay(date, availability.availability_start)) {
+          return true
+        }
+      }
+    }
+  }
+  return false
+}
+</script>
+
+<template>
+  <v-container fluid class="bg-white">
+    <v-row class="d-flex align-center">
+      <v-col class="d-flex align-center h-100">
+        <h3>
+          <strong>{{ reservation.propertyName }}</strong>
+        </h3>
+      </v-col>
+      <v-col v-if="false">
+        <v-menu v-model="arrivalDateMenu" :close-on-content-click="false">
+          <template v-slot:activator="{ props }">
+            <v-text-field
+              v-model="arrivalDateString"
+              label="Arrival"
+              append-inner-icon="mdi-calendar"
+              v-bind="props"
+            ></v-text-field>
+          </template>
+          <v-card>
+            <v-date-picker
+              :hide-header="true"
+              v-model="reservation.arrivalDate"
+              :min="arrivalDateMin"
+              :max="arrivalDateMax"
+              @update:model-value="arrivalDateChange()"
+            >
+            </v-date-picker>
+          </v-card>
+        </v-menu>
+      </v-col>
+      <v-col>
+        <v-text-field
+          label="Nights"
+          :model-value="nightsOverviewString"
+          :error-messages="reservation.errors && reservation.errors['nights']"
+          :readonly="true"
+        ></v-text-field>
+      </v-col>
+      <v-col v-if="false">
+        <v-menu v-model="departureDateMenu" :close-on-content-click="false">
+          <template v-slot:activator="{ props }">
+            <v-text-field
+              v-model="departureDateString"
+              label="Departure"
+              append-inner-icon="mdi-calendar"
+              v-bind="props"
+            ></v-text-field>
+          </template>
+          <v-card>
+            <v-date-picker
+              :hide-header="true"
+              v-model="reservation.departureDate"
+              :min="departureDateMin"
+              :max="departureDateMax"
+              @update:model-value="emitChange()"
+            ></v-date-picker>
+          </v-card>
+        </v-menu>
+      </v-col>
+      <v-col>
+        <v-text-field
+          label="Rooms"
+          v-model="reservation.numberOfRooms"
+          :error-messages="reservation.errors && reservation.errors['numberOfRooms']"
+          type="number"
+          @change="emitChange()"
+        ></v-text-field>
+      </v-col>
+      <v-col>
+        <GuestsPerRoomSelecter
+          v-model="reservation.guestsPerRoom"
+          :errors="reservation.errors"
+        ></GuestsPerRoomSelecter>
+      </v-col>
+
+      <v-col class="d-flex justify-space-between">
+        <v-btn class="secondary-button mr-3" @click="reset()">Reset</v-btn>
+        <v-btn class="danger-button" @click="remove(reservation)" v-if="false"> Remove </v-btn>
+        <v-btn>
+          <strong>Total: </strong
+          >{{
+            priceFormatter.formatPrice(
+              reservationHelper.calculateSumOfAllAvailabilities(reservation)
+            )
+          }}</v-btn
+        >
+      </v-col>
+    </v-row>
+  </v-container>
+  <template v-if="reservation.issues.length > 0">
+    <v-container fluid>
+      <div class="my-3">
+        <div v-for="issue in reservation.issues" :key="issue">
+          <v-alert type="warning" elevation="2">{{ issue }}</v-alert>
+        </div>
+      </div>
+    </v-container>
+  </template>
+
+  <v-container fluid>
+    <v-progress-linear
+      v-if="availabilitiesLoading"
+      color="primary"
+      indeterminate
+    ></v-progress-linear>
+    <v-expansion-panels class="mb-2 mt-2" v-model="expansionModel">
+      <v-expansion-panel title="Availabilities" value="availabilities">
+        <v-expansion-panel-text>
+          <v-table>
+            <thead>
+              <tr class="bg-lightblue">
+                <th class="" style="width: 15rem"></th>
+
+                <th class="d-flex">
+                  <div
+                    v-for="date of availableDates"
+                    :key="date.toISOString()"
+                    class="text-center availability-box-width"
+                  >
+                    {{ dateHelper.getNameOfDay(date) }}<br />
+                    {{ dateFormatter.dddotmm(date) }}
+                  </div>
+                </th>
+
+                <template v-if="reservation.protelAvailabilities.length === 0">
+                  <th v-for="i in 12" :key="i"></th>
+                </template>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="d-flex justify-space-between align-center">
+                  <v-btn variant="text" icon @click="clickOnPlusButtonInAvailability()">
+                    <v-icon class="text-primary">
+                      {{ availabilityIcon }}
+                    </v-icon></v-btn
+                  >
+
+                  Availibility (incl. OB)
+                </td>
+                <td class="bg-lightgray">
+                  <div class="d-flex">
+                    <div
+                      v-for="date of availableDates"
+                      :key="date.toISOString()"
+                      class="text-center availability-box-width"
+                      :class="{
+                        'bg-light-blue-lighten-4': isDateOccupiedInReservation(date),
+                        'bg-orange-lighten-4': isDateOccupiedByOtherReservations(date)
+                      }"
+                    >
+                      <div class="availability-inner-box">
+                        {{ getTotalOfAvailabilityCountOnDate(date) }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <template v-if="reservation.protelAvailabilities.length === 0">
+                  <td v-for="i in 12" :key="i" class="bg-lightgray">
+                    <div class="bg-white mr-3 px-5 py-2 my-2 text-center">
+                      <v-icon>mdi-circle-small</v-icon>
+                    </div>
+                  </td>
+                </template>
+              </tr>
+              <tr
+                v-for="roomTypeCode of availabilityHelper.getUniqueRoomTypeCodes(
+                  reservation.protelAvailabilities
+                )"
+                :key="roomTypeCode"
+              >
+                <td v-if="showRoomsInProtelAvailabilitiesSelecter">
+                  <div class="d-flex justify-space-between">
+                    <div>{{ roomTypeCode }}</div>
+                    <div>
+                      <v-btn @click="roomTypeDialog = true" variant="text" icon size="x-small">
+                        <v-icon>mdi-information-outline</v-icon>
+                      </v-btn>
+                    </div>
+                  </div>
+                </td>
+                <td class="bg-lightgray" v-if="showRoomsInProtelAvailabilitiesSelecter">
+                  <ProtelAvailabilitiesSelecter
+                    v-model="reservation"
+                    :room-type-code="roomTypeCode"
+                  ></ProtelAvailabilitiesSelecter>
+                </td>
+              </tr>
+            </tbody> </v-table
+        ></v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+  </v-container>
+  <v-dialog v-model="profileDialog" fullscreen scrollable>
+    <v-card>
+      <ProfileSearchCard
+        @close="closeProfileDialog()"
+        @profile-selected="(profile) => profileSelected(profile)"
+      ></ProfileSearchCard>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="roomTypeDialog" width="600" scrollable>
+    <RoomDetailsCard @close="roomTypeDialog = false"> </RoomDetailsCard>
+  </v-dialog>
+</template>

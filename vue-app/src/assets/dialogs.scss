@@ -38,3 +38,9 @@
     @extend .font-size-rem-8;
   }
 }
+
+.standard-card-toolbar {
+  @extend .bg-white;
+  border-top-left-radius: 0.5rem !important;
+  border-top-right-radius: 0.5rem !important;
+}

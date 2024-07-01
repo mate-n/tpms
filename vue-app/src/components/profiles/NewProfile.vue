@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import ProfileForm from './ProfileForm.vue'
 import { CrudOperations } from '@/enums/CrudOperations'
 import { CloneHelper } from '@/helpers/CloneHelper'
@@ -31,13 +31,13 @@ const toggleFullScreen = () => {
   }
 }
 
-onMounted(() => {
-  newProfile.value = cloneHelper.clone(props.profileInput)
-})
-
-watch(props, (newInput) => {
-  newProfile.value = cloneHelper.clone(newInput.profileInput)
-})
+watch(
+  props,
+  (newInput) => {
+    newProfile.value = cloneHelper.clone(newInput.profileInput)
+  },
+  { immediate: true }
+)
 </script>
 <template>
   <v-toolbar class="bg-white">

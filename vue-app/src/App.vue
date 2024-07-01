@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import realmsLogo from '@/assets/images/realms-icon.webp'
-import { ref, type Ref } from 'vue'
+import { computed, inject, onMounted, ref, watch, type Ref } from 'vue'
 import { RouterView } from 'vue-router'
 import { useBasketItemsStore } from './stores/basketItems'
 import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
@@ -8,6 +8,36 @@ import { useUserStore } from './stores/user'
 import { Profile } from './shared/classes/Profile'
 import router from './router'
 import BasketCard from './components/baskets/BasketCard.vue'
+import { useRouter as UseRouter } from 'vue-router'
+import { ProtelApiStatusService } from './services/protel/ProtelApiStatusService'
+import type { AxiosStatic } from 'axios'
+import { AxiosHelper } from './helpers/AxiosHelper'
+const axiosHelper = new AxiosHelper()
+const axios2: AxiosStatic | undefined = inject('axios2')
+const axios: AxiosStatic | undefined = inject('axios')
+const protelApiStatusService = new ProtelApiStatusService(axios)
+const protelApiStatus = ref('waiting...')
+const protelApiStatusIcon = computed(() => {
+  if (protelApiStatus.value === 'waiting...') {
+    return 'mdi-clock-outline'
+  } else if (protelApiStatus.value === 'success') {
+    return 'mdi-check-circle-outline'
+  } else {
+    return 'mdi-alert-circle-outline'
+  }
+})
+const protelApiStatusColor = computed(() => {
+  if (protelApiStatus.value === 'waiting...') {
+    return 'grey'
+  } else if (protelApiStatus.value === 'success') {
+    return 'green'
+  } else {
+    return 'red'
+  }
+})
+
+const useRouter = UseRouter()
+
 const userStore = useUserStore()
 userStore.currentProfile = new Profile()
 const basketItemsStore = useBasketItemsStore()
@@ -15,14 +45,6 @@ const reservationsMenu = ref(false)
 
 const goHome = () => {
   router.push('/')
-}
-
-const closeExpansionPanelReservation = () => {
-  expansionPanelReservation.value = []
-}
-
-const openExpansionPanelReservation = () => {
-  expansionPanelReservation.value = ['front-desk']
 }
 
 const expansionPanelReservation: Ref<String[]> = ref(['front-desk'])
@@ -33,6 +55,36 @@ const clickOnViewCart = () => {
   reservationsMenu.value = false
   basketDialog.value = true
 }
+const showNavigationDrawer = computed(() => {
+  return useRouter.currentRoute.value.name !== 'login'
+})
+
+onMounted(() => {
+  protelApiStatusService.getStatus().then((response) => {
+    protelApiStatus.value = response
+  })
+  if (axios2) {
+    apiSwitch.value = !axiosHelper.isFakeApi(axios2)
+  }
+})
+
+const numberDisplayedOnCart = computed(() => {
+  return basketItemsStore.reservations
+    .map((reservation) => reservation.selectedProtelAvailabilityGroups.length)
+    .reduce((a, b) => a + b, 0)
+})
+
+const apiSwitch = ref(false)
+
+const apiSwitchLabel = computed(() => {
+  return apiSwitch.value ? 'Real' : 'Fake'
+})
+
+watch(apiSwitch, (newValue) => {
+  if (axios2) {
+    axiosHelper.switchBaseUrl(axios2, newValue)
+  }
+})
 </script>
 
 <style>
@@ -46,7 +98,12 @@ const clickOnViewCart = () => {
 
 <template>
   <v-app>
-    <v-navigation-drawer :width="330" mobile-breakpoint="xs" rail-width="55">
+    <v-navigation-drawer
+      v-model="showNavigationDrawer"
+      :width="330"
+      mobile-breakpoint="xs"
+      rail-width="55"
+    >
       <v-list-item
         height="5rem"
         prepend-icon="mdi-menu"
@@ -54,15 +111,14 @@ const clickOnViewCart = () => {
         @click="goHome()"
         class="bg-lightgray"
       >
-        <v-list-item-text>
-          <div><strong>TPMS-Frontend</strong></div>
-          <div class="d-flex align-center justify-start">
-            <div>Realms</div>
-            <div class="ms-3 mt-1">
-              <v-img width="1.8rem" height="1.8rem" aspect-ratio="1/1" :src="realmsLogo"></v-img>
-            </div>
-          </div> </v-list-item-text
-      ></v-list-item>
+        <div><strong>TPMS-Frontend</strong></div>
+        <div class="d-flex align-center justify-start">
+          <div>Realms</div>
+          <div class="ms-3 mt-1">
+            <v-img width="1.8rem" height="1.8rem" aspect-ratio="1/1" :src="realmsLogo"></v-img>
+          </div>
+        </div>
+      </v-list-item>
 
       <v-divider></v-divider>
       <v-list-item
@@ -103,10 +159,25 @@ const clickOnViewCart = () => {
             <v-list-item
               color="primary"
               prepend-icon="mdi-circle-small"
-              link
               title="Itinerary Reservations"
               to="/itinerary-reservations"
             ></v-list-item>
+            <v-divider></v-divider>
+            <v-list-item
+              :base-color="protelApiStatusColor"
+              :prepend-icon="protelApiStatusIcon"
+              title="Protel API Status"
+              :subtitle="protelApiStatus"
+            ></v-list-item>
+            <v-divider></v-divider>
+
+            <v-list-item class="mt-2">
+              <v-list-item-title>API Switcher</v-list-item-title>
+              <v-list-item-subtitle>Switch between Real and Fake API</v-list-item-subtitle>
+              <v-list-item-content>
+                <v-switch v-model="apiSwitch" color="primary" :label="apiSwitchLabel"></v-switch>
+              </v-list-item-content>
+            </v-list-item>
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -125,9 +196,9 @@ const clickOnViewCart = () => {
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" icon>
             <v-badge
-              :content="basketItemsStore.reservations.length"
+              :content="numberDisplayedOnCart"
               color="primary"
-              :model-value="basketItemsStore.reservations.length > 0"
+              :model-value="numberDisplayedOnCart > 0"
             >
               <v-icon icon="mdi-cart-outline" size="x-large"></v-icon>
             </v-badge>

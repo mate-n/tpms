@@ -6,9 +6,9 @@ import {
   Patch,
   Param,
   Delete,
-} from '@nestjs/common';
-import { ItineraryReservationsService } from './itinerary-reservations.service';
-import { IItineraryReservation } from 'src/shared/interfaces/IItineraryReservation';
+} from '@nestjs/common'
+import { ItineraryReservationsService } from './itinerary-reservations.service'
+import { IItineraryReservation } from 'src/shared/interfaces/IItineraryReservation'
 
 @Controller('v1/itinerary-reservations')
 export class ItineraryReservationsController {
@@ -18,17 +18,17 @@ export class ItineraryReservationsController {
 
   @Post()
   create(@Body() itineraryReservation: IItineraryReservation) {
-    return this.itineraryReservationsService.create(itineraryReservation);
+    return this.itineraryReservationsService.create(itineraryReservation)
   }
 
   @Get()
   findAll() {
-    return this.itineraryReservationsService.findAll();
+    return this.itineraryReservationsService.findAll()
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.itineraryReservationsService.findOne(+id);
+    return this.itineraryReservationsService.findOne(+id)
   }
 
   @Patch(':id')
@@ -36,11 +36,11 @@ export class ItineraryReservationsController {
     @Param('id') id: string,
     @Body() itineraryReservation: IItineraryReservation,
   ) {
-    return this.itineraryReservationsService.update(+id, itineraryReservation);
+    return this.itineraryReservationsService.update(+id, itineraryReservation)
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.itineraryReservationsService.remove(+id);
+    return this.itineraryReservationsService.remove(+id)
   }
 }

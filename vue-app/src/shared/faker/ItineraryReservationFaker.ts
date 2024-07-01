@@ -8,8 +8,8 @@ export class ItineraryReservationFaker {
   create(): IItineraryReservation {
     const itineraryReservation = new ItineraryReservation()
     itineraryReservation.id = faker.number.int()
-    itineraryReservation.startDate = faker.date.recent()
-    itineraryReservation.endDate = faker.date.future()
+    itineraryReservation.arrivalDate = faker.date.recent()
+    itineraryReservation.departureDate = faker.date.future()
     itineraryReservation.startPropertyName = faker.location.city()
     itineraryReservation.endPropertyName = faker.location.city()
     const reservation1 = this.reservationFaker.create()

@@ -4,7 +4,7 @@ import { DateHelper } from '@/helpers/DateHelper'
 import { PropertyService } from '@/services/PropertyService'
 import { RoomService } from '@/services/RoomService'
 import { useBasketItemsStore } from '@/stores/basketItems'
-import { computed, onMounted, ref, type Ref } from 'vue'
+import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import { onBeforeMount } from 'vue'
 import ConservationFeesCard from './ConservationFeesCard.vue'
 import type { IProperty } from '@/shared/interfaces/IProperty'
@@ -16,15 +16,19 @@ import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import TicketsCard from '../tickets/TicketsCard.vue'
-import { TicketHelper } from '@/helpers/TicketHelper'
-import type { ITicket } from '@/shared/interfaces/ITicket'
 import { TicketService } from '@/services/TicketService'
 import TicketsTable from '../tickets/TicketsTable.vue'
+import type { ITicket } from '@/shared/interfaces/ITicket'
+import { GuestsPerRoomHelper } from '@/helpers/GuestsPerRoomHelper'
+import ProfileSearchCard from '../profiles/ProfileSearchCard.vue'
+import { ProfileHelper } from '@/helpers/ProfileHelper'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
+const priceFormatter = new PriceFormatter()
+const profileHelper = new ProfileHelper()
 const ticketsService = new TicketService()
 const axios: AxiosStatic | undefined = inject('axios')
 const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
-const ticketHelper = new TicketHelper()
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
 const property: Ref<IProperty | null> = ref(null)
 const profile: Ref<IProfile | null> = ref(null)
@@ -34,6 +38,9 @@ const profileService = new ProfileService(axios)
 const roomService = new RoomService(axios)
 const dateFormatter = new DateFormatter()
 const dateHelper = new DateHelper()
+const guestsPerRoomHelper = new GuestsPerRoomHelper()
+const profileDialog = ref(false)
+
 onBeforeMount(() => {
   if (reservation.value.propertyID) {
     propertyService.get(reservation.value.propertyID).then((response) => {
@@ -98,14 +105,66 @@ onMounted(() => {
     }
   })
 })
+const profilesInDropdown: Ref<IProfile[]> = ref([])
+onBeforeMount(() => {
+  profileService.findAll().then((response: IProfile[]) => {
+    profilesInDropdown.value = response
+  })
+})
+
+const profileSelected = (selectedProfile: IProfile) => {
+  changeProfileOfReservations(selectedProfile)
+  profileDialog.value = false
+}
+
+const emitChange = () => {
+  if (reservation.value.profileID) {
+    profileService.get(reservation.value.profileID).then((response) => {
+      changeProfileOfReservations(response)
+    })
+  }
+}
+const changeProfileOfReservations = (newProfile: IProfile) => {
+  profile.value = newProfile
+  profileHelper.changeProfile(reservation.value, newProfile)
+  basketItemsStore.reservations.forEach((reservation) => {
+    profileHelper.changeProfile(reservation, newProfile)
+  })
+}
+
+watch(
+  () => reservation.value.profileID,
+  (newValue) => {
+    if (newValue) {
+      profileService.get(newValue).then((response) => {
+        profile.value = response
+      })
+    }
+  }
+)
 </script>
 
 <template>
   <v-card class="mb-5">
     <v-card-text class="px-0">
-      <div class="d-flex justify-space-between">
+      <div class="d-flex justify-space-between align-center">
         <div class="ms-2 pb-3">
-          <v-icon>mdi-chevron-double-right</v-icon><strong>{{ property?.name }}</strong>
+          <v-icon>mdi-chevron-double-right</v-icon><strong>{{ reservation.propertyName }}</strong>
+        </div>
+        <div class="d-flex align-center" style="min-width: 50%">
+          <v-autocomplete
+            label="Guest"
+            placeholder="Last Name | First Name"
+            hint="Last Name | First Name"
+            v-model="reservation.profileID"
+            :items="profilesInDropdown"
+            :item-title="(profile: IProfile) => `${profile.lastName}, ${profile.firstName}`"
+            :item-value="(profile: IProfile) => profile.id"
+            @update:model-value="emitChange()"
+          ></v-autocomplete>
+          <div class="d-flex align-center" @click="profileDialog = true">
+            <v-icon>mdi-magnify</v-icon>
+          </div>
         </div>
         <div>
           <v-icon
@@ -131,7 +190,7 @@ onMounted(() => {
             <v-col><span class="standard-caption">Nights</span><br />{{ numberOfNights }}</v-col>
             <v-col
               ><span class="standard-caption">Guests per room</span><br />{{
-                reservation.numberOfGuestsPerRoom
+                guestsPerRoomHelper.getTotalNumberOfGuests(reservation.guestsPerRoom)
               }}
             </v-col>
             <v-col><span class="standard-caption">Email</span><br />{{ profile?.email }}</v-col>
@@ -155,12 +214,20 @@ onMounted(() => {
           <v-row>
             <v-col>
               TOTAL RATE<br />
-              <strong>{{ reservation.totalRate.toFixed(2) }}</strong></v-col
+              <strong>{{
+                priceFormatter.formatPrice(reservationHelper.calculateTotalRate(reservation))
+              }}</strong></v-col
             >
             <v-col>
               AVERAGE RATE<br />
-              {{ reservation.averageRate.toFixed(2) }}</v-col
-            >
+              {{
+                priceFormatter.formatPrice(
+                  reservationHelper.getAverageRoomRate(
+                    reservation.selectedProtelAvailabilityGroups.map((s) => s.availabilities).flat()
+                  )
+                )
+              }}
+            </v-col>
             <v-col></v-col>
             <v-col></v-col>
             <v-col class="d-flex"> </v-col>
@@ -190,9 +257,13 @@ onMounted(() => {
         <v-row>
           <v-col>
             TOTAL<br />
-            <strong>{{
-              (reservation.totalRate + ticketHelper.getTotalPrice(reservation.tickets)).toFixed(2)
-            }}</strong></v-col
+            <strong>
+              {{
+                priceFormatter.formatPrice(
+                  reservationHelper.calculateTotalReservationPrice(reservation)
+                )
+              }}
+            </strong></v-col
           >
           <v-col> </v-col>
           <v-col></v-col>
@@ -211,10 +282,22 @@ onMounted(() => {
   <v-dialog v-model="ticketsCardDialog" fullscreen scrollable>
     <v-card>
       <TicketsCard
+        :arrival-date="reservation.arrivalDate"
+        :departure-date="reservation.departureDate"
+        :property-name="reservation.propertyName"
         v-model="reservation"
         @close="ticketsCardDialog = false"
         @add-tickets-to-reservation="addTicketsToReservation()"
       />
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="profileDialog" fullscreen scrollable>
+    <v-card>
+      <ProfileSearchCard
+        @close="profileDialog = false"
+        @profile-selected="(profile) => profileSelected(profile)"
+      ></ProfileSearchCard>
     </v-card>
   </v-dialog>
 </template>

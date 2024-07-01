@@ -2,3 +2,9 @@
   margin-right: 4rem;
   margin-bottom: 1rem;
 }
+
+.itinerary-reservation-fixed-div {
+  position: sticky !important;
+  top: 4rem;
+  z-index: 5;
+}

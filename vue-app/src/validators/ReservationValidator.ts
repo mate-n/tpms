@@ -1,14 +1,11 @@
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import { DateHelper } from '@/helpers/DateHelper'
 import type { IValidator } from '@/shared/interfaces/IValidator'
-import type { IEntityWithErrors } from '@/shared/interfaces/IEntityWithErrors'
+import { GuestsPerRoomHelper } from '@/helpers/GuestsPerRoomHelper'
 
 export class ReservationValidator implements IValidator {
-  validatePromise(objectToBeValidated: IEntityWithErrors): Promise<void> {
-    console.log(objectToBeValidated)
-    throw new Error('Method not implemented.')
-  }
   private dateHelper: DateHelper = new DateHelper()
+  private guestsPerRoomHelper: GuestsPerRoomHelper = new GuestsPerRoomHelper()
 
   validate(reservation: IReservation): void {
     reservation.errors = {}
@@ -19,14 +16,25 @@ export class ReservationValidator implements IValidator {
   }
 
   isGuestsPerRoomValid(reservation: IReservation): void {
-    if (reservation.numberOfGuestsPerRoom < 1) {
-      reservation.errors!['numberOfGuestsPerRoom'] = 'Guests per room cannot be less than 1'
+    const numberOfGuests = this.guestsPerRoomHelper.getTotalNumberOfGuests(
+      reservation.guestsPerRoom
+    )
+    if (numberOfGuests < 1) {
+      reservation.errors!['guestsPerRoom'] = 'Guests per room cannot be less than 1'
     }
   }
 
   isRoomsValid(reservation: IReservation): void {
     if (reservation.numberOfRooms < 1) {
       reservation.errors!['numberOfRooms'] = 'Rooms cannot be less than 1'
+    }
+
+    for (const availability of reservation.selectedProtelAvailabilityGroups
+      .map((s) => s.availabilities)
+      .flat()) {
+      if (availability.availability_count < reservation.numberOfRooms) {
+        reservation.errors!['numberOfRooms'] = 'Not enough rooms available for this room type'
+      }
     }
   }
 
@@ -50,6 +58,12 @@ export class ReservationValidator implements IValidator {
   isPropertyIDValid(reservation: IReservation): void {
     if (!reservation.propertyID) {
       reservation.errors!['propertyID'] = 'Property cannot be empty'
+    }
+  }
+
+  isProfileIDValid(reservation: IReservation): void {
+    if (!reservation.profileID) {
+      reservation.errors!['profileID'] = 'Profile cannot be empty'
     }
   }
 }

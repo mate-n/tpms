@@ -10,8 +10,7 @@ export class DateHelper {
   }
 
   getDateStringForInput(date: Date): string {
-    const dateISOString = date.toISOString()
-    return dateISOString.substring(0, dateISOString.indexOf('T'))
+    return this.dateFormatter.yyyydashmmdashdd(date)
   }
 
   getDateString(inputDate: Date): string {
@@ -36,5 +35,21 @@ export class DateHelper {
   getYYYYMMDDFromDate(date: Date): string {
     const dateISOString = date.toISOString()
     return dateISOString.substring(0, dateISOString.indexOf('T'))
+  }
+
+  getTimeFromDate(date: Date): string {
+    const dateISOString = date.toISOString()
+    return dateISOString.substring(dateISOString.indexOf('T') + 1, dateISOString.length - 1)
+  }
+
+  getTodayDate(): Date {
+    const date = new Date()
+    date.setHours(0, 0, 0, 0)
+    return date
+  }
+
+  getNameOfDay(date: Date): string {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    return days[date.getDay()]
   }
 }

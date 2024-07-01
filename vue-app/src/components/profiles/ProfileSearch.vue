@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ProfileService from '@/services/ProfileService'
-import { inject, onMounted, ref, watch, type Ref } from 'vue'
+import { inject, onMounted, ref, type Ref } from 'vue'
 import NewProfile from './NewProfile.vue'
 import EditProfile from './EditProfile.vue'
 import { GuestTypeService } from '@/services/GuestTypeService'
@@ -10,7 +10,6 @@ import { ProfileSearch } from '@/shared/classes/ProfileSearch'
 import type { IGuestType } from '@/shared/interfaces/IGuestType'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
-import { CloneHelper } from '@/helpers/CloneHelper'
 import type { AxiosStatic } from 'axios'
 const axios: AxiosStatic | undefined = inject('axios')
 const dateFormatter = new DateFormatter()
@@ -18,12 +17,10 @@ const profileService = new ProfileService(axios)
 const guestTypes: Ref<IGuestType[]> = ref([])
 const guestTypeService = new GuestTypeService(axios)
 const emit = defineEmits(['close', 'profileSelected'])
-const profileSearch: Ref<IProfileSearch> = ref(new ProfileSearch())
 const profileFromInputFields = ref<IProfile>(new Profile())
 const newProfileDialog = ref(false)
 const editProfileDialog = ref(false)
 const changeColumnsDialog = ref(false)
-const cloneHelper = new CloneHelper()
 const selectProfile = (profile: IProfile) => {
   emit('profileSelected', profile)
 }
@@ -36,9 +33,11 @@ const editProfile = (profile: IProfile) => {
 const profileToBeEdited = ref<IProfile>(new Profile())
 const foundProfiles: Ref<IProfile[]> = ref([])
 const search = () => {
-  profileService.search(profileSearch.value).then((response) => {
-    foundProfiles.value = response
-  })
+  if (profileSearch.value) {
+    profileService.findAll().then((response) => {
+      foundProfiles.value = response
+    })
+  }
 }
 
 const availableTableDataHeaders = ref([
@@ -80,21 +79,13 @@ onMounted(() => {
   guestTypeService.getAvailableGuestTypes().then((response) => {
     guestTypes.value = response
   })
+
+  if (profileSearch.value === undefined) {
+    profileSearch.value = new ProfileSearch()
+  }
 })
 
-const props = defineProps({
-  profileSearchInput: { type: Object as () => IProfileSearch, required: false }
-})
-
-watch(
-  props,
-  (newInput) => {
-    if (newInput.profileSearchInput) {
-      profileSearch.value = cloneHelper.clone(newInput.profileSearchInput)
-    }
-  },
-  { immediate: true }
-)
+const profileSearch = defineModel({ required: false, type: Object as () => IProfileSearch })
 </script>
 
 <style scoped>
@@ -104,42 +95,77 @@ watch(
 </style>
 
 <template>
-  <v-container class="bg-white" fluid>
+  <v-container class="bg-white" fluid v-if="profileSearch">
     <div class="d-flex">
-      <v-text-field
-        v-model="profileSearch.name"
-        label="Name"
-        variant="underlined"
-        class="me-3"
-      ></v-text-field>
-      <v-text-field
-        v-model="profileSearch.email"
-        label="Email"
-        variant="underlined"
-        class="me-3"
-      ></v-text-field>
-      <v-text-field
-        v-model="profileSearch.city"
-        label="City"
-        variant="underlined"
-        class="me-3"
-      ></v-text-field>
-      <v-text-field
-        v-model="profileSearch.profileID"
-        label="Profile ID"
-        variant="underlined"
-        class="me-3"
-      ></v-text-field>
-      <v-autocomplete
-        label="Type"
-        v-model="profileSearch.guestTypeID"
-        :items="guestTypes"
-        item-title="value"
-        item-value="id"
-        variant="underlined"
-        class="me-3"
-      ></v-autocomplete>
-      <v-btn class="primary-button" @click="search()"><v-icon>mdi-magnify</v-icon>Search</v-btn>
+      <div class="flex-grow-1 flex-shrink-0">
+        <div class="d-flex">
+          <v-text-field
+            v-model="profileSearch.lastName"
+            label="Last Name"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+          <v-text-field
+            v-model="profileSearch.firstName"
+            label="First Name"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+          <v-text-field
+            v-model="profileSearch.email"
+            label="Email"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+          <v-text-field
+            v-model="profileSearch.mobile"
+            label="Mobile"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+          <v-text-field
+            v-model="profileSearch.saIDNumber"
+            label="SA ID Number"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+        </div>
+        <div class="d-flex">
+          <v-text-field
+            v-model="profileSearch.passportNumber"
+            label="Passport Number"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+          <v-text-field
+            v-model="profileSearch.roomSeekerClientCode"
+            label="RoomSeeker Client Code"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+          <v-text-field
+            v-model="profileSearch.tpmsProfileID"
+            label="TPMS Profile ID"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+          <v-text-field
+            v-model="profileSearch.loyaltyMembershipNumber"
+            label="Loyalty Membership Number"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+          <v-text-field
+            v-model="profileSearch.wildcardMembershipNumber"
+            label="Wildcard Membership Number"
+            variant="underlined"
+            class="me-3"
+          ></v-text-field>
+        </div>
+      </div>
+      <div class="d-flex flex-grow-0 flex-shrink-1">
+        <v-btn class="primary-button" @click="search()"><v-icon>mdi-magnify</v-icon>Search</v-btn>
+      </div>
     </div>
   </v-container>
   <v-container fluid v-if="foundProfiles.length > 0" class="bg-white px-0">

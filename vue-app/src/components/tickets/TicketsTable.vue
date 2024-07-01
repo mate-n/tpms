@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
 import { TicketHelper } from '@/helpers/TicketHelper'
 import type { ITicket } from '@/shared/interfaces/ITicket'
 import { computed, onMounted, ref } from 'vue'
+const priceFormatter = new PriceFormatter()
 const dateFormatter = new DateFormatter()
 const ticketHelper = new TicketHelper()
 const props = defineProps({
@@ -40,12 +42,11 @@ onMounted(() => {
   <v-table class="tickets-table border-0" density="compact">
     <thead class="border-0">
       <tr>
-        <th>Amount</th>
-        <th>Item</th>
         <th v-if="showDate">Date</th>
-
-        <th>Price</th>
-        <th>Sub-Total</th>
+        <th>QTY</th>
+        <th>Item</th>
+        <th>Unit Price</th>
+        <th>Total</th>
         <th v-if="showButtons"></th>
       </tr>
     </thead>
@@ -53,12 +54,15 @@ onMounted(() => {
     <tbody class="border-0">
       <template v-if="!collsapsed">
         <tr v-for="group in ticketsGrouped" :key="group[1][0].TicketId">
+          <td v-if="showDate">
+            {{ dateFormatter.dddotmmdotyyyy(group[1][0].Date) }}
+          </td>
           <td>{{ group[1].length }} x</td>
           <td>{{ group[1][0].Name }}</td>
-          <td v-if="showDate">{{ dateFormatter.dddotmmdotyyyy(group[1][0].Date) }}</td>
+
           <td>{{ group[1][0].Price }}</td>
           <td>
-            {{ (group[1].length * group[1][0].Price).toFixed(2) }}
+            {{ priceFormatter.formatPrice(group[1].length * group[1][0].Price) }}
           </td>
           <td v-if="showButtons">
             <div class="d-flex justify-end">
@@ -83,7 +87,7 @@ onMounted(() => {
         <td v-if="showDate"></td>
         <td class="font-weight-bold">Total:</td>
         <td class="font-weight-bold border-s">
-          {{ ticketHelper.getTotalPrice(tickets).toFixed(2) }}
+          {{ priceFormatter.formatPrice(ticketHelper.getTotalPrice(tickets)) }}
         </td>
         <td v-if="showButtons"></td>
       </tr>

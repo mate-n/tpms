@@ -1,200 +1,42 @@
 <script setup lang="ts">
-import { DateHelper } from '@/helpers/DateHelper'
-import { RoomService } from '@/services/RoomService'
 import type { IReservation } from '@/shared/interfaces/IReservation'
-import type { IRoom } from '@/shared/interfaces/IRoom'
-import type { AxiosStatic } from 'axios'
-import { ref, computed, type Ref, onMounted, inject } from 'vue'
 import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
+import StayDetailsForm from './StayDetailsForm.vue'
+import RoomDetailsForm from './RoomDetailsForm.vue'
+import RateDetailsForm from './RateDetailsForm.vue'
 
-const axios: AxiosStatic | undefined = inject('axios')
-const roomService = new RoomService(axios)
 const reservationToBeEdited = defineModel({ required: true, type: Object as () => IReservation })
-const roomsInDropdown: Ref<IRoom[]> = ref([])
-
-const dateHelper = new DateHelper()
-
-const arrivalDateMenu = ref(false)
-const departureDateMenu = ref(false)
-
-const arrivalDateString = computed(() => {
-  return dateHelper.getDateString(reservationToBeEdited.value.arrivalDate)
-})
-
-const departureDateString = computed(() => {
-  return dateHelper.getDateString(reservationToBeEdited.value.departureDate)
-})
-const arrivalDateMin = computed(() => {
-  return dateHelper.getDateString(new Date())
-})
-
-const numberOfNights = computed(() => {
-  return dateHelper.calculateNightsBetweenDates(
-    reservationToBeEdited.value.arrivalDate,
-    reservationToBeEdited.value.departureDate
-  )
-})
-
-const departureDateMin = computed(() => {
-  return dateHelper.getDateString(reservationToBeEdited.value.arrivalDate)
-})
-
-onMounted(() => {
-  roomService.getAll().then((response) => {
-    roomsInDropdown.value = response
-  })
-})
 </script>
 
 <template>
   <v-container fluid class="bg-lightgray pt-0">
     <v-row>
       <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Stay Details</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container>
-            <v-row>
-              <v-col>
-                <v-menu v-model="arrivalDateMenu" :close-on-content-click="false">
-                  <template v-slot:activator="{ props }">
-                    <v-text-field
-                      v-model="arrivalDateString"
-                      label="Arrival"
-                      append-inner-icon="mdi-calendar"
-                      variant="underlined"
-                      v-bind="props"
-                    ></v-text-field>
-                  </template>
-                  <v-card>
-                    <v-date-picker
-                      :hide-header="true"
-                      v-model="reservationToBeEdited.arrivalDate"
-                      :min="arrivalDateMin"
-                    >
-                    </v-date-picker>
-                  </v-card>
-                </v-menu>
-              </v-col>
-              <v-col>
-                <v-menu v-model="arrivalDateMenu" :close-on-content-click="false">
-                  <template v-slot:activator="{ props }">
-                    <v-text-field
-                      label="Optional Date"
-                      append-inner-icon="mdi-calendar"
-                      variant="underlined"
-                      v-bind="props"
-                    ></v-text-field>
-                  </template>
-                  <v-card>
-                    <v-date-picker
-                      :hide-header="true"
-                      v-model="reservationToBeEdited.arrivalDate"
-                      :min="arrivalDateMin"
-                    >
-                    </v-date-picker>
-                  </v-card>
-                </v-menu>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-text-field
-                  label="Nights"
-                  :model-value="numberOfNights"
-                  variant="underlined"
-                  type="number"
-                  :error-messages="
-                    reservationToBeEdited.errors && reservationToBeEdited.errors['nights']
-                  "
-                  :readonly="true"
-                ></v-text-field>
-                <v-menu v-model="departureDateMenu" :close-on-content-click="false">
-                  <template v-slot:activator="{ props }">
-                    <v-text-field
-                      v-model="departureDateString"
-                      label="Departure"
-                      append-inner-icon="mdi-calendar"
-                      variant="underlined"
-                      v-bind="props"
-                    ></v-text-field>
-                  </template>
-                  <v-card>
-                    <v-date-picker
-                      :hide-header="true"
-                      v-model="reservationToBeEdited.departureDate"
-                      :min="departureDateMin"
-                    ></v-date-picker>
-                  </v-card>
-                </v-menu>
-              </v-col>
-              <v-col>
-                <v-text-field
-                  label="Guests per room"
-                  v-model="reservationToBeEdited.numberOfGuestsPerRoom"
-                  :error-messages="
-                    reservationToBeEdited.errors &&
-                    reservationToBeEdited.errors['numberOfGuestsPerRoom']
-                  "
-                  variant="underlined"
-                  type="number"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-        </div>
+        <StayDetailsForm v-model="reservationToBeEdited"></StayDetailsForm>
       </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <RoomDetailsForm v-model="reservationToBeEdited"></RoomDetailsForm>
+      </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <RateDetailsForm v-model="reservationToBeEdited"></RateDetailsForm>
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col class="pr-0 profiles-card-column">
         <div class="profiles-card">
           <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Room Details</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container>
-            <v-autocomplete
-              label="Room Type"
-              v-model="reservationToBeEdited.roomID"
-              :items="roomsInDropdown"
-              variant="underlined"
-              item-title="name"
-              item-value="id"
-            ></v-autocomplete>
-
-            <v-autocomplete
-              label="Room To Change"
-              v-model="reservationToBeEdited.roomID"
-              :items="roomsInDropdown"
-              variant="underlined"
-              item-title="name"
-              item-value="id"
-            ></v-autocomplete>
-          </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Rate Details</span></v-toolbar-title>
+            <v-toolbar-title><span class="text-primary">Notes</span></v-toolbar-title>
+            <v-btn class="text-gray" icon> <v-icon>mdi-calendar-text-outline</v-icon></v-btn>
           </v-toolbar>
           <v-divider class="profiles-card-divider"></v-divider>
           <v-container> </v-container>
         </div>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Segmentation</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
+        <div class="standard-card">
           <v-toolbar class="profiles-card-toolbar">
             <v-toolbar-title><span class="text-primary">Linked Profiles</span></v-toolbar-title>
+            <v-btn class="text-gray" icon> <v-icon>mdi-account-multiple-outline</v-icon></v-btn>
           </v-toolbar>
           <v-divider class="profiles-card-divider"></v-divider>
           <v-container>
@@ -245,51 +87,37 @@ onMounted(() => {
           </v-container>
         </div>
       </v-col>
-    </v-row>
-    <v-row>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Traces</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Notes</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">User Defined</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
-          <v-toolbar class="profiles-card-toolbar">
-            <v-toolbar-title><span class="text-primary">Attachments</span></v-toolbar-title>
-          </v-toolbar>
-          <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
-        </div>
-      </v-col>
-      <v-col class="pr-0 profiles-card-column">
-        <div class="profiles-card">
+      <v-col class="pr-0 standard-card-column">
+        <div class="standard-card">
           <v-toolbar class="profiles-card-toolbar">
             <v-toolbar-title><span class="text-primary">Billing</span></v-toolbar-title>
+            <v-btn class="text-gray" icon> <v-icon>mdi-currency-usd</v-icon></v-btn>
           </v-toolbar>
+
           <v-divider class="profiles-card-divider"></v-divider>
-          <v-container> </v-container>
+          <v-container class="font-size-rem-10">
+            <v-row class="text-gray">
+              <v-col> PAYMENT:</v-col>
+              <v-col class="d-flex justify-end">0.000 </v-col>
+            </v-row>
+            <v-row class="text-gray">
+              <v-col> CHARGES:</v-col>
+              <v-col class="d-flex justify-end">0.000 </v-col>
+            </v-row>
+            <v-row class="text-gray">
+              <v-col> BALANCE:</v-col>
+              <v-col class="d-flex justify-end">0.000 </v-col>
+            </v-row>
+            <v-divider class="my-2"></v-divider>
+            <v-row class="">
+              <v-col> FORECAST:</v-col>
+              <v-col class="d-flex justify-end">166,866.750</v-col>
+            </v-row>
+            <v-row class="text-primary">
+              <v-col> PRE AUTH. DUE:</v-col>
+              <v-col class="d-flex justify-end">166,866.750</v-col>
+            </v-row>
+          </v-container>
         </div>
       </v-col>
     </v-row>

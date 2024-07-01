@@ -1,3 +1,4 @@
+name: tpms-frontend-development
 services:
   vue:
     build:
@@ -6,12 +7,31 @@ services:
       target: development-stage
       args:
         VITE_API_BASE_URL: "${API_BASE_URL}"
+        VITE_API_BASE_URL2: "${API_BASE_URL2}"
     volumes:
       - ../../vue-app/src:/app/src
     env_file:
       - .env
     ports:
       - "${PORT_FRONTEND}:8080"
+  backend-middleware-mongodb:
+    image: "mongo"
+    volumes:
+      - mongodata:/data/db
+    env_file:
+      - .env
+  backend-middleware:
+    build:
+      context: ../../backend-middleware
+      dockerfile: Dockerfile
+    volumes:
+      - ../../backend-middleware/src:/app/src
+    env_file:
+      - .env
+    ports:
+      - "${PORT_MIDDLEWARE}:8080"
+    depends_on:
+      - backend-middleware-mongodb
   nest:
     build:
       context: ../../nest-app
@@ -30,3 +50,6 @@ services:
     profiles:
       - development
     user: "${UID}:${GID}"
+
+volumes:
+  mongodata:

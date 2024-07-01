@@ -21,7 +21,7 @@ onMounted(() => {
     availableRates.value = response
   })
 
-  profileService.search({}).then((response) => {
+  profileService.findAll().then((response) => {
     companies.value = response
   })
 })
@@ -35,14 +35,16 @@ const profileSelected = (profile: IProfile) => {
 const companies: Ref<IProfile[]> = ref([])
 watch(profileToBeEdited, () => {}, { deep: true })
 
-const companyUpdateSearch = (input: any) => {
+const companyUpdateSearch = () => {
   companySearchLoading.value = true
+  /*
   const profileSearch: IProfileSearch = {
     name: input,
     guestTypeID: 3
   }
+    */
 
-  profileService.search(profileSearch).then((response) => {
+  profileService.findAll().then((response) => {
     companySearchLoading.value = false
     companies.value = response
   })
@@ -95,11 +97,24 @@ const profileSearchInput: IProfileSearch = {
         variant="underlined"
       ></v-text-field>
     </v-col>
+    <v-col> </v-col>
+  </v-row>
+
+  <v-row>
     <v-col>
       <v-text-field
-        v-model="profileToBeEdited.passport"
-        label="Passport Number"
+        label="Roomseker ID"
+        v-model="profileToBeEdited.roomSeekerClientCode"
         variant="underlined"
+        type="number"
+      ></v-text-field>
+    </v-col>
+    <v-col>
+      <v-text-field
+        v-model="profileToBeEdited.tpmsProfileID"
+        label="TPMS-Profile ID"
+        variant="underlined"
+        type="number"
       ></v-text-field>
     </v-col>
   </v-row>

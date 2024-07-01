@@ -4,13 +4,14 @@ import type { Ref } from 'vue'
 import { inject, onMounted, ref } from 'vue'
 import { ItineraryReservationService } from '@/services/reservations/ItineraryReservationService'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
-import EditItineraryReservation from '@/components/itinerary-reservations/EditItineraryReservation.vue'
+import EditItineraryReservationCard from '@/components/reservations/EditItineraryReservationCard.vue'
 const axios: AxiosStatic | undefined = inject('axios')
 const itineraryReservationService = new ItineraryReservationService(axios)
 const props = defineProps({
   itineraryReservationId: String
 })
 const itineraryReservation: Ref<IItineraryReservation | undefined> = ref(undefined)
+import router from '@/router'
 
 onMounted(() => {
   if (props.itineraryReservationId) {
@@ -19,11 +20,16 @@ onMounted(() => {
     })
   }
 })
+
+const goToItineraryReservations = () => {
+  router.push('/itinerary-reservations')
+}
 </script>
 
 <template>
-  <EditItineraryReservation
+  <EditItineraryReservationCard
     v-if="itineraryReservation"
+    @close="goToItineraryReservations"
     :itinerary-reservation-input="itineraryReservation"
-  ></EditItineraryReservation>
+  ></EditItineraryReservationCard>
 </template>
