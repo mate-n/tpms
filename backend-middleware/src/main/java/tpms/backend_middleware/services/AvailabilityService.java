@@ -16,33 +16,30 @@ import tpms.backend_middleware.classes.AvailabilityPostBody;
 import tpms.backend_middleware.models.Availability;
 
 public class AvailabilityService {
-    public ArrayList<Availability> getAvailabilities(AvailabilityPostBody availabilityPostBody) throws IOException {
-        System.out.println("get availabilities");
+        public ArrayList<Availability> getAvailabilities(AvailabilityPostBody availabilityPostBody) throws IOException {
+                ObjectMapper objectMapper = new ObjectMapper();
+                String availabilityPostBodyAsString = objectMapper.writeValueAsString(availabilityPostBody);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String availabilityPostBodyAsString = objectMapper.writeValueAsString(availabilityPostBody);
-        System.out.println(availabilityPostBodyAsString);
+                RequestBody body = RequestBody.create(availabilityPostBodyAsString,
+                                MediaType.parse("application/json"));
 
-        RequestBody body = RequestBody.create(availabilityPostBodyAsString, MediaType.parse("application/json"));
+                OkHttpClient client = new OkHttpClient().newBuilder()
+                                .build();
+                Request request = new Request.Builder()
+                                .url("https://ankerws.ankerdata.co.za/availability/index.php?getavailability")
+                                .addHeader("Authorization", "Bearer 1234567890")
+                                .post(body)
+                                .build();
 
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        Request request = new Request.Builder()
-                .url("https://ankerws.ankerdata.co.za/availability/index.php?getavailability")
-                .addHeader("Authorization", "Bearer 1234567890")
-                .post(body)
-                .build();
+                Response response = client.newCall(request).execute();
+                var reponseString = response.body().string();
 
-        Response response = client.newCall(request).execute();
-        var reponseString = response.body().string();
+                JsonNode jsonNode = objectMapper.readTree(reponseString);
+                String availabilitesString = jsonNode.get("data").get("availability_data").toString();
 
-        JsonNode jsonNode = objectMapper.readTree(reponseString);
-        String availabilitesString = jsonNode.get("data").get("availability_data").toString();
-
-        ArrayList<Availability> availabilities = objectMapper.readValue(availabilitesString,
-                new TypeReference<ArrayList<Availability>>() {
-                });
-
-        return availabilities;
-    }
+                ArrayList<Availability> availabilities = objectMapper.readValue(availabilitesString,
+                                new TypeReference<ArrayList<Availability>>() {
+                                });
+                return availabilities;
+        }
 }
