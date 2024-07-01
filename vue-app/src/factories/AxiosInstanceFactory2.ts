@@ -6,7 +6,7 @@ export class AxiosInstanceFactory2 {
       const newAxios = axios.create({
         baseURL: import.meta.env.VITE_API_BASE_URL2
       })
-      newAxios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+      newAxios.defaults.headers.post['Content-Type'] = 'application/json'
       return newAxios
     } else {
       return axiosInstance
