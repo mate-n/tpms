@@ -12,7 +12,7 @@ import tpms.backend_middleware.models.Availability;
 import tpms.backend_middleware.services.AvailabilityService;
 
 @RestController()
-@RequestMapping(path = "/api/v1/availabilities", produces = "application/json")
+@RequestMapping(path = "/api/v1/availabilities", produces = "application/json", consumes = "application/json")
 @CrossOrigin("*")
 public class AvailabilityController {
 
