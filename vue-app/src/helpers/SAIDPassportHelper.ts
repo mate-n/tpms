@@ -4,6 +4,6 @@ export class SAIDPassportHelper {
     const mm = (dateOfBirth.getMonth() + 1).toString().padStart(2, '0')
     const dd = dateOfBirth.getDate().toString().padStart(2, '0')
     const digitafterFirst6Digits = 5
-    return parseInt(yy + mm + dd + digitafterFirst6Digits)
+    return yy + mm + dd + digitafterFirst6Digits
   }
 }
