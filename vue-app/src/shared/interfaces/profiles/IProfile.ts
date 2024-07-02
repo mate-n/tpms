@@ -23,7 +23,7 @@ export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
   dateofbirth: Date | undefined
   gender: string
   roomseekerclientcode: string
-  saId: string
+  sAId: string
   passportno: string
   countryofbirth: string
   wildcardnumber: string
@@ -46,8 +46,6 @@ export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
   isPasserby: boolean
   department: string
   iataCode: string
-  saIDNumber: number | undefined
-  passportNumber: number | undefined
   tpmsProfileID: number | undefined
   loyaltyMembershipNumber: number | undefined
   wildcardMembershipNumber: number | undefined
