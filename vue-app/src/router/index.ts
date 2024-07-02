@@ -13,8 +13,6 @@ import LoginView from '@/views/LoginView.vue'
 import type { AxiosStatic } from 'axios'
 import { inject } from 'vue'
 import AuthenticationService from '@/services/AuthenticationService'
-const axios: AxiosStatic | undefined = inject('axios')
-const authentificationService = new AuthenticationService(axios)
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -90,11 +88,14 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
-  const canAccess = await canUserAccess()
+  const axios: AxiosStatic | undefined = inject('axios')
+  const authentificationService = new AuthenticationService(axios)
+
+  const canAccess = await canUserAccess(authentificationService)
   if (to.name !== 'login' && !canAccess) return '/login'
 })
 
-async function canUserAccess() {
+async function canUserAccess(authentificationService: AuthenticationService) {
   try {
     const response = await authentificationService.isLoggedIn()
     return response
