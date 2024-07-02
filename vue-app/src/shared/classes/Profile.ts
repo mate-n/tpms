@@ -23,7 +23,7 @@ export class Profile implements IProfile {
   dateofbirth: Date | undefined
   gender: string
   roomseekerclientcode: string
-  saId: string
+  sAId: string
   passportno: string
   countryofbirth: string
   wildcardnumber: string
@@ -47,8 +47,6 @@ export class Profile implements IProfile {
   isPasserby: boolean
   department: string
   iataCode: string
-  saIDNumber: number | undefined
-  passportNumber: number | undefined
   roomSeekerClientCode: string
   tpmsProfileID: number | undefined
   loyaltyMembershipNumber: number | undefined
@@ -119,7 +117,7 @@ export class Profile implements IProfile {
     this.country = ''
     this.gender = ''
     this.roomseekerclientcode = ''
-    this.saId = ''
+    this.sAId = ''
     this.passportno = ''
     this.countryofbirth = ''
     this.wildcardnumber = ''
