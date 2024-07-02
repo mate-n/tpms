@@ -174,9 +174,7 @@ watch(apiSwitch, (newValue) => {
             <v-list-item class="mt-2">
               <v-list-item-title>API Switcher</v-list-item-title>
               <v-list-item-subtitle>Switch between Real and Fake API</v-list-item-subtitle>
-              <v-list-item-content>
-                <v-switch v-model="apiSwitch" color="primary" :label="apiSwitchLabel"></v-switch>
-              </v-list-item-content>
+              <v-switch v-model="apiSwitch" color="primary" :label="apiSwitchLabel"></v-switch>
             </v-list-item>
           </v-expansion-panel-text>
         </v-expansion-panel>
