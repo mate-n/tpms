@@ -1,9 +1,9 @@
 import { type AxiosStatic } from 'axios'
 import { AxiosInstanceFactory } from '../factories/AxiosInstanceFactory'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
 import type { IProfilePreferencesPatchBody } from '@/shared/interfaces/profiles/IProfilePreferencesPatchBody'
 import type { IService } from '@/interfaces/IService'
+import type { IProfileLookUpPostBody } from '@/shared/interfaces/profiles/IProfileLookUpPostBody'
 
 class ProfileService implements IService {
   axiosInstance: AxiosStatic
@@ -76,10 +76,10 @@ class ProfileService implements IService {
     })
   }
 
-  search(profilePostBody: IProfileSearch) {
+  search(profileLookUpPostBody: IProfileLookUpPostBody) {
     return new Promise<IProfile[]>((resolve, reject) => {
       this.axiosInstance
-        .post('v1/profiles/search', profilePostBody)
+        .post('v1/profiles/search', profileLookUpPostBody)
         .then((response: any) => {
           resolve(response.data)
         })
