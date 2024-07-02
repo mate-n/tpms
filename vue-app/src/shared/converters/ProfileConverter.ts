@@ -15,7 +15,6 @@ export class ProfileConverter {
     profile.roomseekerclientcode = protelProfile.roomseekerclientcode
     profile.saIDNumber = protelProfile.SAId
     profile.passportNumber = protelProfile.passportno
-    profile.birthCountry = protelProfile.countryofbirth
     profile.wildcardMembershipNumber = protelProfile.wildcardnumber
     profile.loyaltyMembershipNumber = protelProfile.loyaltynumber
     return profile
