@@ -4,14 +4,14 @@ import NewProfile from '@/components/profiles/NewProfile.vue'
 import { ref, type Ref } from 'vue'
 import { Profile } from '@/shared/classes/Profile'
 import { ProfileSearchHelper } from '@/helpers/ProfileSearchHelper'
-import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
-import { ProfileSearch as ProfileSearchClass } from '@/shared/classes/ProfileSearch'
+import type { IProfileLookUpPostBody } from '@/shared/interfaces/profiles/IProfileLookUpPostBody'
+import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
 const profileSearchHelper = new ProfileSearchHelper()
 const newProfileDialog = ref(false)
 const profileForNewProfile = ref(new Profile())
-const profileSearch: Ref<IProfileSearch> = ref(new ProfileSearchClass())
+const profileLookUpPostBody: Ref<IProfileLookUpPostBody> = ref(new ProfileLookUpPostBody())
 const clickOnAdd = () => {
-  profileForNewProfile.value = profileSearchHelper.convertToProfile(profileSearch.value)
+  profileForNewProfile.value = profileSearchHelper.convertToProfile(profileLookUpPostBody.value)
   newProfileDialog.value = true
 }
 </script>
@@ -22,7 +22,7 @@ const clickOnAdd = () => {
       ><v-icon>mdi-plus</v-icon>Add</v-btn
     >
   </v-toolbar>
-  <ProfileSearch @close="newProfileDialog = false" v-model="profileSearch"></ProfileSearch>
+  <ProfileSearch @close="newProfileDialog = false" v-model="profileLookUpPostBody"></ProfileSearch>
   <v-dialog v-model="newProfileDialog" fullscreen scrollable>
     <v-card>
       <NewProfile
