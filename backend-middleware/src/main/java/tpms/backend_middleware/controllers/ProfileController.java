@@ -1,18 +1,23 @@
 package tpms.backend_middleware.controllers;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import tpms.backend_middleware.classes.ProfileLookUpPostBody;
 import tpms.backend_middleware.models.Profile;
 import tpms.backend_middleware.repositories.ProfileRepository;
+import tpms.backend_middleware.services.ProfileService;
 
 @RestController()
-@RequestMapping(path = "/api/profiles", produces = "application/json")
+@RequestMapping(path = "api/v1/profiles", produces = "application/json", consumes = "application/json")
 @CrossOrigin("*")
 public class ProfileController {
     private final ProfileRepository repository;
@@ -22,9 +27,11 @@ public class ProfileController {
         this.repository = repository;
     }
 
-    @GetMapping
-    public Iterable<Profile> index() {
-        return repository.findAll();
+    @PostMapping(path = "/lookup")
+    public Iterable<Profile> lookup(@RequestBody ProfileLookUpPostBody profileLookUpPostBody) throws IOException {
+        ProfileService profileService = new ProfileService();
+        System.out.println(profileLookUpPostBody);
+        return profileService.lookup(profileLookUpPostBody);
     }
 
     @GetMapping(path = "/createnew")
