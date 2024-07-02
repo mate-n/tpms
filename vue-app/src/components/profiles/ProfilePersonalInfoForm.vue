@@ -10,6 +10,9 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
 import DateSelecter from '../dates/DateSelecter.vue'
+import { ProfileValidator } from '@/shared/validators/ProfileValidator'
+import { SAIDPassportHelper } from '@/helpers/SAIDPassportHelper'
+const profileValidator = new ProfileValidator()
 const axios: AxiosStatic | undefined = inject('axios')
 const genderService = new GenderService(axios)
 const nationalityService = new NationalityService(axios)
@@ -17,10 +20,15 @@ const countryService = new CountryService(axios)
 const availableGenders = ref<IGender[]>([])
 const availableNationalities = ref<INationality[]>([])
 const availableCountries = ref<ICountry[]>([])
+const sAIDPassportHelper = new SAIDPassportHelper()
 const profileToBeEdited = defineModel({
   required: true,
   type: Object as () => IProfile
 })
+
+const validate = () => {
+  profileValidator.validate(profileToBeEdited.value)
+}
 
 onMounted(() => {
   genderService.getAvailableGenders().then((response) => {
@@ -35,25 +43,28 @@ onMounted(() => {
     availableCountries.value = response
   })
 })
+
+const dateofbirthUpdated = () => {
+  generateStartOfSAIDNumber()
+  validate()
+}
+
+const generateStartOfSAIDNumber = () => {
+  if (profileToBeEdited.value.dateofbirth) {
+    profileToBeEdited.value.saIDNumber = sAIDPassportHelper.generateStartOfSAIDNumber(
+      profileToBeEdited.value.dateofbirth
+    )
+  }
+}
 </script>
 
 <template>
-  <v-row>
-    <v-col>
-      <DateSelecter
-        v-model="profileToBeEdited.dateofbirth"
-        label="Date of Birth"
-        :errors="profileToBeEdited.errors && profileToBeEdited.errors['dateofbirth']"
-      ></DateSelecter>
-    </v-col>
-    <v-col>
-      <v-text-field
-        v-model="profileToBeEdited.birthPlace"
-        label="Place of Birth"
-        variant="underlined"
-      ></v-text-field>
-    </v-col>
-  </v-row>
+  <DateSelecter
+    v-model="profileToBeEdited.dateofbirth"
+    :error-message="profileToBeEdited.errors && profileToBeEdited.errors['dateofbirth']"
+    label="Date of Birth"
+    @update:model-value="dateofbirthUpdated"
+  ></DateSelecter>
 
   <v-select
     v-model="profileToBeEdited.gender"
@@ -64,20 +75,15 @@ onMounted(() => {
     item-title="value"
   ></v-select>
   <v-select
-    v-model="profileToBeEdited.nationality"
+    v-model="profileToBeEdited.countryofbirth"
     label="Nationality"
     variant="underlined"
-    :v-model="profileToBeEdited.nationality"
+    :v-model="profileToBeEdited.countryofbirth"
+    :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['countryofbirth']"
+    @update:modelValue="validate()"
     :items="availableNationalities"
     item-title="value"
-  ></v-select>
-  <v-select
-    v-model="profileToBeEdited.birthCountry"
-    label="Country of Birth"
-    variant="underlined"
-    :v-model="profileToBeEdited.birthCountry"
-    :items="availableCountries"
-    item-title="value"
+    item-value="id"
   ></v-select>
 
   <v-row>
@@ -86,6 +92,7 @@ onMounted(() => {
         label="SA ID Number"
         v-model="profileToBeEdited.saIDNumber"
         variant="underlined"
+        :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['saIDNumber']"
         type="number"
       ></v-text-field>
     </v-col>
