@@ -1,14 +1,12 @@
 import { Profile } from '@/shared/classes/Profile'
 import { ProfileCommunication } from '@/shared/classes/ProfileCommunication'
-import { ProfileMembershipCard } from '@/shared/classes/ProfileMembership'
-import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
 
 export class ProfileSearchHelper {
-  convertToProfile(profileSearch: IProfileSearch): IProfile {
+  convertToProfile(profileSearch: IProfileSearch): Profile {
     const profile = new Profile()
-    if (profileSearch.lastName) profile.lastName = profileSearch.lastName
-    if (profileSearch.firstName) profile.firstName = profileSearch.firstName
+    if (profileSearch.surname) profile.surname = profileSearch.surname
+    if (profileSearch.name) profile.name = profileSearch.name
     if (profileSearch.email) {
       const communication = new ProfileCommunication()
       communication.communicationTypeID = 147

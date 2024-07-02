@@ -7,13 +7,33 @@ export class Profile implements IProfile {
   id?: number
   localID?: string
 
-  //General
+  //Ankerdata
+  profileID: number
+  title: string
+  initial: string
+  surname: string
   name: string
-  firstName: string
-  lastName: string
+  email: string
+  telephone: string
+  mobile: string
+  address: string
+  city: string
+  postalCode: string
+  country: string
+  dateofbirth: Date | undefined
+  gender: string
+  roomseekerclientcode: string
+  saId: string
+  passportno: string
+  countryofbirth: string
+  wildcardnumber: string
+  loyaltynumber: string
+  marketing: string
+  reservationsms: string
+
+  //General
   middleName: string
   postNominalTitle: string
-  email: string
   language: string
   phone: string
   deibitorAccount: string
@@ -44,8 +64,6 @@ export class Profile implements IProfile {
   //Personal Info
   birthPlace: string
   birthCountry: string
-  birthday: Date
-  gender: string
   nationality: string
 
   //Additional Info
@@ -88,10 +106,31 @@ export class Profile implements IProfile {
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
 
+    //Ankerdata
+    this.profileID = 0
+    this.title = ''
+    this.initial = ''
+    this.surname = ''
+    this.name = ''
+    this.email = ''
+    this.telephone = ''
+    this.mobile = ''
+    this.address = ''
+    this.city = ''
+    this.postalCode = ''
+    this.country = ''
+    this.gender = ''
+    this.roomseekerclientcode = ''
+    this.saId = ''
+    this.passportno = ''
+    this.countryofbirth = ''
+    this.wildcardnumber = ''
+    this.loyaltynumber = ''
+    this.marketing = ''
+    this.reservationsms = ''
+
     //General
     this.name = ''
-    this.firstName = ''
-    this.lastName = ''
     this.middleName = ''
     this.postNominalTitle = ''
     this.email = ''
@@ -120,8 +159,6 @@ export class Profile implements IProfile {
     //Personal Info
     this.birthPlace = ''
     this.birthCountry = ''
-    this.birthday = new Date()
-    this.gender = ''
     this.nationality = ''
 
     //Additional Info

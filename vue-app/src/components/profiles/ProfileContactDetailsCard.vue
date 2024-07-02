@@ -35,6 +35,20 @@ const getCommunicationMethodValue = (communicationMethodID: number | undefined) 
     </v-toolbar>
     <v-divider class="profiles-card-divider"></v-divider>
     <v-container>
+      <v-text-field
+        v-model="profile.email"
+        label="e-Mail"
+        variant="underlined"
+        class="me-3 required-input"
+        :error-messages="profile.errors && profile.errors['email']"
+      ></v-text-field>
+      <v-text-field
+        v-model="profile.email"
+        label="Telephone"
+        variant="underlined"
+        class="me-3 required-input"
+        :error-messages="profile.errors && profile.errors['telephone']"
+      ></v-text-field>
       <div v-for="profileCommunication of profile.communications" :key="profileCommunication.id">
         <div class="mb-2">
           <span class="profile-card-caption">

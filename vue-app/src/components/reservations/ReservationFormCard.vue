@@ -332,11 +332,11 @@ watch(
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">Last Name</span> <br />
-                {{ guestProfile?.lastName }}
+                {{ guestProfile?.surname }}
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">First Name</span> <br />
-                {{ guestProfile?.lastName }}
+                {{ guestProfile?.surname }}
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">Email</span> <br />
@@ -344,7 +344,7 @@ watch(
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">Phone</span> <br />
-                {{ guestProfile?.phone }}
+                {{ guestProfile?.telephone }}
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">City</span> <br />

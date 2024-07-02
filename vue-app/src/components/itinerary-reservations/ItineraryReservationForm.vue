@@ -66,14 +66,15 @@ const selectedReservation = computed(() => {
   <v-toolbar class="bg-primary">
     <v-toolbar-title
       ><v-icon>mdi-account-circle-outline</v-icon>
-      {{ profileAssociatedWithItineraryReservation.firstName }}
-      {{ profileAssociatedWithItineraryReservation.lastName }}</v-toolbar-title
+      {{ profileAssociatedWithItineraryReservation.name }}
+      {{ profileAssociatedWithItineraryReservation.surname }}</v-toolbar-title
     >
   </v-toolbar>
   <ProfileGeneralForm v-model="profileAssociatedWithItineraryReservation"></ProfileGeneralForm>
   <v-toolbar class="bg-lightgray">
     <div class="h-100 d-flex px-5 align-center me-auto font-size-rem-14">
-      Itinerary Reservations <v-icon class="mx-3" size="x-small">mdi-arrow-right</v-icon> #{{
+      Itinerary Reservations
+      <v-icon class="mx-3" size="x-small">mdi-arrow-right</v-icon> #{{
         itineraryReservationToBeEdited.id
       }}
     </div>

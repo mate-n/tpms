@@ -90,8 +90,8 @@ const reservationsCardDialog = ref(false)
   <v-toolbar class="bg-primary">
     <v-toolbar-title
       ><v-icon>mdi-account-circle-outline</v-icon>
-      {{ profileAssociatedWithReservation.firstName }}
-      {{ profileAssociatedWithReservation.lastName }}</v-toolbar-title
+      {{ profileAssociatedWithReservation.name }}
+      {{ profileAssociatedWithReservation.surname }}</v-toolbar-title
     >
   </v-toolbar>
   <ProfileGeneralForm

@@ -37,12 +37,6 @@ watch(profileToBeEdited, () => {}, { deep: true })
 
 const companyUpdateSearch = () => {
   companySearchLoading.value = true
-  /*
-  const profileSearch: IProfileSearch = {
-    name: input,
-    guestTypeID: 3
-  }
-    */
 
   profileService.findAll().then((response) => {
     companySearchLoading.value = false
@@ -104,7 +98,7 @@ const profileSearchInput: IProfileSearch = {
     <v-col>
       <v-text-field
         label="Roomseker ID"
-        v-model="profileToBeEdited.roomSeekerClientCode"
+        v-model="profileToBeEdited.roomseekerclientcode"
         variant="underlined"
         type="number"
       ></v-text-field>

@@ -158,7 +158,7 @@ watch(
             hint="Last Name | First Name"
             v-model="reservation.profileID"
             :items="profilesInDropdown"
-            :item-title="(profile: IProfile) => `${profile.lastName}, ${profile.firstName}`"
+            :item-title="(profile: IProfile) => `${profile.surname}, ${profile.name}`"
             :item-value="(profile: IProfile) => profile.id"
             @update:model-value="emitChange()"
           ></v-autocomplete>
@@ -181,7 +181,7 @@ watch(
           <v-row>
             <v-col
               ><span class="standard-caption">Last Name</span><br />
-              {{ profile?.lastName }}</v-col
+              {{ profile?.surname }}</v-col
             >
             <v-col>
               <span class="standard-caption">Arrival</span><br />
@@ -196,9 +196,7 @@ watch(
             <v-col><span class="standard-caption">Email</span><br />{{ profile?.email }}</v-col>
           </v-row>
           <v-row>
-            <v-col
-              ><span class="standard-caption">First Name</span><br />{{ profile?.firstName }}</v-col
-            >
+            <v-col><span class="standard-caption">First Name</span><br />{{ profile?.name }}</v-col>
             <v-col>
               <span class="standard-caption">Departure</span><br />
               {{ dateFormatter.dddotmmdotyyyy(reservation.departureDate) }}
@@ -209,7 +207,7 @@ watch(
               }}</v-col
             >
             <v-col></v-col>
-            <v-col><span class="standard-caption">Phone</span><br />{{ profile?.phone }}</v-col>
+            <v-col><span class="standard-caption">Phone</span><br />{{ profile?.telephone }}</v-col>
           </v-row>
           <v-row>
             <v-col>

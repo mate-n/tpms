@@ -42,8 +42,8 @@ const search = () => {
 
 const availableTableDataHeaders = ref([
   { key: 'avatar', title: '', selected: true },
-  { key: 'lastName', title: 'LAST NAME', selected: true },
-  { key: 'firstName', title: 'FIRST NAME', selected: true },
+  { key: 'surname', title: 'LAST NAME', selected: true },
+  { key: 'name', title: 'FIRST NAME', selected: true },
   { key: 'company', title: 'COMPANY', selected: true },
   { key: 'birthday', title: 'BIRTHDAY', selected: true },
   { key: 'country', title: 'COUNTRY', selected: true },
@@ -100,13 +100,13 @@ const profileSearch = defineModel({ required: false, type: Object as () => IProf
       <div class="flex-grow-1 flex-shrink-0">
         <div class="d-flex">
           <v-text-field
-            v-model="profileSearch.lastName"
+            v-model="profileSearch.surname"
             label="Last Name"
             variant="underlined"
             class="me-3"
           ></v-text-field>
           <v-text-field
-            v-model="profileSearch.firstName"
+            v-model="profileSearch.name"
             label="First Name"
             variant="underlined"
             class="me-3"
@@ -190,18 +190,18 @@ const profileSearch = defineModel({ required: false, type: Object as () => IProf
             :key="header.key"
           >
             <div v-if="row.item.hasOwnProperty(header.key)">
-              <template v-if="header.key === 'birthday'">
-                {{ dateFormatter.dddotmmdotyyyy(row.item['birthday']) }}
+              <template v-if="header.key === 'dateofbirth' && row.item['dateofbirth']">
+                {{ dateFormatter.dddotmmdotyyyy(row.item['dateofbirth']) }}
               </template>
 
-              <template v-if="header.key !== 'birthday'">
+              <template v-if="header.key !== 'dateofbirth'">
                 {{ row.item[header.key as keyof IProfile] }}
               </template>
             </div>
 
             <div v-if="header.key === 'avatar'">
               <div class="color-avatar-tertiary-10 text-white">
-                {{ row.item.firstName.charAt(0) }}{{ row.item.lastName.charAt(0) }}
+                {{ row.item.name.charAt(0) }}{{ row.item.surname.charAt(0) }}
               </div>
             </div>
 

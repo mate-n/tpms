@@ -6,12 +6,18 @@ defineProps({
   label: {
     type: String,
     required: true
+  },
+  error: {
+    type: Object as () => string,
+    required: false
   }
 })
+
 const date = defineModel({ required: true, type: Object as () => Date })
 
 const dateMenu = ref(false)
 const dateString = computed(() => {
+  if (!date.value) return ''
   return dateFormatter.dddotmmdotyyyy(date.value)
 })
 </script>
@@ -24,6 +30,7 @@ const dateString = computed(() => {
         append-inner-icon="mdi-calendar"
         variant="underlined"
         v-bind="props"
+        :error-messages="error"
       ></v-text-field>
     </template>
     <v-card>

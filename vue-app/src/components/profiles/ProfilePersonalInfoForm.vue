@@ -2,16 +2,15 @@
 import { GenderService } from '@/services/GenderService'
 import { NationalityService } from '@/services/NationalityService'
 import { CountryService } from '@/services/CountryService'
-import { computed, onMounted, ref } from 'vue'
-import { DateFormatter } from '@/helpers/DateFormatter'
+import { onMounted, ref } from 'vue'
 import type { ICountry } from '@/shared/interfaces/ICountry'
 import type { IGender } from '@/shared/interfaces/IGender'
 import type { INationality } from '@/shared/interfaces/INationality'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
+import DateSelecter from '../dates/DateSelecter.vue'
 const axios: AxiosStatic | undefined = inject('axios')
-const dateFormatter = new DateFormatter()
 const genderService = new GenderService(axios)
 const nationalityService = new NationalityService(axios)
 const countryService = new CountryService(axios)
@@ -22,15 +21,6 @@ const profileToBeEdited = defineModel({
   required: true,
   type: Object as () => IProfile
 })
-
-const birthdayMenu = ref(false)
-const birthdayFormatted = computed(() => {
-  return dateFormatter.dddotmmdotyyyy(profileToBeEdited.value.birthday)
-})
-
-const changeBirthDay = (date: any) => {
-  profileToBeEdited.value.birthday = date
-}
 
 onMounted(() => {
   genderService.getAvailableGenders().then((response) => {
@@ -50,25 +40,11 @@ onMounted(() => {
 <template>
   <v-row>
     <v-col>
-      <v-menu v-model="birthdayMenu" :close-on-content-click="false">
-        <template v-slot:activator="{ props }">
-          <v-text-field
-            label="Date of Birth"
-            append-inner-icon="mdi-calendar"
-            v-model="birthdayFormatted"
-            v-bind="props"
-            variant="underlined"
-          ></v-text-field>
-        </template>
-        <v-card>
-          <v-date-picker
-            :hide-header="true"
-            :v-model="profileToBeEdited.birthday"
-            @update:model-value="(value) => changeBirthDay(value)"
-          >
-          </v-date-picker>
-        </v-card>
-      </v-menu>
+      <DateSelecter
+        v-model="profileToBeEdited.dateofbirth"
+        label="Date of Birth"
+        :errors="profileToBeEdited.errors && profileToBeEdited.errors['dateofbirth']"
+      ></DateSelecter>
     </v-col>
     <v-col>
       <v-text-field
