@@ -14,8 +14,8 @@ export interface IProtelProfile {
   dateofbirth: string
   gender: string
   roomseekerclientcode: string
-  SAId: number
-  passportno: number
+  SAId: string
+  passportno: string
   countryofbirth: string
   wildcardnumber: number
   loyaltynumber: number
