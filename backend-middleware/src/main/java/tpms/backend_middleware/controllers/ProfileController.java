@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import tpms.backend_middleware.classes.ProfileCreatePostBody;
 import tpms.backend_middleware.classes.ProfileLookUpPostBody;
 import tpms.backend_middleware.models.Profile;
 import tpms.backend_middleware.repositories.ProfileRepository;
@@ -31,6 +32,12 @@ public class ProfileController {
     public Iterable<Profile> lookup(@RequestBody ProfileLookUpPostBody profileLookUpPostBody) throws IOException {
         ProfileService profileService = new ProfileService();
         return profileService.lookup(profileLookUpPostBody);
+    }
+
+    @PostMapping
+    public String create(@RequestBody ProfileCreatePostBody profileCreatePostBody) throws IOException {
+        ProfileService profileService = new ProfileService();
+        return profileService.create(profileCreatePostBody);
     }
 
     @GetMapping(path = "/createnew")
