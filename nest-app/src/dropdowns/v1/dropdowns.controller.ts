@@ -1423,6 +1423,10 @@ export class DropdownsController {
   nationalities(): INationality[] {
     return [
       {
+        id: 'ZA',
+        value: 'South African',
+      },
+      {
         id: 'AX',
         value: 'Aaland Islands',
       },
