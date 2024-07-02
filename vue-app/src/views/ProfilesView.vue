@@ -3,15 +3,17 @@ import ProfileSearch from '@/components/profiles/ProfileSearch.vue'
 import NewProfile from '@/components/profiles/NewProfile.vue'
 import { ref, type Ref } from 'vue'
 import { Profile } from '@/shared/classes/Profile'
-import { ProfileSearchHelper } from '@/helpers/ProfileSearchHelper'
 import type { IProfileLookUpPostBody } from '@/shared/interfaces/profiles/IProfileLookUpPostBody'
 import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
-const profileSearchHelper = new ProfileSearchHelper()
+import { ProfileLookUpPostBodyHelper } from '@/helpers/ProfileLookUpPostBodyHelper'
+const profileLookUpPostBodyHelper = new ProfileLookUpPostBodyHelper()
 const newProfileDialog = ref(false)
 const profileForNewProfile = ref(new Profile())
 const profileLookUpPostBody: Ref<IProfileLookUpPostBody> = ref(new ProfileLookUpPostBody())
 const clickOnAdd = () => {
-  profileForNewProfile.value = profileSearchHelper.convertToProfile(profileLookUpPostBody.value)
+  profileForNewProfile.value = profileLookUpPostBodyHelper.convertToProfile(
+    profileLookUpPostBody.value
+  )
   newProfileDialog.value = true
 }
 </script>
