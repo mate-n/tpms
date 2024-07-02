@@ -63,8 +63,6 @@ export class Profile implements IProfile {
 
   //Personal Info
   birthPlace: string
-  birthCountry: string
-  nationality: string
 
   //Additional Info
   companyID: number | undefined
@@ -158,8 +156,6 @@ export class Profile implements IProfile {
 
     //Personal Info
     this.birthPlace = ''
-    this.birthCountry = ''
-    this.nationality = ''
 
     //Additional Info
     this.companyID = undefined

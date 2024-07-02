@@ -61,8 +61,6 @@ export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
 
   //Personal Info
   birthPlace: string
-  birthCountry: string
-  nationality: string
 
   //Additional Info
   companyID: number | undefined
