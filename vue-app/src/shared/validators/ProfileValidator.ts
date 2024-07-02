@@ -39,11 +39,10 @@ export class ProfileValidator implements IValidator {
   }
 
   isNationalityPresent(profile: IProfile): void {
-    if (!profile.nationality) {
-      profile.errors!['nationality'] = 'Nationality is required'
+    if (!profile.countryofbirth) {
+      profile.errors!['countryofbirth'] = 'Nationality is required'
     }
-
-    if (profile.nationality === 'ZA') {
+    if (profile.countryofbirth === 'ZA') {
       if (!profile.saIDNumber) {
         profile.errors!['saIDNumber'] = 'SA ID Number is required'
       }
@@ -51,7 +50,6 @@ export class ProfileValidator implements IValidator {
   }
 
   isBirthdatePresent(profile: IProfile): void {
-    console.log('profile.dateofbirth', profile.dateofbirth)
     if (!profile.dateofbirth) {
       profile.errors!['dateofbirth'] = 'Date of Birth is required'
     }
