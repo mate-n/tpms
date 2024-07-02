@@ -24,10 +24,8 @@ export class ProfilesFaker {
     profile.communicationIDs = [faker.number.int(), faker.number.int()]
     profile.addressIDs = [faker.number.int(), faker.number.int()]
     profile.birthPlace = faker.location.city()
-    profile.birthCountry = faker.location.country()
     profile.dateofbirth = faker.date.past()
     profile.gender = faker.person.gender()
-    profile.nationality = faker.location.countryCode()
     profile.companyID = faker.number.int(3)
     profile.occupation = faker.person.jobTitle()
     profile.additionalInfoDefaultRateIDs = [faker.number.int(), faker.number.int()]
