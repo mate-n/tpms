@@ -50,12 +50,12 @@ const getCommunicationMethodValue = (communicationMethodID: number | undefined) 
         @update:modelValue="validate()"
       ></v-text-field>
       <v-text-field
-        v-model="profile.telephone"
-        label="Telephone"
+        v-model="profile.mobile"
+        label="Mobile"
         variant="underlined"
         class="me-3 required-input"
         @update:modelValue="validate()"
-        :error-messages="profile.errors && profile.errors['telephone']"
+        :error-messages="profile.errors && profile.errors['mobile']"
       ></v-text-field>
       <div v-for="profileCommunication of profile.communications" :key="profileCommunication.id">
         <div class="mb-2">
