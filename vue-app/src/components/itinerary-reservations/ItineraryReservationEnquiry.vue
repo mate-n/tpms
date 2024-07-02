@@ -116,7 +116,10 @@ const updateCamps = () => {
       selectedParks.map((park) => park.id).includes(camp.parkID)
     )
   }
+}
 
+const selectAllCampsInDropdown = () => {
+  updateCamps()
   itineraryReservation.value.selectedCamps = campsInDropdown.value
 }
 
@@ -142,14 +145,6 @@ watch(
   [() => itineraryReservation.value.selectedRegions],
   () => {
     updateParks()
-  },
-  { deep: true }
-)
-
-watch(
-  () => itineraryReservation.value.selectedParks,
-  () => {
-    updateCamps()
   },
   { deep: true }
 )
@@ -272,6 +267,7 @@ const clearSelectedCamps = () => {
           item-title="name"
           return-object
           multiple
+          @update:model-value="selectAllCampsInDropdown()"
         ></v-autocomplete>
       </v-col>
       <v-col class="d-flex align-center h-100" cols="6">
@@ -300,9 +296,6 @@ const clearSelectedCamps = () => {
         <ProfileSearchField
           label="Guest"
           icon-name="mdi-account-circle-outline"
-          :profile-search-input="{
-            guestTypeID: 4
-          }"
           v-model="itineraryReservation.guestProfileID"
         ></ProfileSearchField>
       </v-col>
