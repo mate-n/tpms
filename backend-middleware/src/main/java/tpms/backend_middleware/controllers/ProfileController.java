@@ -30,7 +30,6 @@ public class ProfileController {
     @PostMapping(path = "/lookup")
     public Iterable<Profile> lookup(@RequestBody ProfileLookUpPostBody profileLookUpPostBody) throws IOException {
         ProfileService profileService = new ProfileService();
-        System.out.println(profileLookUpPostBody);
         return profileService.lookup(profileLookUpPostBody);
     }
 
