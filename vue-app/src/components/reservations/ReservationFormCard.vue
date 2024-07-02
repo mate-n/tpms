@@ -14,6 +14,7 @@ import { RoomService } from '@/services/RoomService'
 import type { IRate } from '@/shared/interfaces/IRate'
 import { RateService } from '@/services/RateService'
 import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
+import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const roomService = new RoomService(axios)
@@ -193,9 +194,7 @@ watch(
               label="Guest"
               :required="reservationToBeEdited.isBookerGuest"
               icon-name="mdi-account-circle-outline"
-              :profile-search-input="{
-                guestTypeID: 1
-              }"
+              :profile-look-up-post-body="new ProfileLookUpPostBody()"
               v-model="reservationToBeEdited.guestProfileID"
             ></ProfileSearchField>
             <v-checkbox
@@ -207,34 +206,26 @@ watch(
                 label="Booker"
                 :required="!reservationToBeEdited.isBookerGuest"
                 icon-name="mdi-account-tie-voice-outline"
-                :profile-search-input="{
-                  guestTypeID: 1
-                }"
+                :profile-look-up-post-body="new ProfileLookUpPostBody()"
                 v-model="reservationToBeEdited.bookerProfileID"
               ></ProfileSearchField>
             </div>
             <ProfileSearchField
               label="Company"
               icon-name="mdi-briefcase-variant-outline"
-              :profile-search-input="{
-                guestTypeID: 2
-              }"
+              :profile-look-up-post-body="new ProfileLookUpPostBody()"
               v-model="reservationToBeEdited.companyProfileID"
             ></ProfileSearchField>
             <ProfileSearchField
               label="Source"
               icon-name="mdi-earth"
-              :profile-search-input="{
-                guestTypeID: 5
-              }"
+              :profile-look-up-post-body="new ProfileLookUpPostBody()"
               v-model="reservationToBeEdited.sourceProfileID"
             ></ProfileSearchField>
             <ProfileSearchField
               label="Travel Agent"
               icon-name="mdi-airplane"
-              :profile-search-input="{
-                guestTypeID: 4
-              }"
+              :profile-look-up-post-body="new ProfileLookUpPostBody()"
               v-model="reservationToBeEdited.travelAgentProfileID"
             ></ProfileSearchField>
           </v-card>

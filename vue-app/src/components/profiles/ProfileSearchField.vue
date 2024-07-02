@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import ProfileService from '@/services/ProfileService'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
 import type { AxiosStatic } from 'axios'
 import { inject, ref, type Ref } from 'vue'
-import ProfileSearch from './ProfileSearch.vue'
-const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
+import type { IProfileLookUpPostBody } from '@/shared/interfaces/profiles/IProfileLookUpPostBody'
+import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
+import ProfileSearchCard from './ProfileSearchCard.vue'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
+const axios2: AxiosStatic | undefined = inject('axios2')
+const profileService = new ProfileService(axios2)
 const profileSearchDialog = ref(false)
 const profileSearchLoading = ref(false)
 const profileSearchResults: Ref<IProfile[]> = ref([])
 
-const objectWithProfile = defineModel({
-  required: true
+const profileID = defineModel({
+  type: Number,
+  required: false
 })
 
+const profileLookUpPostBody: Ref<IProfileLookUpPostBody> = ref(new ProfileLookUpPostBody())
+
 const props = defineProps({
-  profileSearchInput: {
-    required: true,
-    type: Object as () => IProfileSearch
-  },
   label: {
     required: true,
     type: String
@@ -35,20 +35,16 @@ const props = defineProps({
   }
 })
 
-const profileSearchUpdate = () => {
-  /*
-  const profileSearch: IProfileSearch = {
-    name: input
-  }
-    */
-
-  profileService.findAll().then((response) => {
+const profileSearchUpdate = (searchString: string) => {
+  profileLookUpPostBody.value.surname = searchString
+  profileService.lookup(profileLookUpPostBody.value).then((response) => {
     profileSearchResults.value = response
   })
 }
 
 const profileSelectedInProfileSearch = (profile: IProfile) => {
-  objectWithProfile.value = profile.id
+  profileSearchResults.value = [profile]
+  profileID.value = profile.profileID
   profileSearchDialog.value = false
 }
 </script>
@@ -63,11 +59,11 @@ const profileSelectedInProfileSearch = (profile: IProfile) => {
       :label="props.label"
       :class="{ 'required-input': props.required }"
       variant="underlined"
-      v-model="objectWithProfile"
+      v-model="profileID"
       :items="profileSearchResults"
       @update:search="profileSearchUpdate"
-      item-title="name"
-      item-value="id"
+      :item-title="(profile: IProfile) => `${profile.surname}`"
+      item-value="profileID"
     ></v-autocomplete>
     <div class="d-flex align-center" @click="profileSearchDialog = true">
       <v-icon>mdi-magnify</v-icon>
@@ -76,11 +72,11 @@ const profileSelectedInProfileSearch = (profile: IProfile) => {
 
   <v-dialog v-model="profileSearchDialog" fullscreen scrollable>
     <v-card>
-      <ProfileSearch
-        :profile-search-input="props.profileSearchInput"
+      <ProfileSearchCard
+        :profile-look-up-post-body-input="profileLookUpPostBody"
         @close="profileSearchDialog = false"
         @profile-selected="(profile) => profileSelectedInProfileSearch(profile)"
-      ></ProfileSearch>
+      ></ProfileSearchCard>
     </v-card>
   </v-dialog>
 </template>

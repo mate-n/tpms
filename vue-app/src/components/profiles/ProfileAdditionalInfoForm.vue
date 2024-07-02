@@ -5,8 +5,8 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileSearch from './ProfileSearch.vue'
 import ProfileService from '@/services/ProfileService'
-import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
 import type { AxiosStatic } from 'axios'
+import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
 const axios: AxiosStatic | undefined = inject('axios')
 const profileService = new ProfileService(axios)
 const rateService = new RateService(axios)
@@ -45,10 +45,6 @@ const companyUpdateSearch = () => {
 }
 
 const companySearchLoading = ref(false)
-
-const profileSearchInput: IProfileSearch = {
-  guestTypeID: 2
-}
 </script>
 
 <template>
@@ -116,7 +112,7 @@ const profileSearchInput: IProfileSearch = {
   <v-dialog v-model="profileSearchDialog" fullscreen scrollable>
     <v-card>
       <ProfileSearch
-        :profile-search-input="profileSearchInput"
+        :profile-look-up-post-body="new ProfileLookUpPostBody()"
         @close="profileSearchDialog = false"
         @profile-selected="(profile) => profileSelected(profile)"
       ></ProfileSearch>

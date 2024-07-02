@@ -51,7 +51,7 @@ const dateofbirthUpdated = () => {
 
 const generateStartOfSAIDNumber = () => {
   if (profileToBeEdited.value.dateofbirth) {
-    profileToBeEdited.value.saIDNumber = sAIDPassportHelper.generateStartOfSAIDNumber(
+    profileToBeEdited.value.sAId = sAIDPassportHelper.generateStartOfSAIDNumber(
       profileToBeEdited.value.dateofbirth
     )
   }
@@ -90,18 +90,16 @@ const generateStartOfSAIDNumber = () => {
     <v-col>
       <v-text-field
         label="SA ID Number"
-        v-model="profileToBeEdited.saIDNumber"
+        v-model="profileToBeEdited.sAId"
         variant="underlined"
-        :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['saIDNumber']"
-        type="number"
+        :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['sAId']"
       ></v-text-field>
     </v-col>
     <v-col>
       <v-text-field
-        v-model="profileToBeEdited.passportNumber"
+        v-model="profileToBeEdited.passportno"
         label="Passport Number"
         variant="underlined"
-        type="number"
       ></v-text-field>
     </v-col>
   </v-row>
