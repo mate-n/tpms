@@ -6,7 +6,7 @@ export class ProfileValidator implements IValidator {
     profile.errors = {}
     this.isNamePresent(profile)
     this.isEmailPresent(profile)
-    this.isTelephonePresent(profile)
+    this.isMobilePresent(profile)
     this.isNationalityPresent(profile)
     this.isBirthdatePresent(profile)
   }
@@ -32,9 +32,9 @@ export class ProfileValidator implements IValidator {
     }
   }
 
-  isTelephonePresent(profile: IProfile): void {
-    if (!profile.telephone) {
-      profile.errors!['telephone'] = 'Telephone is required'
+  isMobilePresent(profile: IProfile): void {
+    if (!profile.mobile) {
+      profile.errors!['mobile'] = 'Mobile is required'
     }
   }
 
