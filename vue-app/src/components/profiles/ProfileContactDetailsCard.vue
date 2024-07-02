@@ -6,11 +6,17 @@ import type { ICommunicationMethod } from '@/shared/interfaces/ICommunicationMet
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
+import { ProfileValidator } from '@/shared/validators/ProfileValidator'
+const profileValidator = new ProfileValidator()
 const axios: AxiosStatic | undefined = inject('axios')
 const communicationMethodService = new CommunicationMethodService(axios)
 const communicationMethods = ref<ICommunicationMethod[]>([])
 const editProfileContactDetailsDialog = ref(false)
 const profile = defineModel({ required: true, type: Object as () => IProfile })
+
+const validate = () => {
+  profileValidator.validate(profile.value)
+}
 
 onBeforeMount(() => {
   communicationMethodService.getAvailableCommunicationMethods().then((response) => {
@@ -41,12 +47,14 @@ const getCommunicationMethodValue = (communicationMethodID: number | undefined) 
         variant="underlined"
         class="me-3 required-input"
         :error-messages="profile.errors && profile.errors['email']"
+        @update:modelValue="validate()"
       ></v-text-field>
       <v-text-field
-        v-model="profile.email"
+        v-model="profile.telephone"
         label="Telephone"
         variant="underlined"
         class="me-3 required-input"
+        @update:modelValue="validate()"
         :error-messages="profile.errors && profile.errors['telephone']"
       ></v-text-field>
       <div v-for="profileCommunication of profile.communications" :key="profileCommunication.id">
