@@ -1,4 +1,4 @@
-import { DateHelper } from '@/helpers/DateHelper'
+import { DateHelper } from '../../helpers/DateHelper'
 import type { IItineraryReservation } from '../interfaces/IItineraryReservation'
 import type { IReservation } from '../interfaces/IReservation'
 import type { IProtelCamp } from '../interfaces/protel/IProtelCamp'
