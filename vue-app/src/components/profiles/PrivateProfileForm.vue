@@ -43,6 +43,7 @@ onMounted(() => {
           variant="underlined"
           class="me-3"
           :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['name']"
+          @update:modelValue="emit('change')"
           aria-required="true"
         ></v-text-field>
         <v-text-field
