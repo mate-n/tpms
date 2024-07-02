@@ -18,6 +18,7 @@ export class Reservation implements IReservation {
   numberOfRooms: number
   roomID: number | undefined
   profileID: number | undefined
+  profileName: string | undefined
   guestProfileID: number | undefined
   companyProfileID: number | undefined
   sourceProfileID: number | undefined
@@ -81,8 +82,7 @@ export class Reservation implements IReservation {
     this.orderIndex = reservation.orderIndex
     this.propertyAvailabilities = reservation.propertyAvailabilities
     this.protelAvailabilities = reservation.protelAvailabilities
-    this.selectedProtelAvailabilityGroups =
-      reservation.selectedProtelAvailabilityGroups
+    this.selectedProtelAvailabilityGroups = reservation.selectedProtelAvailabilityGroups
     this.issues = reservation.issues
     if (reservation.errors) {
       this.errors = reservation.errors
@@ -92,7 +92,7 @@ export class Reservation implements IReservation {
     this.tickets = reservation.tickets
     this.totalRate = reservation.totalRate
     this.averageRate = reservation.averageRate
-    this.guestName = reservation.guestName
+    this.profileName = reservation.profileName
     this.propertyName = reservation.propertyName
     this.guestsPerRoom = reservation.guestsPerRoom
     return this
@@ -121,6 +121,32 @@ export class Reservation implements IReservation {
     this.ticketIDs = []
     this.guestName = ''
     this.propertyName = ''
+    this.guestsPerRoom = new GuestsPerRoom()
+  }
+
+  resetInItineraryReservation() {
+    this.arrivalDate = new Date()
+    this.departureDate = this.dateHelper.addDays(this.arrivalDate, 1)
+    this.numberOfRooms = 1
+    this.baseRateCategory = ''
+    this.orderIndex = 0
+    this.roomID = undefined
+    this.profileID = undefined
+    this.guestProfileID = undefined
+    this.companyProfileID = undefined
+    this.sourceProfileID = undefined
+    this.travelAgentProfileID = undefined
+    this.bookerProfileID = undefined
+    //this.propertyID = undefined
+    this.propertyAvailabilities = []
+    this.protelAvailabilities = []
+    this.selectedProtelAvailabilityGroups = []
+    this.issues = []
+    this.errors = {}
+    this.isBookerGuest = true
+    this.ticketIDs = []
+    this.guestName = ''
+    //this.propertyName = ''
     this.guestsPerRoom = new GuestsPerRoom()
   }
 
