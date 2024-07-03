@@ -4,24 +4,24 @@ import { DateFormatter } from '@/helpers/DateFormatter'
 import { DateHelper } from '@/helpers/DateHelper'
 import { GuestsPerRoomHelper } from '@/helpers/GuestsPerRoomHelper'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
-import ProfileService from '@/services/ProfileService'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProtelAvailabilityGroup } from '@/shared/interfaces/protel/IProtelAvailabilityGroup'
 import type { AxiosStatic } from 'axios'
 import { computed, inject, onBeforeMount, ref, watch, type Ref } from 'vue'
 import TicketsTable from '../tickets/TicketsTable.vue'
 import TicketsCard from '../tickets/TicketsCard.vue'
-import ProfileSearchCard from '../profiles/ProfileSearchCard.vue'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
+import ProfileSearchField from '../profiles/ProfileSearchField.vue'
 import { ProfileHelper } from '@/helpers/ProfileHelper'
 import { useBasketItemsStore } from '@/stores/basketItems'
-const profileHelper = new ProfileHelper()
-const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const profileService = new ProfileService(axios2)
 const priceFormatter = new PriceFormatter()
 const dateFormatter = new DateFormatter()
 const availabilityGroupHelper = new AvailabilityGroupHelper()
 const guestsPerRoomHelper = new GuestsPerRoomHelper()
 const dateHelper = new DateHelper()
+const profileHelper = new ProfileHelper()
 const basketItemsStore = useBasketItemsStore()
 
 const availabilityGroup = defineModel({
@@ -43,20 +43,11 @@ const departureDate = computed(() => {
 
 const profilesInDropdown: Ref<IProfile[]> = ref([])
 onBeforeMount(() => {
-  profileService.findAll().then((response: IProfile[]) => {
+  profileService.getAll().then((response: IProfile[]) => {
     profilesInDropdown.value = response
   })
 })
 
-const emitChange = () => {
-  if (availabilityGroup.value.profileID) {
-    profileService.get(availabilityGroup.value.profileID).then((response) => {
-      changeProfileOfReservations(response)
-    })
-  }
-}
-
-const profileDialog = ref(false)
 const profile: Ref<IProfile | undefined> = ref(undefined)
 const numberOfNights = computed(() => {
   return dateHelper.calculateNightsBetweenDates(
@@ -79,11 +70,6 @@ const addTicketsToReservation = () => {
   ticketsCardDialog.value = false
 }
 
-const profileSelected = (selectedProfile: IProfile) => {
-  changeProfileOfReservations(selectedProfile)
-  profileDialog.value = false
-}
-
 const changeProfileOfReservations = (newProfile: IProfile) => {
   profile.value = newProfile
   profileHelper.changeProfile(availabilityGroup.value, newProfile)
@@ -101,7 +87,9 @@ watch(
   (newValue) => {
     if (newValue) {
       profileService.get(newValue).then((response) => {
-        profile.value = response
+        if (response) {
+          changeProfileOfReservations(response)
+        }
       })
     }
   }
@@ -116,20 +104,12 @@ watch(
           <v-icon>mdi-chevron-double-right</v-icon
           ><strong>{{ availabilityGroup.availabilities[0].park_name }}</strong>
         </div>
-        <div class="d-flex align-center" style="min-width: 50%">
-          <v-autocomplete
-            label="Guest"
+        <div class="" style="min-width: 50%">
+          <ProfileSearchField
             v-model="availabilityGroup.profileID"
-            placeholder="Last Name | First Name"
-            hint="Last Name | First Name"
-            :items="profilesInDropdown"
-            :item-title="(profile: IProfile) => `${profile.surname}, ${profile.name}`"
-            :item-value="(profile: IProfile) => profile.id"
-            @update:model-value="emitChange()"
-          ></v-autocomplete>
-          <div class="d-flex align-center" @click="profileDialog = true">
-            <v-icon>mdi-magnify</v-icon>
-          </div>
+            icon-name="mdi-account-circle-outline"
+            label="Guest"
+          ></ProfileSearchField>
         </div>
         <div></div>
       </div>
@@ -254,24 +234,6 @@ watch(
         @close="ticketsCardDialog = false"
         @add-tickets-to-reservation="addTicketsToReservation()"
       />
-    </v-card>
-  </v-dialog>
-
-  <v-dialog v-model="profileDialog" fullscreen scrollable>
-    <v-card>
-      <ProfileSearchCard
-        @close="profileDialog = false"
-        @profile-selected="(profile) => profileSelected(profile)"
-      ></ProfileSearchCard>
-    </v-card>
-  </v-dialog>
-
-  <v-dialog v-model="profileDialog" fullscreen scrollable>
-    <v-card>
-      <ProfileSearchCard
-        @close="profileDialog = false"
-        @profile-selected="(profile) => profileSelected(profile)"
-      ></ProfileSearchCard>
     </v-card>
   </v-dialog>
 </template>
