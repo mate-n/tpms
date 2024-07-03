@@ -127,7 +127,7 @@ const profilesLoading = ref(false)
             class="me-3"
           ></v-text-field>
           <v-text-field
-            v-model="profileLookUpPostBody.tpmsProfileID"
+            v-model="profileLookUpPostBody.profileID"
             label="TPMS Profile ID"
             variant="underlined"
             class="me-3"
