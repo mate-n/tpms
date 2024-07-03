@@ -2,12 +2,10 @@
 import { BookableObjectService } from '@/services/BookableObjectService'
 import { FeatureService } from '@/services/FeatureService'
 import { LanguageService } from '@/services/LanguageService'
-import ProfileService from '@/services/ProfileService'
 import type { IBookableObject } from '@/shared/interfaces/IBookableObject'
 import type { IFeature } from '@/shared/interfaces/IFeature'
 import type { ILanguage } from '@/shared/interfaces/ILanguage'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import type { IProfilePreferencesPatchBody } from '@/shared/interfaces/profiles/IProfilePreferencesPatchBody'
 import { inject, onBeforeMount, ref, watch, type Ref } from 'vue'
 import type { AxiosStatic } from 'axios'
 const axios: AxiosStatic | undefined = inject('axios')
@@ -18,7 +16,6 @@ const profileToBeEdited = defineModel({
 })
 const showSaveButton = ref(false)
 const featureService = new FeatureService(axios)
-const profileService = new ProfileService(axios)
 const languageService = new LanguageService(axios)
 const bookableObjectService = new BookableObjectService(axios)
 const featuresInDropdown = ref<IFeature[]>([])
@@ -49,20 +46,7 @@ watch(
 
 const saveProfilePreferences = () => {
   if (!profileToBeEdited.value.id) return
-
-  const profilePreferencesPatchBody: IProfilePreferencesPatchBody = {
-    id: profileToBeEdited.value.id,
-    preferencesFeatureIDs: profileToBeEdited.value.preferencesFeatureIDs,
-    preferencesDefaultObjectID: profileToBeEdited.value.preferencesDefaultObjectID,
-    preferencesNote: profileToBeEdited.value.preferencesNote,
-    preferencesLanguage: profileToBeEdited.value.preferencesLanguage
-  }
-  profileService
-    .patchProfilePreferences(profilePreferencesPatchBody)
-    .then((response: IProfilePreferencesPatchBody) => {
-      profileToBeEdited.value = Object.assign(profileToBeEdited.value, response)
-      showSaveButton.value = false
-    })
+  console.log('saveProfilePreferences')
 }
 </script>
 
