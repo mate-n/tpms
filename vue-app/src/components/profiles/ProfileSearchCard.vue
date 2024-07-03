@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ProfileService from '@/services/ProfileService'
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import NewProfile from './NewProfile.vue'
 import EditProfile from './EditProfile.vue'
@@ -12,8 +11,10 @@ import type { AxiosStatic } from 'axios'
 import ProfileSearchVue from './ProfileSearch.vue'
 import type { IProfileLookUpPostBody } from '@/shared/interfaces/profiles/IProfileLookUpPostBody'
 import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
 const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const profileService = new ProfileService(axios2)
 const guestTypes: Ref<IGuestType[]> = ref([])
 const guestTypeService = new GuestTypeService(axios)
 const emit = defineEmits(['close', 'profileSelected'])
@@ -27,7 +28,7 @@ const cloneHelper = new CloneHelper()
 const profileToBeEdited = ref<IProfile>(new Profile())
 const foundProfiles: Ref<IProfile[]> = ref([])
 const search = () => {
-  profileService.findAll().then((response) => {
+  profileService.getAll().then((response) => {
     foundProfiles.value = response
   })
 }
