@@ -31,7 +31,7 @@ const { isFullScreen, toggleFullScreen } = useFullscreen()
 <template>
   <v-toolbar class="bg-white">
     <v-toolbar-title
-      >Profile <v-icon>mdi-arrow-right</v-icon> #{{ profileToBeEdited.profileID }}</v-toolbar-title
+      >Profile <v-icon>mdi-arrow-right</v-icon> #{{ profileToBeEdited.id }}</v-toolbar-title
     >
     <div class="profiles-card-toolbar-button" @click="toggleFullScreen()">
       <template v-if="isFullScreen">
