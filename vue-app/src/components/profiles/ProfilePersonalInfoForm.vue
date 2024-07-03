@@ -45,7 +45,6 @@ onMounted(() => {
 })
 
 const dateofbirthUpdated = () => {
-  generateStartOfSAIDNumber()
   validate()
 }
 
@@ -54,6 +53,12 @@ const generateStartOfSAIDNumber = () => {
     profileToBeEdited.value.sAId = sAIDPassportHelper.generateStartOfSAIDNumber(
       profileToBeEdited.value.dateofbirth
     )
+  }
+}
+
+const focusSAID = () => {
+  if (!profileToBeEdited.value.sAId) {
+    generateStartOfSAIDNumber()
   }
 }
 </script>
@@ -93,6 +98,8 @@ const generateStartOfSAIDNumber = () => {
         v-model="profileToBeEdited.sAId"
         variant="underlined"
         :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['sAId']"
+        @click="focusSAID()"
+        @update:modelValue="validate()"
       ></v-text-field>
     </v-col>
     <v-col>
