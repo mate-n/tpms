@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tpms.backend_middleware.models.Camp;
 import tpms.backend_middleware.models.Park;
+import tpms.backend_middleware.models.Profile;
 import tpms.backend_middleware.models.Region;
 import tpms.backend_middleware.repositories.CampRepository;
 import tpms.backend_middleware.repositories.ParkRepository;
+import tpms.backend_middleware.repositories.ProfileRepository;
 import tpms.backend_middleware.repositories.RegionRepository;
 
 @RestController()
@@ -19,12 +21,14 @@ public class SetupController {
     private final RegionRepository regionRepository;
     private final ParkRepository parksRepository;
     private final CampRepository campRepository;
+    private final ProfileRepository profileRepository;
 
     public SetupController(RegionRepository regionRepository, ParkRepository parksRepository,
-            CampRepository campRepository) {
+            CampRepository campRepository, ProfileRepository profileRepository) {
         this.regionRepository = regionRepository;
         this.parksRepository = parksRepository;
         this.campRepository = campRepository;
+        this.profileRepository = profileRepository;
     }
 
     @GetMapping(path = "/seed")
@@ -169,6 +173,28 @@ public class SetupController {
         camp20.setName("Highlands Mountain Retreat");
         camp20.setParkID(park5.getId());
         campRepository.save(camp20);
+
+        Profile profile1 = new Profile();
+        profile1.setName("John");
+        profile1.setSurname("Doe");
+        profile1.setEmail("john@me.com");
+        profile1.setMobile("1234567890");
+        profileRepository.save(profile1);
+
+        Profile profile2 = new Profile();
+        profile2.setName("Jane");
+        profile2.setSurname("Doe");
+        profile2.setEmail("jane@me.com");
+        profile2.setMobile("0987654321");
+        profileRepository.save(profile2);
+
+        Profile profile3 = new Profile();
+        profile3.setName("Jack");
+        profile3.setSurname("Doe");
+        profile3.setEmail("jack@me.com");
+        profile3.setMobile("1234567890");
+        profileRepository.save(profile3);
+
     }
 
 }
