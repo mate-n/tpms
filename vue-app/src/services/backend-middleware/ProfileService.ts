@@ -17,7 +17,7 @@ export class ProfileService implements IService {
   get(profileId: number) {
     return new Promise<IProfile | undefined>((resolve, reject) => {
       const profileLookUpPostBody = new ProfileLookUpPostBody()
-      profileLookUpPostBody.tpmsProfileID = profileId
+      profileLookUpPostBody.profileID = profileId
       this.axiosInstance
         .post('api/v1/profiles/lookup', profileLookUpPostBody)
         .then((response: any) => {
