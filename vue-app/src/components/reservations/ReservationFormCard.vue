@@ -8,15 +8,16 @@ import { DateHelper } from '@/helpers/DateHelper'
 import ProfileSearchField from '../profiles/ProfileSearchField.vue'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import ProfileService from '@/services/ProfileService'
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { RoomService } from '@/services/RoomService'
 import type { IRate } from '@/shared/interfaces/IRate'
 import { RateService } from '@/services/RateService'
 import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
 import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
 const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const profileService = new ProfileService(axios2)
 const roomService = new RoomService(axios)
 const rateService = new RateService(axios)
 const reservationToBeEdited: Ref<IReservation> = ref(new Reservation())
