@@ -29,7 +29,7 @@ export class ProfileService implements IService {
       this.axiosInstance
         .post('api/v1/profiles/lookup', profileLookUpPostBody)
         .then((response: any) => {
-          if (response.data[0].profileID === -1) {
+          if (response.data[0] && response.data[0].profileID === -1) {
             resolve([])
           }
           resolve(response.data)
