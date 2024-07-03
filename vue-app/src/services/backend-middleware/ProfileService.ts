@@ -52,4 +52,17 @@ export class ProfileService implements IService {
         })
     })
   }
+
+  update(profileCreatePostBody: IProfileCreatePostBody) {
+    return new Promise<IProfile>((resolve, reject) => {
+      this.axiosInstance
+        .put('api/v1/profiles', profileCreatePostBody)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
 }
