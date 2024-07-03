@@ -44,7 +44,7 @@ export class ProfileValidator implements IValidator {
     }
     if (profile.countryofbirth === 'ZA') {
       if (!profile.sAId) {
-        profile.errors!['sAID'] = 'SA ID Number is required'
+        profile.errors!['sAId'] = 'SA ID Number is required'
       }
     }
   }
