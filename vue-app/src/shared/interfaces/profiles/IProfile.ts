@@ -8,7 +8,6 @@ export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
   localID?: string
 
   //Ankerdata
-  profileID: number
   title: string
   initial: string
   surname: string

@@ -8,7 +8,6 @@ export class Profile implements IProfile {
   localID?: string
 
   //Ankerdata
-  profileID: number
   title: string
   initial: string
   surname: string
@@ -103,7 +102,6 @@ export class Profile implements IProfile {
     this.localID = LocalIDFactory.createLocalID()
 
     //Ankerdata
-    this.profileID = 0
     this.title = ''
     this.initial = ''
     this.surname = ''
