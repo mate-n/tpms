@@ -44,7 +44,7 @@ const profileSearchUpdate = (searchString: string) => {
 
 const profileSelectedInProfileSearch = (profile: IProfile) => {
   profileSearchResults.value = [profile]
-  profileID.value = profile.profileID
+  profileID.value = profile.id
   profileSearchDialog.value = false
 }
 </script>
