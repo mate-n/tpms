@@ -17,7 +17,7 @@ const availableTableDataHeaders = ref([
   { key: 'surname', title: 'LAST NAME', selected: true },
   { key: 'name', title: 'FIRST NAME', selected: true },
   { key: 'company', title: 'COMPANY', selected: true },
-  { key: 'birthday', title: 'BIRTHDAY', selected: true },
+  { key: 'dateofbirth', title: 'BIRTHDAY', selected: true },
   { key: 'country', title: 'COUNTRY', selected: true },
   { key: 'language', title: 'LANGUAGE', selected: false },
   { key: 'select', title: 'SELECT', selected: true },
@@ -50,11 +50,7 @@ const editProfile = (profile: IProfile) => {
 </style>
 
 <template>
-  <v-container
-    fluid
-    v-if="profiles.length > 0"
-    class="bg-whithttp://localhost:8080/dashboarde px-0"
-  >
+  <v-container fluid v-if="profiles.length > 0" class="bg-white px-0">
     <v-data-table :headers="availableTableDataHeaders.filter((h) => h.selected)" :items="profiles">
       <template v-slot:[`header.avatar`]="{ column }">
         {{ column.title }}
