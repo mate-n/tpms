@@ -11,7 +11,6 @@ import type { IProperty } from '@/shared/interfaces/IProperty'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import ProfileService from '@/services/ProfileService'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
@@ -23,10 +22,12 @@ import { GuestsPerRoomHelper } from '@/helpers/GuestsPerRoomHelper'
 import ProfileSearchCard from '../profiles/ProfileSearchCard.vue'
 import { ProfileHelper } from '@/helpers/ProfileHelper'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
 const priceFormatter = new PriceFormatter()
 const profileHelper = new ProfileHelper()
 const ticketsService = new TicketService()
 const axios: AxiosStatic | undefined = inject('axios')
+const axios2: AxiosStatic | undefined = inject('axios2')
 const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
@@ -34,7 +35,7 @@ const property: Ref<IProperty | null> = ref(null)
 const profile: Ref<IProfile | null> = ref(null)
 const room: Ref<IRoom | null> = ref(null)
 const propertyService = new PropertyService(axios)
-const profileService = new ProfileService(axios)
+const profileService = new ProfileService(axios2)
 const roomService = new RoomService(axios)
 const dateFormatter = new DateFormatter()
 const dateHelper = new DateHelper()
@@ -56,7 +57,9 @@ onBeforeMount(() => {
 
   if (reservation.value.profileID) {
     profileService.get(reservation.value.profileID).then((response) => {
-      profile.value = response
+      if (response) {
+        profile.value = response
+      }
     })
   }
 })
@@ -107,7 +110,7 @@ onMounted(() => {
 })
 const profilesInDropdown: Ref<IProfile[]> = ref([])
 onBeforeMount(() => {
-  profileService.findAll().then((response: IProfile[]) => {
+  profileService.getAll().then((response: IProfile[]) => {
     profilesInDropdown.value = response
   })
 })
@@ -120,7 +123,9 @@ const profileSelected = (selectedProfile: IProfile) => {
 const emitChange = () => {
   if (reservation.value.profileID) {
     profileService.get(reservation.value.profileID).then((response) => {
-      changeProfileOfReservations(response)
+      if (response) {
+        changeProfileOfReservations(response)
+      }
     })
   }
 }
@@ -137,7 +142,9 @@ watch(
   (newValue) => {
     if (newValue) {
       profileService.get(newValue).then((response) => {
-        profile.value = response
+        if (response) {
+          profile.value = response
+        }
       })
     }
   }
