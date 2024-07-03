@@ -5,7 +5,6 @@ import { ReservationValidator } from '@/validators/ReservationValidator'
 import { RoomService } from '@/services/RoomService'
 import { CampService } from '@/services/protel/CampService'
 import type { AxiosStatic } from 'axios'
-import ProfileService from '@/services/ProfileService'
 import type { IReservation } from '@/shared/interfaces/IReservation'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
@@ -21,6 +20,7 @@ import ProtelAvailabilitiesSelecter from './ProtelAvailabilitiesSelecter.vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
 const priceFormatter = new PriceFormatter()
 const availabilityHelper = new AvailabilityHelper()
 const reservationHelper = new ReservationHelper()
@@ -29,7 +29,7 @@ const axios: AxiosStatic | undefined = inject('axios')
 const axios2: AxiosStatic | undefined = inject('axios2')
 
 const campService = new CampService(axios)
-const profileService = new ProfileService(axios)
+const profileService = new ProfileService(axios2)
 const roomService = new RoomService(axios)
 const dateHelper = new DateHelper()
 const reservationValidator = new ReservationValidator()
@@ -63,7 +63,7 @@ onBeforeMount(() => {
     roomsInDropdown.value = response
   })
 
-  profileService.findAll().then((response: IProfile[]) => {
+  profileService.getAll().then((response: IProfile[]) => {
     profilesInDropdown.value = response
   })
 })
