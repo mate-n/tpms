@@ -13,15 +13,16 @@ import type { IReservation } from '@/shared/interfaces/IReservation'
 import { Reservation } from '@/shared/classes/Reservation'
 import { ReservationValidator } from '@/validators/ReservationValidator'
 import { ReservationService } from '@/services/ReservationService'
-import ProfileService from '@/services/ProfileService'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { Profile } from '@/shared/classes/Profile'
 import ProfileGeneralForm from '../profiles/ProfileGeneralForm.vue'
 import ReservationCards from './ReservationCards.vue'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
 const reservationClass = new Reservation()
 const axios: AxiosStatic | undefined = inject('axios')
+const axios2: AxiosStatic | undefined = inject('axios2')
 const reservationService = new ReservationService(axios)
-const profileService = new ProfileService(axios)
+const profileService = new ProfileService(axios2)
 const reservationValidator = new ReservationValidator()
 const languageService = new LanguageService(axios)
 const salutationService = new SalutationService(axios)
@@ -47,13 +48,17 @@ onMounted(() => {
 })
 
 const getReservationWithProfilePromise = () => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     reservationToBeEdited.value = reservationClass.clone(props.reservationInput)
 
     if (reservationToBeEdited.value.guestProfileID) {
       profileService.get(reservationToBeEdited.value.guestProfileID).then((response) => {
-        profileAssociatedWithReservation.value = response
-        resolve(response)
+        if (response) {
+          profileAssociatedWithReservation.value = response
+          resolve(response)
+        } else {
+          reject()
+        }
       })
     }
   })
