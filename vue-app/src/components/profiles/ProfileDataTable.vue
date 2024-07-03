@@ -84,7 +84,7 @@ const editProfile = (profile: IProfile) => {
 
             <div v-if="header.key === 'avatar'">
               <div class="color-avatar-tertiary-10 text-white">
-                {{ row.item.name.charAt(0) }}
+                {{ row.item.name.charAt(0) }}{{ row.item.surname.charAt(0) }}
               </div>
             </div>
 
