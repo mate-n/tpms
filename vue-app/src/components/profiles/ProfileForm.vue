@@ -14,15 +14,18 @@ import type { ILanguage } from '@/shared/interfaces/ILanguage'
 import type { ISalutation } from '@/shared/interfaces/ISalutation'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { ProfileValidator } from '@/shared/validators/ProfileValidator'
-import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import { ValidityHelper } from '@/helpers/ValidityHelper'
 import StationeryCard from '../stationeries/StationeryCard.vue'
 import ReservationsCard from '../reservations/ReservationsCard.vue'
 import ProfileGeneralForm from './ProfileGeneralForm.vue'
 import ProfileMembershipCardsCard from './ProfileMembershipCardsCard.vue'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
+import { ProfileCreatePostBodyConverter } from '@/shared/converters/ProfileCreatePostBodyConverter'
+const profileCreatePostBodyConverter = new ProfileCreatePostBodyConverter()
 const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const profileService = new ProfileService(axios2)
 const profileValidator = new ProfileValidator()
 const languageService = new LanguageService(axios)
 const salutationService = new SalutationService(axios)
@@ -62,9 +65,15 @@ const save = () => {
     return
   }
   if (props.crudOperation === CrudOperations.Create) {
-    profileService.post(profileToBeEdited.value)
+    const profileCreatePostBody = profileCreatePostBodyConverter.convertToProfileCreatePostBody(
+      profileToBeEdited.value
+    )
+    profileService.create(profileCreatePostBody).then((response: any) => {
+      console.log('response', response)
+      alert(response['message'])
+    })
   } else if (props.crudOperation === CrudOperations.Update) {
-    profileService.put(profileToBeEdited.value)
+    //profileService.put(profileToBeEdited.value)
   }
   emit('save', profileToBeEdited.value)
 }
