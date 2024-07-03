@@ -6,7 +6,7 @@ export interface IProfileLookUpPostBody {
   sAID: string | undefined
   passportno: string | undefined
   roomseekerclientcode: string | undefined
-  tpmsProfileID: number | undefined
+  profileID: number | undefined
   wildcardnumber: string | undefined
   loyaltynumber: string | undefined
 }
