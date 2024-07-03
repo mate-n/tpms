@@ -168,6 +168,7 @@ const updateSelectedProtelAvailabilityGroups = () => {
       selectBars.value = selectBars.value.filter((s) => s.id !== selectBar.id)
     } else {
       selectBar.protelAvailabilityGroup.guestsPerRoom = reservation.value.guestsPerRoom
+      selectBar.protelAvailabilityGroup.profileID = reservation.value.profileID
       reservation.value.selectedProtelAvailabilityGroups.push(selectBar.protelAvailabilityGroup)
     }
   }
