@@ -69,7 +69,6 @@ const save = () => {
       profileToBeEdited.value
     )
     profileService.create(profileCreatePostBody).then((response: any) => {
-      console.log('response', response)
       alert(response['message'])
     })
   } else if (props.crudOperation === CrudOperations.Update) {
