@@ -16,8 +16,7 @@ export class ProfileLookUpPostBodyHelper {
       profile.loyaltynumber = profileLookUpPostBody.loyaltynumber
     if (profileLookUpPostBody.roomseekerclientcode)
       profile.roomSeekerClientCode = profileLookUpPostBody.roomseekerclientcode
-    if (profileLookUpPostBody.tpmsProfileID)
-      profile.tpmsProfileID = profileLookUpPostBody.tpmsProfileID
+    if (profileLookUpPostBody.profileID) profile.tpmsProfileID = profileLookUpPostBody.profileID
     return profile
   }
 }
