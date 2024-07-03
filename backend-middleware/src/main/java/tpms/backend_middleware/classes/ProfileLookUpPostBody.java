@@ -8,7 +8,7 @@ public class ProfileLookUpPostBody {
     public String SAId;
     public String passportno;
     public String roomseekerclientcode;
-    public int tpmsProfileID;
+    public Integer profileID;
     public String wildcardnumber;
     public String loyaltynumber;
 }
