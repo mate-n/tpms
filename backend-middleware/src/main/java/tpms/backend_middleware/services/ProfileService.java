@@ -54,6 +54,7 @@ public class ProfileService {
                                 MediaType.parse("application/json"));
 
                 OkHttpClient client = new OkHttpClient().newBuilder()
+                                .pingInterval(5, TimeUnit.SECONDS)
                                 .build();
                 Request request = new Request.Builder()
                                 .url("https://ankerws.ankerdata.co.za/IProfileService/create/v1/index.php")
