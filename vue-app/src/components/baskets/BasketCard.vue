@@ -6,6 +6,7 @@ import router from '@/router'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import { AvailabilityGroupHelper } from '@/helpers/AvailabilityGroupHelper'
 import AvailabilityGroupInBasketCard from './AvailabilityGroupInBasketCard.vue'
+import ConservationFeeForm from '@/components/conservation-fees/ConservationFeeForm.vue'
 const availabilityGroupHelper = new AvailabilityGroupHelper()
 const priceFormatter = new PriceFormatter()
 const basketItemsStore = useBasketItemsStore()
@@ -58,6 +59,8 @@ const availabilityGroups = computed(() => {
     basketItemsStore.reservations
   )
 })
+
+const conservationFeeFormDialog = ref(false)
 </script>
 
 <template>
@@ -86,8 +89,9 @@ const availabilityGroups = computed(() => {
             </p>
           </v-card-text>
         </v-card>
-        <div></div>
-
+        <v-btn class="me-2" elevation="4" @click="conservationFeeFormDialog = true"
+          >Conservation Fees</v-btn
+        >
         <v-btn style="background-color: green; color: white" elevation="4" @click="clickOnBook()"
           >BOOK</v-btn
         >
@@ -133,6 +137,11 @@ const availabilityGroups = computed(() => {
           <v-btn class="primary-button" @click="clickOnOkInConfirmedDialog()">OK</v-btn>
         </div>
       </v-card-text>
+    </v-card>
+  </v-dialog>
+  <v-dialog v-model="conservationFeeFormDialog" scrollable>
+    <v-card>
+      <ConservationFeeForm></ConservationFeeForm>
     </v-card>
   </v-dialog>
 </template>
