@@ -1,17 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
-import { IBookableObject } from 'src/shared/interfaces/IBookableObject';
-import { ICommunicationMethod } from 'src/shared/interfaces/ICommunicationMethod';
-import { ICountry } from 'src/shared/interfaces/ICountry';
-import { IFeature } from 'src/shared/interfaces/IFeature';
-import { IGender } from 'src/shared/interfaces/IGender';
-import { IGuestMarketCode } from 'src/shared/interfaces/IGuestMarketCode';
-import { IGuestTravelDocument } from 'src/shared/interfaces/IGuestTravelDocument';
-import { IGuestType } from 'src/shared/interfaces/IGuestType';
-import { IKeyword } from 'src/shared/interfaces/IKeyword';
-import { ILanguage } from 'src/shared/interfaces/ILanguage';
-import { INationality } from 'src/shared/interfaces/INationality';
-import { IRate } from 'src/shared/interfaces/IRate';
-import { ISalutation } from 'src/shared/interfaces/ISalutation';
+import { Controller, Get } from '@nestjs/common'
+import { IBookableObject } from 'src/shared/interfaces/IBookableObject'
+import { ICommunicationMethod } from 'src/shared/interfaces/ICommunicationMethod'
+import { ICountry } from 'src/shared/interfaces/ICountry'
+import { IFeature } from 'src/shared/interfaces/IFeature'
+import { IGender } from 'src/shared/interfaces/IGender'
+import { IGuestMarketCode } from 'src/shared/interfaces/IGuestMarketCode'
+import { IGuestTravelDocument } from 'src/shared/interfaces/IGuestTravelDocument'
+import { IGuestType } from 'src/shared/interfaces/IGuestType'
+import { IKeyword } from 'src/shared/interfaces/IKeyword'
+import { ILanguage } from 'src/shared/interfaces/ILanguage'
+import { INationality } from 'src/shared/interfaces/INationality'
+import { IRate } from 'src/shared/interfaces/IRate'
+import { ISalutation } from 'src/shared/interfaces/ISalutation'
 
 @Controller('v1/dropdowns')
 export class DropdownsController {
@@ -38,7 +38,7 @@ export class DropdownsController {
         id: 4,
         value: 'Travel Agency',
       },
-    ];
+    ]
   }
 
   @Get('guest-market-codes')
@@ -48,7 +48,7 @@ export class DropdownsController {
         id: 151,
         value: 'WBE Login',
       },
-    ];
+    ]
   }
 
   @Get('salutations')
@@ -78,7 +78,7 @@ export class DropdownsController {
         id: 12,
         value: 'Prof.',
       },
-    ];
+    ]
   }
 
   @Get('languages')
@@ -356,7 +356,7 @@ export class DropdownsController {
         id: 'vi_VN',
         value: 'Vietnamese',
       },
-    ];
+    ]
   }
 
   @Get('keywords')
@@ -374,7 +374,7 @@ export class DropdownsController {
         id: 159,
         value: 'Prospektanfrage',
       },
-    ];
+    ]
   }
 
   @Get('features')
@@ -388,7 +388,7 @@ export class DropdownsController {
         id: 2,
         value: 'Twin Bed',
       },
-    ];
+    ]
   }
 
   @Get('rates')
@@ -406,7 +406,7 @@ export class DropdownsController {
         isDefault: false,
         confidential: false,
       },
-    ];
+    ]
   }
 
   @Get('countries')
@@ -1416,12 +1416,16 @@ export class DropdownsController {
         id: 'ZW',
         value: 'Zimbabwe',
       },
-    ];
+    ]
   }
 
   @Get('nationalities')
   nationalities(): INationality[] {
     return [
+      {
+        id: 'ZA',
+        value: 'South African',
+      },
       {
         id: 'AX',
         value: 'Aaland Islands',
@@ -2426,7 +2430,7 @@ export class DropdownsController {
         id: 'ZW',
         value: 'Zimbabwean',
       },
-    ];
+    ]
   }
 
   @Get('genders')
@@ -2456,7 +2460,7 @@ export class DropdownsController {
         id: 'OPEN',
         value: 'Open',
       },
-    ];
+    ]
   }
 
   @Get('guest-travel-documents')
@@ -2478,7 +2482,7 @@ export class DropdownsController {
         id: 162,
         value: 'Passport',
       },
-    ];
+    ]
   }
 
   @Get('communication-methods')
@@ -2500,7 +2504,7 @@ export class DropdownsController {
         id: 149,
         value: 'Skype',
       },
-    ];
+    ]
   }
 
   @Get('bookable-objects')
@@ -2546,6 +2550,6 @@ export class DropdownsController {
         id: 128,
         value: '010',
       },
-    ];
+    ]
   }
 }

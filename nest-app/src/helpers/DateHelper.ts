@@ -3,7 +3,7 @@ export class DateHelper {
     const arrival = new Date(arrivalDate)
     const departure = new Date(departureDate)
     const timeDifference = departure.getTime() - arrival.getTime()
-    return Math.ceil(timeDifference / (1000 * 3600 * 24))
+    return Math.ceil(timeDifference / (1000 * 3600 * 24)) - 1
   }
 
   getDateString(date: Date): string {
@@ -28,5 +28,11 @@ export class DateHelper {
   getYYYYMMDDFromDate(date: Date): string {
     const dateISOString = date.toISOString()
     return dateISOString.substring(0, dateISOString.indexOf('T'))
+  }
+
+  getTodayDate(): Date {
+    const date = new Date()
+    date.setHours(0, 0, 0, 0)
+    return date
   }
 }

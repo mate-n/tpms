@@ -3,7 +3,6 @@ import { Profile } from '@/shared/classes/Profile'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { computed, inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileGeneralForm from '@/components/profiles/ProfileGeneralForm.vue'
-import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
@@ -11,6 +10,7 @@ import { CloneHelper } from '@/helpers/CloneHelper'
 import ReservationSlice from './ReservationSlice.vue'
 import type { IReservationSelectable } from '@/shared/interfaces/reservations/IReservationSelectable'
 import ReservationCards from '@/components/reservations/ReservationCards.vue'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
 
 const cloneHelper = new CloneHelper()
 const props = defineProps({
@@ -19,8 +19,8 @@ const props = defineProps({
 const reservationSelectables: Ref<IReservationSelectable[]> = ref([])
 const itineraryReservationToBeEdited = ref<IItineraryReservation>(new ItineraryReservation())
 const profileAssociatedWithItineraryReservation = ref<IProfile>(new Profile())
-const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const profileService = new ProfileService(axios2)
 onMounted(() => {
   cloneAndGetProfile()
 })
@@ -40,7 +40,9 @@ const cloneAndGetProfile = () => {
     props.itineraryReservationInput.reservations[0].id
   ) {
     profileService.get(props.itineraryReservationInput.reservations[0].id).then((res) => {
-      profileAssociatedWithItineraryReservation.value = res
+      if (res) {
+        profileAssociatedWithItineraryReservation.value = res
+      }
     })
   }
 }
@@ -66,14 +68,15 @@ const selectedReservation = computed(() => {
   <v-toolbar class="bg-primary">
     <v-toolbar-title
       ><v-icon>mdi-account-circle-outline</v-icon>
-      {{ profileAssociatedWithItineraryReservation.firstName }}
-      {{ profileAssociatedWithItineraryReservation.lastName }}</v-toolbar-title
+      {{ profileAssociatedWithItineraryReservation.name }}
+      {{ profileAssociatedWithItineraryReservation.surname }}</v-toolbar-title
     >
   </v-toolbar>
   <ProfileGeneralForm v-model="profileAssociatedWithItineraryReservation"></ProfileGeneralForm>
   <v-toolbar class="bg-lightgray">
     <div class="h-100 d-flex px-5 align-center me-auto font-size-rem-14">
-      Itinerary Reservations <v-icon class="mx-3" size="x-small">mdi-arrow-right</v-icon> #{{
+      Itinerary Reservations
+      <v-icon class="mx-3" size="x-small">mdi-arrow-right</v-icon> #{{
         itineraryReservationToBeEdited.id
       }}
     </div>

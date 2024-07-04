@@ -4,8 +4,10 @@ import { Reservation } from '@/shared/classes/Reservation'
 import type { AxiosStatic } from 'axios'
 import type { Ref } from 'vue'
 import { inject, onMounted, ref } from 'vue'
-import EditReservation from '@/components/reservations/EditReservation.vue'
 import type { IReservation } from '@/shared/interfaces/IReservation'
+import EditReservationCard from '@/components/reservations/EditReservationCard.vue'
+import router from '@/router'
+
 const axios: AxiosStatic | undefined = inject('axios')
 const reservationService = new ReservationService(axios)
 
@@ -22,8 +24,15 @@ onMounted(() => {
     })
   }
 })
+
+const goToReservation = () => {
+  router.push('/reservations')
+}
 </script>
 
 <template>
-  <EditReservation :reservation-input="reservation"></EditReservation>
+  <EditReservationCard
+    :reservation-input="reservation"
+    @close="goToReservation()"
+  ></EditReservationCard>
 </template>

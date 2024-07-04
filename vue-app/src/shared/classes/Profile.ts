@@ -1,17 +1,38 @@
 import { LocalIDFactory } from '../../shared/factories/LocalIDFactory'
 import type { IProfile } from '../../shared/interfaces/profiles/IProfile'
+import type { IProfileCommunication } from '../interfaces/profiles/IProfileCommunication'
+import type { IProfileMembershipCard } from '../interfaces/profiles/IProfileMembershipCard'
 
 export class Profile implements IProfile {
   id?: number
   localID?: string
 
-  //General
+  //Ankerdata
+  title: string
+  initial: string
+  surname: string
   name: string
-  firstName: string
-  lastName: string
+  email: string
+  telephone: string
+  mobile: string
+  address: string
+  city: string
+  postalCode: string
+  country: string
+  dateofbirth: Date | undefined
+  gender: string
+  roomseekerclientcode: string
+  sAId: string
+  passportno: string
+  countryofbirth: string
+  wildcardnumber: string
+  loyaltynumber: string
+  marketing: string
+  reservationsms: string
+
+  //General
   middleName: string
   postNominalTitle: string
-  email: string
   language: string
   phone: string
   deibitorAccount: string
@@ -25,19 +46,20 @@ export class Profile implements IProfile {
   isPasserby: boolean
   department: string
   iataCode: string
+  roomSeekerClientCode: string
+  tpmsProfileID: number | undefined
+  loyaltyMembershipNumber: number | undefined
+  wildcardMembershipNumber: number | undefined
 
   //Communications / Contact details
   communicationIDs: number[]
+  communications: IProfileCommunication[]
 
   //Addresses
   addressIDs: number[]
 
   //Personal Info
   birthPlace: string
-  birthCountry: string
-  birthday: Date
-  gender: string
-  nationality: string
 
   //Additional Info
   companyID: number | undefined
@@ -61,6 +83,7 @@ export class Profile implements IProfile {
 
   //Membership Cards
   membershipCardIDs: number[]
+  membershipCards: IProfileMembershipCard[]
 
   //Documents
   documentIDs: number[]
@@ -78,10 +101,30 @@ export class Profile implements IProfile {
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
 
+    //Ankerdata
+    this.title = ''
+    this.initial = ''
+    this.surname = ''
+    this.name = ''
+    this.email = ''
+    this.telephone = ''
+    this.mobile = ''
+    this.address = ''
+    this.city = ''
+    this.postalCode = ''
+    this.country = ''
+    this.gender = ''
+    this.roomseekerclientcode = ''
+    this.sAId = ''
+    this.passportno = ''
+    this.countryofbirth = ''
+    this.wildcardnumber = ''
+    this.loyaltynumber = ''
+    this.marketing = ''
+    this.reservationsms = ''
+
     //General
     this.name = ''
-    this.firstName = ''
-    this.lastName = ''
     this.middleName = ''
     this.postNominalTitle = ''
     this.email = ''
@@ -98,19 +141,17 @@ export class Profile implements IProfile {
     this.isPasserby = false
     this.department = ''
     this.iataCode = ''
+    this.roomSeekerClientCode = ''
 
     //Communications / Contact details
     this.communicationIDs = []
+    this.communications = []
 
     //Addresses
     this.addressIDs = []
 
     //Personal Info
     this.birthPlace = ''
-    this.birthCountry = ''
-    this.birthday = new Date()
-    this.gender = ''
-    this.nationality = ''
 
     //Additional Info
     this.companyID = undefined
@@ -134,6 +175,7 @@ export class Profile implements IProfile {
 
     //Membership Cards
     this.membershipCardIDs = []
+    this.membershipCards = []
 
     //Documents
     this.documentIDs = []

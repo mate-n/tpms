@@ -14,14 +14,21 @@ import type { ILanguage } from '@/shared/interfaces/ILanguage'
 import type { ISalutation } from '@/shared/interfaces/ISalutation'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { ProfileValidator } from '@/shared/validators/ProfileValidator'
-import ProfileService from '@/services/ProfileService'
 import type { AxiosStatic } from 'axios'
 import { ValidityHelper } from '@/helpers/ValidityHelper'
 import StationeryCard from '../stationeries/StationeryCard.vue'
 import ReservationsCard from '../reservations/ReservationsCard.vue'
 import ProfileGeneralForm from './ProfileGeneralForm.vue'
+import ProfileMembershipCardsCard from './ProfileMembershipCardsCard.vue'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
+import { ProfileCreatePostBodyConverter } from '@/shared/converters/ProfileCreatePostBodyConverter'
+import type { IProfileCreateResponseBody } from '@/shared/interfaces/profiles/IProfileCreateResponseBody'
+import router from '@/router'
+
+const profileCreatePostBodyConverter = new ProfileCreatePostBodyConverter()
 const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const profileService = new ProfileService(axios2)
 const profileValidator = new ProfileValidator()
 const languageService = new LanguageService(axios)
 const salutationService = new SalutationService(axios)
@@ -35,6 +42,7 @@ const profileToBeEdited = ref<IProfile>(new Profile())
 const emit = defineEmits(['save'])
 const languages: Ref<ILanguage[]> = ref([])
 const salutations: Ref<ISalutation[]> = ref([])
+
 onMounted(() => {
   languageService.getAvailableLanguages().then((response) => {
     languages.value = response
@@ -43,10 +51,12 @@ onMounted(() => {
     salutations.value = response
   })
   profileToBeEdited.value = cloneHelper.clone(props.profileInput)
+  validate()
 })
 
 watch(props, (newInput) => {
   profileToBeEdited.value = cloneHelper.clone(newInput.profileInput)
+  validate()
 })
 
 const validate = () => {
@@ -59,9 +69,19 @@ const save = () => {
     return
   }
   if (props.crudOperation === CrudOperations.Create) {
-    profileService.post(profileToBeEdited.value)
+    const profileCreatePostBody = profileCreatePostBodyConverter.convertToProfileCreatePostBody(
+      profileToBeEdited.value
+    )
+    profileService
+      .create(profileCreatePostBody)
+      .then((profileCreateResponseBody: IProfileCreateResponseBody) => {
+        router.push({
+          name: 'edit profile',
+          params: { profileID: profileCreateResponseBody.ProfileID }
+        })
+      })
   } else if (props.crudOperation === CrudOperations.Update) {
-    profileService.put(profileToBeEdited.value)
+    //profileService.put(profileToBeEdited.value)
   }
   emit('save', profileToBeEdited.value)
 }
@@ -143,7 +163,7 @@ const reservationsCardDialog = ref(false)
   <v-container fluid class="bg-lightgray pt-0">
     <v-row>
       <v-col class="pr-0 profiles-card-column">
-        <ProfileContactDetailsCard :profile="profileToBeEdited"></ProfileContactDetailsCard>
+        <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
         <ProfileAddressCard :profile="profileToBeEdited"></ProfileAddressCard>
@@ -159,7 +179,9 @@ const reservationsCardDialog = ref(false)
       <v-col class="pr-0 profiles-card-column">
         <ProfilePreferencesCard v-model="profileToBeEdited"></ProfilePreferencesCard>
       </v-col>
-      <v-col class="pr-0 profiles-card-column"> </v-col>
+      <v-col class="pr-0 profiles-card-column">
+        <ProfileMembershipCardsCard v-model="profileToBeEdited"></ProfileMembershipCardsCard>
+      </v-col>
     </v-row>
   </v-container>
 

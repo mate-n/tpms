@@ -1,16 +1,39 @@
 import type { IEntityWithErrors } from '../IEntityWithErrors'
 import type { IEntityWithIdentity } from '../IEntityWithIdentity'
+import type { IProfileCommunication } from './IProfileCommunication'
+import type { IProfileMembershipCard } from './IProfileMembershipCard'
 
 export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
-  //General
+  id?: number
+  localID?: string
+
+  //Ankerdata
+  title: string
+  initial: string
+  surname: string
   name: string
-  firstName: string
-  lastName: string
+  email: string
+  telephone: string
+  mobile: string
+  address: string
+  city: string
+  postalCode: string
+  country: string
+  dateofbirth: Date | undefined
+  gender: string
+  roomseekerclientcode: string
+  sAId: string
+  passportno: string
+  countryofbirth: string
+  wildcardnumber: string
+  loyaltynumber: string
+  marketing: string
+  reservationsms: string
+
+  //General
   middleName: string
   postNominalTitle: string
-  email: string
   language: string
-  phone: string
   deibitorAccount: string
   salesTaxNumber: string
   salesTaxNumber2: string
@@ -22,19 +45,19 @@ export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
   isPasserby: boolean
   department: string
   iataCode: string
+  tpmsProfileID: number | undefined
+  loyaltyMembershipNumber: number | undefined
+  wildcardMembershipNumber: number | undefined
 
   //Communications / Contact details
   communicationIDs: number[]
+  communications: IProfileCommunication[]
 
   //Addresses
   addressIDs: number[]
 
   //Personal Info
   birthPlace: string
-  birthCountry: string
-  birthday: Date
-  gender: string
-  nationality: string
 
   //Additional Info
   companyID: number | undefined
@@ -58,6 +81,7 @@ export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
 
   //Membership Cards
   membershipCardIDs: number[]
+  membershipCards: IProfileMembershipCard[]
 
   //Documents
   documentIDs: number[]

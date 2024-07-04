@@ -4,11 +4,12 @@ import type { IRate } from '@/shared/interfaces/IRate'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileSearch from './ProfileSearch.vue'
-import ProfileService from '@/services/ProfileService'
-import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
 import type { AxiosStatic } from 'axios'
+import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
 const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const profileService = new ProfileService(axios2)
 const rateService = new RateService(axios)
 const availableRates = ref<IRate[]>([])
 const profileToBeEdited = defineModel({
@@ -21,7 +22,7 @@ onMounted(() => {
     availableRates.value = response
   })
 
-  profileService.search({}).then((response) => {
+  profileService.getAll().then((response) => {
     companies.value = response
   })
 })
@@ -35,24 +36,16 @@ const profileSelected = (profile: IProfile) => {
 const companies: Ref<IProfile[]> = ref([])
 watch(profileToBeEdited, () => {}, { deep: true })
 
-const companyUpdateSearch = (input: any) => {
+const companyUpdateSearch = () => {
   companySearchLoading.value = true
-  const profileSearch: IProfileSearch = {
-    name: input,
-    guestTypeID: 3
-  }
 
-  profileService.search(profileSearch).then((response) => {
+  profileService.getAll().then((response) => {
     companySearchLoading.value = false
     companies.value = response
   })
 }
 
 const companySearchLoading = ref(false)
-
-const profileSearchInput: IProfileSearch = {
-  guestTypeID: 2
-}
 </script>
 
 <template>
@@ -95,11 +88,24 @@ const profileSearchInput: IProfileSearch = {
         variant="underlined"
       ></v-text-field>
     </v-col>
+    <v-col> </v-col>
+  </v-row>
+
+  <v-row>
     <v-col>
       <v-text-field
-        v-model="profileToBeEdited.passport"
-        label="Passport Number"
+        label="Roomseker ID"
+        v-model="profileToBeEdited.roomseekerclientcode"
         variant="underlined"
+        type="number"
+      ></v-text-field>
+    </v-col>
+    <v-col>
+      <v-text-field
+        v-model="profileToBeEdited.tpmsProfileID"
+        label="TPMS-Profile ID"
+        variant="underlined"
+        type="number"
       ></v-text-field>
     </v-col>
   </v-row>
@@ -107,7 +113,7 @@ const profileSearchInput: IProfileSearch = {
   <v-dialog v-model="profileSearchDialog" fullscreen scrollable>
     <v-card>
       <ProfileSearch
-        :profile-search-input="profileSearchInput"
+        :profile-look-up-post-body="new ProfileLookUpPostBody()"
         @close="profileSearchDialog = false"
         @profile-selected="(profile) => profileSelected(profile)"
       ></ProfileSearch>

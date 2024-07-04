@@ -6,8 +6,8 @@ export class ProfilesFaker {
   create(): IProfile {
     const profile = new Profile()
     profile.id = faker.number.int()
-    profile.firstName = faker.person.firstName()
-    profile.lastName = faker.person.lastName()
+    profile.name = faker.person.firstName()
+    profile.surname = faker.person.lastName()
     profile.middleName = faker.person.middleName()
     profile.email = faker.internet.email()
     profile.language = faker.location.countryCode()
@@ -24,10 +24,8 @@ export class ProfilesFaker {
     profile.communicationIDs = [faker.number.int(), faker.number.int()]
     profile.addressIDs = [faker.number.int(), faker.number.int()]
     profile.birthPlace = faker.location.city()
-    profile.birthCountry = faker.location.country()
-    profile.birthday = faker.date.past()
+    profile.dateofbirth = faker.date.past()
     profile.gender = faker.person.gender()
-    profile.nationality = faker.location.countryCode()
     profile.companyID = faker.number.int(3)
     profile.occupation = faker.person.jobTitle()
     profile.additionalInfoDefaultRateIDs = [faker.number.int(), faker.number.int()]

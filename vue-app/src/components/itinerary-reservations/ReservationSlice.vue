@@ -10,7 +10,7 @@ const props = defineProps({
 const emits = defineEmits(['selectReservation'])
 
 const imageUrl = computed(() => {
-  return `https://source.unsplash.com/random/?africa nature?sig=${Math.random()}`
+  return `https://picsum.photos/300/300?sig=${Math.random()}`
 })
 
 const datesDivClass = computed(() => {

@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePropertyDto } from '../dto/create-property.dto';
-import { UpdatePropertyDto } from '../dto/update-property.dto';
-import { IPropertyAvailabilitySearch } from 'src/shared/interfaces/availability/IPropertyAvailabilitySearch';
-import { IPropertyAvailability } from 'src/shared/interfaces/availability/IPropertyAvailability';
-import { IProperty } from 'src/shared/interfaces/IProperty';
+import { Injectable } from '@nestjs/common'
+import { CreatePropertyDto } from '../dto/create-property.dto'
+import { UpdatePropertyDto } from '../dto/update-property.dto'
+import { IPropertyAvailabilitySearch } from 'src/shared/interfaces/availability/IPropertyAvailabilitySearch'
+import { IPropertyAvailability } from 'src/shared/interfaces/availability/IPropertyAvailability'
+import { IProperty } from 'src/shared/interfaces/IProperty'
 
 @Injectable()
 export class PropertiesService {
   create(createPropertyDto: CreatePropertyDto) {
-    return 'This action adds a new property';
+    return 'This action adds a new property'
   }
 
   findAll() {
@@ -53,22 +53,22 @@ export class PropertiesService {
         name: 'Unions End',
         id: 3608,
       },
-    ];
+    ]
   }
 
   findOne(id: number): IProperty {
     return {
       name: 'Kalahari Tented Camp',
       id: 3599,
-    };
+    }
   }
 
   update(id: number, updatePropertyDto: UpdatePropertyDto) {
-    return `This action updates a #${id} property`;
+    return `This action updates a #${id} property`
   }
 
   remove(id: number) {
-    return `This action removes a #${id} property`;
+    return `This action removes a #${id} property`
   }
 
   search(
@@ -144,6 +144,6 @@ export class PropertiesService {
           },
         ],
       },
-    ];
+    ]
   }
 }

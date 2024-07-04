@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import { CrudOperations } from '@/enums/CrudOperations'
-import { CloneHelper } from '@/helpers/CloneHelper'
 import { LanguageService } from '@/services/LanguageService'
 import { SalutationService } from '@/services/SalutationService'
 import type { ILanguage } from '@/shared/interfaces/ILanguage'
@@ -14,19 +13,19 @@ import type { IReservation } from '@/shared/interfaces/IReservation'
 import { Reservation } from '@/shared/classes/Reservation'
 import { ReservationValidator } from '@/validators/ReservationValidator'
 import { ReservationService } from '@/services/ReservationService'
-import ProfileService from '@/services/ProfileService'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { Profile } from '@/shared/classes/Profile'
 import ProfileGeneralForm from '../profiles/ProfileGeneralForm.vue'
 import ReservationCards from './ReservationCards.vue'
-
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
+const reservationClass = new Reservation()
 const axios: AxiosStatic | undefined = inject('axios')
+const axios2: AxiosStatic | undefined = inject('axios2')
 const reservationService = new ReservationService(axios)
-const profileService = new ProfileService(axios)
+const profileService = new ProfileService(axios2)
 const reservationValidator = new ReservationValidator()
 const languageService = new LanguageService(axios)
 const salutationService = new SalutationService(axios)
-const cloneHelper = new CloneHelper()
 const validityHelper = new ValidityHelper()
 const props = defineProps({
   reservationInput: { type: Object as () => IReservation, required: true },
@@ -49,13 +48,17 @@ onMounted(() => {
 })
 
 const getReservationWithProfilePromise = () => {
-  return new Promise((resolve) => {
-    reservationToBeEdited.value = cloneHelper.clone(props.reservationInput)
+  return new Promise((resolve, reject) => {
+    reservationToBeEdited.value = reservationClass.clone(props.reservationInput)
 
     if (reservationToBeEdited.value.guestProfileID) {
       profileService.get(reservationToBeEdited.value.guestProfileID).then((response) => {
-        profileAssociatedWithReservation.value = response
-        resolve(response)
+        if (response) {
+          profileAssociatedWithReservation.value = response
+          resolve(response)
+        } else {
+          reject()
+        }
       })
     }
   })
@@ -92,8 +95,8 @@ const reservationsCardDialog = ref(false)
   <v-toolbar class="bg-primary">
     <v-toolbar-title
       ><v-icon>mdi-account-circle-outline</v-icon>
-      {{ profileAssociatedWithReservation.firstName }}
-      {{ profileAssociatedWithReservation.lastName }}</v-toolbar-title
+      {{ profileAssociatedWithReservation.name }}
+      {{ profileAssociatedWithReservation.surname }}</v-toolbar-title
     >
   </v-toolbar>
   <ProfileGeneralForm
@@ -114,34 +117,68 @@ const reservationsCardDialog = ref(false)
         >{{ $t('actions.save') }}</v-btn
       >
     </div>
-    <v-tooltip text="Stationery">
+    <v-tooltip text="Reservation color">
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" icon class="profiles-icon-button">
           <v-icon>mdi-circle</v-icon>
         </v-btn>
       </template>
     </v-tooltip>
-    <v-tooltip text="Stationery">
+    <v-tooltip text="Wake-up calls">
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" icon class="profiles-icon-button">
           <v-icon>mdi-phone</v-icon>
         </v-btn>
       </template>
     </v-tooltip>
-    <v-tooltip text="Stationery">
+    <v-tooltip text="Tax Override">
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" icon class="profiles-icon-button">
           <v-icon>mdi-percent-outline</v-icon>
         </v-btn>
       </template>
     </v-tooltip>
-    <v-tooltip text="Stationery">
+    <v-tooltip text="Credit card management">
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" icon class="profiles-icon-button">
           <v-icon>mdi-credit-card-outline</v-icon>
         </v-btn>
       </template>
     </v-tooltip>
+    <v-tooltip text="Fixed Charges">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-calendar-range-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+
+    <v-tooltip text="Routing">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-hub</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+
+    <v-tooltip text="Policies">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-gavel</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+
+    <v-tooltip text="External Link">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon class="profiles-icon-button">
+          <v-icon>mdi-link</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+    <v-btn v-bind="props" icon>
+      <v-icon>mdi-dots-vertical</v-icon>
+    </v-btn>
   </v-toolbar>
 
   <ReservationCards v-model="reservationToBeEdited"></ReservationCards>

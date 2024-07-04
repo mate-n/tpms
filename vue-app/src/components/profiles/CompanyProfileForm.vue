@@ -52,14 +52,14 @@ onMounted(() => {
           class="me-3"
         ></v-text-field>
         <v-text-field
-          v-model="profileToBeEdited.firstName"
+          v-model="profileToBeEdited.name"
           label="Contact First Name"
           variant="underlined"
           class="me-3"
           aria-required="true"
         ></v-text-field>
         <v-text-field
-          v-model="profileToBeEdited.lastName"
+          v-model="profileToBeEdited.surname"
           label="Contact Last Name"
           variant="underlined"
           class="me-3"

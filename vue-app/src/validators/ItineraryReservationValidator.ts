@@ -14,9 +14,9 @@ export class ItineraryReservationValidator {
           reservations[i - 1].departureDate
         )
         if (!isSameDay) {
-          reservations[i].addIssue('Reservation dates do not match up')
+          //reservations[i].addIssue('Reservation dates do not match up')
         } else {
-          reservations[i].removeIssue('Reservation dates do not match up')
+          //reservations[i].removeIssue('Reservation dates do not match up')
         }
         const isTravelDistanceTooFar =
           this.travelDistanceChecker.isDistanceIsPossibleToTravelWithinADay(
@@ -30,5 +30,16 @@ export class ItineraryReservationValidator {
         }
       }
     }
+  }
+
+  getErrors(reservations: IReservation[]): string[] {
+    const errors: string[] = []
+    for (const reservation of reservations) {
+      for (const key in reservation.errors) {
+        const data = reservation.errors[key]
+        errors.push(data)
+      }
+    }
+    return errors
   }
 }

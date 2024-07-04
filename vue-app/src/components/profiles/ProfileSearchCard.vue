@@ -1,24 +1,25 @@
 <script setup lang="ts">
-import ProfileService from '@/services/ProfileService'
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import NewProfile from './NewProfile.vue'
 import EditProfile from './EditProfile.vue'
 import { GuestTypeService } from '@/services/GuestTypeService'
 import { Profile } from '@/shared/classes/Profile'
-import { ProfileSearch } from '@/shared/classes/ProfileSearch'
 import type { IGuestType } from '@/shared/interfaces/IGuestType'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import type { IProfileSearch } from '@/shared/interfaces/profiles/IProfileSearch'
 import { CloneHelper } from '@/helpers/CloneHelper'
 import type { AxiosStatic } from 'axios'
 import ProfileSearchVue from './ProfileSearch.vue'
+import type { IProfileLookUpPostBody } from '@/shared/interfaces/profiles/IProfileLookUpPostBody'
+import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
 const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const profileService = new ProfileService(axios2)
 const guestTypes: Ref<IGuestType[]> = ref([])
 const guestTypeService = new GuestTypeService(axios)
 const emit = defineEmits(['close', 'profileSelected'])
 const close = () => emit('close')
-const profileSearch: Ref<IProfileSearch> = ref(new ProfileSearch())
+const profileLookUpPostBody: Ref<IProfileLookUpPostBody> = ref(new ProfileLookUpPostBody())
 const profileFromInputFields = ref<IProfile>(new Profile())
 const newProfileDialog = ref(false)
 const editProfileDialog = ref(false)
@@ -27,7 +28,7 @@ const cloneHelper = new CloneHelper()
 const profileToBeEdited = ref<IProfile>(new Profile())
 const foundProfiles: Ref<IProfile[]> = ref([])
 const search = () => {
-  profileService.search(profileSearch.value).then((response) => {
+  profileService.getAll().then((response) => {
     foundProfiles.value = response
   })
 }
@@ -46,8 +47,8 @@ const availableTableDataHeaders = ref([
 
 const openNewProfileDialog = () => {
   const profile = new Profile()
-  if (profileSearch.value.name) profile.lastName = profileSearch.value.name
-  if (profileSearch.value.email) profile.email = profileSearch.value.email
+  if (profileLookUpPostBody.value.name) profile.surname = profileLookUpPostBody.value.name
+  if (profileLookUpPostBody.value.email) profile.email = profileLookUpPostBody.value.email
   profileFromInputFields.value = profile
   newProfileDialog.value = true
 }
@@ -82,18 +83,22 @@ onMounted(() => {
 })
 
 const props = defineProps({
-  profileSearchInput: { type: Object as () => IProfileSearch, required: false }
+  profileLookUpPostBodyInput: { type: Object as () => IProfileLookUpPostBody, required: false }
 })
 
 watch(
   props,
   (newInput) => {
-    if (newInput.profileSearchInput) {
-      profileSearch.value = cloneHelper.clone(newInput.profileSearchInput)
+    if (newInput.profileLookUpPostBodyInput) {
+      profileLookUpPostBody.value = cloneHelper.clone(newInput.profileLookUpPostBodyInput)
     }
   },
   { immediate: true }
 )
+
+const profileSelected = (profile: IProfile) => {
+  emit('profileSelected', profile)
+}
 </script>
 
 <style scoped>
@@ -112,7 +117,7 @@ watch(
   </v-toolbar>
   <v-divider class="profiles-card-divider"></v-divider>
 
-  <ProfileSearchVue></ProfileSearchVue>
+  <ProfileSearchVue @profile-selected="(profile) => profileSelected(profile)"></ProfileSearchVue>
 
   <v-dialog v-model="newProfileDialog" fullscreen scrollable>
     <v-card>

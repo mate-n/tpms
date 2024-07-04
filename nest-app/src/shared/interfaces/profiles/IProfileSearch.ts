@@ -2,8 +2,14 @@ import type { ISearch } from '../ISearch'
 
 export interface IProfileSearch extends ISearch {
   name?: string
+  surname?: string
   email?: string
-  city?: string
-  profileID?: number
+  mobile?: string
+  saIDNumber?: number
   guestTypeID?: number
+  passportNumber?: number
+  roomSeekerClientCode?: string
+  tpmsProfileID?: number
+  loyaltyMembershipNumber?: number
+  wildcardMembershipNumber?: number
 }

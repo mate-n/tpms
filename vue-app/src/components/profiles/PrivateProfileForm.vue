@@ -30,18 +30,20 @@ onMounted(() => {
     <div style="flex-grow: 6">
       <div class="d-flex big-vue-input-field-font-size">
         <v-text-field
-          v-model="profileToBeEdited.lastName"
+          v-model="profileToBeEdited.surname"
           label="Last Name"
           variant="underlined"
           class="me-3 required-input"
-          :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['lastName']"
+          :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['surname']"
           @update:modelValue="emit('change')"
         ></v-text-field>
         <v-text-field
-          v-model="profileToBeEdited.firstName"
+          v-model="profileToBeEdited.name"
           label="First Name"
           variant="underlined"
           class="me-3"
+          :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['name']"
+          @update:modelValue="emit('change')"
           aria-required="true"
         ></v-text-field>
         <v-text-field

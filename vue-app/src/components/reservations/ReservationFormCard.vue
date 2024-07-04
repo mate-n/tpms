@@ -8,13 +8,16 @@ import { DateHelper } from '@/helpers/DateHelper'
 import ProfileSearchField from '../profiles/ProfileSearchField.vue'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import ProfileService from '@/services/ProfileService'
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { RoomService } from '@/services/RoomService'
 import type { IRate } from '@/shared/interfaces/IRate'
 import { RateService } from '@/services/RateService'
+import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
+import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
 const axios: AxiosStatic | undefined = inject('axios')
-const profileService = new ProfileService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const profileService = new ProfileService(axios2)
 const roomService = new RoomService(axios)
 const rateService = new RateService(axios)
 const reservationToBeEdited: Ref<IReservation> = ref(new Reservation())
@@ -182,16 +185,9 @@ watch(
                 ></v-text-field
               ></v-col>
             </v-row>
-            <v-text-field
-              label="Guests per room"
-              v-model="reservationToBeEdited.numberOfGuestsPerRoom"
-              :error-messages="
-                reservationToBeEdited.errors &&
-                reservationToBeEdited.errors['numberOfGuestsPerRoom']
-              "
-              variant="underlined"
-              type="number"
-            ></v-text-field>
+            <GuestsPerRoomSelecter
+              v-model="reservationToBeEdited.guestsPerRoom"
+            ></GuestsPerRoomSelecter>
           </v-card>
           <v-card class="pa-3 mt-3 elevation-0"
             ><h3>Associated Profiles</h3>
@@ -199,9 +195,7 @@ watch(
               label="Guest"
               :required="reservationToBeEdited.isBookerGuest"
               icon-name="mdi-account-circle-outline"
-              :profile-search-input="{
-                guestTypeID: 1
-              }"
+              :profile-look-up-post-body="new ProfileLookUpPostBody()"
               v-model="reservationToBeEdited.guestProfileID"
             ></ProfileSearchField>
             <v-checkbox
@@ -213,34 +207,26 @@ watch(
                 label="Booker"
                 :required="!reservationToBeEdited.isBookerGuest"
                 icon-name="mdi-account-tie-voice-outline"
-                :profile-search-input="{
-                  guestTypeID: 1
-                }"
+                :profile-look-up-post-body="new ProfileLookUpPostBody()"
                 v-model="reservationToBeEdited.bookerProfileID"
               ></ProfileSearchField>
             </div>
             <ProfileSearchField
               label="Company"
               icon-name="mdi-briefcase-variant-outline"
-              :profile-search-input="{
-                guestTypeID: 2
-              }"
+              :profile-look-up-post-body="new ProfileLookUpPostBody()"
               v-model="reservationToBeEdited.companyProfileID"
             ></ProfileSearchField>
             <ProfileSearchField
               label="Source"
               icon-name="mdi-earth"
-              :profile-search-input="{
-                guestTypeID: 5
-              }"
+              :profile-look-up-post-body="new ProfileLookUpPostBody()"
               v-model="reservationToBeEdited.sourceProfileID"
             ></ProfileSearchField>
             <ProfileSearchField
               label="Travel Agent"
               icon-name="mdi-airplane"
-              :profile-search-input="{
-                guestTypeID: 4
-              }"
+              :profile-look-up-post-body="new ProfileLookUpPostBody()"
               v-model="reservationToBeEdited.travelAgentProfileID"
             ></ProfileSearchField>
           </v-card>
@@ -338,11 +324,11 @@ watch(
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">Last Name</span> <br />
-                {{ guestProfile?.lastName }}
+                {{ guestProfile?.surname }}
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">First Name</span> <br />
-                {{ guestProfile?.lastName }}
+                {{ guestProfile?.surname }}
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">Email</span> <br />
@@ -350,7 +336,7 @@ watch(
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">Phone</span> <br />
-                {{ guestProfile?.phone }}
+                {{ guestProfile?.telephone }}
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">City</span> <br />
@@ -369,7 +355,6 @@ watch(
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">Adults</span> <br />
-                {{ reservationToBeEdited.numberOfGuestsPerRoom }}
               </div>
               <div class="reservation-summary-element">
                 <span class="standard-caption">Children</span> <br />
