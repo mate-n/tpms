@@ -4,6 +4,7 @@ import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
 import { ProfileConverter } from '@/shared/converters/ProfileConverter'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import type { IProfileCreatePostBody } from '@/shared/interfaces/profiles/IProfileCreatePostBody'
+import type { IProfileCreateResponseBody } from '@/shared/interfaces/profiles/IProfileCreateResponseBody'
 import type { IProfileLookUpPostBody } from '@/shared/interfaces/profiles/IProfileLookUpPostBody'
 import type { AxiosStatic } from 'axios'
 
@@ -69,12 +70,11 @@ export class ProfileService implements IService {
   }
 
   create(profileCreatePostBody: IProfileCreatePostBody) {
-    return new Promise<IProfile>((resolve, reject) => {
+    return new Promise<IProfileCreateResponseBody>((resolve, reject) => {
       this.axiosInstance
         .post('api/v1/profiles', profileCreatePostBody)
         .then((response: any) => {
-          const profile = this.profileConverter.convertProfileFromAPIToProfile(response)
-          resolve(profile)
+          resolve(response.data)
         })
         .catch((e: any) => {
           reject(e)
