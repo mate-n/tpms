@@ -48,14 +48,6 @@ const dateofbirthUpdated = () => {
   validate()
 }
 
-const generateStartOfSAIDNumber = () => {
-  if (profileToBeEdited.value.dateofbirth) {
-    profileToBeEdited.value.sAId = sAIDPassportHelper.generateStartOfSAIDNumber(
-      profileToBeEdited.value.dateofbirth
-    )
-  }
-}
-
 const saidChange = () => {
   if (!profileToBeEdited.value.dateofbirth) {
     const newDateOfBirth = sAIDPassportHelper.extractBirthdateFromSAIDNumber(
