@@ -1,4 +1,4 @@
-export class LuhnAlgorithmHelper {
+export class LuhnAlgorithmValidator {
   luhnCheck = (num: string) => {
     const arr = (num + '')
       .split('')
