@@ -240,6 +240,11 @@ const clearSelectedCamps = () => {
   itineraryReservation.value.selectedCamps = []
   travelDistanceWarningDialog.value = false
 }
+const handleRemovePark = (item) => {
+  itineraryReservation.value.selectedParks = itineraryReservation.value.selectedParks.filter(
+    ({ id }) => id !== item.id
+  );
+}
 </script>
 
 <template>
@@ -261,6 +266,7 @@ const clearSelectedCamps = () => {
         <v-autocomplete
           v-model="itineraryReservation.selectedParks"
           clearable
+          closable-chips
           chips
           label="Parks"
           :items="parksInDropdown"
