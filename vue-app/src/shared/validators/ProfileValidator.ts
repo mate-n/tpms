@@ -1,7 +1,9 @@
+import { LuhnAlgorithmHelper } from '@/helpers/LuhnAlgorithmHelper'
 import type { IValidator } from '../interfaces/IValidator'
 import type { IProfile } from '../interfaces/profiles/IProfile'
 
 export class ProfileValidator implements IValidator {
+  luhnAlgorithmHelper = new LuhnAlgorithmHelper()
   validate(profile: IProfile): void {
     profile.errors = {}
     this.isNamePresent(profile)
@@ -45,8 +47,16 @@ export class ProfileValidator implements IValidator {
     if (profile.countryofbirth === 'ZA') {
       if (!profile.sAId) {
         profile.errors!['sAId'] = 'SA ID Number is required'
+      } else {
+        if (!this.isSAIDValid(profile.sAId)) {
+          profile.errors!['sAId'] = 'SAID is invalid'
+        }
       }
     }
+  }
+
+  isSAIDValid(said: string): boolean {
+    return this.luhnAlgorithmHelper.luhnCheck(said)
   }
 
   isBirthdatePresent(profile: IProfile): void {
