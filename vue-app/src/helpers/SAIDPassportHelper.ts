@@ -7,7 +7,10 @@ export class SAIDPassportHelper {
     return yy + mm + dd + digitafterFirst6Digits
   }
 
-  extractBirthdateFromSAIDNumber(said: string): Date {
+  extractBirthdateFromSAIDNumber(said: string): Date | undefined {
+    if (said.length < 6) {
+      return undefined
+    }
     const dateOfBirth = new Date()
     const yy = parseInt(said.slice(0, 2))
     const mm = said.slice(2, 4)
@@ -22,7 +25,10 @@ export class SAIDPassportHelper {
     return dateOfBirth
   }
 
-  extractGenderFromSAIDNumber(said: string): string {
+  extractGenderFromSAIDNumber(said: string): string | undefined {
+    if (said.length < 10) {
+      return undefined
+    }
     const genderNumber = said.slice(6, 10)
     if (parseInt(genderNumber) < 5000) {
       return 'FEMALE'
