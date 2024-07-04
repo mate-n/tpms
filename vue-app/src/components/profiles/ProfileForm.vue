@@ -22,6 +22,9 @@ import ProfileGeneralForm from './ProfileGeneralForm.vue'
 import ProfileMembershipCardsCard from './ProfileMembershipCardsCard.vue'
 import { ProfileService } from '@/services/backend-middleware/ProfileService'
 import { ProfileCreatePostBodyConverter } from '@/shared/converters/ProfileCreatePostBodyConverter'
+import type { IProfileCreateResponseBody } from '@/shared/interfaces/profiles/IProfileCreateResponseBody'
+import router from '@/router'
+
 const profileCreatePostBodyConverter = new ProfileCreatePostBodyConverter()
 const axios: AxiosStatic | undefined = inject('axios')
 const axios2: AxiosStatic | undefined = inject('axios2')
@@ -39,6 +42,7 @@ const profileToBeEdited = ref<IProfile>(new Profile())
 const emit = defineEmits(['save'])
 const languages: Ref<ILanguage[]> = ref([])
 const salutations: Ref<ISalutation[]> = ref([])
+
 onMounted(() => {
   languageService.getAvailableLanguages().then((response) => {
     languages.value = response
@@ -68,9 +72,14 @@ const save = () => {
     const profileCreatePostBody = profileCreatePostBodyConverter.convertToProfileCreatePostBody(
       profileToBeEdited.value
     )
-    profileService.create(profileCreatePostBody).then((response: any) => {
-      console.log(response)
-    })
+    profileService
+      .create(profileCreatePostBody)
+      .then((profileCreateResponseBody: IProfileCreateResponseBody) => {
+        router.push({
+          name: 'edit profile',
+          params: { profileID: profileCreateResponseBody.ProfileID }
+        })
+      })
   } else if (props.crudOperation === CrudOperations.Update) {
     //profileService.put(profileToBeEdited.value)
   }
