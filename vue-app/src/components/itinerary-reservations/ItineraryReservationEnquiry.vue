@@ -240,11 +240,6 @@ const clearSelectedCamps = () => {
   itineraryReservation.value.selectedCamps = []
   travelDistanceWarningDialog.value = false
 }
-const handleRemovePark = (item) => {
-  itineraryReservation.value.selectedParks = itineraryReservation.value.selectedParks.filter(
-    ({ id }) => id !== item.id
-  );
-}
 </script>
 
 <template>
