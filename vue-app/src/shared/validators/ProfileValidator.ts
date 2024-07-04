@@ -1,9 +1,9 @@
-import { LuhnAlgorithmHelper } from '@/helpers/LuhnAlgorithmHelper'
 import type { IValidator } from '../interfaces/IValidator'
 import type { IProfile } from '../interfaces/profiles/IProfile'
+import { LuhnAlgorithmValidator } from './LuhnAlgorithmValidator'
 
 export class ProfileValidator implements IValidator {
-  luhnAlgorithmHelper = new LuhnAlgorithmHelper()
+  luhnAlgorithmHelper = new LuhnAlgorithmValidator()
   validate(profile: IProfile): void {
     profile.errors = {}
     this.isNamePresent(profile)
