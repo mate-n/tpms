@@ -16,6 +16,7 @@ import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
 import { RegionService } from '@/services/backend-middleware/RegionService'
 import { ParkService } from '@/services/backend-middleware/ParkService'
 import { CampService } from '@/services/backend-middleware/CampService'
+import CampWithAvailabilities from './CampWithAvailabilities.vue'
 const regionsInDropdown: Ref<IProtelRegion[]> = ref([])
 const allParks: Ref<IProtelPark[]> = ref([])
 const parksInDropdown: Ref<IProtelPark[]> = ref([])
@@ -301,6 +302,14 @@ const clearSelectedCamps = () => {
       </v-col>
     </v-row>
   </v-container>
+
+  <template v-for="camp of itineraryReservation.selectedCamps" :key="camp.id">
+    <CampWithAvailabilities
+      :camp="camp"
+      :arrival-date="itineraryReservation.arrivalDate"
+      :departure-date="itineraryReservation.departureDate"
+    ></CampWithAvailabilities>
+  </template>
 
   <template v-for="(reservation, i) of itineraryReservation.reservations" :key="reservation.id">
     <ReservationFormInEnquiry
