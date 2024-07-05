@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, watch } from 'vue'
+import {nextTick, onBeforeMount, onMounted, ref, watch} from 'vue'
 import { ProfileCommunicationService } from '@/services/profiles/ProfileCommunicationService'
 import ProfileCommunicationForm from './ProfileCommunicationForm.vue'
 import { IdentityHelper } from '@/helpers/IdentityHelper'
@@ -35,6 +35,11 @@ const profileCommunicationService = new ProfileCommunicationService(axios)
 
 onBeforeMount(() => {
   reloadProfileCommunications()
+})
+
+onMounted(async () => {
+  await nextTick()
+  addProfileCommunication()
 })
 
 const saveProfileCommunications = () => {
