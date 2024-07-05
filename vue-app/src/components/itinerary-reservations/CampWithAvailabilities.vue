@@ -216,6 +216,7 @@ const availabilitiesSelected = (availabilities: IProtelAvailability[]) => {
                       availabilityHelper.getAvailabilityByRoomTypeCode(availabilities, roomTypeCode)
                     "
                     :room-type-code="roomTypeCode"
+                    :arrival-date="props.arrivalDate"
                     :departure-date="props.departureDate"
                     @availabilities-selected="
                       (availabilities: IProtelAvailability[]) =>
