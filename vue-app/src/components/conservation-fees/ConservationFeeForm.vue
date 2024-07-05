@@ -5,12 +5,23 @@ import type { IWildcardWithAdultsAndChildren } from '@/shared/interfaces/IWildca
 import { computed, ref, type Ref } from 'vue'
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
 
+const props = defineProps({
+  numberOfAdults: { type: Number, required: true },
+  numberOfChildren: { type: Number, required: true },
+  numberOfNights: { type: Number, required: true }
+})
+
 const southAfricanCitizens: Ref<IAdultsAndChildren> = ref({ adults: 0, children: 0 })
 const sadcCitizens: Ref<IAdultsAndChildren> = ref({ adults: 0, children: 0 })
 const internationals: Ref<IAdultsAndChildren> = ref({ adults: 0, children: 0 })
 
-const totalNumberOfConservationFeesForAdults = ref(14)
-const totalNumberOfConservationFeesForChildren = ref(14)
+const totalNumberOfConservationFeesForAdults = computed(() => {
+  return props.numberOfAdults * props.numberOfNights
+})
+
+const totalNumberOfConservationFeesForChildren = computed(() => {
+  return props.numberOfChildren * props.numberOfNights
+})
 
 const appliedNumberOfConservationFeesForAdults = computed(() => {
   return southAfricanCitizens.value.adults + sadcCitizens.value.adults + internationals.value.adults
