@@ -1,12 +1,15 @@
 export class LuhnAlgorithmValidator {
-  luhnCheck = (num: string) => {
-    const arr = (num + '')
+  luhnCheck = (num: any) => {
+    const arr = `${num}`
       .split('')
       .reverse()
-      .map((x) => parseInt(x))
-    const lastDigit = arr.splice(0, 1)[0]
-    let sum = arr.reduce((acc, val, i) => (i % 2 !== 0 ? acc + val : acc + ((val * 2) % 9) || 9), 0)
-    sum += lastDigit
+      .map((x) => Number.parseInt(x))
+    const lastDigit = arr.shift()
+    let sum = arr.reduce(
+      (acc, val, i) => (i % 2 !== 0 ? acc + val : acc + ((val *= 2) > 9 ? val - 9 : val)),
+      0
+    )
+    sum += lastDigit!
     return sum % 10 === 0
   }
 }
