@@ -214,7 +214,7 @@ const getChildrenFromFreeEntryReasons = () => {
       >
     </v-row>
 
-    <v-row class="" v-for="(wildcard, index) of wildcards" :key="wildcard">
+    <v-row v-for="(wildcard, index) of wildcards" :key="wildcard.wildcard">
       <v-col :class="getBackGroundClassForCell(index)" class="conservation-fee-cell">
         {{ wildcard.wildcard }}</v-col
       >
@@ -255,7 +255,10 @@ const getChildrenFromFreeEntryReasons = () => {
         ></v-col
       >
     </v-row>
-    <v-row v-for="(freeEntryReason, index) of freeEntryReasons" :key="freeEntryReason">
+    <v-row
+      v-for="(freeEntryReason, index) of freeEntryReasons"
+      :key="freeEntryReason.freeEntryReason"
+    >
       <v-col
         :class="getBackGroundClassForCell(index)"
         class="d-flex justify-space-between conservation-fee-cell"
