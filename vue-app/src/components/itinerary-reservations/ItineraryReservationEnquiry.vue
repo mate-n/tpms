@@ -4,7 +4,6 @@ import type { Ref } from 'vue'
 import { ItineraryReservationValidator } from '@/validators/ItineraryReservationValidator'
 import { useBasketItemsStore } from '@/stores/basketItems'
 import { Reservation } from '@/shared/classes/Reservation'
-import ReservationFormInEnquiry from './ReservationFormInEnquiry.vue'
 import BasketCard from '@/components/baskets/BasketCard.vue'
 import type { IProtelRegion } from '@/shared/interfaces/protel/IProtelRegion'
 import type { AxiosStatic } from 'axios'
@@ -312,18 +311,6 @@ const clearSelectedCamps = () => {
       :arrival-date="itineraryReservation.arrivalDate"
       :departure-date="itineraryReservation.departureDate"
     ></CampWithAvailabilities>
-  </template>
-
-  <template v-for="(reservation, i) of itineraryReservation.reservations" :key="reservation.id">
-    <ReservationFormInEnquiry
-      v-model="itineraryReservation.reservations[i]"
-      @check="checkForIssues()"
-      @change="onReservationChanged()"
-      :previous-reservation="itineraryReservation.reservations[i - 1]"
-      :next-reservation="itineraryReservation.reservations[i + 1]"
-      :collapse-expansion="closeExpansionPanels"
-      :itinerary-reservation="itineraryReservation"
-    ></ReservationFormInEnquiry>
   </template>
 
   <v-container fluid>
