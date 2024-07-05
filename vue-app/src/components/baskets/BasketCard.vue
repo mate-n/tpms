@@ -141,7 +141,11 @@ const conservationFeeFormDialog = ref(false)
   </v-dialog>
   <v-dialog v-model="conservationFeeFormDialog" scrollable>
     <v-card>
-      <ConservationFeeForm></ConservationFeeForm>
+      <ConservationFeeForm
+        :number-of-adults="2"
+        :number-of-nights="7"
+        :number-of-children="1"
+      ></ConservationFeeForm>
     </v-card>
   </v-dialog>
 </template>
