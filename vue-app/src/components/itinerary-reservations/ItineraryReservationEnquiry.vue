@@ -249,6 +249,7 @@ const clearSelectedCamps = () => {
         <v-autocomplete
           v-model="itineraryReservation.selectedRegions"
           clearable
+          closable-chips
           chips
           label="Regions"
           :items="regionsInDropdown"
@@ -275,6 +276,7 @@ const clearSelectedCamps = () => {
         <v-autocomplete
           v-model="itineraryReservation.selectedCamps"
           clearable
+          closable-chips
           chips
           label="Camps"
           :items="campsInDropdown"
