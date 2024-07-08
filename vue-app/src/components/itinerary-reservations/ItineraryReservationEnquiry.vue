@@ -205,7 +205,7 @@ const addReservationToCamp = (camp: IProtelCamp) => {
   const reservation = new Reservation()
   reservation.propertyName = camp.name
   reservation.profileID = selectedProfile.value
-  reservation.propertyID = 1
+  reservation.propertyID = camp.id
   reservation.arrivalDate = itineraryReservation.value.arrivalDate
   reservation.departureDate = itineraryReservation.value.departureDate
   itineraryReservation.value.reservations.push(reservation)

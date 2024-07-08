@@ -8,7 +8,7 @@ export class ProfileLookUpPostBodyHelper {
     if (profileLookUpPostBody.name) profile.name = profileLookUpPostBody.name
     if (profileLookUpPostBody.email) profile.email = profileLookUpPostBody.email
     if (profileLookUpPostBody.mobile) profile.mobile = profileLookUpPostBody.mobile
-    if (profileLookUpPostBody.sAID) profile.sAId = profileLookUpPostBody.sAID
+    if (profileLookUpPostBody.SAId) profile.sAId = profileLookUpPostBody.SAId
     if (profileLookUpPostBody.passportno) profile.passportno = profileLookUpPostBody.passportno
     if (profileLookUpPostBody.wildcardnumber)
       profile.wildcardnumber = profileLookUpPostBody.wildcardnumber

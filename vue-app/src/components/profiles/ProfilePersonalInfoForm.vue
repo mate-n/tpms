@@ -48,18 +48,28 @@ const dateofbirthUpdated = () => {
   validate()
 }
 
-const generateStartOfSAIDNumber = () => {
-  if (profileToBeEdited.value.dateofbirth) {
-    profileToBeEdited.value.sAId = sAIDPassportHelper.generateStartOfSAIDNumber(
-      profileToBeEdited.value.dateofbirth
+const saidChange = () => {
+  if (!profileToBeEdited.value.dateofbirth) {
+    const newDateOfBirth = sAIDPassportHelper.extractBirthdateFromSAIDNumber(
+      profileToBeEdited.value.sAId
     )
+    if (newDateOfBirth) {
+      profileToBeEdited.value.dateofbirth = newDateOfBirth
+    }
   }
-}
 
-const focusSAID = () => {
-  if (!profileToBeEdited.value.sAId) {
-    generateStartOfSAIDNumber()
+  if (!profileToBeEdited.value.gender) {
+    const newGender = sAIDPassportHelper.extractGenderFromSAIDNumber(profileToBeEdited.value.sAId)
+    if (newGender) {
+      profileToBeEdited.value.gender = newGender
+    }
   }
+
+  if (!profileToBeEdited.value.countryofbirth) {
+    profileToBeEdited.value.countryofbirth = 'ZA'
+  }
+
+  validate()
 }
 </script>
 
@@ -98,8 +108,7 @@ const focusSAID = () => {
         v-model="profileToBeEdited.sAId"
         variant="underlined"
         :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['sAId']"
-        @click="focusSAID()"
-        @update:modelValue="validate()"
+        @update:modelValue="saidChange()"
       ></v-text-field>
     </v-col>
     <v-col>

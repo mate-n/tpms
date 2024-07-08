@@ -5,7 +5,7 @@ export class ProfileLookUpPostBody implements IProfileLookUpPostBody {
   name: string | undefined
   email: string | undefined
   mobile: string | undefined
-  sAID: string | undefined
+  SAId: string | undefined
   passportno: string | undefined
   roomseekerclientcode: string | undefined
   profileID: number | undefined

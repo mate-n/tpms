@@ -107,7 +107,7 @@ const profilesLoading = ref(false)
             class="me-3"
           ></v-text-field>
           <v-text-field
-            v-model="profileLookUpPostBody.sAID"
+            v-model="profileLookUpPostBody.SAId"
             label="SA ID Number"
             variant="underlined"
             class="me-3"

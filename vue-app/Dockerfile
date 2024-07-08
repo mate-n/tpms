@@ -38,4 +38,10 @@ RUN chown node:node /shared-volume
 
 ENTRYPOINT ["sh", "vue-app-integration-entrypoint-script.sh"]
 
+FROM nginx as production-stage
 
+RUN mkdir /app
+
+COPY --from=development-stage /app/dist /app
+
+COPY nginx.conf /etc/nginx/nginx.conf

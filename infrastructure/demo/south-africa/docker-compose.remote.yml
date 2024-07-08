@@ -5,7 +5,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${PORT_FRONTEND}:8080"
+      - "${PORT_FRONTEND}:80"
   backend-middleware-mongodb:
     image: "mongo"
     volumes:

@@ -5,14 +5,14 @@ services:
     build:
       context: ../../../vue-app
       dockerfile: Dockerfile
-      target: development-stage
+      target: production-stage
       args:
         VITE_API_BASE_URL: "${API_BASE_URL}"
         VITE_API_BASE_URL2: "${API_BASE_URL2}"
     env_file:
       - .env
     ports:
-      - "${PORT_FRONTEND}:8080"
+      - "${PORT_FRONTEND}:80"
   backend-middleware-mongodb:
     image: "mongo"
     volumes:

@@ -140,7 +140,6 @@ const check = () => {
   reservationValidator.validate(reservation.value)
   if (!reservation.value.propertyID) return
   availabilitiesLoading.value = true
-
   const departureDatePlusOne = dateHelper.addDays(reservation.value.departureDate, 1)
   const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
     arrivaldate: dateFormatter.yyyydashmmdashdd(reservation.value.arrivalDate),
