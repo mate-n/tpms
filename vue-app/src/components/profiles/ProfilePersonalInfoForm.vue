@@ -21,6 +21,7 @@ const availableGenders = ref<IGender[]>([])
 const availableNationalities = ref<INationality[]>([])
 const availableCountries = ref<ICountry[]>([])
 const sAIDPassportHelper = new SAIDPassportHelper()
+const emit = defineEmits(['blur-said'])
 const profileToBeEdited = defineModel({
   required: true,
   type: Object as () => IProfile
@@ -71,6 +72,10 @@ const saidChange = () => {
 
   validate()
 }
+
+const saidBlur = () => {
+  emit('blur-said')
+}
 </script>
 
 <template>
@@ -109,6 +114,7 @@ const saidChange = () => {
         variant="underlined"
         :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['sAId']"
         @update:modelValue="saidChange()"
+        @blur="saidBlur()"
       ></v-text-field>
     </v-col>
     <v-col>

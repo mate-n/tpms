@@ -1,16 +1,30 @@
 <script setup lang="ts">
 import { useBasketItemsStore } from '@/stores/basketItems'
-import { computed, ref } from 'vue'
+import { computed, inject, ref, type Ref } from 'vue'
 import { ReservationHelper } from '@/helpers/ReservationHelper'
 import router from '@/router'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import { AvailabilityGroupHelper } from '@/helpers/AvailabilityGroupHelper'
 import AvailabilityGroupInBasketCard from './AvailabilityGroupInBasketCard.vue'
 import ConservationFeeForm from '@/components/conservation-fees/ConservationFeeForm.vue'
+import type { AxiosStatic } from 'axios'
+import { CartService } from '@/services/backend-middleware/CartService'
+import type { CreateCartResponseBody } from '@/shared/interfaces/cart/CreateCartResponseBody'
+import type { ICartBody } from '@/shared/interfaces/cart/ICartBody'
+import type { IUpdateCartBody } from '@/shared/interfaces/cart/IUpdateCartBody'
+import type { IAddItemToCartBody } from '@/shared/interfaces/cart/IAddItemToCartBody'
+import { AddItemToCartBody } from '@/shared/classes/AddItemToCartBody'
+import { ReservationConverter } from '@/shared/converters/ReservationConverter'
+import { DateFormatter } from '@/helpers/DateFormatter'
+import type { ISettleCartBody } from '@/shared/interfaces/cart/ISettleCartBody'
+const dateFormatter = new DateFormatter()
+const axios2: AxiosStatic | undefined = inject('axios2')
+const cartService = new CartService(axios2)
 const availabilityGroupHelper = new AvailabilityGroupHelper()
 const priceFormatter = new PriceFormatter()
 const basketItemsStore = useBasketItemsStore()
 const reservationHelper = new ReservationHelper()
+const reservationConverter = new ReservationConverter()
 const emits = defineEmits(['close'])
 const removeAllReservations = () => {
   for (const reservation of basketItemsStore.reservations) {
@@ -18,12 +32,101 @@ const removeAllReservations = () => {
   }
 }
 
+const cartNumber: Ref<string | null> = ref(null)
+
 const totalPrice = computed(() => {
   return availabilityGroupHelper.calculateTotalPrice(availabilityGroups.value)
 })
 
 const clickOnBook = () => {
   checkIfBookingIsPossible()
+}
+
+const settleAnkerdataCart = () => {
+  const cartBody: ICartBody = {
+    action: 'create',
+    profile_number: '639',
+    cart_type: 2
+  }
+
+  cartService
+    .createCart(cartBody)
+    .then((createCartResponseBody: CreateCartResponseBody) => {
+      cartNumber.value = createCartResponseBody.cart_number
+      return updateCart()
+    })
+    .then(() => {
+      return addItemsToCart()
+    })
+    .then(() => {
+      const settleCartBody: ISettleCartBody = {
+        action: 'updatePayment',
+        cart_number: cartNumber.value!,
+        payment_ref: 'REF123456789',
+        payment_amount: '123',
+        payment_method: 'AHSPAYMENTPROCESSOR',
+        status: 'Confirmed'
+      }
+      cartService.settleCart(settleCartBody).then((res) => {
+        console.log(res)
+      })
+    })
+}
+
+const updateCart = () => {
+  return new Promise((resolve, reject) => {
+    if (cartNumber.value === null) {
+      reject()
+    }
+
+    const cartBody: IUpdateCartBody = {
+      action: 'updateProfile',
+      cart_number: cartNumber.value!,
+      profile_number: '639'
+    }
+
+    cartService.updateCart(cartBody).then((res) => {
+      resolve(res)
+    })
+  })
+}
+
+const addItemsToCart = () => {
+  return new Promise((resolve) => {
+    for (const availabilityGroup of availabilityGroups.value) {
+      const reservations = reservationConverter.convertToReservations(
+        availabilityGroup.availabilities
+      )
+
+      for (const reservation of reservations) {
+        const newItem: IAddItemToCartBody = new AddItemToCartBody()
+        newItem.action = 'add'
+        newItem.cart_id = cartNumber.value!
+        newItem.arrival_date = dateFormatter.yyyydashmmdashdd(reservation.arrivalDate)
+        newItem.departure_date = dateFormatter.yyyydashmmdashdd(reservation.departureDate)
+        newItem.adults = 1
+        newItem.children = 0
+        newItem.units = reservation.numberOfRooms
+        if (reservation.roomTypeCode) {
+          newItem.type_code = reservation.roomTypeCode
+        }
+        if (reservation.propertyID) {
+          newItem.property_code = reservation.propertyID
+        }
+        cartService.addItemToCart(newItem)
+      }
+      resolve('')
+    }
+
+    const newItem: IAddItemToCartBody = new AddItemToCartBody()
+    newItem.action = 'add'
+    newItem.cart_id = cartNumber.value!
+    newItem.arrival_date = '2024-07-01'
+    newItem.departure_date = '2024-07-07'
+    cartService.addItemToCart(newItem).then((res) => {
+      resolve(res)
+    })
+  })
 }
 
 const allowBook = computed(() => {
@@ -40,6 +143,7 @@ const checkIfBookingIsPossible = () => {
     errors.value.push('Please add a profile to the reservation before booking.')
     errorsDialog.value = true
   } else {
+    settleAnkerdataCart()
     errors.value = []
     itineraryConfirmedDialog.value = true
   }

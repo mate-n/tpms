@@ -13,7 +13,7 @@ const salutationService = new SalutationService(axios)
 const profileToBeEdited = defineModel({ required: true, type: Object as () => IProfile })
 const languages: Ref<ILanguage[]> = ref([])
 const salutations: Ref<ISalutation[]> = ref([])
-const emit = defineEmits(['change'])
+const emit = defineEmits(['change', 'blur-name'])
 
 onMounted(() => {
   languageService.getAvailableLanguages().then((response) => {
@@ -23,6 +23,14 @@ onMounted(() => {
     salutations.value = response
   })
 })
+
+const blurLastName = () => {
+  emit('blur-name')
+}
+
+const blurFirstName = () => {
+  emit('blur-name')
+}
 </script>
 
 <template>
@@ -36,6 +44,7 @@ onMounted(() => {
           class="me-3 required-input"
           :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['surname']"
           @update:modelValue="emit('change')"
+          @blur="blurLastName()"
         ></v-text-field>
         <v-text-field
           v-model="profileToBeEdited.name"
@@ -45,6 +54,7 @@ onMounted(() => {
           :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['name']"
           @update:modelValue="emit('change')"
           aria-required="true"
+          @blur="blurFirstName()"
         ></v-text-field>
         <v-text-field
           v-model="profileToBeEdited.middleName"

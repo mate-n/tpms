@@ -6,6 +6,7 @@ import PrivateProfileForm from './PrivateProfileForm.vue'
 import CompanyProfileForm from './CompanyProfileForm.vue'
 import TravelAgencyProfileForm from './TravelAgencyProfileForm.vue'
 
+const emit = defineEmits(['blur-name'])
 const profileValidator = new ProfileValidator()
 const profileToBeEdited = defineModel({ required: true, type: Object as () => IProfile })
 
@@ -16,6 +17,10 @@ const validate = () => {
 defineProps({
   crudOperation: { type: Number, required: false, default: 2 }
 })
+
+const blurName = () => {
+  emit('blur-name')
+}
 </script>
 <template>
   <v-container fluid class="bg-white">
@@ -30,7 +35,11 @@ defineProps({
       </v-col>
       <v-col cols="10" class="border-s">
         <div v-if="profileToBeEdited.profileType === 'Private'">
-          <PrivateProfileForm v-model="profileToBeEdited" @change="validate()"></PrivateProfileForm>
+          <PrivateProfileForm
+            v-model="profileToBeEdited"
+            @change="validate()"
+            @blur-name="blurName()"
+          ></PrivateProfileForm>
         </div>
         <div
           v-if="

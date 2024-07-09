@@ -14,6 +14,7 @@ import { inject } from 'vue'
 import AuthenticationService from '@/services/AuthenticationService'
 import ProfilesView from '@/views/ProfilesView.vue'
 import ProfileSearchView from '@/views/ProfileSearchView.vue'
+import CartTestView from '@/views/CartTestView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -90,6 +91,11 @@ const router = createRouter({
       name: 'edit profile',
       component: EditProfileView,
       props: true
+    },
+    {
+      path: '/cart-test-view',
+      name: 'cart test view',
+      component: CartTestView
     }
   ]
 })

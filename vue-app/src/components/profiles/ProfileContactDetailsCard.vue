@@ -13,6 +13,7 @@ const communicationMethodService = new CommunicationMethodService(axios)
 const communicationMethods = ref<ICommunicationMethod[]>([])
 const editProfileContactDetailsDialog = ref(false)
 const profile = defineModel({ required: true, type: Object as () => IProfile })
+const emit = defineEmits(['blur-email'])
 
 const validate = () => {
   profileValidator.validate(profile.value)
@@ -29,6 +30,10 @@ const getCommunicationMethodValue = (communicationMethodID: number | undefined) 
     (cm) => cm.id === communicationMethodID
   )
   return communicationMethod ? communicationMethod.value : ''
+}
+
+const blurEmail = () => {
+  emit('blur-email')
 }
 </script>
 <template>
@@ -48,6 +53,7 @@ const getCommunicationMethodValue = (communicationMethodID: number | undefined) 
         class="me-3 required-input"
         :error-messages="profile.errors && profile.errors['email']"
         @update:modelValue="validate()"
+        @blur="blurEmail()"
       ></v-text-field>
       <v-text-field
         v-model="profile.mobile"
