@@ -12,15 +12,19 @@ import type { IProtelPark } from '@/shared/interfaces/protel/IProtelPark'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 import DateSelecter from '@/components/dates/DateSelecter.vue'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
-import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
 import { RegionService } from '@/services/backend-middleware/RegionService'
 import { ParkService } from '@/services/backend-middleware/ParkService'
 import { CampService } from '@/services/backend-middleware/CampService'
+import { IProtelRoomType } from '@/shared/interfaces/protel/IProtelRoomType'
 const regionsInDropdown: Ref<IProtelRegion[]> = ref([])
 const allParks: Ref<IProtelPark[]> = ref([])
 const parksInDropdown: Ref<IProtelPark[]> = ref([])
 const allCamps: Ref<IProtelCamp[]> = ref([])
 const campsInDropdown: Ref<IProtelCamp[]> = ref([])
+const roomTypesInDropdown: Ref<IProtelRoomType[]> = ref([
+  { name: 'Bungalow BA3' },
+  { name: 'Campsite CK6P' },
+]);
 const basketItemsStore = useBasketItemsStore()
 const itineraryReservationValidator = new ItineraryReservationValidator()
 const axios2: AxiosStatic | undefined = inject('axios2')
@@ -158,7 +162,11 @@ watch(
 )
 
 watch(
-  [() => itineraryReservation.value.arrivalDate, () => itineraryReservation.value.departureDate],
+  [
+    () => itineraryReservation.value.arrivalDate,
+    () => itineraryReservation.value.departureDate,
+    () => itineraryReservation.value.roomType,
+  ],
   () => {
     updateReservations()
   },
@@ -169,6 +177,7 @@ const updatePropertiesOfReservations = () => {
   for (const reservation of itineraryReservation.value.reservations) {
     reservation.arrivalDate = itineraryReservation.value.arrivalDate
     reservation.departureDate = itineraryReservation.value.departureDate
+    reservation.roomType = itineraryReservation.value.roomType
   }
 }
 
@@ -208,6 +217,7 @@ const addReservationToCamp = (camp: IProtelCamp) => {
   reservation.propertyID = camp.id
   reservation.arrivalDate = itineraryReservation.value.arrivalDate
   reservation.departureDate = itineraryReservation.value.departureDate
+  reservation.roomType = itineraryReservation.value.roomType
   itineraryReservation.value.reservations.push(reservation)
 }
 
@@ -296,11 +306,17 @@ const clearSelectedCamps = () => {
         <DateSelecter v-model="itineraryReservation.departureDate" label="Departure"></DateSelecter>
       </v-col>
       <v-col>
-        <ProfileSearchField
-          label="Guest"
-          icon-name="mdi-account-circle-outline"
-          v-model="itineraryReservation.guestProfileID"
-        ></ProfileSearchField>
+        <v-autocomplete
+          v-model="itineraryReservation.roomType"
+          clearable
+          closable-chips
+          chips
+          variant="underlined"
+          label="Room type"
+          :items="roomTypesInDropdown"
+          item-title="name"
+          return-object
+        ></v-autocomplete>
       </v-col>
     </v-row>
   </v-container>

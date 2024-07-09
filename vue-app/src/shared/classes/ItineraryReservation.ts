@@ -4,6 +4,7 @@ import type { IReservation } from '../interfaces/IReservation'
 import type { IProtelCamp } from '../interfaces/protel/IProtelCamp'
 import type { IProtelPark } from '../interfaces/protel/IProtelPark'
 import type { IProtelRegion } from '../interfaces/protel/IProtelRegion'
+import type { IProtelRoomType } from '../interfaces/protel/IProtelRoomType'
 
 export class ItineraryReservation implements IItineraryReservation {
   dateHelper: DateHelper = new DateHelper()
@@ -13,6 +14,7 @@ export class ItineraryReservation implements IItineraryReservation {
   id?: number
   arrivalDate: Date
   departureDate: Date
+  roomType: IProtelRoomType | undefined
   selectedRegions: IProtelRegion[]
   selectedParks: IProtelPark[]
   selectedCamps: IProtelCamp[]
