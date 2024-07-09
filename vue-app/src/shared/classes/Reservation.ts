@@ -40,6 +40,7 @@ export class Reservation implements IReservation {
   guestName: string
   propertyName: string
   guestsPerRoom: IGuestsPerRoom
+  roomTypeCode: string | undefined
   cloneHelper: CloneHelper = new CloneHelper()
 
   constructor() {
@@ -62,6 +63,7 @@ export class Reservation implements IReservation {
     this.guestName = ''
     this.propertyName = ''
     this.guestsPerRoom = new GuestsPerRoom()
+    this.roomTypeCode = ''
   }
 
   convertToReservation(reservation: IReservation) {
@@ -95,6 +97,7 @@ export class Reservation implements IReservation {
     this.profileName = reservation.profileName
     this.propertyName = reservation.propertyName
     this.guestsPerRoom = reservation.guestsPerRoom
+    this.roomTypeCode = reservation.roomTypeCode
     return this
   }
 
@@ -122,6 +125,7 @@ export class Reservation implements IReservation {
     this.guestName = ''
     this.propertyName = ''
     this.guestsPerRoom = new GuestsPerRoom()
+    this.roomTypeCode = ''
   }
 
   resetInItineraryReservation() {
@@ -148,6 +152,7 @@ export class Reservation implements IReservation {
     this.guestName = ''
     //this.propertyName = ''
     this.guestsPerRoom = new GuestsPerRoom()
+    this.roomTypeCode = ''
   }
 
   addIssue(issue: string) {

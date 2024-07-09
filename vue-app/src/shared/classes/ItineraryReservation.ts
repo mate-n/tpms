@@ -1,3 +1,4 @@
+import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
 import { DateHelper } from '../../helpers/DateHelper'
 import type { IItineraryReservation } from '../interfaces/IItineraryReservation'
 import type { IReservation } from '../interfaces/IReservation'
@@ -7,6 +8,7 @@ import type { IProtelRegion } from '../interfaces/protel/IProtelRegion'
 
 export class ItineraryReservation implements IItineraryReservation {
   dateHelper: DateHelper = new DateHelper()
+  protelReservations: IProtelReservation[]
   reservations: IReservation[]
   startPropertyName: string
   endPropertyName: string
@@ -19,6 +21,7 @@ export class ItineraryReservation implements IItineraryReservation {
   guestProfileID: number | undefined
 
   constructor() {
+    this.protelReservations = []
     this.reservations = []
     this.arrivalDate = new Date()
     this.departureDate = this.dateHelper.addDays(this.arrivalDate, 1)

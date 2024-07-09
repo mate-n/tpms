@@ -24,6 +24,7 @@ import { ProfileService } from '@/services/backend-middleware/ProfileService'
 import { ProfileCreatePostBodyConverter } from '@/shared/converters/ProfileCreatePostBodyConverter'
 import type { IProfileCreateResponseBody } from '@/shared/interfaces/profiles/IProfileCreateResponseBody'
 import router from '@/router'
+import type { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
 
 const profileCreatePostBodyConverter = new ProfileCreatePostBodyConverter()
 const axios: AxiosStatic | undefined = inject('axios')
@@ -59,6 +60,18 @@ watch(props, (newInput) => {
   validate()
 })
 
+const blurEmail = () => {
+  checkIfProfilesWithSameEmailExist(profileToBeEdited.value.email)
+}
+
+const blurSaid = () => {
+  checkIfProfilesWithSAIDExist()
+}
+
+const blurName = () => {
+  checkIfProfilesWithSameFirstAndLastNameExist()
+}
+
 const validate = () => {
   profileValidator.validate(profileToBeEdited.value)
 }
@@ -92,11 +105,89 @@ const toggleActive = () => {
 
 const stationeryCardDialog = ref(false)
 const reservationsCardDialog = ref(false)
+
+const profilesWithSameFirstAndLastName = ref<IProfile[]>([])
+const checkIfProfilesWithSameFirstAndLastNameExist = async () => {
+  if (profileToBeEdited.value.name.length < 3 || profileToBeEdited.value.surname.length < 3) {
+    return
+  }
+  const profileLookUpPostBody: ProfileLookUpPostBody = {
+    email: undefined,
+    surname: profileToBeEdited.value.surname,
+    name: profileToBeEdited.value.name,
+    mobile: undefined,
+    SAId: undefined,
+    passportno: undefined,
+    roomseekerclientcode: undefined,
+    profileID: undefined,
+    wildcardnumber: undefined,
+    loyaltynumber: undefined
+  }
+  profileService.lookup(profileLookUpPostBody).then((response) => {
+    profilesWithSameFirstAndLastName.value = response.slice(0, 3)
+  })
+}
+
+const profilesWithSameSAID = ref<IProfile[]>([])
+const checkIfProfilesWithSAIDExist = async () => {
+  if (profileToBeEdited.value.sAId.length < 3) {
+    return
+  }
+  const profileLookUpPostBody: ProfileLookUpPostBody = {
+    email: undefined,
+    surname: undefined,
+    name: undefined,
+    mobile: undefined,
+    SAId: profileToBeEdited.value.sAId,
+    passportno: undefined,
+    roomseekerclientcode: undefined,
+    profileID: undefined,
+    wildcardnumber: undefined,
+    loyaltynumber: undefined
+  }
+  profileService.lookup(profileLookUpPostBody).then((response) => {
+    profilesWithSameSAID.value = response.slice(0, 3)
+  })
+}
+
+const profilesWithSameEmail = ref<IProfile[]>([])
+const checkIfProfilesWithSameEmailExist = async (email: string) => {
+  if (email.length < 3) {
+    return
+  }
+  const profileLookUpPostBody: ProfileLookUpPostBody = {
+    email: email,
+    surname: undefined,
+    name: undefined,
+    mobile: undefined,
+    SAId: undefined,
+    passportno: undefined,
+    roomseekerclientcode: undefined,
+    profileID: undefined,
+    wildcardnumber: undefined,
+    loyaltynumber: undefined
+  }
+  profileService.lookup(profileLookUpPostBody).then((response) => {
+    profilesWithSameEmail.value = response.slice(0, 3)
+  })
+}
+
+const goToProfile = (profileID: number | undefined) => {
+  if (!profileID) {
+    return
+  }
+
+  router.push({
+    name: 'edit profile',
+    params: { profileID: profileID }
+  })
+}
 </script>
 <template>
   <ProfileGeneralForm
     :crudOperation="crudOperation"
     v-model="profileToBeEdited"
+    @blur-name="blurName()"
   ></ProfileGeneralForm>
   <v-toolbar class="bg-lightgray">
     <div class="h-100 d-flex px-5 align-center me-auto" @click="toggleActive()">
@@ -160,16 +251,47 @@ const reservationsCardDialog = ref(false)
       </template>
     </v-tooltip>
   </v-toolbar>
-  <v-container fluid class="bg-lightgray pt-0">
+  <div v-if="profilesWithSameEmail.length > 0" class="bg-lightgray">
+    <div v-for="profile of profilesWithSameEmail" :key="profile.id">
+      <v-alert type="warning" class="mt-2">
+        {{ profile.email }} is already taken.
+        <v-btn @click="goToProfile(profile.id)" class="ml-auto text-primary">Go to profile</v-btn>
+      </v-alert>
+    </div>
+  </div>
+  <div v-if="profilesWithSameSAID.length > 0" class="bg-lightgray">
+    <div v-for="profile of profilesWithSameSAID" :key="profile.id">
+      <v-alert type="warning" class="mt-2">
+        A profile with {{ profile.sAId }} already exists.
+        <v-btn @click="goToProfile(profile.id)" class="ml-auto text-primary">Go to profile</v-btn>
+      </v-alert>
+    </div>
+  </div>
+  <div v-if="profilesWithSameFirstAndLastName.length > 0" class="bg-lightgray">
+    <div v-for="profile of profilesWithSameFirstAndLastName" :key="profile.id">
+      <v-alert type="warning" class="mt-2 d-flex">
+        A profile with {{ profile.name }} {{ profile.surname }} already exists.
+        <v-btn @click="goToProfile(profile.id)" class="ml-auto text-primary">Go to profile</v-btn>
+      </v-alert>
+    </div>
+  </div>
+
+  <v-container fluid class="bg-lightgray pt-2">
     <v-row>
       <v-col class="pr-0 profiles-card-column">
-        <ProfileContactDetailsCard v-model="profileToBeEdited"></ProfileContactDetailsCard>
+        <ProfileContactDetailsCard
+          v-model="profileToBeEdited"
+          @blur-email="blurEmail()"
+        ></ProfileContactDetailsCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
         <ProfileAddressCard :profile="profileToBeEdited"></ProfileAddressCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
-        <ProfilePersonalInfoCard v-model="profileToBeEdited"></ProfilePersonalInfoCard>
+        <ProfilePersonalInfoCard
+          v-model="profileToBeEdited"
+          @blur-said="blurSaid()"
+        ></ProfilePersonalInfoCard>
       </v-col>
     </v-row>
     <v-row class="mt-0">

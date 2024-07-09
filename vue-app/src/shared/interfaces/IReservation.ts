@@ -37,6 +37,7 @@ export interface IReservation
   averageRate: number
   propertyName: string
   guestsPerRoom: IGuestsPerRoom
+  roomTypeCode: string | undefined
   reset(): void
   resetInItineraryReservation(): void
   addIssue(issue: string): void
