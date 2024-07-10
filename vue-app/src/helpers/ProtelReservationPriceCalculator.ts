@@ -21,4 +21,11 @@ export class ProtelReservationPriceCalculator {
       reservation.tickets.reduce((acc, ticket) => acc + ticket.Price, 0)
     )
   }
+
+  getPriceForAllNightsWithTicketsForAllReservations(reservations: IProtelReservation[]) {
+    return reservations.reduce(
+      (acc, reservation) => acc + this.getPriceForAllNightsWithTickets(reservation),
+      0
+    )
+  }
 }

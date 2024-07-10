@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AvailabilityHelper } from '@/helpers/AvailabilityHelper';
+import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
@@ -22,7 +22,7 @@ const resetProtelAvailabilitySelectables = () => {
 
   const availabilities = availabilityHelper.getAvailabilityByRoomTypeCode(
     props.allAvailabilities,
-    props.roomTypeCode,
+    props.roomTypeCode
   )
 
   for (const protelAvailability of availabilities) {
@@ -48,7 +48,7 @@ const updateAvailabilitySelectables = (availability: IProtelAvailability, select
   const protelReservationSelectUpdate: IProtelReservationSelectUpdate = {
     selectedAvailabilities: selectedAvailabilities,
     roomTypeCode: props.roomTypeCode,
-    property_code: props.availabilities[0].property_code
+    property_code: props.allAvailabilities[0].property_code
   }
 
   emits('availabilities-selected', protelReservationSelectUpdate)
