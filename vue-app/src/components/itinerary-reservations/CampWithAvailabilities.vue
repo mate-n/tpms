@@ -22,7 +22,8 @@ const props = defineProps({
     type: Object as () => Date,
     required: true
   },
-  departureDate: { type: Object as () => Date, required: true }
+  departureDate: { type: Object as () => Date, required: true },
+  roomTypeCode: { type: String, required: false },
 })
 
 const expansionModel = ref<string[] | null>(['availabilities'])
@@ -66,7 +67,6 @@ const isDateOccupiedInReservation = (date: Date) => {
 }
 
 const isDateOccupiedByOtherReservations = (date: Date) => {
-  console.log(date, 'date')
   return false
 }
 
@@ -86,7 +86,7 @@ const getAvailabilities = () => {
   const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
     arrivaldate: dateFormatter.yyyydashmmdashdd(props.arrivalDate),
     departuredate: dateFormatter.yyyydashmmdashdd(departureDatePlusOne),
-    roomtype: 'null',
+    roomtype: props.roomTypeCode || 'null',
     propertyid: props.camp.id.toString(),
     detail: '0',
     accomodation_type: null
@@ -98,7 +98,7 @@ const getAvailabilities = () => {
 }
 
 watch(
-  [() => props.arrivalDate, () => props.departureDate],
+  [() => props.arrivalDate, () => props.departureDate, () => props.roomTypeCode],
   async () => {
     getAvailabilities()
   },

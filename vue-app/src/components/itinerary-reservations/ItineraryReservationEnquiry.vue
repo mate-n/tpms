@@ -14,23 +14,27 @@ import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
 import { RegionService } from '@/services/backend-middleware/RegionService'
 import { ParkService } from '@/services/backend-middleware/ParkService'
 import { CampService } from '@/services/backend-middleware/CampService'
-import { IProtelRoomType } from '@/shared/interfaces/protel/IProtelRoomType'
+import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
 import CampWithAvailabilities from './CampWithAvailabilities.vue'
+import { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
+import { DateFormatter } from '@/helpers/DateFormatter'
+import { DateHelper } from '@/helpers/DateHelper'
+import { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
+const dateFormatter = new DateFormatter()
+const dateHelper = new DateHelper()
 const regionsInDropdown: Ref<IProtelRegion[]> = ref([])
 const allParks: Ref<IProtelPark[]> = ref([])
 const parksInDropdown: Ref<IProtelPark[]> = ref([])
 const allCamps: Ref<IProtelCamp[]> = ref([])
 const campsInDropdown: Ref<IProtelCamp[]> = ref([])
-const roomTypesInDropdown: Ref<IProtelRoomType[]> = ref([
-  { name: 'Bungalow BA3' },
-  { name: 'Campsite CK6P' },
-]);
+const roomTypeCodesInDropdown: Ref<string[]> = ref([]);
 const basketItemsStore = useBasketItemsStore()
 const itineraryReservationValidator = new ItineraryReservationValidator()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const regionService = new RegionService(axios2)
 const parkService = new ParkService(axios2)
 const campService = new CampService(axios2)
+const availabilityService = new AvailabilityService(axios2)
 const itineraryReservation = ref(new ItineraryReservation())
 
 const updateOrderIndexes = () => {
@@ -136,6 +140,34 @@ const getCamps = () => {
     })
   })
 }
+const getRoomTypes = () => {
+  roomTypeCodesInDropdown.value = []
+
+  const promises = itineraryReservation.value.selectedCamps.map((camp: IProtelCamp) => {
+    const departureDatePlusOne = dateHelper.addDays(itineraryReservation.value.departureDate, 1);
+    const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
+      arrivaldate: dateFormatter.yyyydashmmdashdd(itineraryReservation.value.arrivalDate),
+      departuredate: dateFormatter.yyyydashmmdashdd(departureDatePlusOne),
+      roomtype: 'null',
+      propertyid: String(camp.id),
+      detail: '0',
+      accomodation_type: null,
+    };
+    return availabilityService.getAvailabilities(protelAvailabilityPostBody);
+  });
+
+  Promise.all(promises).then((response: IProtelAvailability[][]) => {
+    const roomTypeCodeSet = new Set<string>();
+    response.forEach((availabilities) => {
+      availabilities.forEach((availability) => {
+        if (availability.room_type_code) {
+          roomTypeCodeSet.add(availability.room_type_code);
+        }
+      });
+    });
+    roomTypeCodesInDropdown.value = roomTypeCodeSet.values()
+  });
+};
 
 const showBookButton = ref(false)
 
@@ -156,6 +188,7 @@ watch(
 watch(
   [() => itineraryReservation.value.selectedCamps],
   () => {
+    getRoomTypes()
     updateReservations()
   },
   { deep: true }
@@ -165,7 +198,7 @@ watch(
   [
     () => itineraryReservation.value.arrivalDate,
     () => itineraryReservation.value.departureDate,
-    () => itineraryReservation.value.roomType,
+    () => itineraryReservation.value.roomTypeCode,
   ],
   () => {
     updateReservations()
@@ -177,7 +210,7 @@ const updatePropertiesOfReservations = () => {
   for (const reservation of itineraryReservation.value.reservations) {
     reservation.arrivalDate = itineraryReservation.value.arrivalDate
     reservation.departureDate = itineraryReservation.value.departureDate
-    reservation.roomType = itineraryReservation.value.roomType
+    reservation.roomTypeCode = itineraryReservation.value.roomTypeCode
   }
 }
 
@@ -217,7 +250,7 @@ const addReservationToCamp = (camp: IProtelCamp) => {
   reservation.propertyID = camp.id
   reservation.arrivalDate = itineraryReservation.value.arrivalDate
   reservation.departureDate = itineraryReservation.value.departureDate
-  reservation.roomType = itineraryReservation.value.roomType
+  reservation.roomTypeCode = itineraryReservation.value.roomTypeCode
   itineraryReservation.value.reservations.push(reservation)
 }
 
@@ -307,15 +340,13 @@ const clearSelectedCamps = () => {
       </v-col>
       <v-col>
         <v-autocomplete
-          v-model="itineraryReservation.roomType"
+          v-model="itineraryReservation.roomTypeCode"
           clearable
           closable-chips
           chips
           variant="underlined"
           label="Room type"
-          :items="roomTypesInDropdown"
-          item-title="name"
-          return-object
+          :items="roomTypeCodesInDropdown"
         ></v-autocomplete>
       </v-col>
     </v-row>
@@ -326,6 +357,7 @@ const clearSelectedCamps = () => {
       :camp="camp"
       :arrival-date="itineraryReservation.arrivalDate"
       :departure-date="itineraryReservation.departureDate"
+      :room-type-code="itineraryReservation.roomTypeCode"
     ></CampWithAvailabilities>
   </template>
 

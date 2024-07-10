@@ -144,7 +144,7 @@ const check = () => {
   const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
     arrivaldate: dateFormatter.yyyydashmmdashdd(reservation.value.arrivalDate),
     departuredate: dateFormatter.yyyydashmmdashdd(departureDatePlusOne),
-    roomtype: reservation.value.roomType?.name || 'null',
+    roomtype: 'null',
     propertyid: reservation.value.propertyID.toString(),
     detail: '0',
     accomodation_type: null
@@ -198,7 +198,6 @@ watch(
     () => reservation.value.profileID,
     () => reservation.value.arrivalDate,
     () => reservation.value.departureDate,
-    () => reservation.value.roomType,
     () => reservation.value.propertyID
   ],
   () => {

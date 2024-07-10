@@ -7,7 +7,6 @@ import type { IGuestsPerRoom } from '../interfaces/IGuestsPerRoom'
 import type { ITicket } from '../interfaces/ITicket'
 import type { IProtelAvailability } from '../interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilityGroup } from '../interfaces/protel/IProtelAvailabilityGroup'
-import type { IProtelRoomType } from '../interfaces/protel/IProtelRoomType'
 import { GuestsPerRoom } from './GuestsPerRoom'
 
 export class Reservation implements IReservation {
@@ -38,7 +37,6 @@ export class Reservation implements IReservation {
   tickets: ITicket[]
   totalRate: number
   averageRate: number
-  roomType: IProtelRoomType | undefined
   guestName: string
   propertyName: string
   guestsPerRoom: IGuestsPerRoom
