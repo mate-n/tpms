@@ -1,3 +1,4 @@
+import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
 import type { IEntityWithIdentity } from './IEntityWithIdentity'
 import type { IReservation } from './IReservation'
 import type { IProtelCamp } from './protel/IProtelCamp'
@@ -14,4 +15,5 @@ export interface IItineraryReservation extends IEntityWithIdentity {
   selectedParks: IProtelPark[]
   selectedCamps: IProtelCamp[]
   guestProfileID: number | undefined
+  protelReservations: IProtelReservation[]
 }

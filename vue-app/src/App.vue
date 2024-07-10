@@ -2,7 +2,6 @@
 import realmsLogo from '@/assets/images/realms-icon.webp'
 import { computed, inject, onMounted, ref, watch, type Ref } from 'vue'
 import { RouterView } from 'vue-router'
-import { useBasketItemsStore } from './stores/basketItems'
 import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
 import { useUserStore } from './stores/user'
 import { Profile } from './shared/classes/Profile'
@@ -12,6 +11,7 @@ import { useRouter as UseRouter } from 'vue-router'
 import { ProtelApiStatusService } from './services/protel/ProtelApiStatusService'
 import type { AxiosStatic } from 'axios'
 import { AxiosHelper } from './helpers/AxiosHelper'
+import { useItineraryReservationCartStore } from './stores/itineraryReservationCart'
 const axiosHelper = new AxiosHelper()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const axios: AxiosStatic | undefined = inject('axios')
@@ -40,7 +40,7 @@ const useRouter = UseRouter()
 
 const userStore = useUserStore()
 userStore.currentProfile = new Profile()
-const basketItemsStore = useBasketItemsStore()
+const itineraryReservationCartStore = useItineraryReservationCartStore()
 const reservationsMenu = ref(false)
 
 const goHome = () => {
@@ -68,12 +68,6 @@ onMounted(() => {
   }
 })
 
-const numberDisplayedOnCart = computed(() => {
-  return basketItemsStore.reservations
-    .map((reservation) => reservation.selectedProtelAvailabilityGroups.length)
-    .reduce((a, b) => a + b, 0)
-})
-
 const apiSwitch = ref(false)
 
 const apiSwitchLabel = computed(() => {
@@ -84,6 +78,13 @@ watch(apiSwitch, (newValue) => {
   if (axios2) {
     axiosHelper.switchBaseUrl(axios2, newValue)
   }
+})
+
+const showBadge = computed(() => {
+  if (!itineraryReservationCartStore.itineraryReservation) {
+    return false
+  }
+  return itineraryReservationCartStore.itineraryReservation?.protelReservations.length > 0
 })
 </script>
 
@@ -194,9 +195,12 @@ watch(apiSwitch, (newValue) => {
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" icon>
             <v-badge
-              :content="numberDisplayedOnCart"
+              :content="
+                itineraryReservationCartStore.itineraryReservation &&
+                itineraryReservationCartStore.itineraryReservation.protelReservations.length
+              "
               color="primary"
-              :model-value="numberDisplayedOnCart > 0"
+              :model-value="showBadge"
             >
               <v-icon icon="mdi-cart-outline" size="x-large"></v-icon>
             </v-badge>

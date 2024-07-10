@@ -75,6 +75,18 @@ export class AvailabilityHelper {
     return groupedAvailabilities
   }
 
+  groupAvailabilitiesByRoomTypeCode(availabilities: IProtelAvailability[]) {
+    const groupedAvailabilities: { [key: string]: IProtelAvailability[] } = {}
+    availabilities.forEach((availability) => {
+      const key = availability.room_type_code
+      if (!groupedAvailabilities[key]) {
+        groupedAvailabilities[key] = []
+      }
+      groupedAvailabilities[key].push(availability)
+    })
+    return groupedAvailabilities
+  }
+
   groupAvailabilitiesByRoomType(availabilities: IProtelAvailability[]) {
     const groupedAvailabilities: { [key: string]: IProtelAvailability[] } = {}
     availabilities.forEach((availability) => {
@@ -101,6 +113,45 @@ export class AvailabilityHelper {
       total += +availability.availability_count
     })
     return total
+  }
+
+  sortByAvailabilityStart(availabilitiesInput: IProtelAvailability[]): IProtelAvailability[] {
+    return availabilitiesInput.sort((a, b) => {
+      return new Date(a.availability_start).getTime() - new Date(b.availability_start).getTime()
+    })
+  }
+
+  getAvailabilitiesWithConsecutiveDates(
+    availabilitiesInput: IProtelAvailability[]
+  ): IAvailabilitiesInGroup[] {
+    const consecutiveAvailabilityGroups: IAvailabilitiesInGroup[] = []
+
+    const availabilitiesSortedByAvailabilityStart =
+      this.sortByAvailabilityStart(availabilitiesInput)
+
+    const availabilityGroup: IAvailabilitiesInGroup = {
+      availabilities: [availabilitiesSortedByAvailabilityStart[0]]
+    }
+
+    for (let i = 1; i < availabilitiesSortedByAvailabilityStart.length; i++) {
+      const previousAvailability = availabilitiesInput[i - 1]
+      const currentAvailability = availabilitiesInput[i]
+
+      if (
+        this.dateHelper.isSameDay(
+          this.dateHelper.addDays(previousAvailability.availability_start, 1),
+          currentAvailability.availability_start
+        )
+      ) {
+        availabilityGroup.availabilities.push(currentAvailability)
+      } else {
+        consecutiveAvailabilityGroups.push({ ...availabilityGroup })
+        availabilityGroup.availabilities = [currentAvailability]
+      }
+    }
+    consecutiveAvailabilityGroups.push({ ...availabilityGroup })
+
+    return consecutiveAvailabilityGroups
   }
 
   getConsecutiveAvailabilitiesOnDate(availabilitiesInput: IProtelAvailability[], dateInput: Date) {
@@ -182,4 +233,8 @@ export class AvailabilityHelper {
     };
     return protelAvailabilityPostBody;
   }
+}
+
+interface IAvailabilitiesInGroup {
+  availabilities: IProtelAvailability[]
 }

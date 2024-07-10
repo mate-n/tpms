@@ -130,7 +130,7 @@ const checkIfProfilesWithSameFirstAndLastNameExist = async () => {
 
 const profilesWithSameSAID = ref<IProfile[]>([])
 const checkIfProfilesWithSAIDExist = async () => {
-  if (profileToBeEdited.value.sAId.length < 3) {
+  if (profileToBeEdited.value.SAId.length < 3) {
     return
   }
   const profileLookUpPostBody: ProfileLookUpPostBody = {
@@ -138,7 +138,7 @@ const checkIfProfilesWithSAIDExist = async () => {
     surname: undefined,
     name: undefined,
     mobile: undefined,
-    SAId: profileToBeEdited.value.sAId,
+    SAId: profileToBeEdited.value.SAId,
     passportno: undefined,
     roomseekerclientcode: undefined,
     profileID: undefined,
@@ -262,7 +262,7 @@ const goToProfile = (profileID: number | undefined) => {
   <div v-if="profilesWithSameSAID.length > 0" class="bg-lightgray">
     <div v-for="profile of profilesWithSameSAID" :key="profile.id">
       <v-alert type="warning" class="mt-2">
-        A profile with {{ profile.sAId }} already exists.
+        A profile with {{ profile.SAId }} already exists.
         <v-btn @click="goToProfile(profile.id)" class="ml-auto text-primary">Go to profile</v-btn>
       </v-alert>
     </div>

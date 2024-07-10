@@ -3,11 +3,12 @@ import type { IProfile } from '../interfaces/profiles/IProfile'
 import { LuhnAlgorithmValidator } from './LuhnAlgorithmValidator'
 
 export class ProfileValidator implements IValidator {
+  emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   luhnAlgorithmHelper = new LuhnAlgorithmValidator()
   validate(profile: IProfile): void {
     profile.errors = {}
     this.isNamePresent(profile)
-    this.isEmailPresent(profile)
+    this.isEmailValid(profile)
     this.isMobilePresent(profile)
     this.isNationalityPresent(profile)
     this.isBirthdatePresent(profile)
@@ -28,9 +29,16 @@ export class ProfileValidator implements IValidator {
     }
   }
 
-  isEmailPresent(profile: IProfile): void {
+  isEmailValid(profile: IProfile): void {
     if (!profile.email) {
       profile.errors!['email'] = 'Email is required'
+    }
+
+    if (profile.email) {
+      const isEmailValid = this.emailRegex.test(profile.email)
+      if (!isEmailValid) {
+        profile.errors!['email'] = 'Invalid email address'
+      }
     }
   }
 
@@ -45,10 +53,10 @@ export class ProfileValidator implements IValidator {
       profile.errors!['countryofbirth'] = 'Nationality is required'
     }
     if (profile.countryofbirth === 'ZA') {
-      if (!profile.sAId) {
+      if (!profile.SAId) {
         profile.errors!['sAId'] = 'SA ID Number is required'
       } else {
-        if (!this.isSAIDValid(profile.sAId)) {
+        if (!this.isSAIDValid(profile.SAId)) {
           profile.errors!['sAId'] = 'SAID is invalid'
         }
       }

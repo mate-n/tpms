@@ -22,7 +22,7 @@ export class Profile implements IProfile {
   dateofbirth: Date | undefined
   gender: string
   roomseekerclientcode: string
-  sAId: string
+  SAId: string
   passportno: string
   countryofbirth: string
   wildcardnumber: string
@@ -115,7 +115,7 @@ export class Profile implements IProfile {
     this.country = ''
     this.gender = ''
     this.roomseekerclientcode = ''
-    this.sAId = ''
+    this.SAId = ''
     this.passportno = ''
     this.countryofbirth = ''
     this.wildcardnumber = ''
