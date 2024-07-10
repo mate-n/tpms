@@ -232,9 +232,7 @@ const clickOnReset = () => {
                 </td>
                 <td class="bg-lightgray" v-if="showRoomsInProtelAvailabilitiesSelecter">
                   <AvailabilitiesSelecter
-                    :availabilities="
-                      availabilityHelper.getAvailabilityByRoomTypeCode(availabilities, roomTypeCode)
-                    "
+                    :all-availabilities="availabilities"
                     :room-type-code="roomTypeCode"
                     :arrival-date="props.arrivalDate"
                     :departure-date="props.departureDate"

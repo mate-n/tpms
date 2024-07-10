@@ -1,14 +1,16 @@
 <script setup lang="ts">
+import { AvailabilityHelper } from '@/helpers/AvailabilityHelper';
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
 import { nextTick, ref, watch } from 'vue'
+const availabilityHelper = new AvailabilityHelper()
 const isSelecting = ref<boolean>(false)
 const startSelectingAt = ref<IProtelAvailabilitySelectable | null>(null)
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
 const props = defineProps({
   roomTypeCode: { type: String, required: true },
-  availabilities: { type: Array as () => IProtelAvailability[], required: true },
+  allAvailabilities: { type: Array as () => IProtelAvailability[], required: true },
   arrivalDate: { type: Object as () => Date, required: true },
   departureDate: { type: Object as () => Date, required: true }
 })
@@ -18,7 +20,12 @@ const emits = defineEmits(['availabilities-selected'])
 const resetProtelAvailabilitySelectables = () => {
   protelAvailabilitySelectables.value = []
 
-  for (const protelAvailability of props.availabilities) {
+  const availabilities = availabilityHelper.getAvailabilityByRoomTypeCode(
+    props.allAvailabilities,
+    props.roomTypeCode,
+  )
+
+  for (const protelAvailability of availabilities) {
     protelAvailabilitySelectables.value.push({
       availability: protelAvailability,
       selected: false
@@ -107,7 +114,7 @@ const handleMouseUp = () => {
 }
 
 watch(
-  props.availabilities,
+  [() => props.allAvailabilities, () => props.roomTypeCode],
   async () => {
     resetProtelAvailabilitySelectables()
     await nextTick()
