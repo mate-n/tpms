@@ -6,7 +6,6 @@ import { useBasketItemsStore } from '@/stores/basketItems'
 import { Reservation } from '@/shared/classes/Reservation'
 import BasketCard from '@/components/baskets/BasketCard.vue'
 import type { IProtelRegion } from '@/shared/interfaces/protel/IProtelRegion'
-import type { AxiosStatic } from 'axios'
 import type { IProtelPark } from '@/shared/interfaces/protel/IProtelPark'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 import DateSelecter from '@/components/dates/DateSelecter.vue'
@@ -23,10 +22,9 @@ const allCamps: Ref<IProtelCamp[]> = ref([])
 const campsInDropdown: Ref<IProtelCamp[]> = ref([])
 const basketItemsStore = useBasketItemsStore()
 const itineraryReservationValidator = new ItineraryReservationValidator()
-const axios2: AxiosStatic | undefined = inject('axios2')
-const regionService = new RegionService(axios2)
-const parkService = new ParkService(axios2)
-const campService = new CampService(axios2)
+const regionService = new RegionService()
+const parkService = new ParkService()
+const campService = new CampService()
 const itineraryReservation = ref(new ItineraryReservation())
 
 const updateOrderIndexes = () => {

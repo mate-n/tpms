@@ -1,14 +1,7 @@
-import { AxiosInstanceFactory2 } from '@/factories/AxiosInstanceFactory2'
-import type { IService } from '@/interfaces/IService'
 import type { IProtelRegion } from '@/shared/interfaces/protel/IProtelRegion'
-import type { AxiosStatic } from 'axios'
+import { Service } from '../Service'
 
-export class RegionService implements IService {
-  axiosInstance: any
-  constructor(axios: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory2.createAxiosInstance(axios)
-  }
-
+export class RegionService extends Service {
   findAll() {
     return new Promise<IProtelRegion[]>((resolve, reject) => {
       this.axiosInstance
