@@ -98,7 +98,7 @@ const getAvailabilities = () => {
   const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
     arrivaldate: dateFormatter.yyyydashmmdashdd(props.arrivalDate),
     departuredate: dateFormatter.yyyydashmmdashdd(props.departureDate),
-    roomtype: 'null',
+    roomtype: props.roomTypeCode || 'null',
     propertyid: props.camp.id.toString(),
     detail: '0',
     accomodation_type: null

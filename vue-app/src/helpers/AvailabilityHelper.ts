@@ -222,10 +222,9 @@ export class AvailabilityHelper {
     arrivalDate: Date;
     roomTypeCode?: string;
   }) => {
-    const departureDatePlusOne = this.dateHelper.addDays(data.departureDate, 1);
     const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
       arrivaldate: this.dateFormatter.yyyydashmmdashdd(data.arrivalDate),
-      departuredate: this.dateFormatter.yyyydashmmdashdd(departureDatePlusOne),
+      departuredate: this.dateFormatter.yyyydashmmdashdd(data.departureDate),
       roomtype: data.roomTypeCode || 'null',
       propertyid: `${data.camp.id}`,
       detail: '0',
