@@ -16,12 +16,9 @@ import { ParkService } from '@/services/backend-middleware/ParkService'
 import { CampService } from '@/services/backend-middleware/CampService'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
 import CampWithAvailabilities from './CampWithAvailabilities.vue'
-import { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
-import { DateFormatter } from '@/helpers/DateFormatter'
-import { DateHelper } from '@/helpers/DateHelper'
 import { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
-const dateFormatter = new DateFormatter()
-const dateHelper = new DateHelper()
+import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
+const availabilityHelper = new AvailabilityHelper()
 const regionsInDropdown: Ref<IProtelRegion[]> = ref([])
 const allParks: Ref<IProtelPark[]> = ref([])
 const parksInDropdown: Ref<IProtelPark[]> = ref([])
@@ -144,15 +141,11 @@ const getRoomTypes = () => {
   roomTypeCodesInDropdown.value = []
 
   const promises = itineraryReservation.value.selectedCamps.map((camp: IProtelCamp) => {
-    const departureDatePlusOne = dateHelper.addDays(itineraryReservation.value.departureDate, 1);
-    const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
-      arrivaldate: dateFormatter.yyyydashmmdashdd(itineraryReservation.value.arrivalDate),
-      departuredate: dateFormatter.yyyydashmmdashdd(departureDatePlusOne),
-      roomtype: 'null',
-      propertyid: String(camp.id),
-      detail: '0',
-      accomodation_type: null,
-    };
+    const protelAvailabilityPostBody = availabilityHelper.mapPostBody({
+      camp,
+      arrivalDate: itineraryReservation.value.arrivalDate,
+      departureDate: itineraryReservation.value.departureDate,
+    })
     return availabilityService.getAvailabilities(protelAvailabilityPostBody);
   });
 

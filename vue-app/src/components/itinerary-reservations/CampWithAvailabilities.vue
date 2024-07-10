@@ -81,16 +81,12 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
 const roomTypeDialog = ref(false)
 
 const getAvailabilities = () => {
-  const departureDatePlusOne = dateHelper.addDays(props.departureDate, 1)
-
-  const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
-    arrivaldate: dateFormatter.yyyydashmmdashdd(props.arrivalDate),
-    departuredate: dateFormatter.yyyydashmmdashdd(departureDatePlusOne),
-    roomtype: props.roomTypeCode || 'null',
-    propertyid: props.camp.id.toString(),
-    detail: '0',
-    accomodation_type: null
-  }
+  const protelAvailabilityPostBody = availabilityHelper.mapPostBody({
+    camp: props.camp,
+    arrivalDate: props.arrivalDate,
+    departureDate: props.departureDate,
+    roomTypeCode: props.roomTypeCode,
+  })
 
   availabilityService.getAvailabilities(protelAvailabilityPostBody).then((response) => {
     availabilities.value = response

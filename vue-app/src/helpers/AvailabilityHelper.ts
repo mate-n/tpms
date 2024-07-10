@@ -1,4 +1,6 @@
+import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
+import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import { DateHelper } from './DateHelper'
 import { DateFormatter } from './DateFormatter'
 
@@ -161,5 +163,23 @@ export class AvailabilityHelper {
     return availabilities.some((availability) =>
       this.dateHelper.isSameDay(availability.availability_start, dayAfter)
     )
+  }
+
+  mapPostBody = (data: {
+    camp: IProtelCamp;
+    departureDate: Date;
+    arrivalDate: Date;
+    roomTypeCode?: string;
+  }) => {
+    const departureDatePlusOne = this.dateHelper.addDays(data.departureDate, 1);
+    const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
+      arrivaldate: this.dateFormatter.yyyydashmmdashdd(data.arrivalDate),
+      departuredate: this.dateFormatter.yyyydashmmdashdd(departureDatePlusOne),
+      roomtype: data.roomTypeCode || 'null',
+      propertyid: `${data.camp.id}`,
+      detail: '0',
+      accomodation_type: null,
+    };
+    return protelAvailabilityPostBody;
   }
 }
