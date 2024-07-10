@@ -18,6 +18,19 @@ export class DateHelper {
     return this.dateFormatter.dddotmmdotyyyy(date)
   }
 
+  /**
+   * Check if d1 is after d2
+   * @param d1 
+   * @param d2 
+   */
+  isAfter(d1: Date, d2: Data): boolean {
+    const date1 = new Date(d1)
+    date1.setHours(0, 0, 0, 0)
+    const date2 = new Date(d2)
+    date2.setHours(0, 0, 0, 0)
+    return date1.getTime() > date2.getTime()
+  }
+
   isSameDay(d1: Date, d2: Date) {
     return (
       d1.getFullYear() === d2.getFullYear() &&

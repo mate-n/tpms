@@ -15,7 +15,8 @@ import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
 import { RegionService } from '@/services/backend-middleware/RegionService'
 import { ParkService } from '@/services/backend-middleware/ParkService'
 import { CampService } from '@/services/backend-middleware/CampService'
-import CampWithAvailabilities from './CampWithAvailabilities.vue'
+import { DateHelper } from '@/helpers/DateHelper'
+const dateHelper = new DateHelper()
 const regionsInDropdown: Ref<IProtelRegion[]> = ref([])
 const allParks: Ref<IProtelPark[]> = ref([])
 const parksInDropdown: Ref<IProtelPark[]> = ref([])
@@ -28,6 +29,7 @@ const regionService = new RegionService(axios2)
 const parkService = new ParkService(axios2)
 const campService = new CampService(axios2)
 const itineraryReservation = ref(new ItineraryReservation())
+const arrivalDateNextDay = ref(dateHelper.addDays(itineraryReservation.value.arrivalDate, 1))
 
 const updateOrderIndexes = () => {
   itineraryReservation.value.reservations.forEach((reservation, index) => {
@@ -160,6 +162,17 @@ watch(
 watch(
   [() => itineraryReservation.value.arrivalDate, () => itineraryReservation.value.departureDate],
   () => {
+    arrivalDateNextDay.value = dateHelper.addDays(itineraryReservation.value.arrivalDate, 1)
+
+    const isAfter = dateHelper.isAfter(
+      dateHelper.addDays(itineraryReservation.value.arrivalDate, 1),
+      itineraryReservation.value.departureDate,
+    )
+    if (isAfter) {
+      itineraryReservation.value.departureDate =
+        dateHelper.addDays(itineraryReservation.value.arrivalDate, 1)
+    }
+
     updateReservations()
   },
   { deep: true }
@@ -293,7 +306,11 @@ const clearSelectedCamps = () => {
         <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
       </v-col>
       <v-col class="d-flex align-center h-100">
-        <DateSelecter v-model="itineraryReservation.departureDate" label="Departure"></DateSelecter>
+        <DateSelecter
+          v-model="itineraryReservation.departureDate"
+          label="Departure"
+          :min="arrivalDateNextDay"
+        ></DateSelecter>
       </v-col>
       <v-col>
         <ProfileSearchField
