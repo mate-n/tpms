@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeMount, ref, watch } from 'vue'
 import type { Ref } from 'vue'
-import { ItineraryReservationValidator } from '@/validators/ItineraryReservationValidator'
 import { useBasketItemsStore } from '@/stores/basketItems'
+import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
 import { Reservation } from '@/shared/classes/Reservation'
 import BasketCard from '@/components/baskets/BasketCard.vue'
 import type { IProtelRegion } from '@/shared/interfaces/protel/IProtelRegion'
@@ -15,6 +15,11 @@ import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
 import { RegionService } from '@/services/backend-middleware/RegionService'
 import { ParkService } from '@/services/backend-middleware/ParkService'
 import { CampService } from '@/services/backend-middleware/CampService'
+import CampWithAvailabilities from './CampWithAvailabilities.vue'
+import { ProtelAvailabilityConverter } from '@/shared/converters/ProtelAvailabilityConverter'
+import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
+import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
+const protelAvailabilityConverter = new ProtelAvailabilityConverter()
 import { DateHelper } from '@/helpers/DateHelper'
 const dateHelper = new DateHelper()
 const regionsInDropdown: Ref<IProtelRegion[]> = ref([])
@@ -23,7 +28,7 @@ const parksInDropdown: Ref<IProtelPark[]> = ref([])
 const allCamps: Ref<IProtelCamp[]> = ref([])
 const campsInDropdown: Ref<IProtelCamp[]> = ref([])
 const basketItemsStore = useBasketItemsStore()
-const itineraryReservationValidator = new ItineraryReservationValidator()
+const itineraryReservationCartStore = useItineraryReservationCartStore()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const regionService = new RegionService(axios2)
 const parkService = new ParkService(axios2)
@@ -37,40 +42,17 @@ const updateOrderIndexes = () => {
   })
 }
 
-const onReservationChanged = () => {
-  updateAllReservations()
-  checkForIssues()
-  updateShowBookButton()
-}
-
 const selectedProfile = computed(() => {
   if (itineraryReservation.value.reservations.length === 0) return 0
   return itineraryReservation.value.reservations[0].profileID
 })
 
-const updateAllReservations = () => {
-  for (const reservation of itineraryReservation.value.reservations) {
-    reservation.profileID = selectedProfile.value
-  }
-}
-
-const checkForIssues = () => {
-  itineraryReservationValidator.validate(itineraryReservation.value.reservations)
-}
-
-const updateShowBookButton = () => {
-  const errors = itineraryReservationValidator.getErrors(itineraryReservation.value.reservations)
-  if (errors.length > 0) {
-    showBookButton.value = false
-  } else {
-    showBookButton.value = true
-  }
-}
-
 const clickOnAddToCart = () => {
   closeExpansionPanels.value++
   updateOrderIndexes()
   basketItemsStore.addReservations(itineraryReservation.value.reservations)
+
+  itineraryReservationCartStore.setItineraryReservation(itineraryReservation.value)
 }
 
 const closeExpansionPanels = ref(0)
@@ -134,8 +116,6 @@ const getCamps = () => {
     })
   })
 }
-
-const showBookButton = ref(false)
 
 const clickOnViewCart = () => {
   basketDialog.value = true
@@ -253,6 +233,36 @@ const clearSelectedCamps = () => {
   itineraryReservation.value.selectedCamps = []
   travelDistanceWarningDialog.value = false
 }
+
+const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservationSelectUpdate) => {
+  const newReservations = protelAvailabilityConverter.convertToReservations(
+    protelReservationSelectUpdate.selectedAvailabilities
+  )
+
+  itineraryReservation.value.protelReservations =
+    itineraryReservation.value.protelReservations.filter(
+      (reservation) =>
+        !hasReservationPropertyCodeAndRoomTypeCode(
+          reservation,
+          protelReservationSelectUpdate.property_code,
+          protelReservationSelectUpdate.roomTypeCode
+        )
+    )
+
+  itineraryReservation.value.protelReservations.push(...newReservations)
+}
+
+const hasReservationPropertyCodeAndRoomTypeCode = (
+  reservation: IProtelReservation,
+  property_code: string,
+  roomTypeCode: string
+) => {
+  if (roomTypeCode === '') {
+    return reservation.property_code === property_code
+  }
+
+  return reservation.property_code === property_code && reservation.type_code === roomTypeCode
+}
 </script>
 
 <template>
@@ -327,6 +337,11 @@ const clearSelectedCamps = () => {
       :camp="camp"
       :arrival-date="itineraryReservation.arrivalDate"
       :departure-date="itineraryReservation.departureDate"
+      @availabilities-selected="
+        (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
+          availabilitiesSelected(protelReservationSelectUpdate)
+      "
+      :itinerary-reservation="itineraryReservation"
     ></CampWithAvailabilities>
   </template>
 

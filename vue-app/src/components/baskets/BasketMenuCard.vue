@@ -5,29 +5,32 @@ import { ReservationHelper } from '@/helpers/ReservationHelper'
 import { AvailabilityGroupHelper } from '@/helpers/AvailabilityGroupHelper'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import AvailabilityGroupInBasketMenuCard from './AvailabilityGroupInBasketMenuCard.vue'
+import ProtelReservationInBasketMenuCard from './ProtelReservationInBasketMenuCard.vue'
+import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
+import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
 const priceFormatter = new PriceFormatter()
 const availabilityGroupHelper = new AvailabilityGroupHelper()
-const reservationHelper = new ReservationHelper()
+const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
+const itineraryReservationCartStore = useItineraryReservationCartStore()
 const emit = defineEmits(['close', 'clickOnViewCart'])
 const basketItemsStore = useBasketItemsStore()
 const removeAllReservations = () => {
-  for (const reservation of basketItemsStore.reservations) {
-    basketItemsStore.removeReservation(reservation)
+  if (itineraryReservationCartStore.itineraryReservation) {
+    itineraryReservationCartStore.itineraryReservation.protelReservations = []
   }
   emit('close')
 }
-const removeReservation = () => {
-  if (basketItemsStore.reservations.length === 0) {
-    emit('close')
-  }
-}
 
 const totalPrice = computed(() => {
-  {
-    {
-      return reservationHelper.getTotalPrice(basketItemsStore.reservations)
+  let total = 0
+  if (itineraryReservationCartStore.itineraryReservation) {
+    for (const reservation of itineraryReservationCartStore.itineraryReservation
+      .protelReservations) {
+      total += protelReservationPriceCalculator.getPriceForAllNightsWithTickets(reservation)
     }
   }
+
+  return total
 })
 
 const clickOnViewCart = () => {
@@ -43,12 +46,15 @@ const availabilityGroupsOfReservations = computed(() => {
 <template>
   <v-container class="bg-lightgray pa-1 rounded">
     <div style="overflow-y: auto; max-height: 90vh">
-      <AvailabilityGroupInBasketMenuCard
-        v-for="availabilityGroup in availabilityGroupsOfReservations"
-        :key="availabilityGroup.id"
-        :availabilityGroup="availabilityGroup"
-        :guestsPerRoom="basketItemsStore.reservations[0].guestsPerRoom"
-      ></AvailabilityGroupInBasketMenuCard>
+      <template v-if="itineraryReservationCartStore.itineraryReservation">
+        <ProtelReservationInBasketMenuCard
+          v-for="(reservation, index) in itineraryReservationCartStore.itineraryReservation
+            .protelReservations"
+          :key="index"
+          :reservation="reservation"
+          @removeReservation="removeAllReservations"
+        ></ProtelReservationInBasketMenuCard>
+      </template>
     </div>
     <v-card min-width="350" class="mb-2 px-2">
       <div>

@@ -10,6 +10,8 @@ import type { AxiosStatic } from 'axios'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
 import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import RoomDetailsCard from '@/components/rooms/RoomDetailsCard.vue'
+import type { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
+import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
 const axios2: AxiosStatic | undefined = inject('axios2')
 const availabilityService = new AvailabilityService(axios2)
 const dateHelper = new DateHelper()
@@ -22,7 +24,8 @@ const props = defineProps({
     type: Object as () => Date,
     required: true
   },
-  departureDate: { type: Object as () => Date, required: true }
+  departureDate: { type: Object as () => Date, required: true },
+  itineraryReservation: { type: Object as () => ItineraryReservation, required: true }
 })
 
 const expansionModel = ref<string[] | null>(['availabilities'])
@@ -41,7 +44,7 @@ const numberOfNights = computed(() => {
 
 const availableDates = computed(() => {
   const dates = []
-  for (let i = 0; i < numberOfNights.value + 1; i++) {
+  for (let i = 0; i < numberOfNights.value; i++) {
     dates.push(dateHelper.addDays(props.arrivalDate, i))
   }
   return dates
@@ -57,8 +60,11 @@ const clickOnPlusButtonInAvailability = () => {
 }
 
 const isDateOccupiedInReservation = (date: Date) => {
-  for (const availability of selectedAvailabilities.value) {
-    if (dateHelper.isSameDay(date, availability.availability_start)) {
+  const reservations = props.itineraryReservation.protelReservations.filter(
+    (reservation) => reservation.property_code === props.camp.id.toString()
+  )
+  for (const reservation of reservations) {
+    if (dateHelper.isDateBetweenDates(date, reservation.arrivalDate, reservation.departureDate)) {
       return true
     }
   }
@@ -66,7 +72,14 @@ const isDateOccupiedInReservation = (date: Date) => {
 }
 
 const isDateOccupiedByOtherReservations = (date: Date) => {
-  console.log(date, 'date')
+  const otherReservations = props.itineraryReservation.protelReservations.filter(
+    (reservation) => reservation.property_code !== props.camp.id.toString()
+  )
+  for (const reservation of otherReservations) {
+    if (dateHelper.isDateBetweenDates(date, reservation.arrivalDate, reservation.departureDate)) {
+      return true
+    }
+  }
   return false
 }
 
@@ -81,11 +94,9 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
 const roomTypeDialog = ref(false)
 
 const getAvailabilities = () => {
-  const departureDatePlusOne = dateHelper.addDays(props.departureDate, 1)
-
   const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
     arrivaldate: dateFormatter.yyyydashmmdashdd(props.arrivalDate),
-    departuredate: dateFormatter.yyyydashmmdashdd(departureDatePlusOne),
+    departuredate: dateFormatter.yyyydashmmdashdd(props.departureDate),
     roomtype: 'null',
     propertyid: props.camp.id.toString(),
     detail: '0',
@@ -108,9 +119,18 @@ watch(
   }
 )
 
-const availabilitiesSelected = (availabilities: IProtelAvailability[]) => {
-  selectedAvailabilities.value = availabilities
-  emits('availabilities-selected', availabilities)
+const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservationSelectUpdate) => {
+  selectedAvailabilities.value = protelReservationSelectUpdate.selectedAvailabilities
+  emits('availabilities-selected', protelReservationSelectUpdate)
+}
+
+const clickOnReset = () => {
+  const protelReservationSelectUpdate: IProtelReservationSelectUpdate = {
+    selectedAvailabilities: [],
+    property_code: props.camp.id.toString(),
+    roomTypeCode: ''
+  }
+  emits('availabilities-selected', protelReservationSelectUpdate)
 }
 </script>
 <template>
@@ -129,7 +149,7 @@ const availabilitiesSelected = (availabilities: IProtelAvailability[]) => {
         ></v-text-field>
       </v-col>
       <v-col>
-        <v-btn>Reset</v-btn>
+        <v-btn @click="clickOnReset()">Reset</v-btn>
       </v-col>
       <v-col>
         <v-btn>Total: 0.00</v-btn>
@@ -219,8 +239,8 @@ const availabilitiesSelected = (availabilities: IProtelAvailability[]) => {
                     :arrival-date="props.arrivalDate"
                     :departure-date="props.departureDate"
                     @availabilities-selected="
-                      (availabilities: IProtelAvailability[]) =>
-                        availabilitiesSelected(availabilities)
+                      (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
+                        availabilitiesSelected(protelReservationSelectUpdate)
                     "
                   ></AvailabilitiesSelecter>
                 </td>

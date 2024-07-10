@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { useBasketItemsStore } from '@/stores/basketItems'
-import { computed, inject, ref, type Ref } from 'vue'
-import { ReservationHelper } from '@/helpers/ReservationHelper'
+import { computed, inject, onMounted, ref, type Ref } from 'vue'
 import router from '@/router'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
-import { AvailabilityGroupHelper } from '@/helpers/AvailabilityGroupHelper'
-import AvailabilityGroupInBasketCard from './AvailabilityGroupInBasketCard.vue'
 import ConservationFeeForm from '@/components/conservation-fees/ConservationFeeForm.vue'
 import type { AxiosStatic } from 'axios'
 import { CartService } from '@/services/backend-middleware/CartService'
@@ -14,28 +10,40 @@ import type { ICartBody } from '@/shared/interfaces/cart/ICartBody'
 import type { IUpdateCartBody } from '@/shared/interfaces/cart/IUpdateCartBody'
 import type { IAddItemToCartBody } from '@/shared/interfaces/cart/IAddItemToCartBody'
 import { AddItemToCartBody } from '@/shared/classes/AddItemToCartBody'
-import { ReservationConverter } from '@/shared/converters/ReservationConverter'
 import { DateFormatter } from '@/helpers/DateFormatter'
 import type { ISettleCartBody } from '@/shared/interfaces/cart/ISettleCartBody'
+import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
+import ProtelReservationInBasketCard from './ProtelReservationInBasketCard.vue'
+import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
+import { Profile } from '@/shared/classes/Profile'
+import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
+const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const dateFormatter = new DateFormatter()
 const axios2: AxiosStatic | undefined = inject('axios2')
+const profileService = new ProfileService(axios2)
 const cartService = new CartService(axios2)
-const availabilityGroupHelper = new AvailabilityGroupHelper()
 const priceFormatter = new PriceFormatter()
-const basketItemsStore = useBasketItemsStore()
-const reservationHelper = new ReservationHelper()
-const reservationConverter = new ReservationConverter()
+const itineraryReservationCartStore = useItineraryReservationCartStore()
 const emits = defineEmits(['close'])
 const removeAllReservations = () => {
-  for (const reservation of basketItemsStore.reservations) {
-    basketItemsStore.removeReservation(reservation)
+  if (itineraryReservationCartStore.itineraryReservation) {
+    itineraryReservationCartStore.itineraryReservation.protelReservations = []
   }
 }
 
 const cartNumber: Ref<string | null> = ref(null)
 
 const totalPrice = computed(() => {
-  return availabilityGroupHelper.calculateTotalPrice(availabilityGroups.value)
+  let total = 0
+  if (itineraryReservationCartStore.itineraryReservation) {
+    for (const reservation of itineraryReservationCartStore.itineraryReservation
+      .protelReservations) {
+      total += protelReservationPriceCalculator.getPriceForAllNightsWithTickets(reservation)
+    }
+  }
+
+  return total
 })
 
 const clickOnBook = () => {
@@ -63,7 +71,7 @@ const settleAnkerdataCart = () => {
         action: 'updatePayment',
         cart_number: cartNumber.value!,
         payment_ref: 'REF123456789',
-        payment_amount: '123',
+        payment_amount: totalPrice.value.toString(),
         payment_method: 'AHSPAYMENTPROCESSOR',
         status: 'Confirmed'
       }
@@ -92,29 +100,28 @@ const updateCart = () => {
 }
 
 const addItemsToCart = () => {
-  return new Promise((resolve) => {
-    for (const availabilityGroup of availabilityGroups.value) {
-      const reservations = reservationConverter.convertToReservations(
-        availabilityGroup.availabilities
-      )
-
-      for (const reservation of reservations) {
-        const newItem: IAddItemToCartBody = new AddItemToCartBody()
-        newItem.action = 'add'
-        newItem.cart_id = cartNumber.value!
-        newItem.arrival_date = dateFormatter.yyyydashmmdashdd(reservation.arrivalDate)
-        newItem.departure_date = dateFormatter.yyyydashmmdashdd(reservation.departureDate)
-        newItem.adults = 1
-        newItem.children = 0
-        newItem.units = reservation.numberOfRooms
-        if (reservation.roomTypeCode) {
-          newItem.type_code = reservation.roomTypeCode
-        }
-        if (reservation.propertyID) {
-          newItem.property_code = reservation.propertyID
-        }
-        cartService.addItemToCart(newItem)
+  return new Promise((resolve, reject) => {
+    if (!itineraryReservationCartStore.itineraryReservation) {
+      reject('')
+    }
+    for (const reservation of itineraryReservationCartStore.itineraryReservation!
+      .protelReservations) {
+      const newItem: IAddItemToCartBody = new AddItemToCartBody()
+      newItem.action = 'add'
+      newItem.cart_id = cartNumber.value!
+      newItem.arrival_date = dateFormatter.yyyydashmmdashdd(reservation.arrivalDate)
+      newItem.departure_date = dateFormatter.yyyydashmmdashdd(reservation.departureDate)
+      newItem.adults = 1
+      newItem.children = 0
+      newItem.units = reservation.numberOfRooms
+      if (reservation.roomTypeCode) {
+        newItem.type_code = reservation.roomTypeCode
       }
+      if (reservation.property_code) {
+        newItem.property_code = parseInt(reservation.property_code)
+      }
+      cartService.addItemToCart(newItem)
+
       resolve('')
     }
 
@@ -130,10 +137,9 @@ const addItemsToCart = () => {
 }
 
 const allowBook = computed(() => {
-  return (
-    basketItemsStore.reservations.length > 0 &&
-    reservationHelper.doAllReservationsHaveProfileID(basketItemsStore.reservations)
-  )
+  return true
+  //itineraryReservationCartStore.reservations.length > 0 &&
+  //reservationHelper.doAllReservationsHaveProfileID(basketItemsStore.reservations)
 })
 
 const checkIfBookingIsPossible = () => {
@@ -158,13 +164,33 @@ const clickOnOkInConfirmedDialog = () => {
   emits('close')
 }
 
-const availabilityGroups = computed(() => {
-  return availabilityGroupHelper.getAvailabilityGroupsFromReservations(
-    basketItemsStore.reservations
-  )
+const conservationFeeFormDialog = ref(false)
+
+const itineraryReservationProfile: Ref<IProfile> = ref(new Profile())
+
+onMounted(() => {
+  getProfileOfItineraryReservation
 })
 
-const conservationFeeFormDialog = ref(false)
+const getProfileOfItineraryReservation = () => {
+  if (itineraryReservationCartStore.itineraryReservation?.guestProfileID === undefined) {
+    return
+  }
+  profileService
+    .get(itineraryReservationCartStore.itineraryReservation?.guestProfileID)
+    .then((response: IProfile | undefined) => {
+      if (response) {
+        itineraryReservationProfile.value = response
+      }
+    })
+}
+
+const profileSelected = (selectedProfile: IProfile) => {
+  if (itineraryReservationCartStore.itineraryReservation) {
+    itineraryReservationCartStore.itineraryReservation.guestProfileID = selectedProfile.id
+  }
+  itineraryReservationProfile.value = selectedProfile
+}
 </script>
 
 <template>
@@ -181,8 +207,18 @@ const conservationFeeFormDialog = ref(false)
     </v-toolbar>
     <v-divider class="profiles-card-divider"></v-divider>
     <v-container fluid class="bg-lightgray">
-      <div v-for="(availabilityGroup, index) of availabilityGroups" :key="availabilityGroup.id">
-        <AvailabilityGroupInBasketCard v-model="availabilityGroups[index]" />
+      <div
+        v-for="(reservation, index) of itineraryReservationCartStore.itineraryReservation
+          ?.protelReservations"
+        :key="index"
+      >
+        <template v-if="itineraryReservationCartStore.itineraryReservation">
+          <ProtelReservationInBasketCard
+            v-model="itineraryReservationCartStore.itineraryReservation.protelReservations[index]"
+            :profile="itineraryReservationProfile"
+            @profile-selected="(profile: IProfile) => profileSelected(profile)"
+          ></ProtelReservationInBasketCard>
+        </template>
       </div>
 
       <div class="d-flex justify-end align-center">
@@ -193,9 +229,12 @@ const conservationFeeFormDialog = ref(false)
             </p>
           </v-card-text>
         </v-card>
-        <v-btn class="me-2" elevation="4" @click="conservationFeeFormDialog = true"
-          >Conservation Fees</v-btn
-        >
+        <template v-if="false">
+          <v-btn class="me-2" elevation="4" @click="conservationFeeFormDialog = true"
+            >Conservation Fees</v-btn
+          >
+        </template>
+
         <v-btn style="background-color: green; color: white" elevation="4" @click="clickOnBook()"
           >BOOK</v-btn
         >
@@ -235,7 +274,9 @@ const conservationFeeFormDialog = ref(false)
     <v-divider class="profiles-card-divider"></v-divider>
     <v-card class="rounded-t-0">
       <v-card-text>
-        <div class="mb-5">Your itinerary reservation has been suceessfully booked.</div>
+        <div class="mb-5">
+          Your itinerary reservation: "{{ cartNumber }}" has been suceessfully booked.
+        </div>
         <div class="d-flex justify-end">
           <v-btn class="me-2" @click="itineraryConfirmedDialog = false">Close</v-btn>
           <v-btn class="primary-button" @click="clickOnOkInConfirmedDialog()">OK</v-btn>

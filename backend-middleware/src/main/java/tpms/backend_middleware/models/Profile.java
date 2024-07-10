@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 import tpms.backend_middleware.interfaces.IModel;
@@ -31,6 +32,7 @@ public class Profile implements IModel {
     private String dateofbirth;
     private String gender;
     private String roomseekerclientcode;
+    @JsonProperty("SAId")
     private String SAId;
     private String passportno;
     private String countryofbirth;

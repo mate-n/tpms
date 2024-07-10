@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
 import { nextTick, ref, watch } from 'vue'
@@ -37,7 +38,13 @@ const updateAvailabilitySelectables = (availability: IProtelAvailability, select
     .filter(({ selected }) => selected)
     .map(({ availability }) => availability)
 
-  emits('availabilities-selected', selectedAvailabilities)
+  const protelReservationSelectUpdate: IProtelReservationSelectUpdate = {
+    selectedAvailabilities: selectedAvailabilities,
+    roomTypeCode: props.roomTypeCode,
+    property_code: props.availabilities[0].property_code
+  }
+
+  emits('availabilities-selected', protelReservationSelectUpdate)
 }
 
 const handleMouseDown = (

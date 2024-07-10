@@ -20,10 +20,10 @@ export class DateHelper {
 
   /**
    * Check if d1 is after d2
-   * @param d1 
-   * @param d2 
+   * @param d1
+   * @param d2
    */
-  isAfter(d1: Date, d2: Data): boolean {
+  isAfter(d1: Date, d2: Date): boolean {
     const date1 = new Date(d1)
     date1.setHours(0, 0, 0, 0)
     const date2 = new Date(d2)
@@ -37,6 +37,10 @@ export class DateHelper {
       d1.getMonth() === d2.getMonth() &&
       d1.getDate() === d2.getDate()
     )
+  }
+
+  isDateBetweenDates(date: Date, startDate: Date, endDate: Date) {
+    return date >= startDate && date <= endDate
   }
 
   addDays(date: Date, days: number) {
