@@ -11,28 +11,33 @@ import type { IProtelPark } from '@/shared/interfaces/protel/IProtelPark'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 import DateSelecter from '@/components/dates/DateSelecter.vue'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
-import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
 import { RegionService } from '@/services/backend-middleware/RegionService'
 import { ParkService } from '@/services/backend-middleware/ParkService'
 import { CampService } from '@/services/backend-middleware/CampService'
+import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
 import CampWithAvailabilities from './CampWithAvailabilities.vue'
+import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
+import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import { ProtelAvailabilityConverter } from '@/shared/converters/ProtelAvailabilityConverter'
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
-const protelAvailabilityConverter = new ProtelAvailabilityConverter()
 import { DateHelper } from '@/helpers/DateHelper'
+const protelAvailabilityConverter = new ProtelAvailabilityConverter()
+const availabilityHelper = new AvailabilityHelper()
 const dateHelper = new DateHelper()
 const regionsInDropdown: Ref<IProtelRegion[]> = ref([])
 const allParks: Ref<IProtelPark[]> = ref([])
 const parksInDropdown: Ref<IProtelPark[]> = ref([])
 const allCamps: Ref<IProtelCamp[]> = ref([])
 const campsInDropdown: Ref<IProtelCamp[]> = ref([])
+const roomTypeCodesInDropdown: Ref<string[]> = ref([])
 const basketItemsStore = useBasketItemsStore()
 const itineraryReservationCartStore = useItineraryReservationCartStore()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const regionService = new RegionService(axios2)
 const parkService = new ParkService(axios2)
 const campService = new CampService(axios2)
+const availabilityService = new AvailabilityService(axios2)
 const itineraryReservation = ref(new ItineraryReservation())
 const arrivalDateNextDay = ref(dateHelper.addDays(itineraryReservation.value.arrivalDate, 1))
 
@@ -116,6 +121,30 @@ const getCamps = () => {
     })
   })
 }
+const getRoomTypes = () => {
+  roomTypeCodesInDropdown.value = []
+
+  const promises = itineraryReservation.value.selectedCamps.map((camp: IProtelCamp) => {
+    const protelAvailabilityPostBody = availabilityHelper.mapPostBody({
+      camp,
+      arrivalDate: itineraryReservation.value.arrivalDate,
+      departureDate: itineraryReservation.value.departureDate
+    })
+    return availabilityService.getAvailabilities(protelAvailabilityPostBody)
+  })
+
+  Promise.all(promises).then((response: IProtelAvailability[][]) => {
+    const roomTypeCodeSet = new Set<string>()
+    response.forEach((availabilities) => {
+      availabilities.forEach((availability) => {
+        if (availability.room_type_code) {
+          roomTypeCodeSet.add(availability.room_type_code)
+        }
+      })
+    })
+    roomTypeCodesInDropdown.value = Array.from(roomTypeCodeSet.values())
+  })
+}
 
 const clickOnViewCart = () => {
   basketDialog.value = true
@@ -134,23 +163,30 @@ watch(
 watch(
   [() => itineraryReservation.value.selectedCamps],
   () => {
+    getRoomTypes()
     updateReservations()
   },
   { deep: true }
 )
 
 watch(
-  [() => itineraryReservation.value.arrivalDate, () => itineraryReservation.value.departureDate],
+  [
+    () => itineraryReservation.value.arrivalDate,
+    () => itineraryReservation.value.departureDate,
+    () => itineraryReservation.value.roomTypeCode
+  ],
   () => {
     arrivalDateNextDay.value = dateHelper.addDays(itineraryReservation.value.arrivalDate, 1)
 
     const isAfter = dateHelper.isAfter(
       dateHelper.addDays(itineraryReservation.value.arrivalDate, 1),
-      itineraryReservation.value.departureDate,
+      itineraryReservation.value.departureDate
     )
     if (isAfter) {
-      itineraryReservation.value.departureDate =
-        dateHelper.addDays(itineraryReservation.value.arrivalDate, 1)
+      itineraryReservation.value.departureDate = dateHelper.addDays(
+        itineraryReservation.value.arrivalDate,
+        1
+      )
     }
 
     updateReservations()
@@ -162,6 +198,7 @@ const updatePropertiesOfReservations = () => {
   for (const reservation of itineraryReservation.value.reservations) {
     reservation.arrivalDate = itineraryReservation.value.arrivalDate
     reservation.departureDate = itineraryReservation.value.departureDate
+    reservation.roomTypeCode = itineraryReservation.value.roomTypeCode
   }
 }
 
@@ -201,6 +238,7 @@ const addReservationToCamp = (camp: IProtelCamp) => {
   reservation.propertyID = camp.id
   reservation.arrivalDate = itineraryReservation.value.arrivalDate
   reservation.departureDate = itineraryReservation.value.departureDate
+  reservation.roomTypeCode = itineraryReservation.value.roomTypeCode
   itineraryReservation.value.reservations.push(reservation)
 }
 
@@ -323,11 +361,15 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
         ></DateSelecter>
       </v-col>
       <v-col>
-        <ProfileSearchField
-          label="Guest"
-          icon-name="mdi-account-circle-outline"
-          v-model="itineraryReservation.guestProfileID"
-        ></ProfileSearchField>
+        <v-autocomplete
+          v-model="itineraryReservation.roomTypeCode"
+          clearable
+          closable-chips
+          chips
+          variant="underlined"
+          label="Room type"
+          :items="roomTypeCodesInDropdown"
+        ></v-autocomplete>
       </v-col>
     </v-row>
   </v-container>
@@ -337,6 +379,7 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       :camp="camp"
       :arrival-date="itineraryReservation.arrivalDate"
       :departure-date="itineraryReservation.departureDate"
+      :room-type-code="itineraryReservation.roomTypeCode"
       @availabilities-selected="
         (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
           availabilitiesSelected(protelReservationSelectUpdate)

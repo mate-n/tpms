@@ -8,7 +8,6 @@ import { DateFormatter } from '@/helpers/DateFormatter'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import type { AxiosStatic } from 'axios'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
-import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import RoomDetailsCard from '@/components/rooms/RoomDetailsCard.vue'
 import type { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
@@ -25,6 +24,7 @@ const props = defineProps({
     required: true
   },
   departureDate: { type: Object as () => Date, required: true },
+  roomTypeCode: { type: String, required: false },
   itineraryReservation: { type: Object as () => ItineraryReservation, required: true }
 })
 
@@ -101,22 +101,20 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
 const roomTypeDialog = ref(false)
 
 const getAvailabilities = () => {
-  const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
-    arrivaldate: dateFormatter.yyyydashmmdashdd(props.arrivalDate),
-    departuredate: dateFormatter.yyyydashmmdashdd(props.departureDate),
-    roomtype: 'null',
-    propertyid: props.camp.id.toString(),
-    detail: '0',
-    accomodation_type: null
-  }
+  const protelAvailabilityPostBody = availabilityHelper.mapPostBody({
+    camp: props.camp,
+    arrivalDate: props.arrivalDate,
+    departureDate: props.departureDate,
+    roomTypeCode: props.roomTypeCode
+  })
 
   availabilityService.getAvailabilities(protelAvailabilityPostBody).then((response) => {
-    availabilities.value = response
+    availabilities.value = (response || []).filter((item) => !!item)
   })
 }
 
 watch(
-  [() => props.arrivalDate, () => props.departureDate],
+  [() => props.arrivalDate, () => props.departureDate, () => props.roomTypeCode],
   async () => {
     getAvailabilities()
   },
