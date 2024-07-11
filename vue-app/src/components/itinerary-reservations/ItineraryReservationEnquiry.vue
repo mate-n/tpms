@@ -16,6 +16,7 @@ import { ParkService } from '@/services/backend-middleware/ParkService'
 import { CampService } from '@/services/backend-middleware/CampService'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
 import CampWithAvailabilities from './CampWithAvailabilities.vue'
+import ItineraryReservationRightbar from './itinerary-reservation-rightbar/ItineraryReservationRightbar.vue'
 import { type IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 const availabilityHelper = new AvailabilityHelper()
@@ -429,4 +430,9 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       </v-card-text>
     </v-card>
   </v-dialog>
+
+  <ItineraryReservationRightbar
+    :itinerary-reservation="itineraryReservation"
+    @update="(val) => (itineraryReservation.protelReservations = val)"
+  />
 </template>

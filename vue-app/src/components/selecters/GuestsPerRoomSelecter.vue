@@ -10,6 +10,8 @@ const guestsPerRoom = defineModel({
   type: Object as () => GuestsPerRoom
 })
 
+const emit = defineEmits(['update:modelValue'])
+
 defineProps({
   errors: {
     type: Object as () => Record<string, string> | undefined,
@@ -22,6 +24,10 @@ const totalGuests = computed(() => {
 })
 
 const guestsPerRoomMenu = ref(false)
+
+const handleUpdate = (values: Partial<GuestsPerRoom>) => {
+  emit('update:modelValue', { ...guestsPerRoom.value, ...values })
+}
 </script>
 <template>
   <v-menu v-model="guestsPerRoomMenu" :close-on-content-click="false">
@@ -42,6 +48,7 @@ const guestsPerRoomMenu = ref(false)
           label="Adult"
           :inset="true"
           :min="0"
+          @update:model-value="(val) => handleUpdate({ numberOfAdults: val })"
         ></v-number-input>
         <v-number-input
           v-model="guestsPerRoom.numberOfInfants"
@@ -50,6 +57,7 @@ const guestsPerRoomMenu = ref(false)
           controlVariant="stacked"
           variant="underlined"
           :min="0"
+          @update:model-value="(val) => handleUpdate({ numberOfInfants: val })"
         ></v-number-input>
 
         <v-number-input
@@ -59,6 +67,7 @@ const guestsPerRoomMenu = ref(false)
           controlVariant="stacked"
           variant="underlined"
           :min="0"
+          @update:model-value="(val) => handleUpdate({ numberOfChildren: val })"
         ></v-number-input>
 
         <v-number-input
@@ -68,6 +77,7 @@ const guestsPerRoomMenu = ref(false)
           controlVariant="stacked"
           variant="underlined"
           :min="0"
+          @update:model-value="(val) => handleUpdate({ numberOfSeniors: val })"
         ></v-number-input>
       </v-card-text>
     </v-card>
