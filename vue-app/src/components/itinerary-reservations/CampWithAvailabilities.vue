@@ -8,10 +8,13 @@ import { DateFormatter } from '@/helpers/DateFormatter'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import type { AxiosStatic } from 'axios'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
-import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import RoomDetailsCard from '@/components/rooms/RoomDetailsCard.vue'
 import type { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
+import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
+const priceFormatter = new PriceFormatter()
+const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const availabilityService = new AvailabilityService(axios2)
 const dateHelper = new DateHelper()
@@ -34,10 +37,20 @@ const selectedAvailabilities: Ref<IProtelAvailability[]> = ref([])
 const availabilities: Ref<IProtelAvailability[]> = ref([])
 
 const nightsOverviewString = computed(() => {
-  const selectedNights = selectedAvailabilities.value.length
+  const selectedNights = getNumberOfSelectedNights()
 
   return `${selectedNights} / ${numberOfNights.value}`
 })
+
+const getNumberOfSelectedNights = () => {
+  let reservationsNights = 0
+  for (const availableDate of availableDates.value) {
+    if (isDateOccupiedInReservation(availableDate)) {
+      reservationsNights++
+    }
+  }
+  return reservationsNights
+}
 
 const numberOfNights = computed(() => {
   return dateHelper.calculateNightsBetweenDates(props.arrivalDate, props.departureDate)
@@ -106,7 +119,7 @@ const getAvailabilities = () => {
     camp: props.camp,
     arrivalDate: props.arrivalDate,
     departureDate: props.departureDate,
-    roomTypeCode: props.roomTypeCode,
+    roomTypeCode: props.roomTypeCode
   })
 
   availabilityService.getAvailabilities(protelAvailabilityPostBody).then((response) => {
@@ -138,6 +151,17 @@ const clickOnReset = () => {
   }
   emits('availabilities-selected', protelReservationSelectUpdate)
 }
+
+const totalPriceForCamp = computed(() => {
+  const reservationsInThisCamp = props.itineraryReservation.protelReservations.filter(
+    (reservation) => reservation.property_code === props.camp.id.toString()
+  )
+  let total = 0
+  for (const reservation of reservationsInThisCamp) {
+    total += protelReservationPriceCalculator.getPriceForAllNights(reservation)
+  }
+  return priceFormatter.formatPrice(total)
+})
 </script>
 <template>
   <v-container fluid class="bg-white">
@@ -158,7 +182,7 @@ const clickOnReset = () => {
         <v-btn @click="clickOnReset()">Reset</v-btn>
       </v-col>
       <v-col>
-        <v-btn>Total: 0.00</v-btn>
+        <v-btn>Total: {{ totalPriceForCamp }}</v-btn>
       </v-col>
     </v-row>
 
@@ -240,12 +264,14 @@ const clickOnReset = () => {
                   <AvailabilitiesSelecter
                     :all-availabilities="availabilities"
                     :room-type-code="roomTypeCode"
+                    :property-code="camp.id.toString()"
                     :arrival-date="props.arrivalDate"
                     :departure-date="props.departureDate"
                     @availabilities-selected="
                       (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
                         availabilitiesSelected(protelReservationSelectUpdate)
                     "
+                    :-itinerary-reservation="props.itineraryReservation"
                   ></AvailabilitiesSelecter>
                 </td>
               </tr>

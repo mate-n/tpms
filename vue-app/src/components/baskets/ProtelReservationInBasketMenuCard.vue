@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
 import type { IRoom } from '@/shared/interfaces/IRoom'
-import { ref, type Ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
 import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
+import { DateHelper } from '@/helpers/DateHelper'
 const priceFormatter = new PriceFormatter()
+const dateHelper = new DateHelper()
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
-defineProps({
+const props = defineProps({
   reservation: { type: Object as () => IProtelReservation, required: true }
 })
 const emits = defineEmits(['removeReservation'])
@@ -19,6 +21,13 @@ const removeReservation = (reservation: IProtelReservation) => {
   console.log(reservation)
   emits('removeReservation')
 }
+
+const numberOfNights = computed(() => {
+  return dateHelper.calculateNightsBetweenDates(
+    props.reservation.arrivalDate,
+    props.reservation.departureDate
+  )
+})
 </script>
 
 <template>
@@ -51,6 +60,7 @@ const removeReservation = (reservation: IProtelReservation) => {
         <v-col></v-col>
         <v-col class="">
           <div class="mb-1 text-end">
+            {{ numberOfNights }} x
             {{ priceFormatter.formatPrice(parseInt(reservation.rate.value)) }}
           </div>
           <v-divider></v-divider>

@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
+import { DateHelper } from '@/helpers/DateHelper'
+import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
 import { nextTick, ref, watch } from 'vue'
+const dateHelper = new DateHelper()
 const availabilityHelper = new AvailabilityHelper()
 const isSelecting = ref<boolean>(false)
 const startSelectingAt = ref<IProtelAvailabilitySelectable | null>(null)
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
 const props = defineProps({
   roomTypeCode: { type: String, required: true },
+  propertyCode: { type: String, required: true },
   allAvailabilities: { type: Array as () => IProtelAvailability[], required: true },
   arrivalDate: { type: Object as () => Date, required: true },
-  departureDate: { type: Object as () => Date, required: true }
+  departureDate: { type: Object as () => Date, required: true },
+  ItineraryReservation: { type: Object as () => IItineraryReservation, required: true }
 })
 
 const emits = defineEmits(['availabilities-selected'])
@@ -117,6 +122,46 @@ watch(
   [() => props.allAvailabilities, () => props.roomTypeCode],
   async () => {
     resetProtelAvailabilitySelectables()
+    await nextTick()
+  },
+  {
+    immediate: true,
+    deep: true
+  }
+)
+
+const setSelectedAvailabilities = () => {
+  for (const selectable of protelAvailabilitySelectables.value) {
+    selectable.selected = false
+  }
+
+  for (const selectable of protelAvailabilitySelectables.value) {
+    selectable.selected = false
+    const reservations = props.ItineraryReservation.protelReservations.filter(
+      (reservation) =>
+        reservation.roomTypeCode === props.roomTypeCode &&
+        reservation.property_code === props.propertyCode
+    )
+
+    for (const reservation of reservations) {
+      const dayBeforeDeparture = dateHelper.addDays(new Date(reservation.departureDate), -1)
+      if (
+        dateHelper.isDateBetweenDates(
+          selectable.availability.availability_start,
+          reservation.arrivalDate,
+          dayBeforeDeparture
+        )
+      ) {
+        selectable.selected = true
+      }
+    }
+  }
+}
+
+watch(
+  [() => props.ItineraryReservation.protelReservations],
+  async () => {
+    setSelectedAvailabilities()
     await nextTick()
   },
   {
