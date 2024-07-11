@@ -16,14 +16,14 @@ import { ParkService } from '@/services/backend-middleware/ParkService'
 import { CampService } from '@/services/backend-middleware/CampService'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
 import CampWithAvailabilities from './CampWithAvailabilities.vue'
-import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
+import { type IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
+const availabilityHelper = new AvailabilityHelper()
 import { ProtelAvailabilityConverter } from '@/shared/converters/ProtelAvailabilityConverter'
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
-import { DateHelper } from '@/helpers/DateHelper'
 const protelAvailabilityConverter = new ProtelAvailabilityConverter()
-const availabilityHelper = new AvailabilityHelper()
+import { DateHelper } from '@/helpers/DateHelper'
 const dateHelper = new DateHelper()
 const regionsInDropdown: Ref<IProtelRegion[]> = ref([])
 const allParks: Ref<IProtelPark[]> = ref([])

@@ -8,6 +8,7 @@ import { DateFormatter } from '@/helpers/DateFormatter'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import type { AxiosStatic } from 'axios'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
+import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import RoomDetailsCard from '@/components/rooms/RoomDetailsCard.vue'
 import type { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
@@ -105,11 +106,11 @@ const getAvailabilities = () => {
     camp: props.camp,
     arrivalDate: props.arrivalDate,
     departureDate: props.departureDate,
-    roomTypeCode: props.roomTypeCode
+    roomTypeCode: props.roomTypeCode,
   })
 
   availabilityService.getAvailabilities(protelAvailabilityPostBody).then((response) => {
-    availabilities.value = (response || []).filter((item) => !!item)
+    availabilities.value = response
   })
 }
 

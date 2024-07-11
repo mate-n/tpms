@@ -18,7 +18,7 @@ export class AvailabilityHelper {
   getUniqueRoomTypeCodes(availabilities: IProtelAvailability[]) {
     const uniqueCodes = new Set<string>()
     availabilities.forEach((availability) => {
-      if (availability.room_type_code) {
+      if (availability && availability.room_type_code) {
         uniqueCodes.add(availability.room_type_code)
       }
     })
@@ -58,8 +58,9 @@ export class AvailabilityHelper {
   }
 
   getAvailabilitiesByDate(availabilities: IProtelAvailability[], date: Date) {
-    return availabilities.filter((availability) =>
-      this.dateHelper.isSameDay(availability.availability_start, date)
+    return availabilities.filter(
+      (availability) =>
+        availability && this.dateHelper.isSameDay(availability.availability_start, date)
     )
   }
 
@@ -217,10 +218,10 @@ export class AvailabilityHelper {
   }
 
   mapPostBody = (data: {
-    camp: IProtelCamp;
-    departureDate: Date;
-    arrivalDate: Date;
-    roomTypeCode?: string;
+    camp: IProtelCamp
+    departureDate: Date
+    arrivalDate: Date
+    roomTypeCode?: string
   }) => {
     const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
       arrivaldate: this.dateFormatter.yyyydashmmdashdd(data.arrivalDate),
@@ -228,9 +229,9 @@ export class AvailabilityHelper {
       roomtype: data.roomTypeCode || 'null',
       propertyid: `${data.camp.id}`,
       detail: '0',
-      accomodation_type: null,
-    };
-    return protelAvailabilityPostBody;
+      accomodation_type: null
+    }
+    return protelAvailabilityPostBody
   }
 }
 
