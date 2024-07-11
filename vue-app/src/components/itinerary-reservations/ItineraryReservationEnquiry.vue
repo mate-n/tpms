@@ -16,7 +16,7 @@ import { ParkService } from '@/services/backend-middleware/ParkService'
 import { CampService } from '@/services/backend-middleware/CampService'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
 import CampWithAvailabilities from './CampWithAvailabilities.vue'
-import { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
+import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import { ProtelAvailabilityConverter } from '@/shared/converters/ProtelAvailabilityConverter'
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
@@ -30,7 +30,7 @@ const allParks: Ref<IProtelPark[]> = ref([])
 const parksInDropdown: Ref<IProtelPark[]> = ref([])
 const allCamps: Ref<IProtelCamp[]> = ref([])
 const campsInDropdown: Ref<IProtelCamp[]> = ref([])
-const roomTypeCodesInDropdown: Ref<string[]> = ref([]);
+const roomTypeCodesInDropdown: Ref<string[]> = ref([])
 const basketItemsStore = useBasketItemsStore()
 const itineraryReservationCartStore = useItineraryReservationCartStore()
 const axios2: AxiosStatic | undefined = inject('axios2')
@@ -128,23 +128,23 @@ const getRoomTypes = () => {
     const protelAvailabilityPostBody = availabilityHelper.mapPostBody({
       camp,
       arrivalDate: itineraryReservation.value.arrivalDate,
-      departureDate: itineraryReservation.value.departureDate,
+      departureDate: itineraryReservation.value.departureDate
     })
-    return availabilityService.getAvailabilities(protelAvailabilityPostBody);
-  });
+    return availabilityService.getAvailabilities(protelAvailabilityPostBody)
+  })
 
   Promise.all(promises).then((response: IProtelAvailability[][]) => {
-    const roomTypeCodeSet = new Set<string>();
+    const roomTypeCodeSet = new Set<string>()
     response.forEach((availabilities) => {
       availabilities.forEach((availability) => {
         if (availability.room_type_code) {
-          roomTypeCodeSet.add(availability.room_type_code);
+          roomTypeCodeSet.add(availability.room_type_code)
         }
-      });
-    });
-    roomTypeCodesInDropdown.value = roomTypeCodeSet.values()
-  });
-};
+      })
+    })
+    roomTypeCodesInDropdown.value = Array.from(roomTypeCodeSet.values())
+  })
+}
 
 const clickOnViewCart = () => {
   basketDialog.value = true
@@ -173,18 +173,20 @@ watch(
   [
     () => itineraryReservation.value.arrivalDate,
     () => itineraryReservation.value.departureDate,
-    () => itineraryReservation.value.roomTypeCode,
+    () => itineraryReservation.value.roomTypeCode
   ],
   () => {
     arrivalDateNextDay.value = dateHelper.addDays(itineraryReservation.value.arrivalDate, 1)
 
     const isAfter = dateHelper.isAfter(
       dateHelper.addDays(itineraryReservation.value.arrivalDate, 1),
-      itineraryReservation.value.departureDate,
+      itineraryReservation.value.departureDate
     )
     if (isAfter) {
-      itineraryReservation.value.departureDate =
-        dateHelper.addDays(itineraryReservation.value.arrivalDate, 1)
+      itineraryReservation.value.departureDate = dateHelper.addDays(
+        itineraryReservation.value.arrivalDate,
+        1
+      )
     }
 
     updateReservations()
