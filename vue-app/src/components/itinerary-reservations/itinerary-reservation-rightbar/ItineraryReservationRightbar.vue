@@ -81,7 +81,7 @@ onMounted(() => {
 
   <v-navigation-drawer v-model="showDrawer" :width="400" location="right">
     <h2 class="pa-2">
-      <strong>{{ $t('Placed reservations list') }}</strong>
+      <strong>Placed reservations list</strong>
     </h2>
 
     <div v-for="{ name, reservations } in campReservations" :key="name">
