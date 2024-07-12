@@ -16,7 +16,7 @@ const dateHelper = new DateHelper()
 
 const emit = defineEmits(['update'])
 
-const showDrawer = ref(false)
+const showDrawer = ref(true)
 const availableRates = ref<IRate[]>([])
 const minDate = ref<Date | undefined>()
 const campReservations = ref<{ name: string; reservations: IProtelReservation[] }[]>([])
@@ -80,10 +80,15 @@ onMounted(() => {
   <v-btn variant="text" icon="mdi-menu" @click="showDrawer = !showDrawer"></v-btn>
 
   <v-navigation-drawer v-model="showDrawer" :width="400" location="right">
+    <h2 class="pa-2">
+      <strong>{{ $t('Placed reservations list') }}</strong>
+    </h2>
+
     <div v-for="{ name, reservations } in campReservations" :key="name">
-      <h3 class="mt-4 mx-2">
+      <h3 class="my-2 py-2 px-5 bg-lightgray">
         <strong>{{ name }}</strong>
       </h3>
+
       <div
         class="flex flex-col px-2 py-2"
         v-for="protelReservation in reservations"
@@ -98,8 +103,6 @@ onMounted(() => {
           @delete="handleDelete"
         />
       </div>
-
-      <v-divider class="mt-3"></v-divider>
     </div>
   </v-navigation-drawer>
 </template>

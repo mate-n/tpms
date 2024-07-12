@@ -29,7 +29,7 @@ const handleUpdate = () => {
 
 watch(
   () => props.protelReservation.departureDate,
-  () => (maxArrivalDate.value = dateHelper.addDays(props.protelReservation.arrivalDate, 1)),
+  () => (maxArrivalDate.value = dateHelper.addDays(props.protelReservation.departureDate, -1)),
   { immediate: true, deep: true }
 )
 
