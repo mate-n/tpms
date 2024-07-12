@@ -6,7 +6,7 @@ import { Rate } from './Rate'
 import type { ITicket } from '../interfaces/ITicket'
 
 export class ProtelReservation implements IProtelReservation {
-  id: string
+  id: string | undefined
   arrivalDate: Date
   departureDate: Date
   numberOfRooms: number
