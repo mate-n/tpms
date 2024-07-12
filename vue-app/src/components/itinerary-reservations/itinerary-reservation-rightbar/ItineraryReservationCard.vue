@@ -1,74 +1,122 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import type { Ref } from 'vue'
+import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
-import type { IGuestsPerRoom } from '@/shared/interfaces/IGuestsPerRoom'
-
+import { DateHelper } from '@/helpers/DateHelper'
 import DateSelecter from '@/components/dates/DateSelecter.vue'
 import GuestsPerRoomSelecter from '@/components/selecters/GuestsPerRoomSelecter.vue'
-import { DateHelper } from '@/helpers/DateHelper'
+import type { IRate } from '@/shared/interfaces/IRate'
+import { ProtelReservation } from '@/shared/classes/ProtelReservation'
+
 const dateHelper = new DateHelper()
 
-const emit = defineEmits(['update'])
+const emit = defineEmits(['update', 'delete'])
 
 const props = defineProps({
-  reservation: { type: Object as () => IProtelReservation, required: true }
+  minDate: { type: Date, required: false },
+  maxDate: { type: Date, required: false },
+  availableRates: { type: Object as () => IRate[], required: true },
+  protelReservation: { type: Object as () => IProtelReservation, required: true }
 })
 
-const arrivalDate: Ref<Date | null> = ref(null)
-const departureDate: Ref<Date | null> = ref(null)
-const arrivalDateNextDay: Ref<Date | null> = ref(null)
-const guestsPerRoom: Ref<IGuestsPerRoom | null> = ref(null)
+const reservation = ref<IProtelReservation>(new ProtelReservation())
+const arrivalDateNextDay = ref<Date | undefined>()
 
-const handleUpdate = (data: Partial<IProtelReservation>) => {
-  emit('update', data)
+const handleUpdate = () => {
+  emit('update', { ...reservation.value })
 }
 
 watch(
-  () => props.reservation.arrivalDate,
-  (val) => {
-    arrivalDate.value = val
-    arrivalDateNextDay.value = dateHelper.addDays(props.reservation.arrivalDate, 1)
+  () => props.protelReservation,
+  () => {
+    reservation.value = props.protelReservation
+    arrivalDateNextDay.value = dateHelper.addDays(props.protelReservation.arrivalDate, 1)
   },
-  { immediate: true, deep: true }
-)
-watch(
-  () => props.reservation.departureDate,
-  (val) => (departureDate.value = val),
-  { immediate: true, deep: true }
-)
-watch(
-  () => props.reservation.guestsPerRoom,
-  (val) => (guestsPerRoom.value = val),
   { immediate: true, deep: true }
 )
 </script>
 
 <template>
-  <v-card class="px-2">
-    <div class="border-b-sm py-2">{{ reservation.roomTypeCode }}</div>
-    <v-row class="py-2">
-      <v-col cols="6">
+  <v-card class="px-3">
+    <div class="d-flex justify-space-between align-center py-3">
+      <div class="d-flex ga-2">
+        <v-icon>mdi-bed-outline</v-icon>
+        <p>{{ reservation.roomTypeCode }}</p>
+      </div>
+      <v-btn
+        class="text-grey-darken-1"
+        density="compact"
+        variant="text"
+        icon="mdi-delete-outline"
+        @click="emit('delete', protelReservation)"
+      ></v-btn>
+    </div>
+
+    <v-divider class="mb-3"></v-divider>
+
+    <v-row>
+      <v-col cols="5">
         <DateSelecter
           label="Arrival"
-          v-model="arrivalDate"
-          @update:model-value="(val) => handleUpdate({ arrivalDate: val })"
+          :min="minDate"
+          :max="maxDate"
+          v-model="reservation.arrivalDate"
+          @update:model-value="handleUpdate"
         ></DateSelecter>
         <DateSelecter
           label="Departure"
-          v-model="departureDate"
           :min="arrivalDateNextDay"
-          @update:model-value="(val) => handleUpdate({ departureDate: val })"
+          :max="maxDate"
+          v-model="reservation.departureDate"
+          @update:model-value="handleUpdate"
         ></DateSelecter>
       </v-col>
 
-      <v-col cols="6">
-        <GuestsPerRoomSelecter
-          v-model="guestsPerRoom"
-          :errors="reservation.errors"
-          @update:model-value="(val) => handleUpdate({ guestsPerRoom: val })"
-        ></GuestsPerRoomSelecter
-      ></v-col>
+      <v-col cols="7">
+        <v-row>
+          <v-col cols="6">
+            <GuestsPerRoomSelecter
+              v-model="reservation.guestsPerRoom"
+              @update:model-value="handleUpdate"
+            ></GuestsPerRoomSelecter>
+          </v-col>
+
+          <v-col cols="6">
+            <v-number-input
+              class="hide-control"
+              :hide-spin-buttons="true"
+              controlVariant="default"
+              variant="underlined"
+              label="Rooms"
+              :min="1"
+              v-model="reservation.numberOfRooms"
+              @update:model-value="handleUpdate"
+            ></v-number-input>
+          </v-col>
+        </v-row>
+
+        <v-autocomplete
+          return-object
+          clearable
+          closable-chips
+          chips
+          label="Rate Code"
+          variant="underlined"
+          item-title="value"
+          :items="availableRates"
+          v-model="reservation.rate"
+          @update:model-value="handleUpdate"
+        ></v-autocomplete>
+      </v-col>
     </v-row>
   </v-card>
 </template>
+
+<style lang="scss">
+.hide-control {
+  .v-field__append-inner {
+    background: red;
+    display: none !important;
+  }
+}
+</style>

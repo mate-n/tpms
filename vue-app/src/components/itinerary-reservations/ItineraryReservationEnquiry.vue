@@ -350,29 +350,36 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       </v-col>
     </v-row>
 
-    <v-row class="d-flex align-center">
-      <v-col class="d-flex align-center h-100">
-        <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
-      </v-col>
-      <v-col class="d-flex align-center h-100">
-        <DateSelecter
-          v-model="itineraryReservation.departureDate"
-          label="Departure"
-          :min="arrivalDateNextDay"
-        ></DateSelecter>
-      </v-col>
-      <v-col>
-        <v-autocomplete
-          v-model="itineraryReservation.roomTypeCode"
-          clearable
-          closable-chips
-          chips
-          variant="underlined"
-          label="Room type"
-          :items="roomTypeCodesInDropdown"
-        ></v-autocomplete>
-      </v-col>
-    </v-row>
+    <div class="d-flex align-center ga-4">
+      <v-row class="d-flex align-center">
+        <v-col class="d-flex align-center h-100">
+          <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
+        </v-col>
+        <v-col class="d-flex align-center h-100">
+          <DateSelecter
+            v-model="itineraryReservation.departureDate"
+            label="Departure"
+            :min="arrivalDateNextDay"
+          ></DateSelecter>
+        </v-col>
+        <v-col>
+          <v-autocomplete
+            v-model="itineraryReservation.roomTypeCode"
+            clearable
+            closable-chips
+            chips
+            variant="underlined"
+            label="Room type"
+            :items="roomTypeCodesInDropdown"
+          ></v-autocomplete>
+        </v-col>
+      </v-row>
+
+      <ItineraryReservationRightbar
+        :itinerary-reservation="itineraryReservation"
+        @update="(val) => (itineraryReservation.protelReservations = val)"
+      />
+    </div>
   </v-container>
 
   <template v-for="camp of itineraryReservation.selectedCamps" :key="camp.id">
@@ -430,9 +437,4 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       </v-card-text>
     </v-card>
   </v-dialog>
-
-  <ItineraryReservationRightbar
-    :itinerary-reservation="itineraryReservation"
-    @update="(val) => (itineraryReservation.protelReservations = val)"
-  />
 </template>

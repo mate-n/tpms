@@ -11,6 +11,10 @@ defineProps({
     type: Date,
     required: false,
   },
+  max: {
+    type: Date,
+    required: false,
+  },
   errorMessage: {
     type: String,
     required: false
@@ -38,7 +42,7 @@ const dateString = computed(() => {
       ></v-text-field>
     </template>
     <v-card>
-      <v-date-picker :hide-header="true" :min="min" v-model="date"></v-date-picker>
+      <v-date-picker :hide-header="true" :min="min" :max="max" v-model="date"></v-date-picker>
     </v-card>
   </v-menu>
 </template>

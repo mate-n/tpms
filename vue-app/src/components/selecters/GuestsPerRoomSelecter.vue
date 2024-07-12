@@ -35,6 +35,7 @@ const handleUpdate = (values: Partial<GuestsPerRoom>) => {
       <v-text-field
         v-model="totalGuests"
         label="Guests per Room"
+        variant="underlined"
         :error-messages="errors && errors['guestsPerRoom']"
         v-bind="props"
       ></v-text-field>
