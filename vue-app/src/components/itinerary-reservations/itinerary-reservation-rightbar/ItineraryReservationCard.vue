@@ -20,18 +20,28 @@ const props = defineProps({
 })
 
 const reservation = ref<IProtelReservation>(new ProtelReservation())
-const arrivalDateNextDay = ref<Date | undefined>()
+const maxArrivalDate = ref<Date | undefined>()
+const minDepartureDate = ref<Date | undefined>()
 
 const handleUpdate = () => {
   emit('update', { ...reservation.value })
 }
 
 watch(
+  () => props.protelReservation.departureDate,
+  () => (maxArrivalDate.value = dateHelper.addDays(props.protelReservation.arrivalDate, 1)),
+  { immediate: true, deep: true }
+)
+
+watch(
+  () => props.protelReservation.arrivalDate,
+  () => (minDepartureDate.value = dateHelper.addDays(props.protelReservation.arrivalDate, 1)),
+  { immediate: true, deep: true }
+)
+
+watch(
   () => props.protelReservation,
-  () => {
-    reservation.value = props.protelReservation
-    arrivalDateNextDay.value = dateHelper.addDays(props.protelReservation.arrivalDate, 1)
-  },
+  () => (reservation.value = props.protelReservation),
   { immediate: true, deep: true }
 )
 </script>
@@ -59,13 +69,13 @@ watch(
         <DateSelecter
           label="Arrival"
           :min="minDate"
-          :max="maxDate"
+          :max="maxArrivalDate"
           v-model="reservation.arrivalDate"
           @update:model-value="handleUpdate"
         ></DateSelecter>
         <DateSelecter
           label="Departure"
-          :min="arrivalDateNextDay"
+          :min="minDepartureDate"
           :max="maxDate"
           v-model="reservation.departureDate"
           @update:model-value="handleUpdate"
@@ -95,18 +105,15 @@ watch(
           </v-col>
         </v-row>
 
-        <v-autocomplete
+        <v-select
           return-object
-          clearable
-          closable-chips
-          chips
           label="Rate Code"
           variant="underlined"
           item-title="value"
           :items="availableRates"
           v-model="reservation.rate"
           @update:model-value="handleUpdate"
-        ></v-autocomplete>
+        ></v-select>
       </v-col>
     </v-row>
   </v-card>

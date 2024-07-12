@@ -3,6 +3,7 @@ import type { IGuestsPerRoom } from '@/shared/interfaces/IGuestsPerRoom'
 import type { IRate } from '@/shared/interfaces/IRate'
 
 export interface IProtelReservation extends IEntityWithTickets {
+  id?: string
   arrivalDate: Date
   departureDate: Date
   numberOfRooms: number

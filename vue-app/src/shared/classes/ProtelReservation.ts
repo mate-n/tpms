@@ -6,6 +6,7 @@ import { Rate } from './Rate'
 import type { ITicket } from '../interfaces/ITicket'
 
 export class ProtelReservation implements IProtelReservation {
+  id: string
   arrivalDate: Date
   departureDate: Date
   numberOfRooms: number
@@ -20,6 +21,7 @@ export class ProtelReservation implements IProtelReservation {
   tickets: ITicket[]
 
   constructor() {
+    this.id = crypto.randomUUID()
     this.arrivalDate = new Date()
     this.departureDate = new Date()
     this.numberOfRooms = 1
