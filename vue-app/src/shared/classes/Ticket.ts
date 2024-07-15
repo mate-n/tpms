@@ -1,7 +1,7 @@
 import type { ITicket } from '../interfaces/ITicket'
 
 export class Ticket implements ITicket {
-  TicketId: number
+  TicketId: string
   Name: string
   Price: number
   MaxPerTransaction: number
@@ -30,7 +30,7 @@ export class Ticket implements ITicket {
   Date: Date
 
   constructor() {
-    this.TicketId = 0
+    this.TicketId = '0'
     this.Name = ''
     this.Price = 0
     this.MaxPerTransaction = 0

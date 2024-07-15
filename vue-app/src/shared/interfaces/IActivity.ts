@@ -1,29 +1,29 @@
-export interface ITicket {
+export interface IActivity {
+  id: number
   TicketId: string
   Name: string
-  Price: number
+  Price: string
   MaxPerTransaction: number
   MinPerTransaction: number
   MaxPerCustomer: number
   MinPerCustomer: number
   TotalTickets: number
   Description: string
-  LongDescription: string
+  LongDescription: any
   AvailableTickets: number
-  TicketEventId: number
+  TicketEventId: string
   TicketEventName: string
   DisplayOrder: number
   TagType: string
-  TicketTagValues: string[]
   AvailableOn: number
   Status: string
   TicketType: string
-  MappingId: number
+  MappingId: string
   ItemCode: string
   Category: string
   MaxSales: number
   RemainingCapacity: number
   EventMaxCapacity: number
   EventRemainingCapacity: number
-  Date: Date
+  date: string
 }

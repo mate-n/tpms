@@ -17,8 +17,9 @@ import ConservationFeesCard from '@/components/baskets/ConservationFeesCard.vue'
 import TicketsCard from '@/components/tickets/TicketsCard.vue'
 import TicketsTable from '@/components/tickets/TicketsTable.vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
+import ConservationFeeForm from '@/components/conservation-fees/ConservationFeeForm.vue'
 const priceFormatter = new PriceFormatter()
-const emit = defineEmits(['profile-selected'])
+const emit = defineEmits(['profile-selected', 'remove-reservation'])
 
 const props = defineProps({
   profile: {
@@ -46,8 +47,7 @@ const numberOfNights = computed(() => {
 })
 
 const removeReservation = (reservation: IProtelReservation) => {
-  console.log(reservation)
-  //basketItemsStore.removeReservation(reservation)
+  emit('remove-reservation', reservation)
 }
 
 const conservationFeesDialog = ref(false)
@@ -103,6 +103,8 @@ watch(
   },
   { deep: true }
 )
+
+const conservationFeeFormDialog = ref(false)
 </script>
 
 <template>
@@ -209,6 +211,7 @@ watch(
             />
           </v-col>
           <v-col class="d-flex align-end justify-end">
+            <v-btn class="me-2" @click="conservationFeeFormDialog = true">Conservation Fees</v-btn>
             <v-btn @click="clickOnAddFixedCharges()" class="me-2"> Add Additional </v-btn></v-col
           >
         </v-row>
@@ -245,6 +248,7 @@ watch(
         :arrival-date="reservation.arrivalDate"
         :departure-date="reservation.departureDate"
         :property-name="reservation.property_name"
+        :property-code="reservation.property_code"
         v-model="reservation"
         @close="ticketsCardDialog = false"
         @add-tickets-to-reservation="addTicketsToReservation()"
@@ -258,6 +262,15 @@ watch(
         @close="profileDialog = false"
         @profile-selected="(profile) => profileSelected(profile)"
       ></ProfileSearchCard>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="conservationFeeFormDialog" scrollable>
+    <v-card>
+      <ConservationFeeForm
+        v-model="reservation"
+        @close="conservationFeeFormDialog = false"
+      ></ConservationFeeForm>
     </v-card>
   </v-dialog>
 </template>

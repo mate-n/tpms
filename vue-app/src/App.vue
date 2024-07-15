@@ -144,11 +144,9 @@ const showBadge = computed(() => {
               to="/profiles"
             ></v-list-item>
             <v-list-item
-              color="primary"
+              style="color: lightgray"
               prepend-icon="mdi-circle-small"
-              link
               title="Reservations"
-              to="/reservations"
             ></v-list-item>
             <v-list-item
               color="primary"
@@ -161,6 +159,7 @@ const showBadge = computed(() => {
               color="primary"
               prepend-icon="mdi-circle-small"
               title="Itinerary Reservations"
+              link
               to="/itinerary-reservations"
             ></v-list-item>
             <v-divider></v-divider>

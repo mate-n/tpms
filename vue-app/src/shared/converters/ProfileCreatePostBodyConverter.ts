@@ -7,6 +7,9 @@ export class ProfileCreatePostBodyConverter {
   dateFormatter = new DateFormatter()
   convertToProfileCreatePostBody(profile: IProfile): IProfileCreatePostBody {
     const profileCreatePostBody = new ProfileCreatePostBody()
+    if (profile.id) {
+      profileCreatePostBody.profileID = profile.id.toString()
+    }
     profileCreatePostBody.NamePrefix = ''
     profileCreatePostBody.GivenName = profile.name
     profileCreatePostBody.MiddleName = profile.middleName

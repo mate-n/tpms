@@ -68,4 +68,10 @@ public class CartController {
         CartService cartService = new CartService();
         return cartService.settleCart(settleCartBody);
     }
+
+    @PostMapping(path = "/retrieve")
+    public String settleCart(@RequestBody String json) throws IOException {
+        CartService cartService = new CartService();
+        return cartService.retrieveCart(json);
+    }
 }

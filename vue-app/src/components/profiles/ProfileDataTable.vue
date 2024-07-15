@@ -2,13 +2,14 @@
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { Profile } from '@/shared/classes/Profile'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import EditProfile from './EditProfile.vue'
 const dateFormatter = new DateFormatter()
 const profileToBeEdited = ref<IProfile>(new Profile())
 
-defineProps({
-  profiles: { type: Object as () => IProfile[], required: true }
+const props = defineProps({
+  profiles: { type: Object as () => IProfile[], required: true },
+  showSelectButton: { type: Boolean, default: true }
 })
 const changeColumnsDialog = ref(false)
 
@@ -41,6 +42,14 @@ const editProfile = (profile: IProfile) => {
   profileToBeEdited.value = newProfileToBeEdited
   editProfileDialog.value = true
 }
+
+watch(
+  () => props.showSelectButton,
+  (newInput: boolean) => {
+    availableTableDataHeaders.value.find((h) => h.key === 'select')!.selected = newInput
+  },
+  { deep: true, immediate: true }
+)
 </script>
 
 <style scoped>

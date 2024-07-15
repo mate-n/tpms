@@ -4,9 +4,17 @@ import { DateHelper } from '@/helpers/DateHelper'
 import { TicketService } from '@/services/TicketService'
 import type { ITicket } from '@/shared/interfaces/ITicket'
 import type { Ref } from 'vue'
-import { onMounted, ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
 import TicketsTable from '@/components/tickets/TicketsTable.vue'
 import type { IEntityWithTickets } from '@/shared/interfaces/IEntityWithTickets'
+import type { AxiosStatic } from 'axios'
+import { ActivityService } from '@/services/backend-middleware/ActivityService'
+import type { IActivityGetRequestBody } from '@/shared/interfaces/IActivityGetRequestBody'
+import { TicketsConverter } from '@/shared/converters/TicketsConverter'
+import type { IActivity } from '@/shared/interfaces/IActivity'
+const ticketConverter = new TicketsConverter()
+const axios2: AxiosStatic | undefined = inject('axios2')
+const activitiesService = new ActivityService(axios2)
 const dateHelper = new DateHelper()
 const ticketsService = new TicketService()
 const emits = defineEmits(['close', 'addTicketsToReservation'])
@@ -32,10 +40,36 @@ onMounted(() => {
   setAvailableDates()
 })
 
+const ankerdataTickets: Ref<ITicket[]> = ref([])
+
+const getActivities = () => {
+  if (!selectedDate.value) {
+    return
+  }
+  ankerdataTickets.value = []
+  const activityGetRequestBody: IActivityGetRequestBody = {
+    property_code: props.propertyCode,
+    type: 2,
+    date_from: dateFormatter.yyyydashmmdashdd(selectedDate.value),
+    date_to: dateFormatter.yyyydashmmdashdd(selectedDate.value)
+  }
+
+  activitiesService.getActivities(activityGetRequestBody).then((data) => {
+    console.log(data)
+    for (const [key, value] of Object.entries(data)) {
+      console.log(`${key}: ${value}`)
+      ankerdataTickets.value.push(ticketConverter.convertToTicket(value as IActivity))
+    }
+    console.log('ankerdataTickets')
+    console.log(ankerdataTickets.value)
+  })
+}
+
 const props = defineProps({
   arrivalDate: { type: Object as () => Date, required: true },
   departureDate: { type: Object as () => Date, required: true },
-  propertyName: { type: String, required: true }
+  propertyName: { type: String, required: true },
+  propertyCode: { type: String, required: true }
 })
 
 const setAvailableDates = () => {
@@ -49,6 +83,7 @@ const setAvailableDates = () => {
 
 const selectDate = (date: Date) => {
   selectedDate.value = date
+  getActivities()
 }
 
 const addTicketsFromReservationToSelectedTickets = () => {
@@ -125,8 +160,9 @@ const showSaveButton = ref(false)
           </v-col>
           <v-col class="border-e"
             ><h2 class="mb-2 text-center">Choose Tickets</h2>
+
             <div v-if="selectedDate">
-              <div v-for="ticket of tickets" :key="ticket.TicketId">
+              <div v-for="ticket of ankerdataTickets" :key="ticket.TicketId">
                 <div v-if="ticket.AvailableTickets > 0">
                   <v-btn class="w-100 mb-3 secondary-button" @click="addTicket(ticket)">
                     {{ ticket.Name }}

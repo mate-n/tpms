@@ -4,12 +4,17 @@ import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import { ProtelReservation } from '../classes/ProtelReservation'
 import { DateHelper } from '@/helpers/DateHelper'
 import { Rate } from '../classes/Rate'
+import type { IGuestsPerRoom } from '../interfaces/IGuestsPerRoom'
+import { GuestsPerRoom } from '../classes/GuestsPerRoom'
 
 export class ProtelAvailabilityConverter {
   availabilityHelper = new AvailabilityHelper()
   dateHelper = new DateHelper()
 
-  convertToReservations(protelAvailabilities: IProtelAvailability[]): IProtelReservation[] {
+  convertToReservations(
+    protelAvailabilities: IProtelAvailability[],
+    guestsPerRoom: IGuestsPerRoom | undefined
+  ): IProtelReservation[] {
     const protelReservations: IProtelReservation[] = []
 
     const availabilitiesGroupedByRoomTypeCode =
@@ -30,9 +35,14 @@ export class ProtelAvailabilityConverter {
             availabilitiesWithConsecutiveDates.availabilities.length - 1
           ]
 
+        if (!guestsPerRoom) {
+          guestsPerRoom = new GuestsPerRoom()
+        }
+
         const protelReservation = this.convertToReservation(
           startProtelAvailability,
-          endProtelAvailability
+          endProtelAvailability,
+          guestsPerRoom
         )
         protelReservations.push(protelReservation)
       }
@@ -43,7 +53,8 @@ export class ProtelAvailabilityConverter {
 
   convertToReservation(
     startProtelAvailability: IProtelAvailability,
-    endProtelAvailability: IProtelAvailability
+    endProtelAvailability: IProtelAvailability,
+    guestsPerRoom: IGuestsPerRoom
   ): IProtelReservation {
     const protelReservation: IProtelReservation = new ProtelReservation()
     protelReservation.arrivalDate = startProtelAvailability.availability_start
@@ -59,6 +70,7 @@ export class ProtelAvailabilityConverter {
     const rate = new Rate()
     rate.value = startProtelAvailability.rates_data[0].room_rate
     protelReservation.rate = rate
+    protelReservation.guestsPerRoom = guestsPerRoom
     return protelReservation
   }
 }

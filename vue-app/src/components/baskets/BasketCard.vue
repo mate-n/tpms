@@ -2,7 +2,6 @@
 import { computed, inject, onMounted, ref, type Ref } from 'vue'
 import router from '@/router'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
-import ConservationFeeForm from '@/components/conservation-fees/ConservationFeeForm.vue'
 import type { AxiosStatic } from 'axios'
 import { CartService } from '@/services/backend-middleware/CartService'
 import type { CreateCartResponseBody } from '@/shared/interfaces/cart/CreateCartResponseBody'
@@ -18,18 +17,37 @@ import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPri
 import { Profile } from '@/shared/classes/Profile'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { ProfileService } from '@/services/backend-middleware/ProfileService'
+import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
+import { IdentityHelper } from '@/helpers/IdentityHelper'
+import { CartHelper } from '@/helpers/CartHelper'
+import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
+const itineraryReservationCartManager = new ItineraryReservationCartManager()
+const confirmationNumbers = ref<string[]>([])
+const identityHelper = new IdentityHelper()
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const dateFormatter = new DateFormatter()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const profileService = new ProfileService(axios2)
 const cartService = new CartService(axios2)
+const cartHelper = new CartHelper()
 const priceFormatter = new PriceFormatter()
 const itineraryReservationCartStore = useItineraryReservationCartStore()
 const emits = defineEmits(['close'])
+
 const removeAllReservations = () => {
   if (itineraryReservationCartStore.itineraryReservation) {
     itineraryReservationCartStore.itineraryReservation.protelReservations = []
   }
+}
+
+const removeReservation = (reservation: IProtelReservation) => {
+  if (!itineraryReservationCartStore.itineraryReservation) {
+    return
+  }
+  itineraryReservationCartStore.itineraryReservation.protelReservations =
+    itineraryReservationCartStore.itineraryReservation.protelReservations.filter(
+      (r) => !identityHelper.isSame(r, reservation)
+    )
 }
 
 const cartNumber: Ref<string | null> = ref(null)
@@ -46,20 +64,36 @@ const totalPrice = computed(() => {
   return total
 })
 
-const clickOnBook = () => {
-  checkIfBookingIsPossible()
+const payNow = ref(false)
+
+const clickOnPayNow = () => {
+  payNow.value = true
+  checkIfBookingIsPossible(totalPrice.value.toString())
+}
+
+const clickOnPayLater = () => {
+  payNow.value = false
+  checkIfBookingIsPossible('0')
 }
 
 const settleAnkerdataCart = () => {
+  let profile_number = '639'
+  if (
+    itineraryReservationCartStore.itineraryReservation &&
+    itineraryReservationCartStore.itineraryReservation.guestProfileID
+  ) {
+    profile_number = itineraryReservationCartStore.itineraryReservation.guestProfileID.toString()
+  }
   const cartBody: ICartBody = {
     action: 'create',
-    profile_number: '639',
+    profile_number: profile_number,
     cart_type: 2
   }
 
   cartService
     .createCart(cartBody)
     .then((createCartResponseBody: CreateCartResponseBody) => {
+      cartHelper.setCartNumber(createCartResponseBody.cart_number)
       cartNumber.value = createCartResponseBody.cart_number
       return updateCart()
     })
@@ -75,9 +109,15 @@ const settleAnkerdataCart = () => {
         payment_method: 'AHSPAYMENTPROCESSOR',
         status: 'Confirmed'
       }
-      cartService.settleCart(settleCartBody).then((res) => {
-        console.log(res)
-      })
+      cartService
+        .settleCart(settleCartBody)
+        .then((res) => {
+          console.log('settleCart', res)
+          console.log(res.error)
+        })
+        .catch((error) => {
+          alert('Error: ' + error)
+        })
     })
 }
 
@@ -87,10 +127,17 @@ const updateCart = () => {
       reject()
     }
 
+    let profile_number = '639'
+    if (
+      itineraryReservationCartStore.itineraryReservation &&
+      itineraryReservationCartStore.itineraryReservation.guestProfileID
+    ) {
+      profile_number = itineraryReservationCartStore.itineraryReservation.guestProfileID.toString()
+    }
     const cartBody: IUpdateCartBody = {
       action: 'updateProfile',
       cart_number: cartNumber.value!,
-      profile_number: '639'
+      profile_number: profile_number
     }
 
     cartService.updateCart(cartBody).then((res) => {
@@ -104,6 +151,8 @@ const addItemsToCart = () => {
     if (!itineraryReservationCartStore.itineraryReservation) {
       reject('')
     }
+    const addItemToCartPromises: Promise<void>[] = []
+
     for (const reservation of itineraryReservationCartStore.itineraryReservation!
       .protelReservations) {
       const newItem: IAddItemToCartBody = new AddItemToCartBody()
@@ -114,42 +163,66 @@ const addItemsToCart = () => {
       newItem.adults = 1
       newItem.children = 0
       newItem.units = reservation.numberOfRooms
+      newItem.item_type = 1
+      newItem.pricing.base_pricing = parseInt(reservation.rate.value)
       if (reservation.roomTypeCode) {
         newItem.type_code = reservation.roomTypeCode
       }
       if (reservation.property_code) {
         newItem.property_code = parseInt(reservation.property_code)
       }
-      cartService.addItemToCart(newItem)
-
-      resolve('')
+      addItemToCartPromises.push(
+        cartService.addItemToCart(newItem).then((res) => {
+          console.log('addItem', res.confirmation)
+          console.log('reservation', reservation)
+          confirmationNumbers.value.push(res.confirmation + ' ' + reservation.property_name)
+        })
+      )
     }
 
-    const newItem: IAddItemToCartBody = new AddItemToCartBody()
-    newItem.action = 'add'
-    newItem.cart_id = cartNumber.value!
-    newItem.arrival_date = '2024-07-01'
-    newItem.departure_date = '2024-07-07'
-    cartService.addItemToCart(newItem).then((res) => {
-      resolve(res)
+    Promise.all(addItemToCartPromises).then(() => {
+      resolve('')
     })
   })
 }
 
 const allowBook = computed(() => {
   return true
-  //itineraryReservationCartStore.reservations.length > 0 &&
-  //reservationHelper.doAllReservationsHaveProfileID(basketItemsStore.reservations)
 })
 
-const checkIfBookingIsPossible = () => {
+const checkIfBookingIsPossible = (totalPrice: string) => {
+  console.log('checkIfBookingIsPossible')
+  console.log('d', itineraryReservationCartStore.getProfileNumber())
   if (!allowBook.value) {
     errors.value = []
 
     errors.value.push('Please add a profile to the reservation before booking.')
     errorsDialog.value = true
+  } else if (!itineraryReservationCartStore.getProfileNumber()) {
+    errors.value = []
+    errors.value.push('Please add a profile to the reservation before booking.')
+    errorsDialog.value = true
   } else {
+    /*
     settleAnkerdataCart()
+    */
+    itineraryReservationCartManager
+      .settleCart(itineraryReservationCartStore.getCartNumber(), totalPrice, cartService)
+      .then((res: any) => {
+        cartNumber.value = itineraryReservationCartStore.getCartNumber()
+
+        cartService.retrieveCart(cartNumber.value!).then((data) => {
+          console.log('retrieve Cart data', data)
+          confirmationNumbers.value = []
+          for (const item of data['cart_items']) {
+            console.log('item', item)
+            confirmationNumbers.value.push(item['confirmation'])
+          }
+        })
+
+        console.log('settleCart', res)
+        console.log(res['error'])
+      })
     errors.value = []
     itineraryConfirmedDialog.value = true
   }
@@ -163,8 +236,6 @@ const clickOnOkInConfirmedDialog = () => {
   router.push('/itinerary-reservations')
   emits('close')
 }
-
-const conservationFeeFormDialog = ref(false)
 
 const itineraryReservationProfile: Ref<IProfile> = ref(new Profile())
 
@@ -181,6 +252,15 @@ const getProfileOfItineraryReservation = () => {
     .then((response: IProfile | undefined) => {
       if (response) {
         itineraryReservationProfile.value = response
+        if (response && response.id) {
+          itineraryReservationCartStore.setProfileNumber(response.id.toString())
+
+          itineraryReservationCartManager.updateCart(
+            response.id.toString(),
+            itineraryReservationCartStore.getCartNumber(),
+            cartService
+          )
+        }
       }
     })
 }
@@ -190,6 +270,15 @@ const profileSelected = (selectedProfile: IProfile) => {
     itineraryReservationCartStore.itineraryReservation.guestProfileID = selectedProfile.id
   }
   itineraryReservationProfile.value = selectedProfile
+
+  if (selectedProfile && selectedProfile.id) {
+    itineraryReservationCartStore.setProfileNumber(selectedProfile.id.toString())
+    itineraryReservationCartManager.updateCart(
+      selectedProfile.id.toString(),
+      itineraryReservationCartStore.getCartNumber(),
+      cartService
+    )
+  }
 }
 </script>
 
@@ -197,7 +286,7 @@ const profileSelected = (selectedProfile: IProfile) => {
   <div class="standard-dialog-card">
     <v-toolbar class="standard-dialog-card-toolbar fixed-toolbar">
       <v-toolbar-title><span class="text-primary">Basket</span></v-toolbar-title>
-      <div @click="clickOnBook()" class="profiles-card-toolbar-button">Confirm Cart</div>
+      <div @click="clickOnPayLater()" class="profiles-card-toolbar-button">Confirm Cart</div>
       <div class="profiles-card-toolbar-button" @click="removeAllReservations()">
         <v-icon size="large">mdi-timer-sand-empty</v-icon> Empty Cart
       </div>
@@ -210,13 +299,16 @@ const profileSelected = (selectedProfile: IProfile) => {
       <div
         v-for="(reservation, index) of itineraryReservationCartStore.itineraryReservation
           ?.protelReservations"
-        :key="index"
+        :key="reservation.localID"
       >
         <template v-if="itineraryReservationCartStore.itineraryReservation">
           <ProtelReservationInBasketCard
             v-model="itineraryReservationCartStore.itineraryReservation.protelReservations[index]"
             :profile="itineraryReservationProfile"
             @profile-selected="(profile: IProfile) => profileSelected(profile)"
+            @remove-reservation="
+              (protelReservation: IProtelReservation) => removeReservation(protelReservation)
+            "
           ></ProtelReservationInBasketCard>
         </template>
       </div>
@@ -229,15 +321,8 @@ const profileSelected = (selectedProfile: IProfile) => {
             </p>
           </v-card-text>
         </v-card>
-        <template v-if="false">
-          <v-btn class="me-2" elevation="4" @click="conservationFeeFormDialog = true"
-            >Conservation Fees</v-btn
-          >
-        </template>
-
-        <v-btn style="background-color: green; color: white" elevation="4" @click="clickOnBook()"
-          >BOOK</v-btn
-        >
+        <v-btn class="me-2" @click="clickOnPayNow()">Pay Now</v-btn>
+        <v-btn elevation="4" @click="clickOnPayLater()">Pay Later</v-btn>
       </div>
     </v-container>
   </div>
@@ -275,22 +360,22 @@ const profileSelected = (selectedProfile: IProfile) => {
     <v-card class="rounded-t-0">
       <v-card-text>
         <div class="mb-5">
-          Your itinerary reservation: "{{ cartNumber }}" has been suceessfully booked.
+          <div>Your itinerary reservation: "{{ cartNumber }}" has been suceessfully booked.</div>
+          <div>
+            Confirmation numbers:
+            <ul class="ms-4">
+              <li v-for="confirmationNumber in confirmationNumbers" :key="confirmationNumber">
+                {{ confirmationNumber }}
+              </li>
+            </ul>
+          </div>
+          <div v-if="payNow">Please proceed to Protel Cloud PMS to complete payment.</div>
         </div>
         <div class="d-flex justify-end">
           <v-btn class="me-2" @click="itineraryConfirmedDialog = false">Close</v-btn>
           <v-btn class="primary-button" @click="clickOnOkInConfirmedDialog()">OK</v-btn>
         </div>
       </v-card-text>
-    </v-card>
-  </v-dialog>
-  <v-dialog v-model="conservationFeeFormDialog" scrollable>
-    <v-card>
-      <ConservationFeeForm
-        :number-of-adults="2"
-        :number-of-nights="7"
-        :number-of-children="1"
-      ></ConservationFeeForm>
     </v-card>
   </v-dialog>
 </template>

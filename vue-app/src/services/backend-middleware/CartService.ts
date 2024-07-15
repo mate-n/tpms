@@ -44,6 +44,7 @@ export class CartService implements IService {
 
   addItemToCart(addItemToCartBody: IAddItemToCartBody) {
     return new Promise<any>((resolve, reject) => {
+      console.log('addItemToCart', addItemToCartBody)
       this.axiosInstance
         .post('api/v1/cart/add-item', addItemToCartBody)
         .then((response: any) => {
@@ -85,6 +86,21 @@ export class CartService implements IService {
     return new Promise<any>((resolve, reject) => {
       this.axiosInstance
         .post('api/v1/cart/settle', settleCartBody)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
+
+  retrieveCart(cart_number: string) {
+    return new Promise<any>((resolve, reject) => {
+      this.axiosInstance
+        .post('api/v1/cart/retrieve', {
+          cart_number: cart_number
+        })
         .then((response: any) => {
           resolve(response.data)
         })

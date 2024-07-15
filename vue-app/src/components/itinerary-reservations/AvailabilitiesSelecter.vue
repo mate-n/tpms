@@ -53,7 +53,8 @@ const updateAvailabilitySelectables = (availability: IProtelAvailability, select
   const protelReservationSelectUpdate: IProtelReservationSelectUpdate = {
     selectedAvailabilities: selectedAvailabilities,
     roomTypeCode: props.roomTypeCode,
-    property_code: props.allAvailabilities[0].property_code
+    property_code: props.allAvailabilities[0].property_code,
+    guestsPerRoom: undefined
   }
 
   emits('availabilities-selected', protelReservationSelectUpdate)
