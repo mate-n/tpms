@@ -159,7 +159,7 @@ const showSaveButton = ref(false)
             </v-btn>
           </v-col>
           <v-col class="border-e"
-            ><h2 class="mb-2 text-center">Choose Tickets</h2>
+            ><h2 class="mb-2 text-center">Choose Activities</h2>
 
             <div v-if="selectedDate">
               <div v-for="ticket of ankerdataTickets" :key="ticket.TicketId">
