@@ -45,17 +45,16 @@ watch(
     // group "reservations" by "camp"
     const groupSet: Record<string, IProtelReservation[]> = {}
     props.itineraryReservation.protelReservations.forEach((reservation) => {
-      const name = reservation.property_name.trim()
-      if (!groupSet[name]) groupSet[name] = []
-      groupSet[name].push({ ...reservation })
+      const campId = reservation.property_code
+      if (!groupSet[campId]) groupSet[campId] = []
+      groupSet[campId].push({ ...reservation })
     })
 
     const campReservationList: { name: string; reservations: IProtelReservation[] }[] = []
     // loop in "selectedCamps" to keep the correct order
     props.itineraryReservation.selectedCamps.forEach((camp) => {
-      const name = camp.name.trim()
-      if (groupSet[name]) {
-        campReservationList.push({ name: name, reservations: groupSet[name] })
+      if (groupSet[camp.id]) {
+        campReservationList.push({ name: camp.name.trim(), reservations: groupSet[camp.id] })
       }
     })
     campReservations.value = campReservationList
