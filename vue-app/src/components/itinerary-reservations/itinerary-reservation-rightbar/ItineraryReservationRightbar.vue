@@ -27,14 +27,14 @@ const props = defineProps({
 
 const handleUpdate = (data: IProtelReservation) => {
   const newProtelReservations = props.itineraryReservation.protelReservations.map((item) =>
-    item.id === data.id ? { ...data } : { ...item }
+    item.localID === data.localID ? { ...data } : { ...item }
   )
   emit('update', newProtelReservations)
 }
 
 const handleDelete = (data: IProtelReservation) => {
   const newProtelReservations = props.itineraryReservation.protelReservations.filter(
-    (item) => item.id !== data.id
+    (item) => item.localID !== data.localID
   )
   emit('update', newProtelReservations)
 }

@@ -231,6 +231,7 @@ watch(
         :arrival-date="arrivalDate"
         :departure-date="departureDate"
         :property-name="availabilityGroup.availabilities[0].park_name"
+        :property-code="availabilityGroup.availabilities[0].property_code"
         @close="ticketsCardDialog = false"
         @add-tickets-to-reservation="addTicketsToReservation()"
       />

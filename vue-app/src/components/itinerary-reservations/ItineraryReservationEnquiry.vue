@@ -19,12 +19,15 @@ import CampWithAvailabilities from './CampWithAvailabilities.vue'
 import ItineraryReservationRightbar from './itinerary-reservation-rightbar/ItineraryReservationRightbar.vue'
 import { type IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
-const availabilityHelper = new AvailabilityHelper()
 import { ProtelAvailabilityConverter } from '@/shared/converters/ProtelAvailabilityConverter'
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
-const protelAvailabilityConverter = new ProtelAvailabilityConverter()
 import { DateHelper } from '@/helpers/DateHelper'
+import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
+import { CartService } from '@/services/backend-middleware/CartService'
+import type { CreateCartResponseBody } from '@/shared/interfaces/cart/CreateCartResponseBody'
+const protelAvailabilityConverter = new ProtelAvailabilityConverter()
+const availabilityHelper = new AvailabilityHelper()
 const dateHelper = new DateHelper()
 const regionsInDropdown: Ref<IProtelRegion[]> = ref([])
 const allParks: Ref<IProtelPark[]> = ref([])
@@ -35,12 +38,14 @@ const roomTypeCodesInDropdown: Ref<string[]> = ref([])
 const basketItemsStore = useBasketItemsStore()
 const itineraryReservationCartStore = useItineraryReservationCartStore()
 const axios2: AxiosStatic | undefined = inject('axios2')
+const cartService = new CartService(axios2)
 const regionService = new RegionService(axios2)
 const parkService = new ParkService(axios2)
 const campService = new CampService(axios2)
 const availabilityService = new AvailabilityService(axios2)
 const itineraryReservation = ref(new ItineraryReservation())
 const arrivalDateNextDay = ref(dateHelper.addDays(itineraryReservation.value.arrivalDate, 1))
+const itineraryReservationCartManager = new ItineraryReservationCartManager()
 
 const updateOrderIndexes = () => {
   itineraryReservation.value.reservations.forEach((reservation, index) => {
@@ -59,6 +64,17 @@ const clickOnAddToCart = () => {
   basketItemsStore.addReservations(itineraryReservation.value.reservations)
 
   itineraryReservationCartStore.setItineraryReservation(itineraryReservation.value)
+
+  itineraryReservationCartManager
+    .createCart('0', cartService)
+    .then((createCartResponseBody: CreateCartResponseBody) => {
+      itineraryReservationCartStore.setCartNumber(createCartResponseBody.cart_number)
+      itineraryReservationCartManager.addItemsToCart(
+        itineraryReservation.value.protelReservations,
+        createCartResponseBody.cart_number,
+        cartService
+      )
+    })
 }
 
 const closeExpansionPanels = ref(0)
@@ -204,6 +220,7 @@ const updatePropertiesOfReservations = () => {
 }
 
 const updateReservations = () => {
+  itineraryReservation.value.protelReservations = []
   filterOutLeftOverReservations()
   addReservationToCamps()
   updatePropertiesOfReservations()
@@ -275,7 +292,8 @@ const clearSelectedCamps = () => {
 
 const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservationSelectUpdate) => {
   const newReservations = protelAvailabilityConverter.convertToReservations(
-    protelReservationSelectUpdate.selectedAvailabilities
+    protelReservationSelectUpdate.selectedAvailabilities,
+    protelReservationSelectUpdate.guestsPerRoom
   )
 
   itineraryReservation.value.protelReservations =

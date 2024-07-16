@@ -4,9 +4,11 @@ import type { IRate } from '../interfaces/IRate'
 import { GuestsPerRoom } from './GuestsPerRoom'
 import { Rate } from './Rate'
 import type { ITicket } from '../interfaces/ITicket'
+import { LocalIDFactory } from '../factories/LocalIDFactory'
 
 export class ProtelReservation implements IProtelReservation {
-  id: string | undefined
+  localID?: string
+
   arrivalDate: Date
   departureDate: Date
   numberOfRooms: number
@@ -21,7 +23,7 @@ export class ProtelReservation implements IProtelReservation {
   tickets: ITicket[]
 
   constructor() {
-    this.id = crypto.randomUUID()
+    this.localID = LocalIDFactory.createLocalID()
     this.arrivalDate = new Date()
     this.departureDate = new Date()
     this.numberOfRooms = 1

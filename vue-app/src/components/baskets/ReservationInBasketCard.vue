@@ -149,6 +149,11 @@ watch(
     }
   }
 )
+
+const propertyCode = computed(() => {
+  const pc = reservation.value.propertyID?.toString()
+  return pc ? pc : ''
+})
 </script>
 
 <template>
@@ -290,6 +295,7 @@ watch(
         :arrival-date="reservation.arrivalDate"
         :departure-date="reservation.departureDate"
         :property-name="reservation.propertyName"
+        :property-code="propertyCode"
         v-model="reservation"
         @close="ticketsCardDialog = false"
         @add-tickets-to-reservation="addTicketsToReservation()"

@@ -39,6 +39,10 @@ const search = () => {
   }
 }
 
+defineProps({
+  showSelectButton: { type: Boolean, default: true }
+})
+
 const closeNewProfileDialog = () => {
   newProfileDialog.value = false
 }
@@ -157,6 +161,7 @@ const profilesLoading = ref(false)
     :profiles="foundProfiles"
     @profile-selected="(profile) => selectProfile(profile)"
     @profile-updated="search()"
+    :show-select-button="showSelectButton"
   ></ProfileDataTable>
 
   <v-dialog v-model="newProfileDialog" fullscreen scrollable>

@@ -13,6 +13,9 @@ import type { ItineraryReservation } from '@/shared/classes/ItineraryReservation
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
 import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
+import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
+import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
+const guestsPerRoom: Ref<GuestsPerRoom> = ref(new GuestsPerRoom())
 const priceFormatter = new PriceFormatter()
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const axios2: AxiosStatic | undefined = inject('axios2')
@@ -78,9 +81,9 @@ const isDateOccupiedInReservation = (date: Date) => {
     (reservation) => reservation.property_code === props.camp.id.toString()
   )
   for (const reservation of reservations) {
-    const morning = new Date(reservation.departureDate)
-    morning.setHours(0, 0, 0, 0)
-    if (dateHelper.isDateBetweenDates(date, reservation.arrivalDate, morning)) {
+    const nightBeforeDepartureDate = dateHelper.addDays(reservation.departureDate, -1)
+    nightBeforeDepartureDate.setHours(23, 59, 59, 999)
+    if (dateHelper.isDateBetweenDates(date, reservation.arrivalDate, nightBeforeDepartureDate)) {
       return true
     }
   }
@@ -95,9 +98,9 @@ const isDateOccupiedByOtherReservations = (date: Date) => {
     (reservation) => reservation.property_code !== props.camp.id.toString()
   )
   for (const reservation of otherReservations) {
-    const morning = new Date(reservation.departureDate)
-    morning.setHours(0, 0, 0, 0)
-    if (dateHelper.isDateBetweenDates(date, reservation.arrivalDate, morning)) {
+    const nightBeforeDepartureDate = dateHelper.addDays(reservation.departureDate, -1)
+    nightBeforeDepartureDate.setHours(23, 59, 59, 999)
+    if (dateHelper.isDateBetweenDates(date, reservation.arrivalDate, nightBeforeDepartureDate)) {
       return true
     }
   }
@@ -139,6 +142,7 @@ watch(
 )
 
 const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservationSelectUpdate) => {
+  protelReservationSelectUpdate.guestsPerRoom = guestsPerRoom.value
   selectedAvailabilities.value = protelReservationSelectUpdate.selectedAvailabilities
   emits('availabilities-selected', protelReservationSelectUpdate)
 }
@@ -147,7 +151,8 @@ const clickOnReset = () => {
   const protelReservationSelectUpdate: IProtelReservationSelectUpdate = {
     selectedAvailabilities: [],
     property_code: props.camp.id.toString(),
-    roomTypeCode: ''
+    roomTypeCode: '',
+    guestsPerRoom: guestsPerRoom.value
   }
   emits('availabilities-selected', protelReservationSelectUpdate)
 }
@@ -177,6 +182,9 @@ const totalPriceForCamp = computed(() => {
           :model-value="nightsOverviewString"
           :readonly="true"
         ></v-text-field>
+      </v-col>
+      <v-col>
+        <GuestsPerRoomSelecter v-model="guestsPerRoom"></GuestsPerRoomSelecter>
       </v-col>
       <v-col>
         <v-btn @click="clickOnReset()">Reset</v-btn>

@@ -9,8 +9,8 @@ export class TicketHelper {
     return total
   }
 
-  groupTicketsByTicketId(selectedTickets: ITicket[]): Map<number, ITicket[]> {
-    const grouped = new Map<number, ITicket[]>()
+  groupTicketsByTicketId(selectedTickets: ITicket[]): Map<string, ITicket[]> {
+    const grouped = new Map<string, ITicket[]>()
     for (const ticket of selectedTickets) {
       if (!grouped.has(ticket.TicketId)) {
         grouped.set(ticket.TicketId, [])

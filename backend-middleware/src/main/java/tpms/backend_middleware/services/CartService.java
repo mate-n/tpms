@@ -171,4 +171,23 @@ public class CartService {
 
                 return reponseString;
         }
+
+        public String retrieveCart(String json) throws IOException {
+
+                RequestBody body = RequestBody.create(json,
+                                MediaType.parse("application/json"));
+
+                OkHttpClient client = new OkHttpClient().newBuilder()
+                                .build();
+                Request request = new Request.Builder()
+                                .url("https://ankerws.ankerdata.co.za/web_basket_it/v1/retrieve_cart/index.php")
+                                .addHeader("Authorization", "Bearer abcdef123456")
+                                .post(body)
+                                .build();
+
+                Response response = client.newCall(request).execute();
+                var reponseString = response.body().string();
+
+                return reponseString;
+        }
 }

@@ -3,8 +3,11 @@ import { defineStore } from 'pinia'
 
 export const useItineraryReservationCartStore = defineStore('itineraryReservationCart', {
   state: (): IItineraryReservationState => ({
-    itineraryReservation: undefined
+    itineraryReservation: undefined,
+    cartNumber: '',
+    profileNumber: ''
   }),
+
   actions: {
     setItineraryReservation(itineraryReservation: IItineraryReservation) {
       this.itineraryReservation = itineraryReservation
@@ -14,10 +17,24 @@ export const useItineraryReservationCartStore = defineStore('itineraryReservatio
     },
     clearItineraryReservation() {
       this.itineraryReservation = undefined
+    },
+    setCartNumber(cartNumber: string) {
+      this.cartNumber = cartNumber
+    },
+    getCartNumber(): string {
+      return this.cartNumber
+    },
+    setProfileNumber(profileNumber: string) {
+      this.profileNumber = profileNumber
+    },
+    getProfileNumber(): string {
+      return this.profileNumber
     }
   }
 })
 
 interface IItineraryReservationState {
   itineraryReservation: undefined | IItineraryReservation
+  cartNumber: string
+  profileNumber: string
 }

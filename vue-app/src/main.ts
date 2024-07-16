@@ -11,7 +11,7 @@ import router from './router'
 const customLightTheme: ThemeDefinition = {
   dark: false,
   colors: {
-    primary: '#006221',
+    primary: '#459BE5',
     background: '#f5f5f5',
     protelBlue: '#459BE5'
   }

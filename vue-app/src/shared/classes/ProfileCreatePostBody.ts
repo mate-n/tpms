@@ -1,6 +1,7 @@
 import type { IProfileCreatePostBody } from '../interfaces/profiles/IProfileCreatePostBody'
 
 export class ProfileCreatePostBody implements IProfileCreatePostBody {
+  profileID: string | undefined
   NamePrefix: string
   GivenName: string
   MiddleName: string

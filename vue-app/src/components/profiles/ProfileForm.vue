@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileContactDetailsCard from './ProfileContactDetailsCard.vue'
-import ProfileAddressCard from './ProfileAddressCard.vue'
 import { CrudOperations } from '@/enums/CrudOperations'
 import { CloneHelper } from '@/helpers/CloneHelper'
 import ProfilePersonalInfoCard from './ProfilePersonalInfoCard.vue'
@@ -25,6 +24,7 @@ import { ProfileCreatePostBodyConverter } from '@/shared/converters/ProfileCreat
 import type { IProfileCreateResponseBody } from '@/shared/interfaces/profiles/IProfileCreateResponseBody'
 import router from '@/router'
 import type { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
+import ProfileAddressCard2 from './ProfileAddressCard2.vue'
 
 const profileCreatePostBodyConverter = new ProfileCreatePostBodyConverter()
 const axios: AxiosStatic | undefined = inject('axios')
@@ -61,15 +61,21 @@ watch(props, (newInput) => {
 })
 
 const blurEmail = () => {
-  checkIfProfilesWithSameEmailExist(profileToBeEdited.value.email)
+  if (props.crudOperation === CrudOperations.Create) {
+    checkIfProfilesWithSameEmailExist(profileToBeEdited.value.email)
+  }
 }
 
 const blurSaid = () => {
-  checkIfProfilesWithSAIDExist()
+  if (props.crudOperation === CrudOperations.Create) {
+    checkIfProfilesWithSAIDExist()
+  }
 }
 
 const blurName = () => {
-  checkIfProfilesWithSameFirstAndLastNameExist()
+  if (props.crudOperation === CrudOperations.Create) {
+    checkIfProfilesWithSameFirstAndLastNameExist()
+  }
 }
 
 const validate = () => {
@@ -94,7 +100,17 @@ const save = () => {
         })
       })
   } else if (props.crudOperation === CrudOperations.Update) {
-    //profileService.put(profileToBeEdited.value)
+    const profileCreatePostBody = profileCreatePostBodyConverter.convertToProfileCreatePostBody(
+      profileToBeEdited.value
+    )
+    profileService
+      .create(profileCreatePostBody)
+      .then((profileCreateResponseBody: IProfileCreateResponseBody) => {
+        router.push({
+          name: 'edit profile',
+          params: { profileID: profileCreateResponseBody.ProfileID }
+        })
+      })
   }
   emit('save', profileToBeEdited.value)
 }
@@ -285,7 +301,7 @@ const goToProfile = (profileID: number | undefined) => {
         ></ProfileContactDetailsCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
-        <ProfileAddressCard :profile="profileToBeEdited"></ProfileAddressCard>
+        <ProfileAddressCard2 v-model="profileToBeEdited"></ProfileAddressCard2>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
         <ProfilePersonalInfoCard

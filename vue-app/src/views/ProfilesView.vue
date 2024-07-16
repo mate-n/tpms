@@ -24,7 +24,11 @@ const clickOnAdd = () => {
       ><v-icon>mdi-plus</v-icon>Add</v-btn
     >
   </v-toolbar>
-  <ProfileSearch @close="newProfileDialog = false" v-model="profileLookUpPostBody"></ProfileSearch>
+  <ProfileSearch
+    @close="newProfileDialog = false"
+    v-model="profileLookUpPostBody"
+    :show-select-button="false"
+  ></ProfileSearch>
   <v-dialog v-model="newProfileDialog" fullscreen scrollable>
     <v-card>
       <NewProfile

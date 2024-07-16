@@ -3,8 +3,18 @@ import { inject, onMounted, ref, type Ref } from 'vue'
 import type { AxiosStatic } from 'axios'
 import { ItineraryReservationService } from '@/services/reservations/ItineraryReservationService'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
-import ItineraryReservationsTable from './ItineraryReservationsTable.vue'
+import { CartService } from '@/services/backend-middleware/CartService'
+import type { IReservation } from '@/shared/interfaces/IReservation'
+import { Reservation } from '@/shared/classes/Reservation'
+import ReservationsTable from '@/components/reservations/ReservationsTable.vue'
+import { ProfileService } from '@/services/backend-middleware/ProfileService'
+import { CampService } from '@/services/backend-middleware/CampService'
 const axios: AxiosStatic | undefined = inject('axios')
+const axios2: AxiosStatic | undefined = inject('axios2')
+const cartService = new CartService(axios2)
+const profileService = new ProfileService(axios2)
+const campService = new CampService(axios2)
+
 const itineraryReservationService = new ItineraryReservationService(axios)
 const itineraryReservations: Ref<IItineraryReservation[]> = ref([])
 onMounted(() => {
@@ -12,6 +22,39 @@ onMounted(() => {
     itineraryReservations.value = data
   })
 })
+const profileNumberOfCart = ref<string>('0')
+const searchField = ref<string>('')
+const clickOnSearch = async () => {
+  reservations.value = []
+
+  const campsFromAPI = await campService.findAll()
+  const dataFromAPI = await cartService.retrieveCart(searchField.value)
+  const profileNumberString = dataFromAPI['cart']['profile_number']
+    ? dataFromAPI['cart']['profile_number']
+    : '1'
+  const profileFromAPI = await profileService.get(parseInt(profileNumberString))
+
+  console.log(dataFromAPI)
+  for (const item of dataFromAPI['cart_items']) {
+    const campId = parseInt(item['camp_id'])
+    const camp = campsFromAPI.find((camp) => camp.id == campId)
+    const campName = camp?.name
+
+    const newReservation = new Reservation()
+    newReservation.profileID = parseInt(profileNumberOfCart.value)
+    newReservation.guestName = profileFromAPI?.name + ' ' + profileFromAPI?.surname
+    newReservation.arrivalDate = new Date(item['arrival_date'])
+    newReservation.departureDate = new Date(item['departure_date'])
+    newReservation.roomID = item['unit_id']
+    newReservation.propertyID = campId
+    if (campName) {
+      newReservation.propertyName = campName
+    }
+    reservations.value.push(newReservation)
+  }
+}
+
+const reservations: Ref<IReservation[]> = ref([])
 </script>
 
 <template>
@@ -24,52 +67,22 @@ onMounted(() => {
   <v-container fluid class="bg-lightgray">
     <v-row class="d-flex align-center">
       <v-col>
-        <v-autocomplete
+        <v-text-field
+          v-model="searchField"
           label="Search"
           item-title="name"
           item-value="id"
           variant="underlined"
-        ></v-autocomplete>
+        ></v-text-field>
       </v-col>
-      <v-col>
-        <v-menu :close-on-content-click="false">
-          <template v-slot:activator="{ props }">
-            <v-text-field
-              label="From"
-              append-inner-icon="mdi-calendar"
-              class="required-input"
-              variant="underlined"
-              v-bind="props"
-            ></v-text-field>
-          </template>
-          <v-card>
-            <v-date-picker :hide-header="true"> </v-date-picker>
-          </v-card>
-        </v-menu>
-      </v-col>
-      <v-col>
-        <v-menu :close-on-content-click="false">
-          <template v-slot:activator="{ props }">
-            <v-text-field
-              label="To"
-              append-inner-icon="mdi-calendar"
-              variant="underlined"
-              class="required-input"
-              v-bind="props"
-            ></v-text-field>
-          </template>
-          <v-card>
-            <v-date-picker :hide-header="true"></v-date-picker>
-          </v-card>
-        </v-menu>
-      </v-col>
+
       <v-col class="d-flex justify-space-between">
-        <v-btn class="primary-button mr-3 w-100">SEARCH</v-btn>
+        <v-btn class="primary-button mr-3 w-100" @click="clickOnSearch()">SEARCH</v-btn>
       </v-col>
     </v-row>
   </v-container>
 
   <v-container fluid class="bg-white">
-    <ItineraryReservationsTable :itinerary-reservations="itineraryReservations" />
+    <ReservationsTable :reservations="reservations"></ReservationsTable>
   </v-container>
 </template>

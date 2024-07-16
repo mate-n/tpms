@@ -12,6 +12,8 @@ import { ProtelApiStatusService } from './services/protel/ProtelApiStatusService
 import type { AxiosStatic } from 'axios'
 import { AxiosHelper } from './helpers/AxiosHelper'
 import { useItineraryReservationCartStore } from './stores/itineraryReservationCart'
+const showApiStatus = import.meta.env.VITE_SHOW_API_STATUS === 'true'
+const showApiSwitcher = import.meta.env.VITE_SHOW_API_SWITCHER === 'true'
 const axiosHelper = new AxiosHelper()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const axios: AxiosStatic | undefined = inject('axios')
@@ -144,11 +146,9 @@ const showBadge = computed(() => {
               to="/profiles"
             ></v-list-item>
             <v-list-item
-              color="primary"
+              style="color: lightgray"
               prepend-icon="mdi-circle-small"
-              link
               title="Reservations"
-              to="/reservations"
             ></v-list-item>
             <v-list-item
               color="primary"
@@ -161,18 +161,20 @@ const showBadge = computed(() => {
               color="primary"
               prepend-icon="mdi-circle-small"
               title="Itinerary Reservations"
+              link
               to="/itinerary-reservations"
             ></v-list-item>
-            <v-divider></v-divider>
+            <v-divider v-if="showApiStatus"></v-divider>
             <v-list-item
+              v-if="showApiStatus"
               :base-color="protelApiStatusColor"
               :prepend-icon="protelApiStatusIcon"
               title="Protel API Status"
               :subtitle="protelApiStatus"
             ></v-list-item>
-            <v-divider></v-divider>
 
-            <v-list-item class="mt-2">
+            <v-divider v-if="showApiSwitcher"></v-divider>
+            <v-list-item v-if="showApiSwitcher" class="mt-2">
               <v-list-item-title>API Switcher</v-list-item-title>
               <v-list-item-subtitle>Switch between Real and Fake API</v-list-item-subtitle>
               <v-switch v-model="apiSwitch" color="primary" :label="apiSwitchLabel"></v-switch>

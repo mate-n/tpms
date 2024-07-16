@@ -1,24 +1,31 @@
 <script setup lang="ts">
-import { useBasketItemsStore } from '@/stores/basketItems'
 import { computed } from 'vue'
-import { ReservationHelper } from '@/helpers/ReservationHelper'
-import { AvailabilityGroupHelper } from '@/helpers/AvailabilityGroupHelper'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
-import AvailabilityGroupInBasketMenuCard from './AvailabilityGroupInBasketMenuCard.vue'
 import ProtelReservationInBasketMenuCard from './ProtelReservationInBasketMenuCard.vue'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
 import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
+import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
+import { IdentityHelper } from '@/helpers/IdentityHelper'
+const identityHelper = new IdentityHelper()
 const priceFormatter = new PriceFormatter()
-const availabilityGroupHelper = new AvailabilityGroupHelper()
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const itineraryReservationCartStore = useItineraryReservationCartStore()
 const emit = defineEmits(['close', 'clickOnViewCart'])
-const basketItemsStore = useBasketItemsStore()
 const removeAllReservations = () => {
   if (itineraryReservationCartStore.itineraryReservation) {
     itineraryReservationCartStore.itineraryReservation.protelReservations = []
   }
   emit('close')
+}
+
+const removeReservation = (reservation: IProtelReservation) => {
+  if (!itineraryReservationCartStore.itineraryReservation) {
+    return
+  }
+  itineraryReservationCartStore.itineraryReservation.protelReservations =
+    itineraryReservationCartStore.itineraryReservation.protelReservations.filter(
+      (r) => !identityHelper.isSame(r, reservation)
+    )
 }
 
 const totalPrice = computed(() => {
@@ -36,12 +43,6 @@ const totalPrice = computed(() => {
 const clickOnViewCart = () => {
   emit('clickOnViewCart')
 }
-
-const availabilityGroupsOfReservations = computed(() => {
-  return availabilityGroupHelper.getAvailabilityGroupsFromReservations(
-    basketItemsStore.reservations
-  )
-})
 </script>
 <template>
   <v-container class="bg-lightgray pa-1 rounded">
@@ -52,7 +53,9 @@ const availabilityGroupsOfReservations = computed(() => {
             .protelReservations"
           :key="index"
           :reservation="reservation"
-          @removeReservation="removeAllReservations"
+          @removeReservation="
+            (protelReservation: IProtelReservation) => removeReservation(reservation)
+          "
         ></ProtelReservationInBasketMenuCard>
       </template>
     </div>

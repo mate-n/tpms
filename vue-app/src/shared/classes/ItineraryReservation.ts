@@ -24,7 +24,7 @@ export class ItineraryReservation implements IItineraryReservation {
   constructor() {
     this.protelReservations = []
     this.reservations = []
-    this.arrivalDate = new Date()
+    this.arrivalDate = this.dateHelper.getTodayDate()
     this.departureDate = this.dateHelper.addDays(this.arrivalDate, 1)
     this.startPropertyName = ''
     this.endPropertyName = ''

@@ -13,6 +13,7 @@ const availableTableDataHeaders = ref([
   { key: 'departureDate', title: 'DEPARTURE', selected: true },
   { key: 'numberOfNights', title: 'NIGHTS', selected: true },
   { key: 'roomID', title: 'ROOM', selected: true },
+  { key: 'propertyName', title: 'PROPERTY', selected: true },
   { key: 'action', title: 'ACTION', selected: true },
   { key: 'menu', title: '', selected: true }
 ])

@@ -1,9 +1,12 @@
+import type { IEntityWithConservationFees } from '@/shared/interfaces/IEntityWithConservationFees'
+import type { IEntityWithIdentity } from '@/shared/interfaces/IEntityWithIdentity'
 import type { IEntityWithTickets } from '@/shared/interfaces/IEntityWithTickets'
 import type { IGuestsPerRoom } from '@/shared/interfaces/IGuestsPerRoom'
 import type { IRate } from '@/shared/interfaces/IRate'
-
-export interface IProtelReservation extends IEntityWithTickets {
-  id?: string
+export interface IProtelReservation
+  extends IEntityWithTickets,
+    IEntityWithConservationFees,
+    IEntityWithIdentity {
   arrivalDate: Date
   departureDate: Date
   numberOfRooms: number
