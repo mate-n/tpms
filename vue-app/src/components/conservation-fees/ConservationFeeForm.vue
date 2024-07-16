@@ -16,9 +16,9 @@ const reservation = defineModel({
   type: Object as () => IProtelReservation
 })
 
-const southAfricanCitizens: Ref<IAdultsAndChildren> = ref({ adults: 0, children: 0, seniors: 0 })
-const sadcCitizens: Ref<IAdultsAndChildren> = ref({ adults: 0, children: 0, seniors: 0 })
-const internationals: Ref<IAdultsAndChildren> = ref({ adults: 0, children: 0, seniors: 0 })
+const southAfricanCitizens: Ref<IAdultsAndChildren> = ref({ adults: 0, children: 0 })
+const sadcCitizens: Ref<IAdultsAndChildren> = ref({ adults: 0, children: 0 })
+const internationals: Ref<IAdultsAndChildren> = ref({ adults: 0, children: 0 })
 
 const numberOfNights = computed(() => {
   return dateHelper.calculateNightsBetweenDates(
@@ -35,10 +35,6 @@ const totalNumberOfConservationFeesForChildren = computed(() => {
   return reservation.value.guestsPerRoom.numberOfChildren * numberOfNights.value
 })
 
-const totalNumberOfConservationFeesForSeniors = computed(() => {
-  return reservation.value.guestsPerRoom.numberOfSeniors * numberOfNights.value
-})
-
 const appliedNumberOfConservationFeesForAdults = computed(() => {
   return southAfricanCitizens.value.adults + sadcCitizens.value.adults + internationals.value.adults
 })
@@ -48,12 +44,6 @@ const appliedNumberOfConservationFeesForChildren = computed(() => {
     southAfricanCitizens.value.children +
     sadcCitizens.value.children +
     internationals.value.children
-  )
-})
-
-const appliedNumberOfConservationFeesForSeniors = computed(() => {
-  return (
-    southAfricanCitizens.value.seniors + sadcCitizens.value.seniors + internationals.value.seniors
   )
 })
 
@@ -75,21 +65,12 @@ const outstandingNumberOfConservationFeesForChildren = computed(() => {
   )
 })
 
-const outstandingNumberOfConservationFeesForSeniors = computed(() => {
-  return (
-    totalNumberOfConservationFeesForSeniors.value -
-    appliedNumberOfConservationFeesForSeniors.value -
-    seniorsFromFreeEntryReasons.value -
-    seniorsFromWildcards.value
-  )
-})
-
 const freeEntryReasons = ref<IFreeEntryReasonWithAdultsAndChildren[]>([])
 const freeEntryReasonInSelect = ref<string>('')
 const addFreeEntryReason = () => {
   const newFreeEntryReason: IFreeEntryReasonWithAdultsAndChildren = {
     freeEntryReason: freeEntryReasonInSelect.value,
-    adultsAndChildren: { adults: 0, children: 0, seniors: 0 }
+    adultsAndChildren: { adults: 0, children: 0 }
   }
   freeEntryReasons.value.push(newFreeEntryReason)
   freeEntryReasonInSelect.value = ''
@@ -100,7 +81,7 @@ const wildcardTextField = ref<string>('')
 const addWildcard = () => {
   const newWildcard: IWildcardWithAdultsAndChildren = {
     wildcard: wildcardTextField.value,
-    adultsAndChildren: { adults: 0, children: 0, seniors: 0 }
+    adultsAndChildren: { adults: 0, children: 0 }
   }
   wildcards.value.push(newWildcard)
   wildcardTextField.value = ''
@@ -114,11 +95,9 @@ const getBackGroundClassForCell = (index: number) => {
 
 const adultsFromWildcards = computed(() => getAdultsFromWildcards())
 const childrenFromWildcards = computed(() => getChildrenFromWildcards())
-const seniorsFromWildcards = computed(() => getSeniorsFromWildcards())
 
 const adultsFromFreeEntryReasons = computed(() => getAdultsFromFreeEntryReasons())
 const childrenFromFreeEntryReasons = computed(() => getChildrenFromFreeEntryReasons())
-const seniorsFromFreeEntryReasons = computed(() => getSeniorsFromFreeEntryReasons())
 
 const getAdultsFromWildcards = () => {
   return wildcards.value.reduce((acc, wildcard) => acc + wildcard.adultsAndChildren.adults, 0)
@@ -126,10 +105,6 @@ const getAdultsFromWildcards = () => {
 
 const getChildrenFromWildcards = () => {
   return wildcards.value.reduce((acc, wildcard) => acc + wildcard.adultsAndChildren.children, 0)
-}
-
-const getSeniorsFromWildcards = () => {
-  return wildcards.value.reduce((acc, wildcard) => acc + wildcard.adultsAndChildren.seniors, 0)
 }
 
 const getAdultsFromFreeEntryReasons = () => {
@@ -142,13 +117,6 @@ const getAdultsFromFreeEntryReasons = () => {
 const getChildrenFromFreeEntryReasons = () => {
   return freeEntryReasons.value.reduce(
     (acc, freeEntryReason) => acc + freeEntryReason.adultsAndChildren.children,
-    0
-  )
-}
-
-const getSeniorsFromFreeEntryReasons = () => {
-  return freeEntryReasons.value.reduce(
-    (acc, freeEntryReason) => acc + freeEntryReason.adultsAndChildren.seniors,
     0
   )
 }
@@ -168,9 +136,7 @@ const isAppliedFulfilled = computed(() => {
     appliedNumberOfConservationFeesForAdults.value ===
       totalNumberOfConservationFeesForAdults.value &&
     appliedNumberOfConservationFeesForChildren.value ===
-      totalNumberOfConservationFeesForChildren.value &&
-    appliedNumberOfConservationFeesForSeniors.value ===
-      totalNumberOfConservationFeesForSeniors.value
+      totalNumberOfConservationFeesForChildren.value
   )
 })
 </script>
@@ -208,7 +174,6 @@ const isAppliedFulfilled = computed(() => {
       >
       <v-col> Adults </v-col>
       <v-col> Children </v-col>
-      <v-col> Seniors </v-col>
     </v-row>
     <v-row>
       <v-col class="conservation-fee-cell-background1 conservation-fee-cell">
@@ -228,15 +193,6 @@ const isAppliedFulfilled = computed(() => {
           v-model="southAfricanCitizens.children"
           hide-details
           label="Children"
-          variant="underlined"
-          density="compact"
-        ></v-number-input>
-      </v-col>
-      <v-col class="conservation-fee-cell-background1 conservation-fee-cell">
-        <v-number-input
-          v-model="southAfricanCitizens.seniors"
-          hide-details
-          label="Seniors"
           variant="underlined"
           density="compact"
         ></v-number-input>
@@ -262,15 +218,6 @@ const isAppliedFulfilled = computed(() => {
           density="compact"
         ></v-number-input>
       </v-col>
-      <v-col class="conservation-fee-cell-background2 conservation-fee-cell">
-        <v-number-input
-          v-model="sadcCitizens.seniors"
-          hide-details
-          label="Seniors"
-          variant="underlined"
-          density="compact"
-        ></v-number-input>
-      </v-col>
     </v-row>
     <v-row>
       <v-col class="conservation-fee-cell-background1 conservation-fee-cell">
@@ -291,16 +238,6 @@ const isAppliedFulfilled = computed(() => {
           hide-details
           type="number"
           label="Children"
-          variant="underlined"
-          density="compact"
-        ></v-number-input>
-      </v-col>
-      <v-col class="conservation-fee-cell-background1 conservation-fee-cell">
-        <v-number-input
-          v-model="internationals.seniors"
-          hide-details
-          type="number"
-          label="Seniors"
           variant="underlined"
           density="compact"
         ></v-number-input>
@@ -353,16 +290,6 @@ const isAppliedFulfilled = computed(() => {
           hide-details
           type="number"
           label="Children"
-          variant="underlined"
-          density="compact"
-        ></v-number-input>
-      </v-col>
-      <v-col :class="getBackGroundClassForCell(index)" class="conservation-fee-cell">
-        <v-number-input
-          v-model="wildcard.adultsAndChildren.seniors"
-          hide-details
-          type="number"
-          label="Seniors"
           variant="underlined"
           density="compact"
         ></v-number-input>
@@ -422,16 +349,6 @@ const isAppliedFulfilled = computed(() => {
           density="compact"
         ></v-number-input>
       </v-col>
-      <v-col :class="getBackGroundClassForCell(index)" class="conservation-fee-cell">
-        <v-number-input
-          v-model="freeEntryReason.adultsAndChildren.seniors"
-          hide-details
-          type="number"
-          label="Seniors"
-          variant="underlined"
-          density="compact"
-        ></v-number-input>
-      </v-col>
     </v-row>
     <v-row class="conservation-fee-cell-background2 font-size-rem-12 conservation-fee-cell">
       <v-col class="text-center"> Balance Check</v-col>
@@ -468,17 +385,6 @@ const isAppliedFulfilled = computed(() => {
       >
         {{ appliedNumberOfConservationFeesForChildren }}</v-col
       >
-      <v-col
-        class="conservation-fee-cell-background1 conservation-fee-cell"
-        :class="{
-          'bg-light-green-lighten-5':
-            appliedNumberOfConservationFeesForSeniors === totalNumberOfConservationFeesForSeniors,
-          'bg-amber-lighten-4':
-            appliedNumberOfConservationFeesForSeniors !== totalNumberOfConservationFeesForSeniors
-        }"
-      >
-        {{ appliedNumberOfConservationFeesForSeniors }}</v-col
-      >
     </v-row>
     <v-row>
       <v-col
@@ -512,17 +418,6 @@ const isAppliedFulfilled = computed(() => {
       >
         {{ outstandingNumberOfConservationFeesForChildren }}</v-col
       >
-      <v-col
-        class="conservation-fee-cell-background1 conservation-fee-cell"
-        :class="{
-          'bg-light-green-lighten-5':
-            appliedNumberOfConservationFeesForSeniors === totalNumberOfConservationFeesForSeniors,
-          'bg-amber-lighten-4':
-            appliedNumberOfConservationFeesForSeniors !== totalNumberOfConservationFeesForSeniors
-        }"
-      >
-        {{ outstandingNumberOfConservationFeesForSeniors }}
-      </v-col>
     </v-row>
   </v-container>
 </template>
