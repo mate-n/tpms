@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 describe('reservations', () => {
     beforeEach(() => {
-        cy.visit('http://vue:8080')
+        cy.visit('http://localhost:8080')
     })
 
     it('displays title of frontend', () => {

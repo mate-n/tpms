@@ -21,6 +21,8 @@ import type { IProtelReservation } from '@/services/reservations/IProtelReservat
 import { IdentityHelper } from '@/helpers/IdentityHelper'
 import { CartHelper } from '@/helpers/CartHelper'
 import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
+import { CampService } from '@/services/backend-middleware/CampService'
+import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 const itineraryReservationCartManager = new ItineraryReservationCartManager()
 const confirmationNumbers = ref<string[]>([])
 const identityHelper = new IdentityHelper()
@@ -31,8 +33,10 @@ const profileService = new ProfileService(axios2)
 const cartService = new CartService(axios2)
 const cartHelper = new CartHelper()
 const priceFormatter = new PriceFormatter()
+const campService = new CampService(axios2)
 const itineraryReservationCartStore = useItineraryReservationCartStore()
 const emits = defineEmits(['close'])
+const camps = ref<IProtelCamp[]>([])
 
 const removeAllReservations = () => {
   if (itineraryReservationCartStore.itineraryReservation) {
@@ -173,8 +177,6 @@ const addItemsToCart = () => {
       }
       addItemToCartPromises.push(
         cartService.addItemToCart(newItem).then((res) => {
-          console.log('addItem', res.confirmation)
-          console.log('reservation', reservation)
           confirmationNumbers.value.push(res.confirmation + ' ' + reservation.property_name)
         })
       )
@@ -191,8 +193,6 @@ const allowBook = computed(() => {
 })
 
 const checkIfBookingIsPossible = (totalPrice: string) => {
-  console.log('checkIfBookingIsPossible')
-  console.log('d', itineraryReservationCartStore.getProfileNumber())
   if (!allowBook.value) {
     errors.value = []
 
@@ -215,17 +215,22 @@ const checkIfBookingIsPossible = (totalPrice: string) => {
           console.log('retrieve Cart data', data)
           confirmationNumbers.value = []
           for (const item of data['cart_items']) {
-            console.log('item', item)
-            confirmationNumbers.value.push(item['confirmation'])
+            let campName = ''
+            const foundCamp = camps.value.find((camp) => camp.id == parseInt(item['camp_id']))
+            if (foundCamp) {
+              campName = foundCamp.name
+            }
+            confirmationNumbers.value.push(item['confirmation'] + ' - ' + campName)
           }
         })
-
-        console.log('settleCart', res)
-        console.log(res['error'])
       })
     errors.value = []
     itineraryConfirmedDialog.value = true
   }
+}
+
+const getCampByID = (id: number) => {
+  return camps.value.find((camp) => camp.id === id)
 }
 
 const errors = ref<string[]>([])
@@ -241,6 +246,9 @@ const itineraryReservationProfile: Ref<IProfile> = ref(new Profile())
 
 onMounted(() => {
   getProfileOfItineraryReservation
+  campService.findAll().then((response: IProtelCamp[]) => {
+    camps.value = response
+  })
 })
 
 const getProfileOfItineraryReservation = () => {

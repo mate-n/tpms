@@ -219,6 +219,7 @@ const updatePropertiesOfReservations = () => {
 }
 
 const updateReservations = () => {
+  itineraryReservation.value.protelReservations = []
   filterOutLeftOverReservations()
   addReservationToCamps()
   updatePropertiesOfReservations()

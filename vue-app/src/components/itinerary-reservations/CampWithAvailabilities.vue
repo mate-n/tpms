@@ -81,9 +81,9 @@ const isDateOccupiedInReservation = (date: Date) => {
     (reservation) => reservation.property_code === props.camp.id.toString()
   )
   for (const reservation of reservations) {
-    const morning = new Date(reservation.departureDate)
-    morning.setHours(0, 0, 0, 0)
-    if (dateHelper.isDateBetweenDates(date, reservation.arrivalDate, morning)) {
+    const nightBeforeDepartureDate = dateHelper.addDays(reservation.departureDate, -1)
+    nightBeforeDepartureDate.setHours(23, 59, 59, 999)
+    if (dateHelper.isDateBetweenDates(date, reservation.arrivalDate, nightBeforeDepartureDate)) {
       return true
     }
   }
@@ -98,9 +98,9 @@ const isDateOccupiedByOtherReservations = (date: Date) => {
     (reservation) => reservation.property_code !== props.camp.id.toString()
   )
   for (const reservation of otherReservations) {
-    const morning = new Date(reservation.departureDate)
-    morning.setHours(0, 0, 0, 0)
-    if (dateHelper.isDateBetweenDates(date, reservation.arrivalDate, morning)) {
+    const nightBeforeDepartureDate = dateHelper.addDays(reservation.departureDate, -1)
+    nightBeforeDepartureDate.setHours(23, 59, 59, 999)
+    if (dateHelper.isDateBetweenDates(date, reservation.arrivalDate, nightBeforeDepartureDate)) {
       return true
     }
   }
