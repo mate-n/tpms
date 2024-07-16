@@ -16,6 +16,7 @@ export class ItineraryReservation implements IItineraryReservation {
   arrivalDate: Date
   departureDate: Date
   roomTypeCode: string | undefined
+  selectedRoomTypeCodes: string[]
   selectedRegions: IProtelRegion[]
   selectedParks: IProtelPark[]
   selectedCamps: IProtelCamp[]
@@ -31,5 +32,6 @@ export class ItineraryReservation implements IItineraryReservation {
     this.selectedRegions = []
     this.selectedParks = []
     this.selectedCamps = []
+    this.selectedRoomTypeCodes = []
   }
 }

@@ -31,7 +31,7 @@ const props = defineProps({
     required: true
   },
   departureDate: { type: Object as () => Date, required: true },
-  roomTypeCode: { type: String, required: false },
+  roomTypeCodes: { type: Object as () => String[], required: false },
   itineraryReservation: { type: Object as () => ItineraryReservation, required: true }
 })
 
@@ -122,16 +122,22 @@ const getAvailabilities = () => {
     camp: props.camp,
     arrivalDate: props.arrivalDate,
     departureDate: props.departureDate,
-    roomTypeCode: props.roomTypeCode
+    roomTypeCode: undefined
   })
 
   availabilityService.getAvailabilities(protelAvailabilityPostBody).then((response) => {
-    availabilities.value = response
+    if (props.roomTypeCodes && props.roomTypeCodes.length > 0) {
+      availabilities.value = response.filter((availability) =>
+        props.roomTypeCodes!.includes(availability.room_type_code)
+      )
+    } else {
+      availabilities.value = response
+    }
   })
 }
 
 watch(
-  [() => props.arrivalDate, () => props.departureDate, () => props.roomTypeCode],
+  [() => props.arrivalDate, () => props.departureDate, () => props.roomTypeCodes],
   async () => {
     getAvailabilities()
   },

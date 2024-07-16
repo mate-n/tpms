@@ -4,13 +4,6 @@ import router from '@/router'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import type { AxiosStatic } from 'axios'
 import { CartService } from '@/services/backend-middleware/CartService'
-import type { CreateCartResponseBody } from '@/shared/interfaces/cart/CreateCartResponseBody'
-import type { ICartBody } from '@/shared/interfaces/cart/ICartBody'
-import type { IUpdateCartBody } from '@/shared/interfaces/cart/IUpdateCartBody'
-import type { IAddItemToCartBody } from '@/shared/interfaces/cart/IAddItemToCartBody'
-import { AddItemToCartBody } from '@/shared/classes/AddItemToCartBody'
-import { DateFormatter } from '@/helpers/DateFormatter'
-import type { ISettleCartBody } from '@/shared/interfaces/cart/ISettleCartBody'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
 import ProtelReservationInBasketCard from './ProtelReservationInBasketCard.vue'
 import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
@@ -19,7 +12,6 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { ProfileService } from '@/services/backend-middleware/ProfileService'
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
 import { IdentityHelper } from '@/helpers/IdentityHelper'
-import { CartHelper } from '@/helpers/CartHelper'
 import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
 import { CampService } from '@/services/backend-middleware/CampService'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
@@ -27,11 +19,9 @@ const itineraryReservationCartManager = new ItineraryReservationCartManager()
 const confirmationNumbers = ref<string[]>([])
 const identityHelper = new IdentityHelper()
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
-const dateFormatter = new DateFormatter()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const profileService = new ProfileService(axios2)
 const cartService = new CartService(axios2)
-const cartHelper = new CartHelper()
 const priceFormatter = new PriceFormatter()
 const campService = new CampService(axios2)
 const itineraryReservationCartStore = useItineraryReservationCartStore()
@@ -80,114 +70,6 @@ const clickOnPayLater = () => {
   checkIfBookingIsPossible('0')
 }
 
-const settleAnkerdataCart = () => {
-  let profile_number = '639'
-  if (
-    itineraryReservationCartStore.itineraryReservation &&
-    itineraryReservationCartStore.itineraryReservation.guestProfileID
-  ) {
-    profile_number = itineraryReservationCartStore.itineraryReservation.guestProfileID.toString()
-  }
-  const cartBody: ICartBody = {
-    action: 'create',
-    profile_number: profile_number,
-    cart_type: 2
-  }
-
-  cartService
-    .createCart(cartBody)
-    .then((createCartResponseBody: CreateCartResponseBody) => {
-      cartHelper.setCartNumber(createCartResponseBody.cart_number)
-      cartNumber.value = createCartResponseBody.cart_number
-      return updateCart()
-    })
-    .then(() => {
-      return addItemsToCart()
-    })
-    .then(() => {
-      const settleCartBody: ISettleCartBody = {
-        action: 'updatePayment',
-        cart_number: cartNumber.value!,
-        payment_ref: 'REF123456789',
-        payment_amount: totalPrice.value.toString(),
-        payment_method: 'AHSPAYMENTPROCESSOR',
-        status: 'Confirmed'
-      }
-      cartService
-        .settleCart(settleCartBody)
-        .then((res) => {
-          console.log('settleCart', res)
-          console.log(res.error)
-        })
-        .catch((error) => {
-          alert('Error: ' + error)
-        })
-    })
-}
-
-const updateCart = () => {
-  return new Promise((resolve, reject) => {
-    if (cartNumber.value === null) {
-      reject()
-    }
-
-    let profile_number = '639'
-    if (
-      itineraryReservationCartStore.itineraryReservation &&
-      itineraryReservationCartStore.itineraryReservation.guestProfileID
-    ) {
-      profile_number = itineraryReservationCartStore.itineraryReservation.guestProfileID.toString()
-    }
-    const cartBody: IUpdateCartBody = {
-      action: 'updateProfile',
-      cart_number: cartNumber.value!,
-      profile_number: profile_number
-    }
-
-    cartService.updateCart(cartBody).then((res) => {
-      resolve(res)
-    })
-  })
-}
-
-const addItemsToCart = () => {
-  return new Promise((resolve, reject) => {
-    if (!itineraryReservationCartStore.itineraryReservation) {
-      reject('')
-    }
-    const addItemToCartPromises: Promise<void>[] = []
-
-    for (const reservation of itineraryReservationCartStore.itineraryReservation!
-      .protelReservations) {
-      const newItem: IAddItemToCartBody = new AddItemToCartBody()
-      newItem.action = 'add'
-      newItem.cart_id = cartNumber.value!
-      newItem.arrival_date = dateFormatter.yyyydashmmdashdd(reservation.arrivalDate)
-      newItem.departure_date = dateFormatter.yyyydashmmdashdd(reservation.departureDate)
-      newItem.adults = 1
-      newItem.children = 0
-      newItem.units = reservation.numberOfRooms
-      newItem.item_type = 1
-      newItem.pricing.base_pricing = parseInt(reservation.rate.value)
-      if (reservation.roomTypeCode) {
-        newItem.type_code = reservation.roomTypeCode
-      }
-      if (reservation.property_code) {
-        newItem.property_code = parseInt(reservation.property_code)
-      }
-      addItemToCartPromises.push(
-        cartService.addItemToCart(newItem).then((res) => {
-          confirmationNumbers.value.push(res.confirmation + ' ' + reservation.property_name)
-        })
-      )
-    }
-
-    Promise.all(addItemToCartPromises).then(() => {
-      resolve('')
-    })
-  })
-}
-
 const allowBook = computed(() => {
   return true
 })
@@ -208,7 +90,7 @@ const checkIfBookingIsPossible = (totalPrice: string) => {
     */
     itineraryReservationCartManager
       .settleCart(itineraryReservationCartStore.getCartNumber(), totalPrice, cartService)
-      .then((res: any) => {
+      .then(() => {
         cartNumber.value = itineraryReservationCartStore.getCartNumber()
 
         cartService.retrieveCart(cartNumber.value!).then((data) => {
@@ -227,10 +109,6 @@ const checkIfBookingIsPossible = (totalPrice: string) => {
     errors.value = []
     itineraryConfirmedDialog.value = true
   }
-}
-
-const getCampByID = (id: number) => {
-  return camps.value.find((camp) => camp.id === id)
 }
 
 const errors = ref<string[]>([])
@@ -368,7 +246,7 @@ const profileSelected = (selectedProfile: IProfile) => {
     <v-card class="rounded-t-0">
       <v-card-text>
         <div class="mb-5">
-          <div>Your itinerary reservation: "{{ cartNumber }}" has been suceessfully booked.</div>
+          <div>Your itinerary reservation: "{{ cartNumber }}" has been successfully booked.</div>
           <div>
             Confirmation numbers:
             <ul class="ms-4">

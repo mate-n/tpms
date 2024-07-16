@@ -39,7 +39,11 @@ const numberOfNights = computed(() => {
         >
       </div>
       <div class="mb-1">
-        <v-icon>mdi-chevron-double-right</v-icon><strong>{{ reservation.property_name }}</strong>
+        <div class="ms-2 pb-3">
+          <v-icon>mdi-chevron-double-right</v-icon><strong>{{ reservation.property_name }}</strong
+          ><br />
+          <span class="text-black">{{ reservation.roomTypeCode }}</span>
+        </div>
       </div>
       <v-row class="pb-0">
         <v-col class="text-gray">{{ room?.code }}</v-col>

@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeMount, ref, watch } from 'vue'
+import { inject, onBeforeMount, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useBasketItemsStore } from '@/stores/basketItems'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
-import { Reservation } from '@/shared/classes/Reservation'
 import BasketCard from '@/components/baskets/BasketCard.vue'
 import type { IProtelRegion } from '@/shared/interfaces/protel/IProtelRegion'
 import type { AxiosStatic } from 'axios'
@@ -51,11 +50,6 @@ const updateOrderIndexes = () => {
     reservation.orderIndex = index
   })
 }
-
-const selectedProfile = computed(() => {
-  if (itineraryReservation.value.reservations.length === 0) return 0
-  return itineraryReservation.value.reservations[0].profileID
-})
 
 const clickOnAddToCart = () => {
   closeExpansionPanels.value++
@@ -221,7 +215,6 @@ const updatePropertiesOfReservations = () => {
 const updateReservations = () => {
   itineraryReservation.value.protelReservations = []
   filterOutLeftOverReservations()
-  addReservationToCamps()
   updatePropertiesOfReservations()
 }
 
@@ -235,28 +228,6 @@ const filterOutLeftOverReservations = () => {
       itineraryReservation.value.reservations.splice(index, 1)
     }
   }
-}
-
-const addReservationToCamps = () => {
-  for (const camp of itineraryReservation.value.selectedCamps) {
-    const foundReservation = itineraryReservation.value.reservations.find(
-      (reservation) => reservation.propertyName === camp.name
-    )
-    if (!foundReservation) {
-      addReservationToCamp(camp)
-    }
-  }
-}
-
-const addReservationToCamp = (camp: IProtelCamp) => {
-  const reservation = new Reservation()
-  reservation.propertyName = camp.name
-  reservation.profileID = selectedProfile.value
-  reservation.propertyID = camp.id
-  reservation.arrivalDate = itineraryReservation.value.arrivalDate
-  reservation.departureDate = itineraryReservation.value.departureDate
-  reservation.roomTypeCode = itineraryReservation.value.roomTypeCode
-  itineraryReservation.value.reservations.push(reservation)
 }
 
 const travelDistanceShown = ref(false)
@@ -380,13 +351,14 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       </v-col>
       <v-col>
         <v-autocomplete
-          v-model="itineraryReservation.roomTypeCode"
+          v-model="itineraryReservation.selectedRoomTypeCodes"
           clearable
           closable-chips
           chips
           variant="underlined"
-          label="Room type"
+          label="Room types"
           :items="roomTypeCodesInDropdown"
+          multiple
         ></v-autocomplete>
       </v-col>
     </v-row>
@@ -397,7 +369,7 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       :camp="camp"
       :arrival-date="itineraryReservation.arrivalDate"
       :departure-date="itineraryReservation.departureDate"
-      :room-type-code="itineraryReservation.roomTypeCode"
+      :room-type-codes="itineraryReservation.selectedRoomTypeCodes"
       @availabilities-selected="
         (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
           availabilitiesSelected(protelReservationSelectUpdate)
