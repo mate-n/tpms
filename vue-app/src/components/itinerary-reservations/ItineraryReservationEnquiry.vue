@@ -24,6 +24,7 @@ import { DateHelper } from '@/helpers/DateHelper'
 import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
 import { CartService } from '@/services/backend-middleware/CartService'
 import type { CreateCartResponseBody } from '@/shared/interfaces/cart/CreateCartResponseBody'
+import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
 const protelAvailabilityConverter = new ProtelAvailabilityConverter()
 const availabilityHelper = new AvailabilityHelper()
 const dateHelper = new DateHelper()
@@ -138,7 +139,8 @@ const getRoomTypes = () => {
     const protelAvailabilityPostBody = availabilityHelper.mapPostBody({
       camp,
       arrivalDate: itineraryReservation.value.arrivalDate,
-      departureDate: itineraryReservation.value.departureDate
+      departureDate: itineraryReservation.value.departureDate,
+      guestsPerRoom: new GuestsPerRoom()
     })
     return availabilityService.getAvailabilities(protelAvailabilityPostBody)
   })

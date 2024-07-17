@@ -15,6 +15,7 @@ import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPri
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
 import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
+import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 const guestsPerRoom: Ref<GuestsPerRoom> = ref(new GuestsPerRoom())
 const priceFormatter = new PriceFormatter()
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
@@ -118,11 +119,12 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
 const roomTypeDialog = ref(false)
 
 const getAvailabilities = () => {
-  const protelAvailabilityPostBody = availabilityHelper.mapPostBody({
+  const protelAvailabilityPostBody: IProtelAvailabilityPostBody = availabilityHelper.mapPostBody({
     camp: props.camp,
     arrivalDate: props.arrivalDate,
     departureDate: props.departureDate,
-    roomTypeCode: undefined
+    roomTypeCode: undefined,
+    guestsPerRoom: guestsPerRoom.value
   })
 
   availabilityService.getAvailabilities(protelAvailabilityPostBody).then((response) => {
@@ -143,6 +145,16 @@ watch(
   },
   {
     immediate: true,
+    deep: true
+  }
+)
+
+watch(
+  guestsPerRoom,
+  () => {
+    getAvailabilities()
+  },
+  {
     deep: true
   }
 )

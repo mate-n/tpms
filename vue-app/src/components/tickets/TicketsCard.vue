@@ -55,12 +55,9 @@ const getActivities = () => {
   }
 
   activitiesService.getActivities(activityGetRequestBody).then((data) => {
-    console.log(data)
     for (const [key, value] of Object.entries(data)) {
-      console.log(`${key}: ${value}`)
       ankerdataTickets.value.push(ticketConverter.convertToTicket(value as IActivity))
     }
-    console.log('ankerdataTickets')
     console.log(ankerdataTickets.value)
   })
 }

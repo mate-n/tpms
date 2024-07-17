@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import ProtelReservationInBasketMenuCard from './ProtelReservationInBasketMenuCard.vue'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
 import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
 import { IdentityHelper } from '@/helpers/IdentityHelper'
+import type { IRemoveItemFromCartBody } from '@/shared/interfaces/cart/IRemoveItemFromCartBody'
+import { CartService } from '@/services/backend-middleware/CartService'
+import type { AxiosStatic } from 'axios'
+const axios2: AxiosStatic | undefined = inject('axios2')
+const cartService = new CartService(axios2)
 const identityHelper = new IdentityHelper()
 const priceFormatter = new PriceFormatter()
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
@@ -13,7 +18,10 @@ const itineraryReservationCartStore = useItineraryReservationCartStore()
 const emit = defineEmits(['close', 'clickOnViewCart'])
 const removeAllReservations = () => {
   if (itineraryReservationCartStore.itineraryReservation) {
-    itineraryReservationCartStore.itineraryReservation.protelReservations = []
+    for (const reservation of itineraryReservationCartStore.itineraryReservation
+      .protelReservations) {
+      removeReservation(reservation)
+    }
   }
   emit('close')
 }
@@ -22,6 +30,15 @@ const removeReservation = (reservation: IProtelReservation) => {
   if (!itineraryReservationCartStore.itineraryReservation) {
     return
   }
+
+  if (reservation.cartITemID) {
+    const removeItemFromCartBody: IRemoveItemFromCartBody = {
+      action: 'delete',
+      id: reservation.cartITemID
+    }
+    cartService.removeItemFromCart(removeItemFromCartBody)
+  }
+
   itineraryReservationCartStore.itineraryReservation.protelReservations =
     itineraryReservationCartStore.itineraryReservation.protelReservations.filter(
       (r) => !identityHelper.isSame(r, reservation)

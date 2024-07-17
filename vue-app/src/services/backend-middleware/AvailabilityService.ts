@@ -19,8 +19,9 @@ export class AvailabilityService implements IService {
       this.axiosInstance
         .post('api/v1/availabilities', protelAvailabilityPostBody)
         .then((response: any) => {
-          const availabilities = response.data
-
+          const availabilitiesData = response.data
+          const availabilities: IProtelAvailability[] =
+            availabilitiesData['data']['availability_data']
           const convertedAvailabilities = availabilities.map(
             (availability: IProtelAvailability) => {
               this.availabilityHelper.convertToAvailability(availability)

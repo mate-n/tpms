@@ -3,6 +3,7 @@ import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvai
 import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import { DateHelper } from './DateHelper'
 import { DateFormatter } from './DateFormatter'
+import type { IGuestsPerRoom } from '@/shared/interfaces/IGuestsPerRoom'
 
 export class AvailabilityHelper {
   dateFormatter = new DateFormatter()
@@ -222,6 +223,7 @@ export class AvailabilityHelper {
     departureDate: Date
     arrivalDate: Date
     roomTypeCode?: string
+    guestsPerRoom: IGuestsPerRoom
   }) => {
     const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
       arrivaldate: this.dateFormatter.yyyydashmmdashdd(data.arrivalDate),
@@ -229,7 +231,10 @@ export class AvailabilityHelper {
       roomtype: data.roomTypeCode || 'null',
       propertyid: `${data.camp.id}`,
       detail: '0',
-      accomodation_type: null
+      accomodation_type: null,
+      adults: data.guestsPerRoom.numberOfAdults,
+      children: data.guestsPerRoom.numberOfChildren,
+      seniors: data.guestsPerRoom.numberOfSeniors
     }
     return protelAvailabilityPostBody
   }

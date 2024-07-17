@@ -147,7 +147,10 @@ const check = () => {
     roomtype: 'null',
     propertyid: reservation.value.propertyID.toString(),
     detail: '0',
-    accomodation_type: null
+    accomodation_type: null,
+    adults: reservation.value.guestsPerRoom.numberOfAdults,
+    children: reservation.value.guestsPerRoom.numberOfChildren,
+    seniors: reservation.value.guestsPerRoom.numberOfSeniors
   }
   reservation.value.selectedProtelAvailabilityGroups = []
   availabilityService.getAvailabilities(protelAvailabilityPostBody).then((response) => {

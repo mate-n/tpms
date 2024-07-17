@@ -51,6 +51,12 @@ public class CartController {
         return cartService.addItemToCart(addItemToCartBody);
     }
 
+    @PostMapping(path = "/remove-item")
+    public String removeItemFromCart(@RequestBody String json) throws IOException {
+        CartService cartService = new CartService();
+        return cartService.removeItemFromCart(json);
+    }
+
     @PostMapping(path = "/get-items")
     public String getItems(@RequestBody RetrieveCartBody retrieveCartBody) throws IOException {
         CartService cartService = new CartService();
@@ -61,6 +67,12 @@ public class CartController {
     public String deleteItemFromCart(@RequestBody RemoveItemFromCartBody removeItemFromCartBody) throws IOException {
         CartService cartService = new CartService();
         return cartService.deleteItemFromCart(removeItemFromCartBody);
+    }
+
+    @PostMapping(path = "/update-item")
+    public String updateItemInCart(@RequestBody String json) throws IOException {
+        CartService cartService = new CartService();
+        return cartService.updateItemInCart(json);
     }
 
     @PostMapping(path = "/settle")
