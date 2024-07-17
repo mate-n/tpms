@@ -147,7 +147,7 @@ const getRoomTypes = () => {
     const roomTypeCodeSet = new Set<string>()
     response.forEach((availabilities) => {
       availabilities.forEach((availability) => {
-        if (availability.room_type_code) {
+        if (availability?.room_type_code) {
           roomTypeCodeSet.add(availability.room_type_code)
         }
       })
