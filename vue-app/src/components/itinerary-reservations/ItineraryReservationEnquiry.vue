@@ -35,6 +35,8 @@ const parksInDropdown: Ref<IProtelPark[]> = ref([])
 const allCamps: Ref<IProtelCamp[]> = ref([])
 const campsInDropdown: Ref<IProtelCamp[]> = ref([])
 const roomTypeCodesInDropdown: Ref<string[]> = ref([])
+const autoToggleRightBar = ref(true)
+const showRightBar = ref(false)
 const basketItemsStore = useBasketItemsStore()
 const itineraryReservationCartStore = useItineraryReservationCartStore()
 const axios2: AxiosStatic | undefined = inject('axios2')
@@ -54,6 +56,8 @@ const updateOrderIndexes = () => {
 }
 
 const clickOnAddToCart = () => {
+  showRightBar.value = false
+  autoToggleRightBar.value = true
   closeExpansionPanels.value++
   updateOrderIndexes()
   basketItemsStore.addReservations(itineraryReservation.value.reservations)
@@ -264,6 +268,11 @@ const clearSelectedCamps = () => {
 }
 
 const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservationSelectUpdate) => {
+  if (autoToggleRightBar.value) {
+    showRightBar.value = true
+    autoToggleRightBar.value = false
+  }
+
   const newReservations = protelAvailabilityConverter.convertToReservations(
     protelReservationSelectUpdate.selectedAvailabilities,
     protelReservationSelectUpdate.guestsPerRoom
@@ -368,7 +377,9 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       </v-row>
 
       <ItineraryReservationRightbar
+        :showRightBar="showRightBar"
         :itinerary-reservation="itineraryReservation"
+        @toggle="(bol) => (showRightBar = bol)"
         @update="(val) => (itineraryReservation.protelReservations = val)"
       />
     </div>

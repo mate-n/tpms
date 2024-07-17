@@ -67,6 +67,7 @@ watch(
     <v-row>
       <v-col cols="5">
         <DateSelecter
+          readonly
           label="Arrival"
           :min="minDate"
           :max="maxArrivalDate"
@@ -74,6 +75,7 @@ watch(
           @update:model-value="handleUpdate"
         ></DateSelecter>
         <DateSelecter
+          readonly
           label="Departure"
           :min="minDepartureDate"
           :max="maxDate"
@@ -86,6 +88,7 @@ watch(
         <v-row>
           <v-col cols="6">
             <GuestsPerRoomSelecter
+              readonly
               v-model="reservation.guestsPerRoom"
               @update:model-value="handleUpdate"
             ></GuestsPerRoomSelecter>
@@ -107,7 +110,8 @@ watch(
 
         <v-select
           return-object
-          label="Rate Code"
+          readonly
+          label="Average Price"
           variant="underlined"
           item-title="value"
           :items="availableRates"

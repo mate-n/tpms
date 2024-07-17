@@ -13,6 +13,10 @@ const guestsPerRoom = defineModel({
 const emit = defineEmits(['update:modelValue'])
 
 defineProps({
+  readonly: {
+    type: Boolean,
+    required: false
+  },
   errors: {
     type: Object as () => Record<string, string> | undefined,
     required: false
@@ -37,6 +41,7 @@ const handleUpdate = (values: Partial<GuestsPerRoom>) => {
         label="Guests per Room"
         variant="underlined"
         :error-messages="errors && errors['guestsPerRoom']"
+        :readonly="readonly"
         v-bind="props"
       ></v-text-field>
     </template>
@@ -49,6 +54,7 @@ const handleUpdate = (values: Partial<GuestsPerRoom>) => {
           label="Adult"
           :inset="true"
           :min="0"
+          :readonly="readonly"
           @update:model-value="(val) => handleUpdate({ numberOfAdults: val })"
         ></v-number-input>
         <v-number-input
@@ -58,6 +64,7 @@ const handleUpdate = (values: Partial<GuestsPerRoom>) => {
           controlVariant="stacked"
           variant="underlined"
           :min="0"
+          :readonly="readonly"
           @update:model-value="(val) => handleUpdate({ numberOfInfants: val })"
         ></v-number-input>
 
@@ -68,6 +75,7 @@ const handleUpdate = (values: Partial<GuestsPerRoom>) => {
           controlVariant="stacked"
           variant="underlined"
           :min="0"
+          :readonly="readonly"
           @update:model-value="(val) => handleUpdate({ numberOfChildren: val })"
         ></v-number-input>
 
@@ -78,6 +86,7 @@ const handleUpdate = (values: Partial<GuestsPerRoom>) => {
           controlVariant="stacked"
           variant="underlined"
           :min="0"
+          :readonly="readonly"
           @update:model-value="(val) => handleUpdate({ numberOfSeniors: val })"
         ></v-number-input>
       </v-card-text>

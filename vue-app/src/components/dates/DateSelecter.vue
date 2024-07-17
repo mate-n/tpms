@@ -18,6 +18,10 @@ defineProps({
   errorMessage: {
     type: String,
     required: false
+  },
+  readonly: {
+    type: Boolean,
+    required: false
   }
 })
 
@@ -38,10 +42,11 @@ const dateString = computed(() => {
         append-inner-icon="mdi-calendar"
         variant="underlined"
         :error-messages="errorMessage"
+        :readonly="readonly"
         v-bind="props"
       ></v-text-field>
     </template>
-    <v-card>
+    <v-card v-if="!readonly">
       <v-date-picker :hide-header="true" :min="min" :max="max" v-model="date"></v-date-picker>
     </v-card>
   </v-menu>

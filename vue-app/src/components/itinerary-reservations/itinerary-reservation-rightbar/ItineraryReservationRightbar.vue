@@ -14,7 +14,7 @@ const axios: AxiosStatic | undefined = inject('axios')
 const rateService = new RateService(axios)
 const dateHelper = new DateHelper()
 
-const emit = defineEmits(['update'])
+const emit = defineEmits(['update', 'toggle'])
 
 const showDrawer = ref(true)
 const availableRates = ref<IRate[]>([])
@@ -22,6 +22,7 @@ const minDate = ref<Date | undefined>()
 const campReservations = ref<{ name: string; reservations: IProtelReservation[] }[]>([])
 
 const props = defineProps({
+  showRightBar: { type: Boolean, required: true },
   itineraryReservation: { type: Object as () => ItineraryReservation, required: true }
 })
 
@@ -68,6 +69,12 @@ watch(
   { immediate: true, deep: true }
 )
 
+watch(
+  () => props.showRightBar,
+  () => (showDrawer.value = props.showRightBar),
+  { immediate: true, deep: true }
+)
+
 onMounted(() => {
   rateService.getAvailableRates().then((response) => {
     availableRates.value = response
@@ -76,10 +83,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-btn variant="text" icon="mdi-menu" @click="showDrawer = !showDrawer"></v-btn>
+  <v-btn variant="text" icon="mdi-menu" @click="emit('toggle', !props.showRightBar)"></v-btn>
 
   <v-navigation-drawer v-model="showDrawer" :width="400" location="right">
-    <h2 class="pa-2">
+    <h2 v-if="campReservations.length" class="pa-2">
       <strong>Placed reservations list</strong>
     </h2>
 
