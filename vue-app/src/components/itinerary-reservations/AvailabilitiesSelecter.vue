@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import { DateHelper } from '@/helpers/DateHelper'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
 import { nextTick, ref, watch } from 'vue'
+const priceFormatter = new PriceFormatter()
 const dateHelper = new DateHelper()
 const availabilityHelper = new AvailabilityHelper()
 const isSelecting = ref<boolean>(false)
@@ -209,7 +211,11 @@ watch(
           style="user-select: none"
         >
           <template v-if="availabilitySelectable.availability?.rates_data">
-            {{ availabilitySelectable.availability?.rates_data[0].room_rate }}
+            {{
+              priceFormatter.formatPriceString(
+                availabilitySelectable.availability?.rates_data[0].room_rate
+              )
+            }}
           </template>
         </div>
       </div>

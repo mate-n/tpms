@@ -15,6 +15,7 @@ import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPri
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
 import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
+import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 const guestsPerRoom: Ref<GuestsPerRoom> = ref(new GuestsPerRoom())
 const priceFormatter = new PriceFormatter()
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
@@ -31,7 +32,7 @@ const props = defineProps({
     required: true
   },
   departureDate: { type: Object as () => Date, required: true },
-  roomTypeCode: { type: String, required: false },
+  roomTypeCodes: { type: Object as () => String[], required: false },
   itineraryReservation: { type: Object as () => ItineraryReservation, required: true }
 })
 
@@ -118,25 +119,42 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
 const roomTypeDialog = ref(false)
 
 const getAvailabilities = () => {
-  const protelAvailabilityPostBody = availabilityHelper.mapPostBody({
+  const protelAvailabilityPostBody: IProtelAvailabilityPostBody = availabilityHelper.mapPostBody({
     camp: props.camp,
     arrivalDate: props.arrivalDate,
     departureDate: props.departureDate,
-    roomTypeCode: props.roomTypeCode
+    roomTypeCode: undefined,
+    guestsPerRoom: guestsPerRoom.value
   })
 
   availabilityService.getAvailabilities(protelAvailabilityPostBody).then((response) => {
-    availabilities.value = response
+    if (props.roomTypeCodes && props.roomTypeCodes.length > 0) {
+      availabilities.value = response.filter((availability) =>
+        props.roomTypeCodes!.includes(availability.room_type_code)
+      )
+    } else {
+      availabilities.value = response
+    }
   })
 }
 
 watch(
-  [() => props.arrivalDate, () => props.departureDate, () => props.roomTypeCode],
+  [() => props.arrivalDate, () => props.departureDate, () => props.roomTypeCodes],
   async () => {
     getAvailabilities()
   },
   {
     immediate: true,
+    deep: true
+  }
+)
+
+watch(
+  guestsPerRoom,
+  () => {
+    getAvailabilities()
+  },
+  {
     deep: true
   }
 )

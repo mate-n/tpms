@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeMount, ref, watch } from 'vue'
+import { inject, onBeforeMount, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useBasketItemsStore } from '@/stores/basketItems'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
-import { Reservation } from '@/shared/classes/Reservation'
 import BasketCard from '@/components/baskets/BasketCard.vue'
 import type { IProtelRegion } from '@/shared/interfaces/protel/IProtelRegion'
 import type { AxiosStatic } from 'axios'
@@ -26,6 +25,7 @@ import { DateHelper } from '@/helpers/DateHelper'
 import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
 import { CartService } from '@/services/backend-middleware/CartService'
 import type { CreateCartResponseBody } from '@/shared/interfaces/cart/CreateCartResponseBody'
+import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
 const protelAvailabilityConverter = new ProtelAvailabilityConverter()
 const availabilityHelper = new AvailabilityHelper()
 const dateHelper = new DateHelper()
@@ -52,11 +52,6 @@ const updateOrderIndexes = () => {
     reservation.orderIndex = index
   })
 }
-
-const selectedProfile = computed(() => {
-  if (itineraryReservation.value.reservations.length === 0) return 0
-  return itineraryReservation.value.reservations[0].profileID
-})
 
 const clickOnAddToCart = () => {
   closeExpansionPanels.value++
@@ -145,7 +140,8 @@ const getRoomTypes = () => {
     const protelAvailabilityPostBody = availabilityHelper.mapPostBody({
       camp,
       arrivalDate: itineraryReservation.value.arrivalDate,
-      departureDate: itineraryReservation.value.departureDate
+      departureDate: itineraryReservation.value.departureDate,
+      guestsPerRoom: new GuestsPerRoom()
     })
     return availabilityService.getAvailabilities(protelAvailabilityPostBody)
   })
@@ -154,7 +150,7 @@ const getRoomTypes = () => {
     const roomTypeCodeSet = new Set<string>()
     response.forEach((availabilities) => {
       availabilities.forEach((availability) => {
-        if (availability.room_type_code) {
+        if (availability?.room_type_code) {
           roomTypeCodeSet.add(availability.room_type_code)
         }
       })
@@ -222,7 +218,6 @@ const updatePropertiesOfReservations = () => {
 const updateReservations = () => {
   itineraryReservation.value.protelReservations = []
   filterOutLeftOverReservations()
-  addReservationToCamps()
   updatePropertiesOfReservations()
 }
 
@@ -236,28 +231,6 @@ const filterOutLeftOverReservations = () => {
       itineraryReservation.value.reservations.splice(index, 1)
     }
   }
-}
-
-const addReservationToCamps = () => {
-  for (const camp of itineraryReservation.value.selectedCamps) {
-    const foundReservation = itineraryReservation.value.reservations.find(
-      (reservation) => reservation.propertyName === camp.name
-    )
-    if (!foundReservation) {
-      addReservationToCamp(camp)
-    }
-  }
-}
-
-const addReservationToCamp = (camp: IProtelCamp) => {
-  const reservation = new Reservation()
-  reservation.propertyName = camp.name
-  reservation.profileID = selectedProfile.value
-  reservation.propertyID = camp.id
-  reservation.arrivalDate = itineraryReservation.value.arrivalDate
-  reservation.departureDate = itineraryReservation.value.departureDate
-  reservation.roomTypeCode = itineraryReservation.value.roomTypeCode
-  itineraryReservation.value.reservations.push(reservation)
 }
 
 const travelDistanceShown = ref(false)
@@ -368,36 +341,30 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       </v-col>
     </v-row>
 
-    <div class="d-flex align-center ga-4">
-      <v-row class="d-flex align-center">
-        <v-col class="d-flex align-center h-100">
-          <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
-        </v-col>
-        <v-col class="d-flex align-center h-100">
-          <DateSelecter
-            v-model="itineraryReservation.departureDate"
-            label="Departure"
-            :min="arrivalDateNextDay"
-          ></DateSelecter>
-        </v-col>
-        <v-col>
-          <v-autocomplete
-            v-model="itineraryReservation.roomTypeCode"
-            clearable
-            closable-chips
-            chips
-            variant="underlined"
-            label="Room type"
-            :items="roomTypeCodesInDropdown"
-          ></v-autocomplete>
-        </v-col>
-      </v-row>
-
-      <ItineraryReservationRightbar
-        :itinerary-reservation="itineraryReservation"
-        @update="(val) => (itineraryReservation.protelReservations = val)"
-      />
-    </div>
+    <v-row class="d-flex align-center">
+      <v-col class="d-flex align-center h-100">
+        <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
+      </v-col>
+      <v-col class="d-flex align-center h-100">
+        <DateSelecter
+          v-model="itineraryReservation.departureDate"
+          label="Departure"
+          :min="arrivalDateNextDay"
+        ></DateSelecter>
+      </v-col>
+      <v-col>
+        <v-autocomplete
+          v-model="itineraryReservation.selectedRoomTypeCodes"
+          clearable
+          closable-chips
+          chips
+          variant="underlined"
+          label="Room types"
+          :items="roomTypeCodesInDropdown"
+          multiple
+        ></v-autocomplete>
+      </v-col>
+    </v-row>
   </v-container>
 
   <template v-for="camp of itineraryReservation.selectedCamps" :key="camp.id">
@@ -405,7 +372,7 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       :camp="camp"
       :arrival-date="itineraryReservation.arrivalDate"
       :departure-date="itineraryReservation.departureDate"
-      :room-type-code="itineraryReservation.roomTypeCode"
+      :room-type-codes="itineraryReservation.selectedRoomTypeCodes"
       @availabilities-selected="
         (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
           availabilitiesSelected(protelReservationSelectUpdate)

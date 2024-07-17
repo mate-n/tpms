@@ -18,6 +18,7 @@ const guestTypeService = new GuestTypeService(axios)
 const profileFromInputFields = ref<IProfile>(new Profile())
 const newProfileDialog = ref(false)
 const editProfileDialog = ref(false)
+const profilesSearched = ref(false)
 const emit = defineEmits(['close', 'profileSelected'])
 const selectProfile = (profile: IProfile) => {
   emit('profileSelected', profile)
@@ -30,11 +31,13 @@ const search = () => {
     profileService.lookup(profileLookUpPostBody.value).then((response) => {
       profilesLoading.value = false
       foundProfiles.value = response
+      profilesSearched.value = true
     })
   } else {
     profileService.getAll().then((response) => {
       profilesLoading.value = false
       foundProfiles.value = response
+      profilesSearched.value = true
     })
   }
 }
@@ -141,6 +144,8 @@ const profilesLoading = ref(false)
             label="Loyalty Membership Number"
             variant="underlined"
             class="me-3"
+            :readonly="true"
+            :disabled="true"
           ></v-text-field>
           <v-text-field
             v-model="profileLookUpPostBody.wildcardnumber"
@@ -163,6 +168,12 @@ const profilesLoading = ref(false)
     @profile-updated="search()"
     :show-select-button="showSelectButton"
   ></ProfileDataTable>
+
+  <div class="d-flex justify-center">
+    <v-card class="mt-2 mb-2" v-if="profilesSearched && foundProfiles.length < 1">
+      <v-card-title>No result found</v-card-title>
+    </v-card>
+  </div>
 
   <v-dialog v-model="newProfileDialog" fullscreen scrollable>
     <v-card>

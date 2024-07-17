@@ -18,8 +18,16 @@ import TicketsCard from '@/components/tickets/TicketsCard.vue'
 import TicketsTable from '@/components/tickets/TicketsTable.vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import ConservationFeeForm from '@/components/conservation-fees/ConservationFeeForm.vue'
+import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
+import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
+import { CartService } from '@/services/backend-middleware/CartService'
+const axios2: AxiosStatic | undefined = inject('axios2')
+
 const priceFormatter = new PriceFormatter()
 const emit = defineEmits(['profile-selected', 'remove-reservation'])
+const itineraryReservationCartStore = useItineraryReservationCartStore()
+const itineraryReservationCartManager = new ItineraryReservationCartManager()
+const cartService = new CartService(axios2)
 
 const props = defineProps({
   profile: {
@@ -30,7 +38,6 @@ const props = defineProps({
 
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const ticketsService = new TicketService()
-const axios2: AxiosStatic | undefined = inject('axios2')
 const reservation = defineModel({ required: true, type: Object as () => IProtelReservation })
 
 const profileService = new ProfileService(axios2)
@@ -60,6 +67,11 @@ const clickOnAddFixedCharges = () => {
 
 const addTicketsToReservation = () => {
   ticketsCardDialog.value = false
+  itineraryReservationCartManager.addTicketsToCart(
+    [reservation.value],
+    itineraryReservationCartStore.getCartNumber(),
+    cartService
+  )
 }
 
 const availableTickets: Ref<ITicket[]> = ref([])

@@ -8,8 +8,7 @@ export class ProfileValidator implements IValidator {
   validate(profile: IProfile): void {
     profile.errors = {}
     this.isNamePresent(profile)
-    this.isEmailValid(profile)
-    this.isMobilePresent(profile)
+    this.isEmailOrMobilePresent(profile)
     this.isNationalityPresent(profile)
     this.isBirthdatePresent(profile)
   }
@@ -26,6 +25,21 @@ export class ProfileValidator implements IValidator {
       if (!profile.name) {
         profile.errors!['name'] = 'Name is required'
       }
+    }
+  }
+
+  isEmailOrMobilePresent(profile: IProfile): void {
+    if (!profile.email && !profile.mobile) {
+      profile.errors!['email'] = 'Email or Mobile is required'
+      profile.errors!['mobile'] = 'Email or Mobile is required'
+    }
+
+    if (profile.email) {
+      this.isEmailValid(profile)
+    }
+
+    if (profile.mobile) {
+      this.isMobilePresent(profile)
     }
   }
 
@@ -68,8 +82,10 @@ export class ProfileValidator implements IValidator {
   }
 
   isBirthdatePresent(profile: IProfile): void {
-    if (!profile.dateofbirth) {
-      profile.errors!['dateofbirth'] = 'Date of Birth is required'
+    if (profile.countryofbirth === 'ZA') {
+      if (!profile.dateofbirth) {
+        profile.errors!['dateofbirth'] = 'Date of Birth is required'
+      }
     }
   }
 }

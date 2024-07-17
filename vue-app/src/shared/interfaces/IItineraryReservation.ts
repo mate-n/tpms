@@ -14,6 +14,7 @@ export interface IItineraryReservation extends IEntityWithIdentity {
   selectedRegions: IProtelRegion[]
   selectedParks: IProtelPark[]
   selectedCamps: IProtelCamp[]
+  selectedRoomTypeCodes: string[]
   guestProfileID: number | undefined
   protelReservations: IProtelReservation[]
 }

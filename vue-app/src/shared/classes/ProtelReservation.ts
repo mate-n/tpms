@@ -21,6 +21,7 @@ export class ProtelReservation implements IProtelReservation {
   property_name: string
   type_code: string
   tickets: ITicket[]
+  cartITemID: number | undefined
 
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
