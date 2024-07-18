@@ -162,7 +162,7 @@ const showSaveButton = ref(false)
               <div v-for="ticket of ankerdataTickets" :key="ticket.TicketId">
                 <div v-if="ticket.AvailableTickets > 0">
                   <v-btn class="w-100 mb-3 secondary-button" @click="addTicket(ticket)">
-                    {{ ticket.Name }}
+                    {{ ticket.Description }}
                   </v-btn>
                 </div>
               </div>

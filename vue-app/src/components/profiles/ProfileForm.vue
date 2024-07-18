@@ -25,7 +25,8 @@ import type { IProfileCreateResponseBody } from '@/shared/interfaces/profiles/IP
 import router from '@/router'
 import type { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
 import ProfileAddressCard2 from './ProfileAddressCard2.vue'
-
+import ProfileCreatedSuccessfullyDialog from './ProfileCreatedSuccessfullycard.vue'
+const loading = ref(false)
 const profileCreatePostBodyConverter = new ProfileCreatePostBodyConverter()
 const axios: AxiosStatic | undefined = inject('axios')
 const axios2: AxiosStatic | undefined = inject('axios2')
@@ -82,22 +83,24 @@ const validate = () => {
   profileValidator.validate(profileToBeEdited.value)
 }
 
+const profileCreateResponseBodyProfileID = ref<number>(0)
+
 const save = () => {
   validate()
   if (profileToBeEdited.value.errors && Object.keys(profileToBeEdited.value.errors).length > 0) {
     return
   }
   if (props.crudOperation === CrudOperations.Create) {
+    loading.value = true
     const profileCreatePostBody = profileCreatePostBodyConverter.convertToProfileCreatePostBody(
       profileToBeEdited.value
     )
     profileService
       .create(profileCreatePostBody)
       .then((profileCreateResponseBody: IProfileCreateResponseBody) => {
-        router.push({
-          name: 'edit profile',
-          params: { profileID: profileCreateResponseBody.ProfileID }
-        })
+        profileCreateResponseBodyProfileID.value = profileCreateResponseBody.ProfileID
+        loading.value = false
+        profileCreatedSuccessfullyDialog.value = true
       })
   } else if (props.crudOperation === CrudOperations.Update) {
     const profileCreatePostBody = profileCreatePostBodyConverter.convertToProfileCreatePostBody(
@@ -121,6 +124,7 @@ const toggleActive = () => {
 
 const stationeryCardDialog = ref(false)
 const reservationsCardDialog = ref(false)
+const profileCreatedSuccessfullyDialog = ref(false)
 
 const profilesWithSameFirstAndLastName = ref<IProfile[]>([])
 const checkIfProfilesWithSameFirstAndLastNameExist = async () => {
@@ -267,6 +271,9 @@ const goToProfile = (profileID: number | undefined) => {
       </template>
     </v-tooltip>
   </v-toolbar>
+  <div v-if="loading">
+    <v-progress-linear color="primary" indeterminate></v-progress-linear>
+  </div>
   <div v-if="profilesWithSameEmail.length > 0" class="bg-lightgray">
     <div v-for="profile of profilesWithSameEmail" :key="profile.id">
       <v-alert type="warning" class="mt-2">
@@ -332,6 +339,16 @@ const goToProfile = (profileID: number | undefined) => {
   <v-dialog v-model="reservationsCardDialog" scrollable>
     <v-card>
       <ReservationsCard @close="reservationsCardDialog = false" />
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="profileCreatedSuccessfullyDialog" scrollable>
+    <v-card>
+      <ProfileCreatedSuccessfullyDialog
+        @close="profileCreatedSuccessfullyDialog = false"
+        @ok="goToProfile(profileCreateResponseBodyProfileID)"
+        :profile-id="profileCreateResponseBodyProfileID"
+      />
     </v-card>
   </v-dialog>
 </template>
