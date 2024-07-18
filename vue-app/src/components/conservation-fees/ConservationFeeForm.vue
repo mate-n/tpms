@@ -1,15 +1,23 @@
 <script setup lang="ts">
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { DateHelper } from '@/helpers/DateHelper'
+import { ConservationFeeService } from '@/services/backend-middleware/ConservationFeeService'
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
+import { ConservationFeePrices } from '@/shared/classes/ConservationFeePrices'
 import type { IAdultsAndChildren } from '@/shared/interfaces/IAdultsAndChildren'
+import type { ICalculatePriceOfConservationFeesBody } from '@/shared/interfaces/ICalculatePriceOfConservationFeesBody'
+import type { IConservationFeePrices } from '@/shared/interfaces/IConservationFeePrices'
 import type { IFreeEntryReasonWithAdultsAndChildren } from '@/shared/interfaces/IFreeEntryReasonWithAdultsAndChildren'
 import type { IWildcardWithAdultsAndChildren } from '@/shared/interfaces/IWildcardWithAdultsAndChildren'
-import { computed, ref, type Ref } from 'vue'
+import type { AxiosStatic } from 'axios'
+import { computed, inject, ref, watch, type Ref } from 'vue'
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
+const axios2: AxiosStatic | undefined = inject('axios2')
+const conservationFeesService = new ConservationFeeService(axios2)
 const dateFormatter = new DateFormatter()
 const dateHelper = new DateHelper()
 const emits = defineEmits(['close'])
+const conservationFeePrices: Ref<IConservationFeePrices> = ref(new ConservationFeePrices())
 
 const reservation = defineModel({
   required: true,
@@ -19,6 +27,14 @@ const reservation = defineModel({
 const southAfricanCitizens: Ref<IAdultsAndChildren> = ref({ adults: 0, children: 0 })
 const sadcCitizens: Ref<IAdultsAndChildren> = ref({ adults: 0, children: 0 })
 const internationals: Ref<IAdultsAndChildren> = ref({ adults: 0, children: 0 })
+
+watch(
+  [southAfricanCitizens, sadcCitizens, internationals],
+  () => {
+    calculatePricesOfFees()
+  },
+  { deep: true }
+)
 
 const numberOfNights = computed(() => {
   return dateHelper.calculateNightsBetweenDates(
@@ -139,6 +155,27 @@ const isAppliedFulfilled = computed(() => {
       totalNumberOfConservationFeesForChildren.value
   )
 })
+
+const calculatePricesOfFees = () => {
+  loading.value = true
+  const calculatePriceOfConservationFeesBody: ICalculatePriceOfConservationFeesBody = {
+    camp_id: parseInt(reservation.value.property_code),
+    adult_sa: southAfricanCitizens.value.adults,
+    child_sa: southAfricanCitizens.value.children,
+    adult_sadc: sadcCitizens.value.adults,
+    child_sadc: sadcCitizens.value.children,
+    adult_int: internationals.value.adults,
+    child_int: internationals.value.children
+  }
+  conservationFeesService
+    .calculatePriceOfConservationFees(calculatePriceOfConservationFeesBody)
+    .then((response) => {
+      conservationFeePrices.value = response
+      loading.value = false
+    })
+}
+
+const loading = ref(false)
 </script>
 <style scoped>
 .conservation-fee-cell-background1 {
@@ -165,7 +202,9 @@ const isAppliedFulfilled = computed(() => {
     </div>
   </v-toolbar>
   <v-divider class="standard-dialog-card-divider"></v-divider>
-
+  <div v-if="loading">
+    <v-progress-linear color="primary" indeterminate></v-progress-linear>
+  </div>
   <v-container fluid>
     <v-row class="conservation-fee-cell-background2 font-size-rem-12 conservation-fee-cell">
       <v-col>
@@ -173,7 +212,9 @@ const isAppliedFulfilled = computed(() => {
         {{ dateFormatter.dddotmmdotyyyy(reservation.departureDate) }}</v-col
       >
       <v-col> Adults </v-col>
+      <v-col> Price</v-col>
       <v-col> Children </v-col>
+      <v-col> Price</v-col>
     </v-row>
     <v-row>
       <v-col class="conservation-fee-cell-background1 conservation-fee-cell">
@@ -188,6 +229,9 @@ const isAppliedFulfilled = computed(() => {
           density="compact"
         ></v-number-input>
       </v-col>
+      <v-col>
+        {{ conservationFeePrices.adult_sa.total }}
+      </v-col>
       <v-col class="conservation-fee-cell-background1 conservation-fee-cell">
         <v-number-input
           v-model="southAfricanCitizens.children"
@@ -196,6 +240,9 @@ const isAppliedFulfilled = computed(() => {
           variant="underlined"
           density="compact"
         ></v-number-input>
+      </v-col>
+      <v-col>
+        {{ conservationFeePrices.child_sa.total }}
       </v-col>
     </v-row>
     <v-row>
@@ -209,6 +256,9 @@ const isAppliedFulfilled = computed(() => {
           density="compact"
         ></v-number-input>
       </v-col>
+      <v-col>
+        {{ conservationFeePrices.adult_sadc.total }}
+      </v-col>
       <v-col class="conservation-fee-cell-background2 conservation-fee-cell">
         <v-number-input
           v-model="sadcCitizens.children"
@@ -217,6 +267,9 @@ const isAppliedFulfilled = computed(() => {
           variant="underlined"
           density="compact"
         ></v-number-input>
+      </v-col>
+      <v-col>
+        {{ conservationFeePrices.child_sadc.total }}
       </v-col>
     </v-row>
     <v-row>
@@ -232,6 +285,9 @@ const isAppliedFulfilled = computed(() => {
           density="compact"
         ></v-number-input>
       </v-col>
+      <v-col>
+        {{ conservationFeePrices.adult_int.total }}
+      </v-col>
       <v-col class="conservation-fee-cell-background1 conservation-fee-cell">
         <v-number-input
           v-model="internationals.children"
@@ -241,6 +297,28 @@ const isAppliedFulfilled = computed(() => {
           variant="underlined"
           density="compact"
         ></v-number-input>
+      </v-col>
+      <v-col>
+        {{ conservationFeePrices.child_int.total }}
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col> Total </v-col>
+      <v-col> </v-col>
+      <v-col>
+        {{
+          conservationFeePrices.summary.total_adult_int +
+          conservationFeePrices.summary.total_adult_sadc +
+          conservationFeePrices.summary.total_adult_sa
+        }}
+      </v-col>
+      <v-col> </v-col>
+      <v-col>
+        {{
+          conservationFeePrices.summary.total_child_int +
+          conservationFeePrices.summary.total_child_sadc +
+          conservationFeePrices.summary.total_child_sa
+        }}
       </v-col>
     </v-row>
     <v-row class="conservation-fee-cell-background2 font-size-rem-12 conservation-fee-cell">
