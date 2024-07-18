@@ -65,6 +65,7 @@ const numberOfNights = computed(() => {
         <v-col class="">
           <div class="mb-1 text-end">
             {{ numberOfNights }} x
+            {{ reservation.numberOfRooms }} x
             {{ priceFormatter.formatPrice(parseInt(reservation.rate.value)) }}
           </div>
           <v-divider></v-divider>

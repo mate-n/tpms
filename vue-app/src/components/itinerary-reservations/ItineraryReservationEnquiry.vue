@@ -15,6 +15,7 @@ import { ParkService } from '@/services/backend-middleware/ParkService'
 import { CampService } from '@/services/backend-middleware/CampService'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
 import CampWithAvailabilities from './CampWithAvailabilities.vue'
+import ItineraryReservationRightbar from './itinerary-reservation-rightbar/ItineraryReservationRightbar.vue'
 import { type IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import { ProtelAvailabilityConverter } from '@/shared/converters/ProtelAvailabilityConverter'
@@ -34,6 +35,8 @@ const parksInDropdown: Ref<IProtelPark[]> = ref([])
 const allCamps: Ref<IProtelCamp[]> = ref([])
 const campsInDropdown: Ref<IProtelCamp[]> = ref([])
 const roomTypeCodesInDropdown: Ref<string[]> = ref([])
+const autoToggleRightBar = ref(true)
+const showRightBar = ref(false)
 const basketItemsStore = useBasketItemsStore()
 const itineraryReservationCartStore = useItineraryReservationCartStore()
 const axios2: AxiosStatic | undefined = inject('axios2')
@@ -53,6 +56,8 @@ const updateOrderIndexes = () => {
 }
 
 const clickOnAddToCart = () => {
+  showRightBar.value = false
+  autoToggleRightBar.value = true
   closeExpansionPanels.value++
   updateOrderIndexes()
   basketItemsStore.addReservations(itineraryReservation.value.reservations)
@@ -263,6 +268,11 @@ const clearSelectedCamps = () => {
 }
 
 const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservationSelectUpdate) => {
+  if (autoToggleRightBar.value) {
+    showRightBar.value = true
+    autoToggleRightBar.value = false
+  }
+
   const newReservations = protelAvailabilityConverter.convertToReservations(
     protelReservationSelectUpdate.selectedAvailabilities,
     protelReservationSelectUpdate.guestsPerRoom
@@ -340,30 +350,39 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       </v-col>
     </v-row>
 
-    <v-row class="d-flex align-center">
-      <v-col class="d-flex align-center h-100">
-        <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
-      </v-col>
-      <v-col class="d-flex align-center h-100">
-        <DateSelecter
-          v-model="itineraryReservation.departureDate"
-          label="Departure"
-          :min="arrivalDateNextDay"
-        ></DateSelecter>
-      </v-col>
-      <v-col>
-        <v-autocomplete
-          v-model="itineraryReservation.selectedRoomTypeCodes"
-          clearable
-          closable-chips
-          chips
-          variant="underlined"
-          label="Room types"
-          :items="roomTypeCodesInDropdown"
-          multiple
-        ></v-autocomplete>
-      </v-col>
-    </v-row>
+    <div class="d-flex align-center ga-4">
+      <v-row class="d-flex align-center">
+        <v-col class="d-flex align-center h-100">
+          <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
+        </v-col>
+        <v-col class="d-flex align-center h-100">
+          <DateSelecter
+            v-model="itineraryReservation.departureDate"
+            label="Departure"
+            :min="arrivalDateNextDay"
+          ></DateSelecter>
+        </v-col>
+        <v-col>
+          <v-autocomplete
+            v-model="itineraryReservation.selectedRoomTypeCodes"
+            clearable
+            closable-chips
+            chips
+            variant="underlined"
+            label="Room types"
+            :items="roomTypeCodesInDropdown"
+            multiple
+          ></v-autocomplete>
+        </v-col>
+      </v-row>
+
+      <ItineraryReservationRightbar
+        :showRightBar="showRightBar"
+        :itinerary-reservation="itineraryReservation"
+        @toggle="(bol) => (showRightBar = bol)"
+        @update="(val) => (itineraryReservation.protelReservations = val)"
+      />
+    </div>
   </v-container>
 
   <template v-for="camp of itineraryReservation.selectedCamps" :key="camp.id">

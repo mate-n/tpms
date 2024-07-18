@@ -8,7 +8,7 @@ export class ProtelReservationPriceCalculator {
       reservation.arrivalDate,
       reservation.departureDate
     )
-    return parseInt(reservation.rate.value) * numberOfNights
+    return parseInt(reservation.rate.value) * numberOfNights * reservation.numberOfRooms
   }
 
   getAveragePricePerNight(reservation: IProtelReservation) {
