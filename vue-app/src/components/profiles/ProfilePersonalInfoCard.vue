@@ -18,7 +18,7 @@ const blurSaid = () => {
     <v-toolbar class="profiles-card-toolbar">
       <v-toolbar-title><span class="text-primary">Personal Info</span></v-toolbar-title>
     </v-toolbar>
-    <v-container>
+    <v-container data-cy="personal_info_form">
       <ProfilePersonalInfoForm
         v-model="profileToBeEdited"
         @blur-said="blurSaid()"

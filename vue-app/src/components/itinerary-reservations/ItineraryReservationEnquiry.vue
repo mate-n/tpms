@@ -346,6 +346,7 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
           return-object
           multiple
           @update:model-value="checkTravelDistance()"
+          data-cy="camp_autocomplete"
         ></v-autocomplete>
       </v-col>
     </v-row>
@@ -404,7 +405,9 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       <v-btn class="secondary-button me-2">Cancel</v-btn>
 
       <v-btn class="secondary-button me-2" @click="clickOnViewCart()">View Cart</v-btn>
-      <v-btn class="primary-button" @click="clickOnAddToCart()">Add to Cart</v-btn>
+      <v-btn class="primary-button" @click="clickOnAddToCart()" data-cy="add_to_cart_button">
+        Add to Cart
+      </v-btn>
     </div>
   </v-container>
 

@@ -229,6 +229,7 @@ const goToProfile = (profileID: number | undefined) => {
         v-if="validityHelper.isValid(profileToBeEdited)"
         class="primary-button text-uppercase"
         @click="save()"
+        data-cy="save_profile_button"
         >{{ $t('actions.save') }}</v-btn
       >
     </div>

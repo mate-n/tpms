@@ -31,7 +31,7 @@ const numberOfNights = computed(() => {
 </script>
 
 <template>
-  <v-card min-width="350" class="mb-2">
+  <v-card min-width="350" class="mb-2" data-cy="reservation_basket_menu_card">
     <v-card-text class="pt-0 px-2">
       <div class="d-flex justify-end">
         <v-btn variant="text" size="x-small" @click="removeReservation(reservation)" icon
@@ -40,24 +40,29 @@ const numberOfNights = computed(() => {
       </div>
       <div class="mb-1">
         <div class="ms-2 pb-3">
-          <v-icon>mdi-chevron-double-right</v-icon><strong>{{ reservation.property_name }}</strong
+          <v-icon>mdi-chevron-double-right</v-icon>
+          <strong data-cy="property_name">{{ reservation.property_name }}</strong
           ><br />
-          <span class="text-black">{{ reservation.roomTypeCode }}</span>
+          <span class="text-black" data-cy="room_type_code">{{ reservation.roomTypeCode }}</span>
         </div>
       </div>
       <v-row class="pb-0">
         <v-col class="text-gray">{{ room?.code }}</v-col>
         <v-col class="d-flex justify-end"
           ><v-icon>mdi-arrow-right </v-icon
-          >{{ dateFormatter.dddotmmdotyyyy(reservation.arrivalDate) }}</v-col
-        >
+          ><span data-cy="arrival_date">
+            {{ dateFormatter.dddotmmdotyyyy(reservation.arrivalDate) }}
+          </span>
+        </v-col>
       </v-row>
       <v-row class="mt-0 pb-0">
         <v-col class="text-gray">Base Rate | Low Season</v-col>
         <v-col class="d-flex justify-end"
-          ><v-icon>mdi-arrow-left </v-icon
-          >{{ dateFormatter.dddotmmdotyyyy(reservation.departureDate) }}</v-col
-        >
+          ><v-icon>mdi-arrow-left </v-icon>
+          <span data-cy="departure_date">
+            {{ dateFormatter.dddotmmdotyyyy(reservation.departureDate) }}
+          </span>
+        </v-col>
       </v-row>
       <v-divider class="mt-1"></v-divider>
       <v-row class="mt-0 pb-0">
@@ -71,7 +76,7 @@ const numberOfNights = computed(() => {
           <v-divider></v-divider>
           <div class="text-end mt-1">
             Total:
-            <strong>{{
+            <strong data-cy="total">{{
               priceFormatter.formatPrice(
                 protelReservationPriceCalculator.getPriceForAllNightsWithTickets(reservation)
               )

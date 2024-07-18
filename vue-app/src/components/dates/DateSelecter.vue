@@ -22,6 +22,10 @@ defineProps({
   readonly: {
     type: Boolean,
     required: false
+  },
+  dataCy: {
+    type: String,
+    required: false
   }
 })
 
@@ -43,11 +47,18 @@ const dateString = computed(() => {
         variant="underlined"
         :error-messages="errorMessage"
         :readonly="readonly"
+        :data-cy="dataCy"
         v-bind="props"
       ></v-text-field>
     </template>
     <v-card v-if="!readonly">
-      <v-date-picker :hide-header="true" :min="min" :max="max" v-model="date"></v-date-picker>
+      <v-date-picker
+        :hide-header="true"
+        :min="min"
+        :max="max"
+        v-model="date"
+        :data-cy="`${dataCy}_picker`"
+      ></v-date-picker>
     </v-card>
   </v-menu>
 </template>

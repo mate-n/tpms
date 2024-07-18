@@ -215,7 +215,7 @@ const profileSelected = (selectedProfile: IProfile) => {
 </script>
 
 <template>
-  <div class="standard-dialog-card">
+  <div class="standard-dialog-card" data-cy="basket_card">
     <v-toolbar class="standard-dialog-card-toolbar fixed-toolbar">
       <v-toolbar-title><span class="text-primary">Basket</span></v-toolbar-title>
       <div @click="clickOnPayLater()" class="profiles-card-toolbar-button">Confirm Cart</div>
@@ -249,7 +249,7 @@ const profileSelected = (selectedProfile: IProfile) => {
         <v-card class="me-2">
           <v-card-text>
             <p>
-              <strong>Total: {{ priceFormatter.formatPrice(totalPrice) }}</strong>
+              <strong data-cy="total_all">Total: {{ priceFormatter.formatPrice(totalPrice) }}</strong>
             </p>
           </v-card-text>
         </v-card>

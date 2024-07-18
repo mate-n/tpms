@@ -22,16 +22,22 @@ const login = ref('')
 const password = ref('')
 </script>
 <template>
-  <v-card>
+  <v-card data-cy="login_card">
     <v-card-text>
-      <v-text-field label="Login" v-model="login" variant="underlined"></v-text-field>
+      <v-text-field
+        label="Login"
+        v-model="login"
+        variant="underlined"
+        data-cy="username_field"
+      ></v-text-field>
       <v-text-field
         label="Password"
         v-model="password"
         variant="underlined"
         type="Password"
+        data-cy="password_field"
       ></v-text-field>
-      <v-btn @click="clickOnLogin()">Login</v-btn>
+      <v-btn @click="clickOnLogin()" data-cy="login_button">Login</v-btn>
     </v-card-text>
   </v-card>
 </template>

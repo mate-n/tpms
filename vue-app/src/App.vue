@@ -203,6 +203,7 @@ const showBadge = computed(() => {
               "
               color="primary"
               :model-value="showBadge"
+              data-cy="cart_icon_button"
             >
               <v-icon icon="mdi-cart-outline" size="x-large"></v-icon>
             </v-badge>

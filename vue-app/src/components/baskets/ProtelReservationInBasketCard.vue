@@ -120,13 +120,14 @@ const conservationFeeFormDialog = ref(false)
 </script>
 
 <template>
-  <v-card class="mb-5">
+  <v-card class="mb-5" data-cy="reservation_basket_card">
     <v-card-text class="px-0">
       <div class="d-flex justify-space-between align-center">
         <div class="ms-2 pb-3">
-          <v-icon>mdi-chevron-double-right</v-icon><strong>{{ reservation.property_name }}</strong
+          <v-icon>mdi-chevron-double-right</v-icon>
+          <strong data-cy="property_name">{{ reservation.property_name }}</strong
           ><br />
-          <span class="text-black">{{ reservation.roomTypeCode }}</span>
+          <span class="text-black" data-cy="room_type_code">{{ reservation.roomTypeCode }}</span>
         </div>
         <div class="d-flex align-center" style="min-width: 50%">
           <v-autocomplete
@@ -159,7 +160,9 @@ const conservationFeeFormDialog = ref(false)
             >
             <v-col>
               <span class="standard-caption">Arrival</span><br />
-              {{ dateFormatter.dddotmmdotyyyy(reservation.arrivalDate) }}
+              <span data-cy="arrival_date">
+                {{ dateFormatter.dddotmmdotyyyy(reservation.arrivalDate) }}
+              </span>
             </v-col>
             <v-col><span class="standard-caption">Nights</span><br />{{ numberOfNights }}</v-col>
             <v-col
@@ -173,7 +176,9 @@ const conservationFeeFormDialog = ref(false)
             <v-col><span class="standard-caption">First Name</span><br />{{ profile?.name }}</v-col>
             <v-col>
               <span class="standard-caption">Departure</span><br />
-              {{ dateFormatter.dddotmmdotyyyy(reservation.departureDate) }}
+              <span data-cy="departure_date">
+                {{ dateFormatter.dddotmmdotyyyy(reservation.departureDate) }}
+              </span>
             </v-col>
             <v-col
               ><span class="standard-caption">Rooms</span><br />{{
@@ -232,7 +237,7 @@ const conservationFeeFormDialog = ref(false)
         <v-row>
           <v-col>
             TOTAL<br />
-            <strong>
+            <strong data-cy="total">
               {{
                 priceFormatter.formatPrice(
                   protelReservationPriceCalculator.getPriceForAllNightsWithTickets(reservation)

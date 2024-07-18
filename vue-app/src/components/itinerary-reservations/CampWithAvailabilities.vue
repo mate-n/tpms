@@ -187,11 +187,11 @@ const totalPriceForCamp = computed(() => {
 })
 </script>
 <template>
-  <v-container fluid class="bg-white">
+  <v-container fluid class="bg-white" data-cy="camp_availabilities_container">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100">
         <h3>
-          <strong>{{ camp.name }}</strong>
+          <strong data-cy="camp_name">{{ camp.name }}</strong>
         </h3>
       </v-col>
       <v-col>
@@ -239,7 +239,12 @@ const totalPriceForCamp = computed(() => {
             <tbody>
               <tr>
                 <td class="d-flex justify-space-between align-center">
-                  <v-btn variant="text" icon @click="clickOnPlusButtonInAvailability()">
+                  <v-btn
+                    variant="text"
+                    icon
+                    @click="clickOnPlusButtonInAvailability()"
+                    data-cy="expand_avalabilities_button"
+                  >
                     <v-icon class="text-primary">
                       {{ availabilityIcon }}
                     </v-icon></v-btn
@@ -278,7 +283,7 @@ const totalPriceForCamp = computed(() => {
               >
                 <td v-if="showRoomsInProtelAvailabilitiesSelecter">
                   <div class="d-flex justify-space-between">
-                    <div>{{ roomTypeCode }}</div>
+                    <div data-cy="avalibility_room_type_code">{{ roomTypeCode }}</div>
                     <div>
                       <v-btn @click="roomTypeDialog = true" variant="text" icon size="x-small">
                         <v-icon>mdi-information-outline</v-icon>
