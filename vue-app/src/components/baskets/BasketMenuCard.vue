@@ -62,7 +62,7 @@ const clickOnViewCart = () => {
 }
 </script>
 <template>
-  <v-container class="bg-lightgray pa-1 rounded">
+  <v-container class="bg-lightgray pa-1 rounded" data-cy="basket_menu_card">
     <div style="overflow-y: auto; max-height: 90vh">
       <template v-if="itineraryReservationCartStore.itineraryReservation">
         <ProtelReservationInBasketMenuCard
@@ -86,7 +86,7 @@ const clickOnViewCart = () => {
     </v-card>
     <div class="d-flex justify-end mt-3">
       <v-btn class="me-2 text-black" @click="removeAllReservations()">Empty Cart</v-btn>
-      <v-btn class="primary-button" @click="clickOnViewCart()">View Cart</v-btn>
+      <v-btn class="primary-button" @click="clickOnViewCart()" data-cy="view_cart_button">View Cart</v-btn>
     </div>
   </v-container>
 </template>

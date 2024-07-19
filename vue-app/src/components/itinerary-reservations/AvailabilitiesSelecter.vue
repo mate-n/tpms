@@ -191,6 +191,7 @@ watch(
         @mousemove="handleMouseMove(availabilitySelectable)"
         @mouseleave="handleMouseLeave(availabilitySelectable, $event)"
         @mouseup="handleMouseUp()"
+        data-cy="avalablity_item"
       >
         <div
           class="py-1"

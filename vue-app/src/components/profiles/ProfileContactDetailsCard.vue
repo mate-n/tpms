@@ -37,7 +37,7 @@ const blurEmail = () => {
 }
 </script>
 <template>
-  <div class="profiles-card">
+  <div class="profiles-card" data-cy="profile_contact_detail_form">
     <v-toolbar class="profiles-card-toolbar">
       <v-toolbar-title><span class="text-primary">Contact details</span></v-toolbar-title>
       <v-btn icon @click="editProfileContactDetailsDialog = true">
@@ -54,6 +54,7 @@ const blurEmail = () => {
         :error-messages="profile.errors && profile.errors['email']"
         @update:modelValue="validate()"
         @blur="blurEmail()"
+        data-cy="email_field"
       ></v-text-field>
       <v-text-field
         v-model="profile.mobile"
@@ -62,6 +63,7 @@ const blurEmail = () => {
         class="me-3 required-input"
         @update:modelValue="validate()"
         :error-messages="profile.errors && profile.errors['mobile']"
+        data-cy="mobile_field"
       ></v-text-field>
       <div v-for="profileCommunication of profile.communications" :key="profileCommunication.id">
         <div class="mb-2">

@@ -20,7 +20,7 @@ const clickOnAdd = () => {
 
 <template>
   <v-toolbar color="primary" title="Profiles">
-    <v-btn class="primary-outline-add-button me-3" @click="clickOnAdd()"
+    <v-btn class="primary-outline-add-button me-3" @click="clickOnAdd()" data-cy="add_profile_button"
       ><v-icon>mdi-plus</v-icon>Add</v-btn
     >
   </v-toolbar>
