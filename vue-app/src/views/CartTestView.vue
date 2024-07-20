@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { CartHelper } from '@/helpers/CartHelper'
+import { CartItemService } from '@/services/backend-middleware/CartItemService'
 import { CartService } from '@/services/backend-middleware/CartService'
 import type { IAddItemToCartBody } from '@/shared/interfaces/cart/IAddItemToCartBody'
 import type { ICartBody } from '@/shared/interfaces/cart/ICartBody'
 import type { ICartItem } from '@/shared/interfaces/cart/ICartItem'
-import type { IRemoveItemFromCartBody } from '@/shared/interfaces/cart/IRemoveItemFromCartBody'
 import type { IRetrieveCartBody } from '@/shared/interfaces/cart/IRetrieveCartBody'
 import type { ISettleCartBody } from '@/shared/interfaces/cart/ISettleCartBody'
 import type { IUpdateCartBody } from '@/shared/interfaces/cart/IUpdateCartBody'
@@ -13,6 +13,7 @@ import { inject, onMounted, ref, type Ref } from 'vue'
 const cartHelper = new CartHelper()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const cartService = new CartService(axios2)
+const cartItemService = new CartItemService()
 
 const cartItems: Ref<ICartItem[]> = ref([])
 
@@ -68,7 +69,7 @@ const addItemToCart = () => {
     gmsTimeSlotId: 0
   }
 
-  cartService.addItemToCart(addItemToCartBody).then((res) => {
+  cartItemService.addItemToCart(addItemToCartBody).then((res) => {
     console.log(res)
   })
 }
@@ -91,7 +92,7 @@ const getItemsInCart = () => {
     cart_number: cartNumber.value
   }
 
-  cartService.getItemsInCart(retrieveCartBody).then((res) => {
+  cartItemService.getItemsInCart(retrieveCartBody).then((res) => {
     console.log(res)
     cartItems.value = res
   })
@@ -117,12 +118,7 @@ const settleCart = () => {
 }
 
 const removeItem = (cartItem: ICartItem) => {
-  const removeItemFromCartBody: IRemoveItemFromCartBody = {
-    action: 'delete',
-    id: cartItem.id
-  }
-
-  cartService.deleteItemFromCart(removeItemFromCartBody).then((res) => {
+  cartItemService.removeItemFromCart(cartItem.id).then((res) => {
     console.log(res)
   })
 }

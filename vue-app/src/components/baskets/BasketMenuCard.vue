@@ -1,20 +1,17 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import ProtelReservationInBasketMenuCard from './ProtelReservationInBasketMenuCard.vue'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
 import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
 import { IdentityHelper } from '@/helpers/IdentityHelper'
-import type { IRemoveItemFromCartBody } from '@/shared/interfaces/cart/IRemoveItemFromCartBody'
-import { CartService } from '@/services/backend-middleware/CartService'
-import type { AxiosStatic } from 'axios'
-const axios2: AxiosStatic | undefined = inject('axios2')
-const cartService = new CartService(axios2)
+import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
 const identityHelper = new IdentityHelper()
 const priceFormatter = new PriceFormatter()
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const itineraryReservationCartStore = useItineraryReservationCartStore()
+const syncCartItemService = new SyncCartItemService()
 const emit = defineEmits(['close', 'clickOnViewCart'])
 const removeAllReservations = () => {
   if (itineraryReservationCartStore.itineraryReservation) {
@@ -32,11 +29,7 @@ const removeReservation = (reservation: IProtelReservation) => {
   }
 
   if (reservation.cartITemID) {
-    const removeItemFromCartBody: IRemoveItemFromCartBody = {
-      action: 'delete',
-      id: reservation.cartITemID
-    }
-    cartService.removeItemFromCart(removeItemFromCartBody)
+    syncCartItemService.syncItemToCart('delete', reservation)
   }
 
   itineraryReservationCartStore.itineraryReservation.protelReservations =

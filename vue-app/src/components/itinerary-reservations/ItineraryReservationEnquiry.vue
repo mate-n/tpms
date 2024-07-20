@@ -26,6 +26,8 @@ import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationC
 import { CartService } from '@/services/backend-middleware/CartService'
 import type { CreateCartResponseBody } from '@/shared/interfaces/cart/CreateCartResponseBody'
 import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
+import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
+import type { ProtelReservation } from '@/shared/classes/ProtelReservation'
 const protelAvailabilityConverter = new ProtelAvailabilityConverter()
 const availabilityHelper = new AvailabilityHelper()
 const dateHelper = new DateHelper()
@@ -38,6 +40,7 @@ const roomTypeCodesInDropdown: Ref<string[]> = ref([])
 const autoToggleRightBar = ref(true)
 const showRightBar = ref(false)
 const basketItemsStore = useBasketItemsStore()
+const previousProtelConservations = ref<ProtelReservation[]>([])
 const itineraryReservationCartStore = useItineraryReservationCartStore()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const cartService = new CartService(axios2)
@@ -48,6 +51,7 @@ const availabilityService = new AvailabilityService(axios2)
 const itineraryReservation = ref(new ItineraryReservation())
 const arrivalDateNextDay = ref(dateHelper.addDays(itineraryReservation.value.arrivalDate, 1))
 const itineraryReservationCartManager = new ItineraryReservationCartManager()
+const syncCartItemService = new SyncCartItemService()
 
 const updateOrderIndexes = () => {
   itineraryReservation.value.reservations.forEach((reservation, index) => {
@@ -68,11 +72,11 @@ const clickOnAddToCart = () => {
     .createCart('0', cartService)
     .then((createCartResponseBody: CreateCartResponseBody) => {
       itineraryReservationCartStore.setCartNumber(createCartResponseBody.cart_number)
-      itineraryReservationCartManager.addItemsToCart(
-        itineraryReservation.value.protelReservations,
-        createCartResponseBody.cart_number,
-        cartService
-      )
+      for (const reservation of itineraryReservation.value.protelReservations) {
+        syncCartItemService.syncItemToCart('add', reservation).then((res) => {
+          reservation.cartITemID = res?.cart_item_id
+        })
+      }
     })
 }
 
@@ -267,7 +271,10 @@ const clearSelectedCamps = () => {
   travelDistanceWarningDialog.value = false
 }
 
-const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservationSelectUpdate) => {
+const availabilitiesSelected = (
+  protelReservationSelectUpdate: IProtelReservationSelectUpdate,
+  action: 'mouseDown' | 'mouseMove' | 'mouseLeave' | 'mouseUp'
+) => {
   if (autoToggleRightBar.value) {
     showRightBar.value = true
     autoToggleRightBar.value = false
@@ -278,17 +285,55 @@ const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservatio
     protelReservationSelectUpdate.guestsPerRoom
   )
 
+  const cartId = itineraryReservationCartStore.getCartNumber()
+  const removingReservations: IProtelReservation[] = []
+
   itineraryReservation.value.protelReservations =
-    itineraryReservation.value.protelReservations.filter(
-      (reservation) =>
-        !hasReservationPropertyCodeAndRoomTypeCode(
+    itineraryReservation.value.protelReservations.filter((reservation) => {
+      const keep = !hasReservationPropertyCodeAndRoomTypeCode(
+        reservation,
+        protelReservationSelectUpdate.property_code,
+        protelReservationSelectUpdate.roomTypeCode
+      )
+      if (!keep) removingReservations.push(reservation)
+      return keep
+    })
+
+  itineraryReservation.value.protelReservations.push(...newReservations)
+
+  if (cartId) {
+    if (action === 'mouseDown') {
+      removingReservations.forEach((reservation) => {
+        syncCartItemService.syncItemToCart('delete', reservation)
+      })
+      // keep previous state for "mouseUp"
+      previousProtelConservations.value = itineraryReservation.value.protelReservations.map(
+        (item) => ({ ...item })
+      )
+    }
+
+    if (action === 'mouseUp') {
+      for (const reservation of newReservations) {
+        syncCartItemService.syncItemToCart('add', reservation).then((res) => {
+          const reservationRef = itineraryReservation.value.protelReservations.find(
+            ({ localID }) => localID === reservation.localID
+          )
+          if (reservationRef) reservationRef.cartITemID = res.cart_item_id
+        })
+      }
+
+      const removingItems = previousProtelConservations.value.filter((reservation) => {
+        return hasReservationPropertyCodeAndRoomTypeCode(
           reservation,
           protelReservationSelectUpdate.property_code,
           protelReservationSelectUpdate.roomTypeCode
         )
-    )
-
-  itineraryReservation.value.protelReservations.push(...newReservations)
+      })
+      removingItems.forEach((reservation) => {
+        syncCartItemService.syncItemToCart('delete', reservation)
+      })
+    }
+  }
 }
 
 const hasReservationPropertyCodeAndRoomTypeCode = (
@@ -393,8 +438,10 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       :departure-date="itineraryReservation.departureDate"
       :room-type-codes="itineraryReservation.selectedRoomTypeCodes"
       @availabilities-selected="
-        (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
-          availabilitiesSelected(protelReservationSelectUpdate)
+        (
+          protelReservationSelectUpdate: IProtelReservationSelectUpdate,
+          action: 'mouseDown' | 'mouseMove' | 'mouseLeave' | 'mouseUp'
+        ) => availabilitiesSelected(protelReservationSelectUpdate, action)
       "
       :itinerary-reservation="itineraryReservation"
     ></CampWithAvailabilities>

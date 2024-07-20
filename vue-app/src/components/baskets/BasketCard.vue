@@ -15,7 +15,7 @@ import { IdentityHelper } from '@/helpers/IdentityHelper'
 import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
 import { CampService } from '@/services/backend-middleware/CampService'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
-import type { IRemoveItemFromCartBody } from '@/shared/interfaces/cart/IRemoveItemFromCartBody'
+import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
 const itineraryReservationCartManager = new ItineraryReservationCartManager()
 const confirmationNumbers = ref<string[]>([])
 const identityHelper = new IdentityHelper()
@@ -23,6 +23,7 @@ const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const profileService = new ProfileService(axios2)
 const cartService = new CartService(axios2)
+const syncCartItemService = new SyncCartItemService()
 const priceFormatter = new PriceFormatter()
 const campService = new CampService(axios2)
 const itineraryReservationCartStore = useItineraryReservationCartStore()
@@ -42,14 +43,7 @@ const removeReservation = (reservation: IProtelReservation) => {
   if (!itineraryReservationCartStore.itineraryReservation) {
     return
   }
-
-  if (reservation.cartITemID) {
-    const removeItemFromCartBody: IRemoveItemFromCartBody = {
-      action: 'delete',
-      id: reservation.cartITemID
-    }
-    cartService.removeItemFromCart(removeItemFromCartBody)
-  }
+  syncCartItemService.syncItemToCart('delete', reservation)
 
   itineraryReservationCartStore.itineraryReservation.protelReservations =
     itineraryReservationCartStore.itineraryReservation.protelReservations.filter(
@@ -98,37 +92,13 @@ const checkIfBookingIsPossible = (totalPrice: string) => {
     errors.value.push('Please add a profile to the reservation before booking.')
     errorsDialog.value = true
   } else {
-    /*
-     Add items without cartItemID to cart
-    */
-    const reservationsWithoutCartItemId =
-      itineraryReservationCartStore.itineraryReservation?.protelReservations.filter(
-        (reservation) => !reservation.cartITemID
-      )
-
-    if (reservationsWithoutCartItemId) {
-      itineraryReservationCartManager.addItemsToCart(
-        reservationsWithoutCartItemId,
-        itineraryReservationCartStore.getCartNumber(),
-        cartService
-      )
-    }
-
-    /*
-     Update items with cartItemID in cart
-    */
-
-    const itemsWithCartItemId =
-      itineraryReservationCartStore.itineraryReservation?.protelReservations.filter(
-        (reservation) => reservation.cartITemID
-      )
-
-    if (itemsWithCartItemId) {
-      itineraryReservationCartManager.updateItemsInCart(
-        itemsWithCartItemId,
-        itineraryReservationCartStore.getCartNumber(),
-        cartService
-      )
+    const reservations =
+      itineraryReservationCartStore.itineraryReservation?.protelReservations || []
+    for (const reservation of reservations) {
+      /*
+        Update items with cartItemID in cart or Add items without cartItemID to cart
+      */
+      syncCartItemService.syncItemToCart(reservation.cartITemID ? 'edit' : 'add', reservation)
     }
 
     /*

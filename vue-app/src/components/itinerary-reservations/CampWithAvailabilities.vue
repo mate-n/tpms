@@ -159,10 +159,13 @@ watch(
   }
 )
 
-const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservationSelectUpdate) => {
+const availabilitiesSelected = (
+  protelReservationSelectUpdate: IProtelReservationSelectUpdate,
+  action: 'mouseDown' | 'mouseMove' | 'mouseLeave' | 'mouseUp'
+) => {
   protelReservationSelectUpdate.guestsPerRoom = guestsPerRoom.value
   selectedAvailabilities.value = protelReservationSelectUpdate.selectedAvailabilities
-  emits('availabilities-selected', protelReservationSelectUpdate)
+  emits('availabilities-selected', protelReservationSelectUpdate, action)
 }
 
 const clickOnReset = () => {
@@ -299,8 +302,10 @@ const totalPriceForCamp = computed(() => {
                     :arrival-date="props.arrivalDate"
                     :departure-date="props.departureDate"
                     @availabilities-selected="
-                      (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
-                        availabilitiesSelected(protelReservationSelectUpdate)
+                      (
+                        protelReservationSelectUpdate: IProtelReservationSelectUpdate,
+                        action: 'mouseDown' | 'mouseMove' | 'mouseLeave' | 'mouseUp'
+                      ) => availabilitiesSelected(protelReservationSelectUpdate, action)
                     "
                     :-itinerary-reservation="props.itineraryReservation"
                   ></AvailabilitiesSelecter>

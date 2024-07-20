@@ -33,7 +33,7 @@ export const useItineraryReservationCartStore = defineStore('itineraryReservatio
   }
 })
 
-interface IItineraryReservationState {
+export interface IItineraryReservationState {
   itineraryReservation: undefined | IItineraryReservation
   cartNumber: string
   profileNumber: string

@@ -9,10 +9,14 @@ import { RateService } from '@/services/RateService'
 import { DateHelper } from '@/helpers/DateHelper'
 
 import ItineraryReservationCard from './ItineraryReservationCard.vue'
+import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
+import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
 
+const itineraryReservationCartStore = useItineraryReservationCartStore()
 const axios: AxiosStatic | undefined = inject('axios')
 const rateService = new RateService(axios)
 const dateHelper = new DateHelper()
+const syncCartItemService = new SyncCartItemService()
 
 const emit = defineEmits(['update', 'toggle'])
 
@@ -27,6 +31,10 @@ const props = defineProps({
 })
 
 const handleUpdate = (data: IProtelReservation) => {
+  if (itineraryReservationCartStore.getCartNumber()) {
+    syncCartItemService.syncItemToCart('edit', data)
+  }
+
   const newProtelReservations = props.itineraryReservation.protelReservations.map((item) =>
     item.localID === data.localID ? { ...data } : { ...item }
   )
@@ -34,6 +42,13 @@ const handleUpdate = (data: IProtelReservation) => {
 }
 
 const handleDelete = (data: IProtelReservation) => {
+  const deletedReservation = props.itineraryReservation.protelReservations.find(
+    ({ localID }) => localID === data.localID
+  )
+  if (deletedReservation && itineraryReservationCartStore.getCartNumber()) {
+    syncCartItemService.syncItemToCart('delete', deletedReservation)
+  }
+
   const newProtelReservations = props.itineraryReservation.protelReservations.filter(
     (item) => item.localID !== data.localID
   )

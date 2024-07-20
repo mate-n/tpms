@@ -40,7 +40,11 @@ const resetProtelAvailabilitySelectables = () => {
   }
 }
 
-const updateAvailabilitySelectables = (availability: IProtelAvailability, selected: boolean) => {
+const updateAvailabilitySelectables = (
+  availability: IProtelAvailability,
+  selected: boolean,
+  action: 'mouseDown' | 'mouseMove' | 'mouseLeave' | 'mouseUp'
+) => {
   protelAvailabilitySelectables.value = protelAvailabilitySelectables.value.map(
     (item: IProtelAvailabilitySelectable) => {
       if (availability.id !== item.availability.id) return item
@@ -59,7 +63,7 @@ const updateAvailabilitySelectables = (availability: IProtelAvailability, select
     guestsPerRoom: undefined
   }
 
-  emits('availabilities-selected', protelReservationSelectUpdate)
+  emits('availabilities-selected', protelReservationSelectUpdate, action)
 }
 
 const handleMouseDown = (
@@ -70,7 +74,10 @@ const handleMouseDown = (
 
   // toggle selected item by holding "ctrl" key
   if (event.ctrlKey || event.metaKey) {
-    updateAvailabilitySelectables(availability, !selected)
+    updateAvailabilitySelectables(availability, !selected, 'mouseDown')
+    // "mouseUp" event will not fire "updateAvailabilitySelectables"
+    // We need to fire "updateAvailabilitySelectables" here with 'mouseUp'
+    updateAvailabilitySelectables(availability, !selected, 'mouseUp')
     return
   }
 
@@ -78,14 +85,14 @@ const handleMouseDown = (
   isSelecting.value = true
   startSelectingAt.value = availabilitySelectable
   resetProtelAvailabilitySelectables()
-  updateAvailabilitySelectables(availability, true)
+  updateAvailabilitySelectables(availability, true, 'mouseDown')
 }
 
 const handleMouseMove = ({ availability }: IProtelAvailabilitySelectable) => {
   if (!isSelecting.value) return
 
   // select item when the mouse is moving over it
-  updateAvailabilitySelectables(availability, true)
+  updateAvailabilitySelectables(availability, true, 'mouseMove')
 }
 
 const handleMouseLeave = ({ availability }: IProtelAvailabilitySelectable, event: MouseEvent) => {
@@ -112,10 +119,13 @@ const handleMouseLeave = ({ availability }: IProtelAvailabilitySelectable, event
     // user is selecting from right to left
     selected = mouseX <= itemLeft
   }
-  updateAvailabilitySelectables(availability, selected)
+  updateAvailabilitySelectables(availability, selected, 'mouseLeave')
 }
 
-const handleMouseUp = () => {
+const handleMouseUp = ({ availability }: IProtelAvailabilitySelectable) => {
+  if (isSelecting.value && startSelectingAt.value) {
+    updateAvailabilitySelectables(availability, true, 'mouseUp')
+  }
   // stop "Selecting" flow
   isSelecting.value = false
   startSelectingAt.value = null
@@ -190,7 +200,7 @@ watch(
         @mousedown="handleMouseDown(availabilitySelectable, $event)"
         @mousemove="handleMouseMove(availabilitySelectable)"
         @mouseleave="handleMouseLeave(availabilitySelectable, $event)"
-        @mouseup="handleMouseUp()"
+        @mouseup="handleMouseUp(availabilitySelectable)"
         data-cy="avalablity_item"
       >
         <div
