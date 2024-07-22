@@ -68,7 +68,7 @@ export class ProtelAvailabilityConverter {
     protelReservation.roomTypeCode = startProtelAvailability.room_type_code
     protelReservation.numberOfRooms = 1
     const rate = new Rate()
-    rate.value = startProtelAvailability.rates_data[0].room_rate
+    rate.value = startProtelAvailability.rates_data?.[0]?.room_rate || ''
     protelReservation.rate = rate
     protelReservation.guestsPerRoom = guestsPerRoom
     return protelReservation

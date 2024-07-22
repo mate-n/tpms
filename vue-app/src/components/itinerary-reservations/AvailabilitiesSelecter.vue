@@ -6,10 +6,12 @@ import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReserv
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
+import { ProtelAvailabilitiesSelecterValidator } from '@/shared/validators/ProtelAvailabilitiesSelecterValidator'
 import { nextTick, ref, watch } from 'vue'
 const priceFormatter = new PriceFormatter()
 const dateHelper = new DateHelper()
 const availabilityHelper = new AvailabilityHelper()
+const availabilitiesSelecterValidator = new ProtelAvailabilitiesSelecterValidator()
 const isSelecting = ref<boolean>(false)
 const startSelectingAt = ref<IProtelAvailabilitySelectable | null>(null)
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
@@ -35,9 +37,14 @@ const resetProtelAvailabilitySelectables = () => {
   for (const protelAvailability of availabilities) {
     protelAvailabilitySelectables.value.push({
       availability: protelAvailability,
+      selectable: false,
       selected: false
     })
   }
+
+  protelAvailabilitySelectables.value.forEach((item) =>
+    availabilitiesSelecterValidator.validate(item)
+  )
 }
 
 const updateAvailabilitySelectables = (availability: IProtelAvailability, selected: boolean) => {
@@ -66,7 +73,8 @@ const handleMouseDown = (
   availabilitySelectable: IProtelAvailabilitySelectable,
   event: MouseEvent
 ) => {
-  const { availability, selected } = availabilitySelectable
+  const { availability, selected, selectable } = availabilitySelectable
+  if (!selectable) return
 
   // toggle selected item by holding "ctrl" key
   if (event.ctrlKey || event.metaKey) {
@@ -81,15 +89,18 @@ const handleMouseDown = (
   updateAvailabilitySelectables(availability, true)
 }
 
-const handleMouseMove = ({ availability }: IProtelAvailabilitySelectable) => {
-  if (!isSelecting.value) return
+const handleMouseMove = ({ availability, selectable }: IProtelAvailabilitySelectable) => {
+  if (!selectable || !isSelecting.value) return
 
   // select item when the mouse is moving over it
   updateAvailabilitySelectables(availability, true)
 }
 
-const handleMouseLeave = ({ availability }: IProtelAvailabilitySelectable, event: MouseEvent) => {
-  if (!isSelecting.value || !startSelectingAt.value?.element) return
+const handleMouseLeave = (
+  { availability, selectable }: IProtelAvailabilitySelectable,
+  event: MouseEvent
+) => {
+  if (!selectable || !isSelecting.value || !startSelectingAt.value?.element) return
 
   // mouse is leaving from the start item, don't need to check it
   if (startSelectingAt.value.availability?.id === availability.id) {
@@ -115,7 +126,8 @@ const handleMouseLeave = ({ availability }: IProtelAvailabilitySelectable, event
   updateAvailabilitySelectables(availability, selected)
 }
 
-const handleMouseUp = () => {
+const handleMouseUp = ({ selectable }: IProtelAvailabilitySelectable) => {
+  if (!selectable) return
   // stop "Selecting" flow
   isSelecting.value = false
   startSelectingAt.value = null
@@ -181,7 +193,8 @@ watch(
       class="text-center border-primary rounded availability-box-width"
     >
       <div
-        class="mr-3 my-2 text-center cursor-pointer bg-light"
+        class="mr-3 my-2 text-center bg-light"
+        :class="[availabilitySelectable.selectable ? 'cursor-pointer' : 'cursor-not-allowed']"
         :ref="
           (el) => {
             availabilitySelectable.element = el
@@ -190,12 +203,13 @@ watch(
         @mousedown="handleMouseDown(availabilitySelectable, $event)"
         @mousemove="handleMouseMove(availabilitySelectable)"
         @mouseleave="handleMouseLeave(availabilitySelectable, $event)"
-        @mouseup="handleMouseUp()"
+        @mouseup="handleMouseUp(availabilitySelectable)"
         data-cy="avalablity_item"
       >
         <div
           class="py-1"
           :class="{
+            'bg-grey-lighten-2': !availabilitySelectable.selectable,
             'bg-yellow': availabilitySelectable.selected,
             'bg-white': !availabilitySelectable.selected
           }"
@@ -206,6 +220,7 @@ watch(
         <div
           class="py-1"
           :class="{
+            'bg-grey-lighten-2': !availabilitySelectable.selectable,
             'bg-yellow': availabilitySelectable.selected,
             'bg-white': !availabilitySelectable.selected
           }"
@@ -218,6 +233,9 @@ watch(
               )
             }}
           </template>
+          <template v-if="!availabilitySelectable.availability?.rates_data">{{
+            priceFormatter.formatPriceString('0')
+          }}</template>
         </div>
       </div>
     </div>
