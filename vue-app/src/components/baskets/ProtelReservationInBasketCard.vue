@@ -32,7 +32,7 @@ const cartService = new CartService(axios2)
 
 const props = defineProps({
   profile: {
-    required: true,
+    required: false,
     type: Object as () => IProfile
   }
 })
@@ -101,7 +101,7 @@ const profileSelected = (selectedProfile: IProfile) => {
   profileDialog.value = false
 }
 
-const selectedProfileInDropdown = ref<IProfile | null>(null)
+const selectedProfileInDropdown = ref<IProfile | undefined>(undefined)
 
 const profileAutoCompleteUpdated = () => {
   if (selectedProfileInDropdown.value) {
@@ -110,20 +110,22 @@ const profileAutoCompleteUpdated = () => {
 }
 
 const addConservationTicketsToCart = () => {
-  ticketsCardDialog.value = false
   itineraryReservationCartManager.addConservationFeesToCart(
     [reservation.value],
     itineraryReservationCartStore.getCartNumber(),
     cartService
   )
+  conservationFeeFormDialog.value = false
 }
 
 watch(
   () => props.profile,
-  (newInput: IProfile) => {
-    selectedProfileInDropdown.value = newInput
+  (newInput: IProfile | undefined) => {
+    if (newInput) {
+      selectedProfileInDropdown.value = newInput
+    }
   },
-  { deep: true }
+  { deep: true, immediate: true }
 )
 
 const conservationFeeFormDialog = ref(false)
@@ -146,8 +148,7 @@ const conservationFeeFormDialog = ref(false)
             placeholder="Last Name | First Name"
             hint="Last Name | First Name"
             :items="profilesInDropdown"
-            :item-title="(profile: IProfile) => `${profile.surname}, ${profile.name}`"
-            :item-value="(profile: IProfile) => profile.id"
+            :item-title="(profile: IProfile | undefined) => `${profile?.surname}, ${profile?.name}`"
             return-object
             @update:model-value="profileAutoCompleteUpdated()"
           ></v-autocomplete>

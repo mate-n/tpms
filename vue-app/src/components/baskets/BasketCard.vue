@@ -172,7 +172,7 @@ const clickOnOkInConfirmedDialog = () => {
 const itineraryReservationProfile: Ref<IProfile> = ref(new Profile())
 
 onMounted(() => {
-  getProfileOfItineraryReservation
+  getProfileOfItineraryReservation()
   campService.findAll().then((response: IProtelCamp[]) => {
     camps.value = response
   })

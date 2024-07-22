@@ -62,7 +62,7 @@ export class ItineraryReservationCartManager {
           newItem.property_code = parseInt(reservation.property_code)
         }
         addItemToCartPromises.push(
-          this.addITemToCartAndAssignCartITemID(reservation, newItem, cartService)
+          this.addITemToCartAndAssignCartITemIDAndID(reservation, newItem, cartService)
         )
       }
 
@@ -97,7 +97,7 @@ export class ItineraryReservationCartManager {
             newItem.property_code = parseInt(reservation.property_code)
           }
           addItemToCartPromises.push(
-            this.addITemToCartAndAssignCartITemID(reservation, newItem, cartService)
+            this.addITemToCartAndAssignCartITemIDAndID(reservation, newItem, cartService)
           )
         }
       }
@@ -235,13 +235,14 @@ export class ItineraryReservationCartManager {
     })
   }
 
-  addITemToCartAndAssignCartITemID(
+  addITemToCartAndAssignCartITemIDAndID(
     reservation: IProtelReservation,
     addItemToCartBody: IAddItemToCartBody,
     cartService: CartService
   ) {
     return new Promise<any>((resolve) => {
       cartService.addItemToCart(addItemToCartBody).then((response) => {
+        reservation.id = response.confirmation
         reservation.cartITemID = response.cart_item_id
         resolve(response)
       })

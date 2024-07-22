@@ -7,11 +7,13 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
 import type { AxiosStatic } from 'axios'
 import { computed, inject, onMounted, ref, watch, type Ref } from 'vue'
-import DateSelecter from '@/components/dates/DateSelecter.vue'
-import { VNumberInput } from 'vuetify/labs/VNumberInput'
-
+import { DateFormatter } from '@/helpers/DateFormatter'
+import { ReservationService } from '@/services/backend-middleware/ReservationService'
+import type { IReservationLookupBody } from '@/shared/interfaces/IReservationLookupBody'
+const dateFormatter = new DateFormatter()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const profileService = new ProfileService(axios2)
+const reservationService = new ReservationService(axios2)
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const emit = defineEmits(['close', 'ok', 'payLater'])
 const itineraryReservationCartStore = useItineraryReservationCartStore()
@@ -43,7 +45,7 @@ const totalPrice = computed(() => {
 })
 
 const reservationCartItemIDs = computed(() => {
-  return itineraryReservation.value.protelReservations.map((item) => item.cartITemID)
+  return itineraryReservation.value.protelReservations.map((item) => item.id)
 })
 
 const firstDepositDate = ref(new Date())
@@ -55,6 +57,14 @@ const secondDepositAmount = ref(0)
 onMounted(() => {
   firstDepositAmount.value = totalPrice.value / 2
   secondDepositAmount.value = totalPrice.value / 2
+  const reservationLookUpBody: IReservationLookupBody = {
+    crsNo: itineraryReservationCartStore.getCartNumber(),
+    reservationNo: undefined,
+    profileId: undefined
+  }
+  reservationService.lookup(reservationLookUpBody).then((res) => {
+    console.log(res)
+  })
 })
 </script>
 
@@ -72,6 +82,14 @@ onMounted(() => {
   <v-card class="rounded-t-0">
     <v-card-text>
       <v-row>
+        <v-col class="font-weight-bold">Itinerary Number</v-col>
+        <v-col class="font-weight-bold">Reservation Total</v-col>
+      </v-row>
+      <v-row>
+        <v-col>{{ itineraryReservationCartStore.getCartNumber() }}</v-col>
+        <v-col>{{ priceFormatter.formatPrice(totalPrice) }}</v-col>
+      </v-row>
+      <v-row>
         <v-col class="font-weight-bold">Reservation Number</v-col>
         <v-col class="font-weight-bold">LastName, First Name</v-col>
       </v-row>
@@ -83,14 +101,7 @@ onMounted(() => {
         </v-col>
         <v-col>{{ profile?.surname }}, {{ profile?.name }} </v-col>
       </v-row>
-      <v-row>
-        <v-col class="font-weight-bold">Itinerary Number</v-col>
-        <v-col class="font-weight-bold">Reservation Total</v-col>
-      </v-row>
-      <v-row>
-        <v-col>{{ itineraryReservationCartStore.getCartNumber() }}</v-col>
-        <v-col>{{ priceFormatter.formatPrice(totalPrice) }}</v-col>
-      </v-row>
+
       <v-divider class="my-5"></v-divider>
       <v-row>
         <v-col class="font-weight-bold"></v-col>
@@ -99,8 +110,8 @@ onMounted(() => {
       </v-row>
       <v-row>
         <v-col>First Deposit</v-col>
-        <v-col><DateSelecter label=" " v-model="firstDepositDate"></DateSelecter></v-col>
-        <v-col><v-number-input :min="0" v-model="firstDepositAmount"></v-number-input></v-col>
+        <v-col>{{ dateFormatter.dddotmmdotyyyy(firstDepositDate) }}</v-col>
+        <v-col> {{ priceFormatter.formatPrice(firstDepositAmount) }}</v-col>
       </v-row>
       <v-row>
         <v-col class="font-weight-bold"></v-col>
@@ -109,8 +120,8 @@ onMounted(() => {
       </v-row>
       <v-row>
         <v-col>Second Deposit</v-col>
-        <v-col><DateSelecter label=" " v-model="secondDepositDate"></DateSelecter></v-col>
-        <v-col><v-number-input :min="0" v-model="secondDepositAmount"></v-number-input></v-col>
+        <v-col>{{ dateFormatter.dddotmmdotyyyy(secondDepositDate) }}</v-col>
+        <v-col>{{ priceFormatter.formatPrice(secondDepositAmount) }}</v-col>
       </v-row>
       <v-divider class="my-5"></v-divider>
 
