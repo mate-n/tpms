@@ -9,10 +9,12 @@ export class ProtelAvailabilitiesSelecterValidator implements IValidator {
     availabilitySelectable.errors = {}
     this.isDateValid(availabilitySelectable)
     this.isRateValid(availabilitySelectable)
+    this.isAvailabilityCountValid(availabilitySelectable)
 
     if (
       !availabilitySelectable.errors?.['rates_data'] &&
-      !availabilitySelectable.errors?.['availability_start']
+      !availabilitySelectable.errors?.['availability_start'] &&
+      !availabilitySelectable.errors?.['availability_count']
     ) {
       availabilitySelectable.selectable = true
     } else {
@@ -33,6 +35,14 @@ export class ProtelAvailabilitiesSelecterValidator implements IValidator {
   isRateValid({ availability, errors }: IProtelAvailabilitySelectable): void {
     if (!availability?.rates_data?.[0]?.room_rate) {
       errors!['rates_data'] = 'rates_data is required'
+    }
+  }
+
+  isAvailabilityCountValid({ availability, errors }: IProtelAvailabilitySelectable): void {
+    if (!availability?.availability_count) {
+      errors!['availability_count'] = 'availability_count is required'
+    } else if (String(availability.availability_count) === '0') {
+      errors!['availability_count'] = "availability_count is '0'"
     }
   }
 }
