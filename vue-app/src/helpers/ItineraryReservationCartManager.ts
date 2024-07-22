@@ -9,6 +9,7 @@ import { DateFormatter } from './DateFormatter'
 import type { ISettleCartBody } from '@/shared/interfaces/cart/ISettleCartBody'
 import type { IUpdateItemInCartBody } from '@/shared/interfaces/cart/IUpdateItemInCartBody'
 import { UpdateItemInCartBody } from '@/shared/classes/UpdateItemInCartBody'
+import type { IConservationFeePrice } from '@/shared/interfaces/IConservationFeePrices'
 
 export class ItineraryReservationCartManager {
   dateFormatter = new DateFormatter()
@@ -83,8 +84,8 @@ export class ItineraryReservationCartManager {
           const newItem: IAddItemToCartBody = new AddItemToCartBody()
           newItem.action = 'add'
           newItem.cart_id = cartNumber
-          newItem.arrival_date = this.dateFormatter.yyyydashmmdashdd(reservation.arrivalDate)
-          newItem.departure_date = this.dateFormatter.yyyydashmmdashdd(reservation.departureDate)
+          newItem.arrival_date = this.dateFormatter.yyyydashmmdashdd(ticket.Date)
+          newItem.departure_date = this.dateFormatter.yyyydashmmdashdd(ticket.Date)
           newItem.adults = 1
           newItem.children = 0
           newItem.units = reservation.numberOfRooms
@@ -102,6 +103,97 @@ export class ItineraryReservationCartManager {
       }
 
       Promise.all(addItemToCartPromises).then((responses) => {
+        resolve(responses)
+      })
+    })
+  }
+
+  convertConservationFeePriceToAddItemToCartBody(
+    reservation: IProtelReservation,
+    conservationFeePrice: IConservationFeePrice,
+    cartNumber: string
+  ) {
+    const addItemToCartBody: IAddItemToCartBody = new AddItemToCartBody()
+    addItemToCartBody.action = 'add'
+    addItemToCartBody.cart_id = cartNumber
+    addItemToCartBody.arrival_date = this.dateFormatter.yyyydashmmdashdd(reservation.arrivalDate)
+    addItemToCartBody.departure_date = this.dateFormatter.yyyydashmmdashdd(
+      reservation.departureDate
+    )
+    addItemToCartBody.units = conservationFeePrice.count
+    addItemToCartBody.type_code = conservationFeePrice.plankton_ticket
+    addItemToCartBody.property_code = parseInt(reservation.property_code)
+    addItemToCartBody.item_type = 2
+
+    return addItemToCartBody
+  }
+
+  addConservationFeesToCart(
+    reservations: IProtelReservation[],
+    cartNumber: string,
+    cartService: CartService
+  ) {
+    return new Promise((resolve) => {
+      const addConservationFeesToCartPromises: Promise<void>[] = []
+      for (const reservation of reservations) {
+        const adult_int_body = this.convertConservationFeePriceToAddItemToCartBody(
+          reservation,
+          reservation.conservationFeePrices.adult_int,
+          cartNumber
+        )
+        const child_int_body = this.convertConservationFeePriceToAddItemToCartBody(
+          reservation,
+          reservation.conservationFeePrices.child_int,
+          cartNumber
+        )
+        const adult_sa_body = this.convertConservationFeePriceToAddItemToCartBody(
+          reservation,
+          reservation.conservationFeePrices.adult_sa,
+          cartNumber
+        )
+        const child_sa_body = this.convertConservationFeePriceToAddItemToCartBody(
+          reservation,
+          reservation.conservationFeePrices.child_sa,
+          cartNumber
+        )
+        const adult_sadc_body = this.convertConservationFeePriceToAddItemToCartBody(
+          reservation,
+          reservation.conservationFeePrices.adult_sadc,
+          cartNumber
+        )
+        const child_sadc_body = this.convertConservationFeePriceToAddItemToCartBody(
+          reservation,
+          reservation.conservationFeePrices.child_sadc,
+          cartNumber
+        )
+
+        if (adult_int_body.units > 0) {
+          addConservationFeesToCartPromises.push(cartService.addItemToCart(adult_int_body))
+        }
+
+        if (child_int_body.units > 0) {
+          addConservationFeesToCartPromises.push(cartService.addItemToCart(child_int_body))
+        }
+
+        if (adult_sa_body.units > 0) {
+          addConservationFeesToCartPromises.push(cartService.addItemToCart(adult_sa_body))
+        }
+
+        if (child_sa_body.units > 0) {
+          addConservationFeesToCartPromises.push(cartService.addItemToCart(child_sa_body))
+        }
+
+        if (adult_sadc_body.units > 0) {
+          addConservationFeesToCartPromises.push(cartService.addItemToCart(adult_sadc_body))
+        }
+
+        if (child_sadc_body.units > 0) {
+          addConservationFeesToCartPromises.push(cartService.addItemToCart(child_sadc_body))
+        }
+      }
+
+      Promise.all(addConservationFeesToCartPromises).then((responses) => {
+        console.log('addConservationFeesToCartPromises', responses)
         resolve(responses)
       })
     })

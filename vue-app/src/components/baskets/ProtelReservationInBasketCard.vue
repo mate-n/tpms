@@ -21,6 +21,7 @@ import ConservationFeeForm from '@/components/conservation-fees/ConservationFeeF
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
 import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
 import { CartService } from '@/services/backend-middleware/CartService'
+
 const axios2: AxiosStatic | undefined = inject('axios2')
 
 const priceFormatter = new PriceFormatter()
@@ -106,6 +107,15 @@ const profileAutoCompleteUpdated = () => {
   if (selectedProfileInDropdown.value) {
     emit('profile-selected', selectedProfileInDropdown.value)
   }
+}
+
+const addConservationTicketsToCart = () => {
+  ticketsCardDialog.value = false
+  itineraryReservationCartManager.addConservationFeesToCart(
+    [reservation.value],
+    itineraryReservationCartStore.getCartNumber(),
+    cartService
+  )
 }
 
 watch(
@@ -287,6 +297,7 @@ const conservationFeeFormDialog = ref(false)
       <ConservationFeeForm
         v-model="reservation"
         @close="conservationFeeFormDialog = false"
+        @save="addConservationTicketsToCart()"
       ></ConservationFeeForm>
     </v-card>
   </v-dialog>

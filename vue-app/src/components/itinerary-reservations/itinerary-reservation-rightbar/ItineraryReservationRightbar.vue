@@ -51,11 +51,17 @@ watch(
       groupSet[campId].push({ ...reservation })
     })
 
-    const campReservationList: { name: string; reservations: IProtelReservation[] }[] = []
+    const campReservationList: {
+      name: string
+      reservations: IProtelReservation[]
+    }[] = []
     // loop in "selectedCamps" to keep the correct order
     props.itineraryReservation.selectedCamps.forEach((camp) => {
       if (groupSet[camp.id]) {
-        campReservationList.push({ name: camp.name.trim(), reservations: groupSet[camp.id] })
+        campReservationList.push({
+          name: camp.name.trim(),
+          reservations: groupSet[camp.id]
+        })
       }
     })
     campReservations.value = campReservationList
@@ -85,7 +91,7 @@ onMounted(() => {
 <template>
   <v-btn variant="text" icon="mdi-menu" @click="emit('toggle', !props.showRightBar)"></v-btn>
 
-  <v-navigation-drawer v-model="showDrawer" :width="400" location="right">
+  <v-navigation-drawer v-model="showDrawer" :width="450" location="right">
     <h2 v-if="campReservations.length" class="pa-2">
       <strong>Placed reservations list</strong>
     </h2>

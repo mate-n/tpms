@@ -16,6 +16,7 @@ import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationC
 import { CampService } from '@/services/backend-middleware/CampService'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 import type { IRemoveItemFromCartBody } from '@/shared/interfaces/cart/IRemoveItemFromCartBody'
+import ProcessPayment from '@/components/reservations/ProcessPayment.vue'
 const itineraryReservationCartManager = new ItineraryReservationCartManager()
 const confirmationNumbers = ref<string[]>([])
 const identityHelper = new IdentityHelper()
@@ -62,104 +63,106 @@ const cartNumber: Ref<string | null> = ref(null)
 const totalPrice = computed(() => {
   let total = 0
   if (itineraryReservationCartStore.itineraryReservation) {
-    for (const reservation of itineraryReservationCartStore.itineraryReservation
-      .protelReservations) {
-      total += protelReservationPriceCalculator.getPriceForAllNightsWithTickets(reservation)
-    }
+    total = protelReservationPriceCalculator.getTotalPriceOfItineraryReservation(
+      itineraryReservationCartStore.itineraryReservation
+    )
   }
-
   return total
 })
 
-const payNow = ref(false)
+const wantToPayNow = ref(false)
 
 const clickOnPayNow = () => {
-  payNow.value = true
-  checkIfBookingIsPossible(totalPrice.value.toString())
+  if (checkIfBookingIsPossible()) {
+    wantToPayNow.value = true
+    //book(totalPrice.value.toString())
+    paymentProcessDialog.value = true
+  }
 }
 
 const clickOnPayLater = () => {
-  payNow.value = false
-  checkIfBookingIsPossible('0')
+  if (checkIfBookingIsPossible()) {
+    wantToPayNow.value = false
+    book('0')
+  }
 }
 
-const allowBook = computed(() => {
+const checkIfBookingIsPossible = () => {
+  errors.value = []
+
+  const isProfilePresent = itineraryReservationCartStore.getProfileNumber()
+
+  if (!isProfilePresent) {
+    errors.value.push('Please add a profile to the reservation before booking.')
+    errorsDialog.value = true
+    return false
+  }
   return true
-})
+}
 
-const checkIfBookingIsPossible = (totalPrice: string) => {
-  if (!allowBook.value) {
-    errors.value = []
-
-    errors.value.push('Please add a profile to the reservation before booking.')
-    errorsDialog.value = true
-  } else if (!itineraryReservationCartStore.getProfileNumber()) {
-    errors.value = []
-    errors.value.push('Please add a profile to the reservation before booking.')
-    errorsDialog.value = true
-  } else {
-    /*
+const book = (totalPrice: string) => {
+  /*
      Add items without cartItemID to cart
     */
-    const reservationsWithoutCartItemId =
-      itineraryReservationCartStore.itineraryReservation?.protelReservations.filter(
-        (reservation) => !reservation.cartITemID
-      )
+  const reservationsWithoutCartItemId =
+    itineraryReservationCartStore.itineraryReservation?.protelReservations.filter(
+      (reservation) => !reservation.cartITemID
+    )
 
-    if (reservationsWithoutCartItemId) {
-      itineraryReservationCartManager.addItemsToCart(
-        reservationsWithoutCartItemId,
-        itineraryReservationCartStore.getCartNumber(),
-        cartService
-      )
-    }
+  if (reservationsWithoutCartItemId) {
+    itineraryReservationCartManager.addItemsToCart(
+      reservationsWithoutCartItemId,
+      itineraryReservationCartStore.getCartNumber(),
+      cartService
+    )
+  }
 
-    /*
+  /*
      Update items with cartItemID in cart
     */
 
-    const itemsWithCartItemId =
-      itineraryReservationCartStore.itineraryReservation?.protelReservations.filter(
-        (reservation) => reservation.cartITemID
-      )
+  const itemsWithCartItemId =
+    itineraryReservationCartStore.itineraryReservation?.protelReservations.filter(
+      (reservation) => reservation.cartITemID
+    )
 
-    if (itemsWithCartItemId) {
-      itineraryReservationCartManager.updateItemsInCart(
-        itemsWithCartItemId,
-        itineraryReservationCartStore.getCartNumber(),
-        cartService
-      )
-    }
+  if (itemsWithCartItemId) {
+    itineraryReservationCartManager.updateItemsInCart(
+      itemsWithCartItemId,
+      itineraryReservationCartStore.getCartNumber(),
+      cartService
+    )
+  }
 
-    /*
+  /*
     settleAnkerdataCart()
     */
-    itineraryReservationCartManager
-      .settleCart(itineraryReservationCartStore.getCartNumber(), totalPrice, cartService)
-      .then(() => {
-        cartNumber.value = itineraryReservationCartStore.getCartNumber()
+  itineraryReservationCartManager
+    .settleCart(itineraryReservationCartStore.getCartNumber(), totalPrice, cartService)
+    .then(() => {
+      cartNumber.value = itineraryReservationCartStore.getCartNumber()
 
-        cartService.retrieveCart(cartNumber.value!).then((data) => {
-          console.log('retrieve Cart data', data)
-          confirmationNumbers.value = []
-          for (const item of data['cart_items']) {
-            let campName = ''
-            const foundCamp = camps.value.find((camp) => camp.id == parseInt(item['camp_id']))
-            if (foundCamp) {
-              campName = foundCamp.name
-            }
-            confirmationNumbers.value.push(item['confirmation'] + ' - ' + campName)
+      cartService.retrieveCart(cartNumber.value!).then((data) => {
+        console.log('retrieve Cart data', data)
+        confirmationNumbers.value = []
+        for (const item of data['cart_items']) {
+          let campName = ''
+          const foundCamp = camps.value.find((camp) => camp.id == parseInt(item['camp_id']))
+          if (foundCamp) {
+            campName = foundCamp.name
           }
-        })
+          confirmationNumbers.value.push(item['confirmation'] + ' - ' + campName)
+        }
       })
-    errors.value = []
-    itineraryConfirmedDialog.value = true
-  }
+    })
+  errors.value = []
+  itineraryConfirmedDialog.value = true
 }
 
 const errors = ref<string[]>([])
 const errorsDialog = ref(false)
 const itineraryConfirmedDialog = ref(false)
+const paymentProcessDialog = ref(false)
 
 const clickOnOkInConfirmedDialog = () => {
   router.push('/itinerary-reservations')
@@ -249,7 +252,9 @@ const profileSelected = (selectedProfile: IProfile) => {
         <v-card class="me-2">
           <v-card-text>
             <p>
-              <strong data-cy="total_all">Total: {{ priceFormatter.formatPrice(totalPrice) }}</strong>
+              <strong data-cy="total_all"
+                >Total: {{ priceFormatter.formatPrice(totalPrice) }}</strong
+              >
             </p>
           </v-card-text>
         </v-card>
@@ -301,13 +306,23 @@ const profileSelected = (selectedProfile: IProfile) => {
               </li>
             </ul>
           </div>
-          <div v-if="payNow">Please proceed to Protel Cloud PMS to complete payment.</div>
+          <div v-if="wantToPayNow">Please proceed to Protel Cloud PMS to complete payment.</div>
         </div>
         <div class="d-flex justify-end">
           <v-btn class="me-2" @click="itineraryConfirmedDialog = false">Close</v-btn>
           <v-btn class="primary-button" @click="clickOnOkInConfirmedDialog()">OK</v-btn>
         </div>
       </v-card-text>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="paymentProcessDialog" width="800" scrollable>
+    <v-card v-if="itineraryReservationCartStore.itineraryReservation">
+      <ProcessPayment
+        v-model="itineraryReservationCartStore.itineraryReservation"
+        @close="paymentProcessDialog = false"
+        @pay-later="clickOnPayLater()"
+      ></ProcessPayment>
     </v-card>
   </v-dialog>
 </template>
