@@ -71,7 +71,10 @@ const clickOnAddFixedCharges = () => {
 const addTicketsToReservation = () => {
   ticketsCardDialog.value = false
   for (const ticket of reservation.value.tickets) {
-    syncCartItemService.syncItemToCart('add', reservation.value, { type_code: ticket.TicketId })
+    syncCartItemService.syncItemToCart('add', reservation.value, {
+      type_code: ticket.TicketId,
+      parent: reservation.value.cartITemID
+    })
   }
 }
 

@@ -55,6 +55,9 @@ export class ItineraryReservationCartManager {
     addItemToCartBody.type_code = conservationFeePrice.plankton_ticket
     addItemToCartBody.property_code = parseInt(reservation.property_code)
     addItemToCartBody.item_type = 2
+    if (reservation.cartITemID) {
+      addItemToCartBody.parent = reservation.cartITemID
+    }
 
     return addItemToCartBody
   }
