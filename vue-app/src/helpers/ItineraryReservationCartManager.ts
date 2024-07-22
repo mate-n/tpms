@@ -1,13 +1,13 @@
 import type { CartService } from '@/services/backend-middleware/CartService'
+import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
+import type { IAddItemToCartBody } from '@/shared/interfaces/cart/IAddItemToCartBody'
 import type { CreateCartResponseBody } from '@/shared/interfaces/cart/CreateCartResponseBody'
+import { AddItemToCartBody } from '@/shared/classes/AddItemToCartBody'
 import type { ICartBody } from '@/shared/interfaces/cart/ICartBody'
 import type { IUpdateCartBody } from '@/shared/interfaces/cart/IUpdateCartBody'
 import { DateFormatter } from './DateFormatter'
 import type { ISettleCartBody } from '@/shared/interfaces/cart/ISettleCartBody'
 import type { IConservationFeePrice } from '@/shared/interfaces/IConservationFeePrices'
-import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
-import type { IAddItemToCartBody } from '@/shared/interfaces/cart/IAddItemToCartBody'
-import { AddItemToCartBody } from '@/shared/classes/AddItemToCartBody'
 
 export class ItineraryReservationCartManager {
   dateFormatter = new DateFormatter()

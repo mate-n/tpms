@@ -27,6 +27,9 @@ const axios2: AxiosStatic | undefined = inject('axios2')
 
 const priceFormatter = new PriceFormatter()
 const emit = defineEmits(['profile-selected', 'remove-reservation'])
+const itineraryReservationCartStore = useItineraryReservationCartStore()
+const itineraryReservationCartManager = new ItineraryReservationCartManager()
+const cartService = new CartService(axios2)
 
 const props = defineProps({
   profile: {
@@ -39,9 +42,6 @@ const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const ticketsService = new TicketService()
 const reservation = defineModel({ required: true, type: Object as () => IProtelReservation })
 
-const cartService = new CartService(axios2)
-const itineraryReservationCartStore = useItineraryReservationCartStore()
-const itineraryReservationCartManager = new ItineraryReservationCartManager()
 const syncCartItemService = new SyncCartItemService()
 const profileService = new ProfileService(axios2)
 const dateFormatter = new DateFormatter()
