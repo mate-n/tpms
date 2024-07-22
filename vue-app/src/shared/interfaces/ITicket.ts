@@ -26,4 +26,5 @@ export interface ITicket {
   EventMaxCapacity: number
   EventRemainingCapacity: number
   Date: Date
+  cartITemID: number | undefined
 }

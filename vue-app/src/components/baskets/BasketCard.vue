@@ -15,8 +15,8 @@ import { IdentityHelper } from '@/helpers/IdentityHelper'
 import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
 import { CampService } from '@/services/backend-middleware/CampService'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
-import type { IRemoveItemFromCartBody } from '@/shared/interfaces/cart/IRemoveItemFromCartBody'
 import ProcessPayment from '@/components/reservations/ProcessPayment.vue'
+import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
 const itineraryReservationCartManager = new ItineraryReservationCartManager()
 const confirmationNumbers = ref<string[]>([])
 const identityHelper = new IdentityHelper()
@@ -26,6 +26,7 @@ const profileService = new ProfileService(axios2)
 const cartService = new CartService(axios2)
 const priceFormatter = new PriceFormatter()
 const campService = new CampService(axios2)
+const syncCartItemService = new SyncCartItemService(axios2)
 const itineraryReservationCartStore = useItineraryReservationCartStore()
 const emits = defineEmits(['close'])
 const camps = ref<IProtelCamp[]>([])
@@ -37,21 +38,18 @@ const removeAllReservations = () => {
       removeReservation(reservation)
     }
   }
+  synchronizeFrontendCartWithBackendCart()
+}
+
+const removeReservationAndSyncWithBackend = (reservation: IProtelReservation) => {
+  removeReservation(reservation)
+  synchronizeFrontendCartWithBackendCart()
 }
 
 const removeReservation = (reservation: IProtelReservation) => {
   if (!itineraryReservationCartStore.itineraryReservation) {
     return
   }
-
-  if (reservation.cartITemID) {
-    const removeItemFromCartBody: IRemoveItemFromCartBody = {
-      action: 'delete',
-      id: reservation.cartITemID
-    }
-    cartService.removeItemFromCart(removeItemFromCartBody)
-  }
-
   itineraryReservationCartStore.itineraryReservation.protelReservations =
     itineraryReservationCartStore.itineraryReservation.protelReservations.filter(
       (r) => !identityHelper.isSame(r, reservation)
@@ -75,7 +73,6 @@ const wantToPayNow = ref(false)
 const clickOnPayNow = () => {
   if (checkIfBookingIsPossible()) {
     wantToPayNow.value = true
-    //book(totalPrice.value.toString())
     paymentProcessDialog.value = true
   }
 }
@@ -100,49 +97,44 @@ const checkIfBookingIsPossible = () => {
   return true
 }
 
+const synchronizeFrontendCartWithBackendCart = () => {
+  if (!itineraryReservationCartStore.itineraryReservation) {
+    return
+  }
+
+  const cartNumber = itineraryReservationCartStore.getCartNumber()
+  if (!cartNumber) {
+    return
+  }
+  syncCartItemService.synchronizeFrontendCartWithBackendCart(
+    itineraryReservationCartStore.itineraryReservation,
+    cartNumber
+  )
+}
+
+const clickOnSubmitButtonInProcessPayment = (specifiedFirstDepositAmount: number) => {
+  paymentProcessDialog.value = false
+  book(specifiedFirstDepositAmount.toString())
+}
+
 const book = (totalPrice: string) => {
-  /*
-     Add items without cartItemID to cart
-    */
-  const reservationsWithoutCartItemId =
-    itineraryReservationCartStore.itineraryReservation?.protelReservations.filter(
-      (reservation) => !reservation.cartITemID
-    )
-
-  if (reservationsWithoutCartItemId) {
-    itineraryReservationCartManager.addItemsToCart(
-      reservationsWithoutCartItemId,
-      itineraryReservationCartStore.getCartNumber(),
-      cartService
-    )
+  if (!itineraryReservationCartStore.itineraryReservation) {
+    return
   }
 
-  /*
-     Update items with cartItemID in cart
-    */
-
-  const itemsWithCartItemId =
-    itineraryReservationCartStore.itineraryReservation?.protelReservations.filter(
-      (reservation) => reservation.cartITemID
-    )
-
-  if (itemsWithCartItemId) {
-    itineraryReservationCartManager.updateItemsInCart(
-      itemsWithCartItemId,
-      itineraryReservationCartStore.getCartNumber(),
-      cartService
-    )
+  const cartNumberFromCartStore = itineraryReservationCartStore.getCartNumber()
+  if (!cartNumberFromCartStore) {
+    return
   }
+  cartNumber.value = cartNumberFromCartStore
 
   /*
     settleAnkerdataCart()
     */
   itineraryReservationCartManager
-    .settleCart(itineraryReservationCartStore.getCartNumber(), totalPrice, cartService)
+    .settleCart(cartNumberFromCartStore, totalPrice, cartService)
     .then(() => {
-      cartNumber.value = itineraryReservationCartStore.getCartNumber()
-
-      cartService.retrieveCart(cartNumber.value!).then((data) => {
+      cartService.retrieveCart(cartNumberFromCartStore).then((data) => {
         console.log('retrieve Cart data', data)
         confirmationNumbers.value = []
         for (const item of data['cart_items']) {
@@ -150,8 +142,8 @@ const book = (totalPrice: string) => {
           const foundCamp = camps.value.find((camp) => camp.id == parseInt(item['camp_id']))
           if (foundCamp) {
             campName = foundCamp.name
+            confirmationNumbers.value.push(item['confirmation'] + ' - ' + campName)
           }
-          confirmationNumbers.value.push(item['confirmation'] + ' - ' + campName)
         }
       })
     })
@@ -179,6 +171,11 @@ onMounted(() => {
 })
 
 const getProfileOfItineraryReservation = () => {
+  const cartNumber = itineraryReservationCartStore.getCartNumber()
+  if (!cartNumber) {
+    return
+  }
+
   if (itineraryReservationCartStore.itineraryReservation?.guestProfileID === undefined) {
     return
   }
@@ -192,7 +189,7 @@ const getProfileOfItineraryReservation = () => {
 
           itineraryReservationCartManager.updateCart(
             response.id.toString(),
-            itineraryReservationCartStore.getCartNumber(),
+            cartNumber,
             cartService
           )
         }
@@ -201,6 +198,10 @@ const getProfileOfItineraryReservation = () => {
 }
 
 const profileSelected = (selectedProfile: IProfile) => {
+  const cartNumber = itineraryReservationCartStore.getCartNumber()
+  if (!cartNumber) {
+    return
+  }
   if (itineraryReservationCartStore.itineraryReservation) {
     itineraryReservationCartStore.itineraryReservation.guestProfileID = selectedProfile.id
   }
@@ -210,10 +211,18 @@ const profileSelected = (selectedProfile: IProfile) => {
     itineraryReservationCartStore.setProfileNumber(selectedProfile.id.toString())
     itineraryReservationCartManager.updateCart(
       selectedProfile.id.toString(),
-      itineraryReservationCartStore.getCartNumber(),
+      cartNumber,
       cartService
     )
   }
+}
+
+const addTicketsToReservation = () => {
+  synchronizeFrontendCartWithBackendCart()
+}
+
+const addConservationFeesToReservation = () => {
+  synchronizeFrontendCartWithBackendCart()
 }
 </script>
 
@@ -242,8 +251,11 @@ const profileSelected = (selectedProfile: IProfile) => {
             :profile="itineraryReservationProfile"
             @profile-selected="(profile: IProfile) => profileSelected(profile)"
             @remove-reservation="
-              (protelReservation: IProtelReservation) => removeReservation(protelReservation)
+              (protelReservation: IProtelReservation) =>
+                removeReservationAndSyncWithBackend(protelReservation)
             "
+            @add-tickets-to-reservation="addTicketsToReservation()"
+            @add-conservation-fees-to-reservation="addConservationFeesToReservation()"
           ></ProtelReservationInBasketCard>
         </template>
       </div>
@@ -322,6 +334,11 @@ const profileSelected = (selectedProfile: IProfile) => {
         v-model="itineraryReservationCartStore.itineraryReservation"
         @close="paymentProcessDialog = false"
         @pay-later="clickOnPayLater()"
+        @click-on-submit-button="
+          (specifiedFirstDepositAmount: number) => {
+            clickOnSubmitButtonInProcessPayment(specifiedFirstDepositAmount)
+          }
+        "
       ></ProcessPayment>
     </v-card>
   </v-dialog>

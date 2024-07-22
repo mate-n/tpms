@@ -254,20 +254,6 @@ const isDateOccupiedInReservation = (date: Date) => {
   }
   return false
 }
-
-const isDateOccupiedByOtherReservations = (date: Date) => {
-  if (isDateOccupiedInReservation(date)) return false
-  for (const reservation of props.itineraryReservation.reservations) {
-    for (const availabilityGroup of reservation.selectedProtelAvailabilityGroups) {
-      for (const availability of availabilityGroup.availabilities) {
-        if (dateHelper.isSameDay(date, availability.availability_start)) {
-          return true
-        }
-      }
-    }
-  }
-  return false
-}
 </script>
 
 <template>
@@ -417,8 +403,7 @@ const isDateOccupiedByOtherReservations = (date: Date) => {
                       :key="date.toISOString()"
                       class="text-center availability-box-width"
                       :class="{
-                        'bg-light-blue-lighten-4': isDateOccupiedInReservation(date),
-                        'bg-orange-lighten-4': isDateOccupiedByOtherReservations(date)
+                        'bg-light-blue-lighten-4': isDateOccupiedInReservation(date)
                       }"
                     >
                       <div class="availability-inner-box">

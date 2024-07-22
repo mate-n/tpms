@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { inject, onBeforeMount, ref, watch } from 'vue'
+import { computed, inject, onBeforeMount, ref, watch } from 'vue'
 import type { Ref } from 'vue'
-import { useBasketItemsStore } from '@/stores/basketItems'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
 import BasketCard from '@/components/baskets/BasketCard.vue'
 import type { IProtelRegion } from '@/shared/interfaces/protel/IProtelRegion'
@@ -26,6 +25,7 @@ import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationC
 import { CartService } from '@/services/backend-middleware/CartService'
 import type { CreateCartResponseBody } from '@/shared/interfaces/cart/CreateCartResponseBody'
 import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
+import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
 const protelAvailabilityConverter = new ProtelAvailabilityConverter()
 const availabilityHelper = new AvailabilityHelper()
 const dateHelper = new DateHelper()
@@ -37,10 +37,10 @@ const campsInDropdown: Ref<IProtelCamp[]> = ref([])
 const roomTypeCodesInDropdown: Ref<string[]> = ref([])
 const autoToggleRightBar = ref(true)
 const showRightBar = ref(false)
-const basketItemsStore = useBasketItemsStore()
 const itineraryReservationCartStore = useItineraryReservationCartStore()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const cartService = new CartService(axios2)
+const syncCartItemService = new SyncCartItemService(axios2)
 const regionService = new RegionService(axios2)
 const parkService = new ParkService(axios2)
 const campService = new CampService(axios2)
@@ -49,31 +49,33 @@ const itineraryReservation = ref(new ItineraryReservation())
 const arrivalDateNextDay = ref(dateHelper.addDays(itineraryReservation.value.arrivalDate, 1))
 const itineraryReservationCartManager = new ItineraryReservationCartManager()
 
-const updateOrderIndexes = () => {
-  itineraryReservation.value.reservations.forEach((reservation, index) => {
-    reservation.orderIndex = index
-  })
-}
-
-const clickOnAddToCart = () => {
+const clickOnCreateCartButton = () => {
   showRightBar.value = false
   autoToggleRightBar.value = true
   closeExpansionPanels.value++
-  updateOrderIndexes()
-  basketItemsStore.addReservations(itineraryReservation.value.reservations)
-
   itineraryReservationCartStore.setItineraryReservation(itineraryReservation.value)
-
   itineraryReservationCartManager
     .createCart('0', cartService)
     .then((createCartResponseBody: CreateCartResponseBody) => {
       itineraryReservationCartStore.setCartNumber(createCartResponseBody.cart_number)
-      itineraryReservationCartManager.addItemsToCart(
-        itineraryReservation.value.protelReservations,
-        createCartResponseBody.cart_number,
-        cartService
+      syncCartItemService.synchronizeFrontendCartWithBackendCart(
+        itineraryReservation.value,
+        createCartResponseBody.cart_number
       )
     })
+}
+
+const clickOnUpdateCartButton = () => {
+  const cartNumber = itineraryReservationCartStore.getCartNumber()
+  if (!cartNumber) {
+    return
+  }
+
+  showRightBar.value = false
+  autoToggleRightBar.value = true
+  closeExpansionPanels.value++
+
+  syncCartItemService.synchronizeFrontendCartWithBackendCart(itineraryReservation.value, cartNumber)
 }
 
 const closeExpansionPanels = ref(0)
@@ -211,28 +213,19 @@ watch(
   { deep: true }
 )
 
-const updatePropertiesOfReservations = () => {
-  for (const reservation of itineraryReservation.value.reservations) {
-    reservation.arrivalDate = itineraryReservation.value.arrivalDate
-    reservation.departureDate = itineraryReservation.value.departureDate
-    reservation.roomTypeCode = itineraryReservation.value.roomTypeCode
-  }
-}
-
 const updateReservations = () => {
   itineraryReservation.value.protelReservations = []
   filterOutLeftOverReservations()
-  updatePropertiesOfReservations()
 }
 
 const filterOutLeftOverReservations = () => {
-  for (const reservation of itineraryReservation.value.reservations) {
+  for (const reservation of itineraryReservation.value.protelReservations) {
     const foundCamp = itineraryReservation.value.selectedCamps.find(
-      (camp) => camp.name === reservation.propertyName
+      (camp) => camp.name === reservation.property_code
     )
     if (!foundCamp) {
-      const index = itineraryReservation.value.reservations.indexOf(reservation)
-      itineraryReservation.value.reservations.splice(index, 1)
+      const index = itineraryReservation.value.protelReservations.indexOf(reservation)
+      itineraryReservation.value.protelReservations.splice(index, 1)
     }
   }
 }
@@ -302,6 +295,10 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
 
   return reservation.property_code === property_code && reservation.type_code === roomTypeCode
 }
+
+const isCartNumberPresent = computed(() => {
+  return itineraryReservationCartStore.getCartNumber() !== undefined
+})
 </script>
 
 <template>
@@ -405,8 +402,11 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
       <v-btn class="secondary-button me-2">Cancel</v-btn>
 
       <v-btn class="secondary-button me-2" @click="clickOnViewCart()">View Cart</v-btn>
-      <v-btn class="primary-button" @click="clickOnAddToCart()" data-cy="add_to_cart_button">
-        Add to Cart
+      <v-btn class="primary-button" @click="clickOnCreateCartButton()" v-if="!isCartNumberPresent">
+        Create Cart
+      </v-btn>
+      <v-btn class="primary-button" @click="clickOnUpdateCartButton()" v-if="isCartNumberPresent">
+        Update Cart
       </v-btn>
     </div>
   </v-container>

@@ -19,16 +19,16 @@ import TicketsTable from '@/components/tickets/TicketsTable.vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import ConservationFeeForm from '@/components/conservation-fees/ConservationFeeForm.vue'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
-import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
-import { CartService } from '@/services/backend-middleware/CartService'
 
 const axios2: AxiosStatic | undefined = inject('axios2')
-
 const priceFormatter = new PriceFormatter()
-const emit = defineEmits(['profile-selected', 'remove-reservation'])
+const emit = defineEmits([
+  'profile-selected',
+  'remove-reservation',
+  'add-tickets-to-reservation',
+  'add-conservation-fees-to-reservation'
+])
 const itineraryReservationCartStore = useItineraryReservationCartStore()
-const itineraryReservationCartManager = new ItineraryReservationCartManager()
-const cartService = new CartService(axios2)
 
 const props = defineProps({
   profile: {
@@ -67,12 +67,13 @@ const clickOnAddFixedCharges = () => {
 }
 
 const addTicketsToReservation = () => {
+  const cartNumber = itineraryReservationCartStore.getCartNumber()
+  if (!cartNumber) {
+    return
+  }
+  emit('add-tickets-to-reservation')
+
   ticketsCardDialog.value = false
-  itineraryReservationCartManager.addTicketsToCart(
-    [reservation.value],
-    itineraryReservationCartStore.getCartNumber(),
-    cartService
-  )
 }
 
 const availableTickets: Ref<ITicket[]> = ref([])
@@ -109,12 +110,13 @@ const profileAutoCompleteUpdated = () => {
   }
 }
 
-const addConservationTicketsToCart = () => {
-  itineraryReservationCartManager.addConservationFeesToCart(
-    [reservation.value],
-    itineraryReservationCartStore.getCartNumber(),
-    cartService
-  )
+const addConservationFeesToReservation = () => {
+  const cartNumber = itineraryReservationCartStore.getCartNumber()
+  if (!cartNumber) {
+    return
+  }
+
+  emit('add-conservation-fees-to-reservation')
   conservationFeeFormDialog.value = false
 }
 
@@ -298,7 +300,7 @@ const conservationFeeFormDialog = ref(false)
       <ConservationFeeForm
         v-model="reservation"
         @close="conservationFeeFormDialog = false"
-        @save="addConservationTicketsToCart()"
+        @save="addConservationFeesToReservation()"
       ></ConservationFeeForm>
     </v-card>
   </v-dialog>

@@ -10,12 +10,14 @@ import { computed, inject, onMounted, ref, watch, type Ref } from 'vue'
 import { DateFormatter } from '@/helpers/DateFormatter'
 import { ReservationService } from '@/services/backend-middleware/ReservationService'
 import type { IReservationLookupBody } from '@/shared/interfaces/IReservationLookupBody'
+import { VNumberInput } from 'vuetify/labs/VNumberInput'
+
 const dateFormatter = new DateFormatter()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const profileService = new ProfileService(axios2)
 const reservationService = new ReservationService(axios2)
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
-const emit = defineEmits(['close', 'ok', 'payLater'])
+const emit = defineEmits(['close', 'ok', 'payLater', 'clickOnSubmitButton'])
 const itineraryReservationCartStore = useItineraryReservationCartStore()
 const priceFormatter = new PriceFormatter()
 
@@ -48,23 +50,77 @@ const reservationCartItemIDs = computed(() => {
   return itineraryReservation.value.protelReservations.map((item) => item.id)
 })
 
-const firstDepositDate = ref(new Date())
-const secondDepositDate = ref(new Date())
+const firstDepositDate: Ref<Date | undefined> = ref(undefined)
+const secondDepositDate: Ref<Date | undefined> = ref(undefined)
+const thirdDepositDate: Ref<Date | undefined> = ref(undefined)
 
 const firstDepositAmount = ref(0)
 const secondDepositAmount = ref(0)
+const thirdDepositAmount = ref(0)
 
 onMounted(() => {
-  firstDepositAmount.value = totalPrice.value / 2
-  secondDepositAmount.value = totalPrice.value / 2
   const reservationLookUpBody: IReservationLookupBody = {
     crsNo: itineraryReservationCartStore.getCartNumber(),
     reservationNo: undefined,
     profileId: undefined
   }
   reservationService.lookup(reservationLookUpBody).then((res) => {
+    if (res.length > 0) {
+      if (res[0].depositDeadline1date) {
+        firstDepositDate.value = new Date(res[0].depositDeadline1date)
+      }
+      if (res[0].depositDeadline2date) {
+        secondDepositDate.value = new Date(res[0].depositDeadline2date)
+      }
+      if (res[0].depositDeadline3date) {
+        thirdDepositDate.value = new Date(res[0].depositDeadline3date)
+      }
+      if (res[0].depositDeadline1amount) {
+        firstDepositAmount.value = parseInt(res[0].depositDeadline1amount)
+        amountSpecifiedByUser.value = parseInt(res[0].depositDeadline1amount)
+      }
+      if (res[0].depositDeadline2amount) {
+        secondDepositAmount.value = parseInt(res[0].depositDeadline2amount)
+      }
+      if (res[0].depositDeadline3amount) {
+        thirdDepositAmount.value = parseInt(res[0].depositDeadline3amount)
+      }
+    }
     console.log(res)
   })
+})
+
+const amountSpecifiedByUser = ref(0)
+const clickOnSubmitButton = () => {
+  emit('clickOnSubmitButton', totalPrice)
+}
+
+const firstDepositSelected = ref(false)
+const secondDepositSelected = ref(false)
+const thirdDepositSelected = ref(false)
+
+const isAnyCheckboxChecked = computed(() => {
+  return firstDepositSelected.value || secondDepositSelected.value || thirdDepositSelected.value
+})
+
+const totalPriceToSubmit = computed(() => {
+  let total = 0
+
+  if (isAnyCheckboxChecked.value) {
+    if (firstDepositSelected.value) {
+      total += amountSpecifiedByUser.value
+    }
+    if (secondDepositSelected.value) {
+      total += secondDepositAmount.value
+    }
+    if (thirdDepositSelected.value) {
+      total += thirdDepositAmount.value
+    }
+  } else {
+    total = amountSpecifiedByUser.value
+  }
+
+  return total
 })
 </script>
 
@@ -103,31 +159,73 @@ onMounted(() => {
       </v-row>
 
       <v-divider class="my-5"></v-divider>
+      <template v-if="firstDepositDate">
+        <v-row>
+          <v-col class="font-weight-bold"></v-col>
+          <v-col class="font-weight-bold">Due Date</v-col>
+          <v-col class="font-weight-bold">Amount</v-col>
+          <v-col></v-col>
+        </v-row>
+        <v-row>
+          <v-col>First Deposit</v-col>
+          <v-col>{{ dateFormatter.dddotmmdotyyyy(firstDepositDate) }}</v-col>
+          <v-col> {{ priceFormatter.formatPrice(firstDepositAmount) }}</v-col>
+          <v-col><v-checkbox v-model="firstDepositSelected" label="Select"></v-checkbox></v-col>
+        </v-row>
+        <v-divider class="mb-2"></v-divider>
+      </template>
+      <template v-if="secondDepositDate">
+        <v-row>
+          <v-col class="font-weight-bold"></v-col>
+          <v-col class="font-weight-bold">Due Date</v-col>
+          <v-col class="font-weight-bold">Amount</v-col>
+          <v-col></v-col>
+        </v-row>
+        <v-row>
+          <v-col>Second Deposit</v-col>
+          <v-col>{{ dateFormatter.dddotmmdotyyyy(secondDepositDate) }}</v-col>
+          <v-col>{{ priceFormatter.formatPrice(secondDepositAmount) }}</v-col>
+          <v-col><v-checkbox v-model="secondDepositSelected" label="Select"></v-checkbox></v-col>
+        </v-row>
+        <v-divider class="mb-2"></v-divider>
+      </template>
+      <template v-if="thirdDepositDate">
+        <v-row>
+          <v-col class="font-weight-bold"></v-col>
+          <v-col class="font-weight-bold">Due Date</v-col>
+          <v-col class="font-weight-bold">Amount</v-col>
+          <v-col></v-col>
+        </v-row>
+        <v-row>
+          <v-col>Third Deposit</v-col>
+          <v-col>{{ dateFormatter.dddotmmdotyyyy(thirdDepositDate) }}</v-col>
+          <v-col>{{ priceFormatter.formatPrice(thirdDepositAmount) }}</v-col>
+          <v-col><v-checkbox v-model="thirdDepositSelected" label="Select"></v-checkbox></v-col>
+        </v-row>
+        <v-divider class="mb-2"></v-divider>
+      </template>
+      <template v-if="!isAnyCheckboxChecked">
+        <v-row>
+          <v-col cols="3">Specify Amount:</v-col>
+          <v-col>
+            <v-number-input
+              :min="firstDepositAmount"
+              v-model="amountSpecifiedByUser"
+            ></v-number-input
+          ></v-col>
+        </v-row>
+        <v-divider class="my-5"></v-divider>
+      </template>
+
       <v-row>
-        <v-col class="font-weight-bold"></v-col>
-        <v-col class="font-weight-bold">Due Date</v-col>
-        <v-col class="font-weight-bold">Amount</v-col>
-      </v-row>
-      <v-row>
-        <v-col>First Deposit</v-col>
-        <v-col>{{ dateFormatter.dddotmmdotyyyy(firstDepositDate) }}</v-col>
-        <v-col> {{ priceFormatter.formatPrice(firstDepositAmount) }}</v-col>
-      </v-row>
-      <v-row>
-        <v-col class="font-weight-bold"></v-col>
-        <v-col class="font-weight-bold">Due Date</v-col>
-        <v-col class="font-weight-bold">Amount</v-col>
-      </v-row>
-      <v-row>
-        <v-col>Second Deposit</v-col>
-        <v-col>{{ dateFormatter.dddotmmdotyyyy(secondDepositDate) }}</v-col>
-        <v-col>{{ priceFormatter.formatPrice(secondDepositAmount) }}</v-col>
+        <v-col class="font-weight-bold" cols="3">Total:</v-col>
+        <v-col> {{ priceFormatter.formatPrice(totalPriceToSubmit) }}</v-col>
       </v-row>
       <v-divider class="my-5"></v-divider>
 
       <div class="d-flex justify-center mt-5">
         <v-btn class="me-5" @click="emit('payLater')">Pay Later</v-btn>
-        <v-btn class="primary-button">SUBMIT</v-btn>
+        <v-btn class="primary-button" @click="clickOnSubmitButton()">SUBMIT</v-btn>
       </div>
     </v-card-text>
   </v-card>

@@ -28,6 +28,7 @@ export class Ticket implements ITicket {
   EventMaxCapacity: number
   EventRemainingCapacity: number
   Date: Date
+  cartITemID: number | undefined
 
   constructor() {
     this.TicketId = '0'

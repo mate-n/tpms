@@ -1,55 +1,20 @@
 <script setup lang="ts">
 import { Profile } from '@/shared/classes/Profile'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import { computed, inject, onMounted, ref, watch, type Ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import ProfileGeneralForm from '@/components/profiles/ProfileGeneralForm.vue'
-import type { AxiosStatic } from 'axios'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
-import { CloneHelper } from '@/helpers/CloneHelper'
 import ReservationSlice from './ReservationSlice.vue'
 import type { IReservationSelectable } from '@/shared/interfaces/reservations/IReservationSelectable'
 import ReservationCards from '@/components/reservations/ReservationCards.vue'
-import { ProfileService } from '@/services/backend-middleware/ProfileService'
 
-const cloneHelper = new CloneHelper()
-const props = defineProps({
+defineProps({
   itineraryReservationInput: { type: Object as () => IItineraryReservation, required: true }
 })
 const reservationSelectables: Ref<IReservationSelectable[]> = ref([])
 const itineraryReservationToBeEdited = ref<IItineraryReservation>(new ItineraryReservation())
 const profileAssociatedWithItineraryReservation = ref<IProfile>(new Profile())
-const axios2: AxiosStatic | undefined = inject('axios2')
-const profileService = new ProfileService(axios2)
-onMounted(() => {
-  cloneAndGetProfile()
-})
-
-const cloneAndGetProfile = () => {
-  itineraryReservationToBeEdited.value = cloneHelper.clone(props.itineraryReservationInput)
-  reservationSelectables.value = itineraryReservationToBeEdited.value.reservations.map(
-    (reservation) => {
-      return {
-        reservation: reservation,
-        selected: false
-      }
-    }
-  )
-  if (
-    props.itineraryReservationInput.reservations.length > 0 &&
-    props.itineraryReservationInput.reservations[0].id
-  ) {
-    profileService.get(props.itineraryReservationInput.reservations[0].id).then((res) => {
-      if (res) {
-        profileAssociatedWithItineraryReservation.value = res
-      }
-    })
-  }
-}
-
-watch(props, () => {
-  cloneAndGetProfile()
-})
 
 const selectReservation = (reservationSelectable: IReservationSelectable) => {
   reservationSelectables.value.forEach((reservationSelectable) => {
