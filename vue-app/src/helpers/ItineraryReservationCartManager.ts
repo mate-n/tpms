@@ -90,6 +90,9 @@ export class ItineraryReservationCartManager {
           newItem.children = 0
           newItem.units = reservation.numberOfRooms
           newItem.item_type = 1
+          if (reservation.cartITemID) {
+            newItem.parent = reservation.cartITemID
+          }
           newItem.pricing.base_pricing = parseInt(reservation.rate.value)
           newItem.type_code = ticket.TicketId
 
@@ -124,6 +127,9 @@ export class ItineraryReservationCartManager {
     addItemToCartBody.type_code = conservationFeePrice.plankton_ticket
     addItemToCartBody.property_code = parseInt(reservation.property_code)
     addItemToCartBody.item_type = 2
+    if (reservation.cartITemID) {
+      addItemToCartBody.parent = reservation.cartITemID
+    }
 
     return addItemToCartBody
   }
