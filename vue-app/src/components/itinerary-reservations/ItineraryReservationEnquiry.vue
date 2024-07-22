@@ -354,7 +354,11 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
     <div class="d-flex align-center ga-4">
       <v-row class="d-flex align-center">
         <v-col class="d-flex align-center h-100">
-          <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
+          <DateSelecter
+            v-model="itineraryReservation.arrivalDate"
+            label="Arrival"
+            data-cy="arrival_date_selector"
+          ></DateSelecter>
         </v-col>
         <v-col class="d-flex align-center h-100">
           <DateSelecter

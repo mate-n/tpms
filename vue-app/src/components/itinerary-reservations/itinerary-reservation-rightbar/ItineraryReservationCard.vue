@@ -47,7 +47,7 @@ watch(
 </script>
 
 <template>
-  <v-card class="px-3">
+  <v-card class="px-3" data-cy="itinerary_reservation_card">
     <div class="d-flex justify-space-between align-center py-3">
       <div class="d-flex ga-2">
         <v-icon>mdi-bed-outline</v-icon>
