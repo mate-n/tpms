@@ -74,6 +74,7 @@ const clickOnAddToCart = () => {
       itineraryReservationCartStore.setCartNumber(createCartResponseBody.cart_number)
       for (const reservation of itineraryReservation.value.protelReservations) {
         syncCartItemService.syncItemToCart('add', reservation).then((res) => {
+          reservation.id = res?.confirmation
           reservation.cartITemID = res?.cart_item_id
         })
       }
