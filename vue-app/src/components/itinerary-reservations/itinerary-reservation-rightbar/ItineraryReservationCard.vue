@@ -96,7 +96,6 @@ watch(
 
           <v-col cols="6">
             <v-number-input
-              class="hide-control"
               :hide-spin-buttons="true"
               controlVariant="default"
               variant="underlined"

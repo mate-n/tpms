@@ -19,6 +19,10 @@ import TicketsTable from '@/components/tickets/TicketsTable.vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import ConservationFeeForm from '@/components/conservation-fees/ConservationFeeForm.vue'
 import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
+import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
+import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
+import { CartService } from '@/services/backend-middleware/CartService'
+
 const axios2: AxiosStatic | undefined = inject('axios2')
 
 const priceFormatter = new PriceFormatter()
@@ -35,6 +39,9 @@ const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const ticketsService = new TicketService()
 const reservation = defineModel({ required: true, type: Object as () => IProtelReservation })
 
+const cartService = new CartService(axios2)
+const itineraryReservationCartStore = useItineraryReservationCartStore()
+const itineraryReservationCartManager = new ItineraryReservationCartManager()
 const syncCartItemService = new SyncCartItemService()
 const profileService = new ProfileService(axios2)
 const dateFormatter = new DateFormatter()
@@ -100,6 +107,15 @@ const profileAutoCompleteUpdated = () => {
   if (selectedProfileInDropdown.value) {
     emit('profile-selected', selectedProfileInDropdown.value)
   }
+}
+
+const addConservationTicketsToCart = () => {
+  ticketsCardDialog.value = false
+  itineraryReservationCartManager.addConservationFeesToCart(
+    [reservation.value],
+    itineraryReservationCartStore.getCartNumber(),
+    cartService
+  )
 }
 
 watch(
@@ -281,6 +297,7 @@ const conservationFeeFormDialog = ref(false)
       <ConservationFeeForm
         v-model="reservation"
         @close="conservationFeeFormDialog = false"
+        @save="addConservationTicketsToCart()"
       ></ConservationFeeForm>
     </v-card>
   </v-dialog>

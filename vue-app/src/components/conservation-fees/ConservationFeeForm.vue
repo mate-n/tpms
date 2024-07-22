@@ -12,12 +12,16 @@ import type { IWildcardWithAdultsAndChildren } from '@/shared/interfaces/IWildca
 import type { AxiosStatic } from 'axios'
 import { computed, inject, ref, watch, type Ref } from 'vue'
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
+import WildcardPopUpCard from '../profiles/WildcardPopUpCard.vue'
+import { WildcardService } from '@/services/backend-middleware/WildcardService'
 const axios2: AxiosStatic | undefined = inject('axios2')
 const conservationFeesService = new ConservationFeeService(axios2)
+const wildcardService = new WildcardService(axios2)
 const dateFormatter = new DateFormatter()
 const dateHelper = new DateHelper()
-const emits = defineEmits(['close'])
+const emits = defineEmits(['close', 'save'])
 const conservationFeePrices: Ref<IConservationFeePrices> = ref(new ConservationFeePrices())
+const wildcardPopUpCardDialog = ref(false)
 
 const reservation = defineModel({
   required: true,
@@ -52,32 +56,35 @@ const totalNumberOfConservationFeesForChildren = computed(() => {
 })
 
 const appliedNumberOfConservationFeesForAdults = computed(() => {
-  return southAfricanCitizens.value.adults + sadcCitizens.value.adults + internationals.value.adults
+  return (
+    southAfricanCitizens.value.adults +
+    sadcCitizens.value.adults +
+    internationals.value.adults +
+    adultsFromFreeEntryReasons.value +
+    adultsFromWildcards.value
+  )
 })
 
 const appliedNumberOfConservationFeesForChildren = computed(() => {
   return (
     southAfricanCitizens.value.children +
     sadcCitizens.value.children +
-    internationals.value.children
+    internationals.value.children +
+    childrenFromFreeEntryReasons.value +
+    childrenFromWildcards.value
   )
 })
 
 const outstandingNumberOfConservationFeesForAdults = computed(() => {
   return (
-    totalNumberOfConservationFeesForAdults.value -
-    appliedNumberOfConservationFeesForAdults.value -
-    adultsFromFreeEntryReasons.value -
-    adultsFromWildcards.value
+    totalNumberOfConservationFeesForAdults.value - appliedNumberOfConservationFeesForAdults.value
   )
 })
 
 const outstandingNumberOfConservationFeesForChildren = computed(() => {
   return (
     totalNumberOfConservationFeesForChildren.value -
-    appliedNumberOfConservationFeesForChildren.value -
-    childrenFromFreeEntryReasons.value -
-    childrenFromWildcards.value
+    appliedNumberOfConservationFeesForChildren.value
   )
 })
 
@@ -95,11 +102,29 @@ const addFreeEntryReason = () => {
 const wildcards = ref<IWildcardWithAdultsAndChildren[]>([])
 const wildcardTextField = ref<string>('')
 const addWildcard = () => {
-  const newWildcard: IWildcardWithAdultsAndChildren = {
-    wildcard: wildcardTextField.value,
-    adultsAndChildren: { adults: 0, children: 0 }
-  }
-  wildcards.value.push(newWildcard)
+  wildcardErrorMessages.value = []
+  wildcardService.checkWildcard(wildcardTextField.value).then((response) => {
+    if (!response.errorCode) {
+      const adults = response.beneficiaries.filter((beneficiary) => beneficiary.typeId === 'ADUL')
+      const children = response.beneficiaries.filter((beneficiary) => beneficiary.typeId === 'CHIL')
+
+      const newWildcard: IWildcardWithAdultsAndChildren = {
+        wildcard: response.wildcard,
+        adultsAndChildren: {
+          adults: adults.length * numberOfNights.value,
+          children: children.length * numberOfNights.value
+        }
+      }
+      wildcards.value.push(newWildcard)
+    } else {
+      if (response.detail) {
+        wildcardErrorMessages.value = [response.detail]
+      } else {
+        wildcardErrorMessages.value = ['Invalid wildcard']
+      }
+    }
+  })
+
   wildcardTextField.value = ''
 }
 
@@ -147,13 +172,21 @@ const removeFreeEntryReasonFromFreeEntryReasons = (freeEntryReason: string) => {
   )
 }
 
-const isAppliedFulfilled = computed(() => {
+const areAdultsFulfilled = computed(() => {
   return (
-    appliedNumberOfConservationFeesForAdults.value ===
-      totalNumberOfConservationFeesForAdults.value &&
-    appliedNumberOfConservationFeesForChildren.value ===
-      totalNumberOfConservationFeesForChildren.value
+    appliedNumberOfConservationFeesForAdults.value >= totalNumberOfConservationFeesForAdults.value
   )
+})
+
+const areChildrenFulfilled = computed(() => {
+  return (
+    appliedNumberOfConservationFeesForChildren.value >=
+    totalNumberOfConservationFeesForChildren.value
+  )
+})
+
+const isAppliedFulfilled = computed(() => {
+  return areAdultsFulfilled.value && areChildrenFulfilled.value
 })
 
 const calculatePricesOfFees = () => {
@@ -170,12 +203,57 @@ const calculatePricesOfFees = () => {
   conservationFeesService
     .calculatePriceOfConservationFees(calculatePriceOfConservationFeesBody)
     .then((response) => {
+      console.log(response)
       conservationFeePrices.value = response
       loading.value = false
+
+      if (wouldWildcardBeCheaper()) {
+        wildcardPopUpCardDialog.value = true
+      }
     })
 }
 
+const totalConservationFeePricesForAdults = computed(() => {
+  return (
+    conservationFeePrices.value.summary.total_adult_int +
+    conservationFeePrices.value.summary.total_adult_sadc +
+    conservationFeePrices.value.summary.total_adult_sa
+  )
+})
+
+const totalConservationFeePricesForChildren = computed(() => {
+  return (
+    conservationFeePrices.value.summary.total_child_int +
+    conservationFeePrices.value.summary.total_child_sadc +
+    conservationFeePrices.value.summary.total_child_sa
+  )
+})
+
+const wouldWildcardBeCheaper = () => {
+  if (reservation.value.guestsPerRoom.numberOfAdults === 1) {
+    return (
+      totalConservationFeePricesForAdults.value + totalConservationFeePricesForChildren.value > 805
+    )
+  }
+
+  if (reservation.value.guestsPerRoom.numberOfAdults === 2) {
+    return (
+      totalConservationFeePricesForAdults.value + totalConservationFeePricesForChildren.value > 1300
+    )
+  }
+  return (
+    totalConservationFeePricesForAdults.value + totalConservationFeePricesForChildren.value > 1560
+  )
+}
+
 const loading = ref(false)
+
+const wildcardErrorMessages = ref<string[]>([])
+
+const save = () => {
+  reservation.value.conservationFeePrices = conservationFeePrices.value
+  emits('save')
+}
 </script>
 <style scoped>
 .conservation-fee-cell-background1 {
@@ -194,7 +272,7 @@ const loading = ref(false)
 <template>
   <v-toolbar class="standard-dialog-card-toolbar">
     <v-toolbar-title><span class="text-primary">Conservation Fees</span></v-toolbar-title>
-    <div class="profiles-card-toolbar-button text-primary">
+    <div class="profiles-card-toolbar-button text-primary" @click="save()">
       <v-icon size="large">mdi-content-save-outline</v-icon>
     </div>
     <div class="profiles-card-toolbar-button rounded-te" @click="emits('close')">
@@ -327,8 +405,8 @@ const loading = ref(false)
         <v-text-field
           label="Enter Wildcard"
           class="me-2"
-          hide-details
           density="compact"
+          :errorMessages="wildcardErrorMessages"
           v-model="wildcardTextField"
         >
         </v-text-field>
@@ -444,10 +522,8 @@ const loading = ref(false)
       <v-col
         class="conservation-fee-cell-background1 conservation-fee-cell"
         :class="{
-          'bg-light-green-lighten-5':
-            appliedNumberOfConservationFeesForAdults === totalNumberOfConservationFeesForAdults,
-          'bg-amber-lighten-4':
-            appliedNumberOfConservationFeesForAdults !== totalNumberOfConservationFeesForAdults
+          'bg-light-green-lighten-5': areAdultsFulfilled,
+          'bg-amber-lighten-4': !areAdultsFulfilled
         }"
       >
         {{ appliedNumberOfConservationFeesForAdults }}</v-col
@@ -455,10 +531,8 @@ const loading = ref(false)
       <v-col
         class="conservation-fee-cell-background1 conservation-fee-cell"
         :class="{
-          'bg-light-green-lighten-5':
-            appliedNumberOfConservationFeesForChildren === totalNumberOfConservationFeesForChildren,
-          'bg-amber-lighten-4':
-            appliedNumberOfConservationFeesForChildren !== totalNumberOfConservationFeesForChildren
+          'bg-light-green-lighten-5': areChildrenFulfilled,
+          'bg-amber-lighten-4': !areChildrenFulfilled
         }"
       >
         {{ appliedNumberOfConservationFeesForChildren }}</v-col
@@ -477,10 +551,8 @@ const loading = ref(false)
       <v-col
         class="conservation-fee-cell-background2 conservation-fee-cell"
         :class="{
-          'bg-light-green-lighten-5':
-            appliedNumberOfConservationFeesForAdults === totalNumberOfConservationFeesForAdults,
-          'bg-amber-lighten-4':
-            appliedNumberOfConservationFeesForAdults !== totalNumberOfConservationFeesForAdults
+          'bg-light-green-lighten-5': areAdultsFulfilled,
+          'bg-amber-lighten-4': !areAdultsFulfilled
         }"
       >
         {{ outstandingNumberOfConservationFeesForAdults }}</v-col
@@ -488,14 +560,21 @@ const loading = ref(false)
       <v-col
         class="conservation-fee-cell-background2 conservation-fee-cell"
         :class="{
-          'bg-light-green-lighten-5':
-            appliedNumberOfConservationFeesForChildren === totalNumberOfConservationFeesForChildren,
-          'bg-amber-lighten-4':
-            appliedNumberOfConservationFeesForChildren !== totalNumberOfConservationFeesForChildren
+          'bg-light-green-lighten-5': areChildrenFulfilled,
+          'bg-amber-lighten-4': !areChildrenFulfilled
         }"
       >
         {{ outstandingNumberOfConservationFeesForChildren }}</v-col
       >
     </v-row>
   </v-container>
+
+  <v-dialog v-model="wildcardPopUpCardDialog" scrollable auto width="500">
+    <v-card>
+      <WildcardPopUpCard
+        @close="wildcardPopUpCardDialog = false"
+        @ok="wildcardPopUpCardDialog = false"
+      ></WildcardPopUpCard>
+    </v-card>
+  </v-dialog>
 </template>

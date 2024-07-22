@@ -5,6 +5,8 @@ import { GuestsPerRoom } from './GuestsPerRoom'
 import { Rate } from './Rate'
 import type { ITicket } from '../interfaces/ITicket'
 import { LocalIDFactory } from '../factories/LocalIDFactory'
+import type { IConservationFeePrices } from '../interfaces/IConservationFeePrices'
+import { ConservationFeePrices } from './ConservationFeePrices'
 
 export class ProtelReservation implements IProtelReservation {
   localID?: string
@@ -22,7 +24,8 @@ export class ProtelReservation implements IProtelReservation {
   type_code: string
   tickets: ITicket[]
   cartITemID: number | undefined
-
+  conservationFeePrices: IConservationFeePrices
+  id?: number | undefined
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
     this.arrivalDate = new Date()
@@ -37,5 +40,6 @@ export class ProtelReservation implements IProtelReservation {
     this.property_name = ''
     this.type_code = ''
     this.tickets = []
+    this.conservationFeePrices = new ConservationFeePrices()
   }
 }
