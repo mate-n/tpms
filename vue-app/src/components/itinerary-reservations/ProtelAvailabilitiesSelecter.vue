@@ -34,6 +34,7 @@ const updateProtelAvailabilitySelectables = () => {
   for (const protelAvailability of newAvailabilities) {
     protelAvailabilitySelectables.value.push({
       availability: protelAvailability,
+      selectable: true,
       selected: false
     })
   }
