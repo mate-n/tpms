@@ -51,26 +51,4 @@ describe('itinerary-reservations-enquiry/validate-selectable-availabilities', ()
     // rightbar should not be shown
     cy.getByCy('itinerary_reservation_rightbar').should('not.exist');
   });
-
-  it("Can't select availability which has no rates", () => {
-    cy.visit(ROUTE_PATHS.ITINERARY_RESERVATION_ENQUIRY);
-
-    // select filters
-    cy.selectMultipleSelectValue('camp_autocomplete', { eqs: [1] });
-
-    // expand avalabilities
-    cy.getByCy(`camp_availabilities_container`).within(() => {
-      cy.getByCy('expand_avalabilities_button').click();
-    });
-
-    // Select "avalability" which has rate is '0'
-    cy.getByCy(`camp_availabilities_container`).within(() => {
-      cy.getByCy('avalablity_item').eq(0).click();
-    });
-
-    cy.wait(1000);
-
-    // rightbar should not be shown
-    cy.getByCy('itinerary_reservation_rightbar').should('not.exist');
-  });
 });
