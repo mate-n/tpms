@@ -2,11 +2,16 @@ export interface IConservationFeePrices {
   camp_id: number
   adult_sa: IConservationFeePrice
   child_sa: IConservationFeePrice
+  infant_sa: IConservationFeePrice
   adult_sadc: IConservationFeePrice
   child_sadc: IConservationFeePrice
+  infant_sadc: IConservationFeePrice
   adult_int: IConservationFeePrice
   child_int: IConservationFeePrice
+  infant_int: IConservationFeePrice
   summary: ISummary
+  arrivalDate: Date
+  departureDate: Date
 }
 
 export interface IConservationFeePrice {

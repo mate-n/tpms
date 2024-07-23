@@ -58,7 +58,6 @@ const getActivities = () => {
     for (const [key, value] of Object.entries(data)) {
       ankerdataTickets.value.push(ticketConverter.convertToTicket(value as IActivity))
     }
-    console.log(ankerdataTickets.value)
   })
 }
 
@@ -104,12 +103,7 @@ const removeTicket = (ticket: ITicket) => {
 
 const addTicketsToReservation = () => {
   entityWithTickets.value.tickets = []
-  for (const ticket of selectedTickets.value) {
-    if (selectedDate.value) {
-      ticket.Date = selectedDate.value
-    }
-    entityWithTickets.value.tickets.push(ticket)
-  }
+  entityWithTickets.value.tickets = selectedTickets.value
   emits('addTicketsToReservation')
 }
 
