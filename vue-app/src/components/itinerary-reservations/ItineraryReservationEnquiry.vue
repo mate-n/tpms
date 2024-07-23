@@ -26,6 +26,7 @@ import { CartService } from '@/services/backend-middleware/CartService'
 import type { CreateCartResponseBody } from '@/shared/interfaces/cart/CreateCartResponseBody'
 import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
 import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
+import WaitOverlay from '@/components/WaitOverlay.vue'
 const protelAvailabilityConverter = new ProtelAvailabilityConverter()
 const availabilityHelper = new AvailabilityHelper()
 const dateHelper = new DateHelper()
@@ -48,8 +49,10 @@ const availabilityService = new AvailabilityService(axios2)
 const itineraryReservation = ref(new ItineraryReservation())
 const arrivalDateNextDay = ref(dateHelper.addDays(itineraryReservation.value.arrivalDate, 1))
 const itineraryReservationCartManager = new ItineraryReservationCartManager()
+const loading = ref(false)
 
 const clickOnCreateCartButton = () => {
+  loading.value = true
   showRightBar.value = false
   autoToggleRightBar.value = true
   closeExpansionPanels.value++
@@ -58,10 +61,14 @@ const clickOnCreateCartButton = () => {
     .createCart('0', cartService)
     .then((createCartResponseBody: CreateCartResponseBody) => {
       itineraryReservationCartStore.setCartNumber(createCartResponseBody.cart_number)
-      syncCartItemService.synchronizeFrontendCartWithBackendCart(
-        itineraryReservation.value,
-        createCartResponseBody.cart_number
-      )
+      syncCartItemService
+        .synchronizeFrontendCartWithBackendCart(
+          itineraryReservation.value,
+          createCartResponseBody.cart_number
+        )
+        .then(() => {
+          loading.value = false
+        })
     })
 }
 
@@ -70,12 +77,17 @@ const clickOnUpdateCartButton = () => {
   if (!cartNumber) {
     return
   }
+  loading.value = true
 
   showRightBar.value = false
   autoToggleRightBar.value = true
   closeExpansionPanels.value++
 
-  syncCartItemService.synchronizeFrontendCartWithBackendCart(itineraryReservation.value, cartNumber)
+  syncCartItemService
+    .synchronizeFrontendCartWithBackendCart(itineraryReservation.value, cartNumber)
+    .then(() => {
+      loading.value = false
+    })
 }
 
 const closeExpansionPanels = ref(0)
@@ -302,6 +314,7 @@ const isCartNumberPresent = computed(() => {
 </script>
 
 <template>
+  <WaitOverlay v-if="loading" />
   <v-container fluid class="bg-protelblue text-white itinerary-reservation-fixed-div">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100" cols="3">

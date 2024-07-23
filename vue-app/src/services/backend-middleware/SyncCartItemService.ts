@@ -173,10 +173,7 @@ export class SyncCartItemService implements IService {
           if (reservation.property_code) {
             newItem.property_code = parseInt(reservation.property_code)
           }
-          addItemToCartPromises.push(
-            this.cartService.addItemToCart(newItem)
-            //this.addITemToCartAndAssignCartITemIDAndID(reservation, newItem, this.cartService)
-          )
+          addItemToCartPromises.push(this.cartService.addItemToCart(newItem))
         }
       }
 
@@ -247,7 +244,6 @@ export class SyncCartItemService implements IService {
       }
 
       Promise.all(addConservationFeesToCartPromises).then((responses) => {
-        console.log('addConservationFeesToCartPromises', responses)
         resolve(responses)
       })
     })
@@ -288,7 +284,6 @@ export class SyncCartItemService implements IService {
           const reservationsCartItemIDs = itineraryReservation.protelReservations.map(
             (reservation) => reservation.cartITemID
           )
-          console.log('before', reservationsCartItemIDs)
 
           const activitiesCartItemIDs = itineraryReservation.protelReservations
             .map((reservation) => reservation.tickets.map((ticket) => ticket.cartITemID))
@@ -301,8 +296,6 @@ export class SyncCartItemService implements IService {
 
           backendCartItems.forEach((backendCartItem) => {
             if (!cartItemIDsInItineraryReservation.includes(backendCartItem.id)) {
-              console.log('Removing item from cart', backendCartItem.id)
-              console.log('cartItemIDsInItineraryReservation', cartItemIDsInItineraryReservation)
               const removeItemFromCartBody: IRemoveItemFromCartBody = {
                 action: 'delete',
                 id: backendCartItem.id

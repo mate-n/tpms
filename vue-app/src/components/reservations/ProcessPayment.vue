@@ -11,6 +11,7 @@ import { DateFormatter } from '@/helpers/DateFormatter'
 import { ReservationService } from '@/services/backend-middleware/ReservationService'
 import type { IReservationLookupBody } from '@/shared/interfaces/IReservationLookupBody'
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
+import type { IReservationLookUpResponseBody } from '@/shared/interfaces/IReservationLookUpResponseBody'
 
 const dateFormatter = new DateFormatter()
 const axios2: AxiosStatic | undefined = inject('axios2')
@@ -58,6 +59,45 @@ const firstDepositAmount = ref(0)
 const secondDepositAmount = ref(0)
 const thirdDepositAmount = ref(0)
 
+const getSumOfDepositDeadline1amount = (
+  reservationLookUpResponseBodies: IReservationLookUpResponseBody[]
+) => {
+  let sum = 0
+  for (const reservationLookUpResponseBody of reservationLookUpResponseBodies) {
+    const depositDeadline1amount = parseFloat(reservationLookUpResponseBody.depositDeadline1amount)
+    if (!isNaN(depositDeadline1amount)) {
+      sum += depositDeadline1amount
+    }
+  }
+  return sum
+}
+
+const getSumOfDepositDeadline2amount = (
+  reservationLookUpResponseBodies: IReservationLookUpResponseBody[]
+) => {
+  let sum = 0
+  for (const reservationLookUpResponseBody of reservationLookUpResponseBodies) {
+    const depositDeadline2amount = parseFloat(reservationLookUpResponseBody.depositDeadline2amount)
+    if (!isNaN(depositDeadline2amount)) {
+      sum += depositDeadline2amount
+    }
+  }
+  return sum
+}
+
+const getSumOfDepositDeadline3amount = (
+  reservationLookUpResponseBodies: IReservationLookUpResponseBody[]
+) => {
+  let sum = 0
+  for (const reservationLookUpResponseBody of reservationLookUpResponseBodies) {
+    const depositDeadline3amount = parseFloat(reservationLookUpResponseBody.depositDeadline3amount)
+    if (!isNaN(depositDeadline3amount)) {
+      sum += depositDeadline3amount
+    }
+  }
+  return sum
+}
+
 onMounted(() => {
   const reservationLookUpBody: IReservationLookupBody = {
     crsNo: itineraryReservationCartStore.getCartNumber(),
@@ -76,14 +116,14 @@ onMounted(() => {
         thirdDepositDate.value = new Date(res[0].depositDeadline3date)
       }
       if (res[0].depositDeadline1amount) {
-        firstDepositAmount.value = parseInt(res[0].depositDeadline1amount)
-        amountSpecifiedByUser.value = parseInt(res[0].depositDeadline1amount)
+        firstDepositAmount.value = getSumOfDepositDeadline1amount(res)
+        amountSpecifiedByUser.value = firstDepositAmount.value
       }
       if (res[0].depositDeadline2amount) {
-        secondDepositAmount.value = parseInt(res[0].depositDeadline2amount)
+        secondDepositAmount.value = getSumOfDepositDeadline2amount(res)
       }
       if (res[0].depositDeadline3amount) {
-        thirdDepositAmount.value = parseInt(res[0].depositDeadline3amount)
+        thirdDepositAmount.value = getSumOfDepositDeadline3amount(res)
       }
     }
     console.log(res)
@@ -147,7 +187,7 @@ const totalPriceToSubmit = computed(() => {
       </v-row>
       <v-row>
         <v-col class="font-weight-bold">Reservation Number</v-col>
-        <v-col class="font-weight-bold">LastName, First Name</v-col>
+        <v-col class="font-weight-bold">Last Name, First Name</v-col>
       </v-row>
       <v-row>
         <v-col
