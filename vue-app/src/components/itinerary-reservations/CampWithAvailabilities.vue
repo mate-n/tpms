@@ -16,6 +16,8 @@ import { PriceFormatter } from '@/helpers/PriceFormatter'
 import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
 import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
 import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
+import { AvailabilitiesFiller } from '@/helpers/AvailabilitiesFiller'
+const availabilitiesFiller = new AvailabilitiesFiller()
 const guestsPerRoom: Ref<GuestsPerRoom> = ref(new GuestsPerRoom())
 const priceFormatter = new PriceFormatter()
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
@@ -135,6 +137,11 @@ const getAvailabilities = () => {
     } else {
       availabilities.value = response
     }
+    availabilitiesFiller.addAvailabilitiesOnDaysWhereThereAreNone(
+      availabilities.value,
+      props.arrivalDate,
+      props.departureDate
+    )
   })
 }
 
