@@ -52,7 +52,7 @@ describe('itinerary-reservations-enquiry/validate-selectable-availabilities', ()
     cy.getByCy('itinerary_reservation_rightbar').should('not.exist');
   });
 
-  it("Can't select availability in the past or today", () => {
+  it("Can't select availability which has no rates", () => {
     cy.visit(ROUTE_PATHS.ITINERARY_RESERVATION_ENQUIRY);
 
     // select filters

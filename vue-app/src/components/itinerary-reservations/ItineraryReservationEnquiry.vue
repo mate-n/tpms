@@ -406,10 +406,20 @@ const isCartNumberPresent = computed(() => {
       <v-btn class="secondary-button me-2">Cancel</v-btn>
 
       <v-btn class="secondary-button me-2" @click="clickOnViewCart()">View Cart</v-btn>
-      <v-btn class="primary-button" @click="clickOnCreateCartButton()" v-if="!isCartNumberPresent">
+      <v-btn
+        class="primary-button"
+        @click="clickOnCreateCartButton()"
+        v-if="!isCartNumberPresent"
+        data-cy="create_cart_button"
+      >
         Create Cart
       </v-btn>
-      <v-btn class="primary-button" @click="clickOnUpdateCartButton()" v-if="isCartNumberPresent">
+      <v-btn
+        class="primary-button"
+        @click="clickOnUpdateCartButton()"
+        v-if="isCartNumberPresent"
+        data-cy="update_cart_button"
+      >
         Update Cart
       </v-btn>
     </div>
