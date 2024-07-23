@@ -10,11 +10,13 @@ import type { IConservationFeePrices } from '@/shared/interfaces/IConservationFe
 import type { IFreeEntryReasonWithAdultsAndChildren } from '@/shared/interfaces/IFreeEntryReasonWithAdultsAndChildren'
 import type { IWildcardWithAdultsAndChildren } from '@/shared/interfaces/IWildcardWithAdultsAndChildren'
 import type { AxiosStatic } from 'axios'
-import { computed, inject, ref, watch, type Ref } from 'vue'
+import { computed, inject, onMounted, ref, watch, type Ref } from 'vue'
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import WildcardPopUpCard from '../profiles/WildcardPopUpCard.vue'
 import { WildcardService } from '@/services/backend-middleware/WildcardService'
 import { AdultsAndChildren } from '@/shared/classes/AdultsAndChildren'
+import { ConservationFeePricesConverter } from '@/shared/converters/ConservationFeePricesConverter'
+const conservationFeePricesConverter = new ConservationFeePricesConverter()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const conservationFeesService = new ConservationFeeService(axios2)
 const wildcardService = new WildcardService(axios2)
@@ -27,6 +29,28 @@ const wildcardPopUpCardDialog = ref(false)
 const reservation = defineModel({
   required: true,
   type: Object as () => IProtelReservation
+})
+
+onMounted(() => {
+  southAfricanCitizens.value = {
+    adults: reservation.value.conservationFeePrices.adult_sa.count,
+    children: reservation.value.conservationFeePrices.child_sa.count,
+    infants: reservation.value.conservationFeePrices.infant_sa.count
+  }
+
+  sadcCitizens.value = {
+    adults: reservation.value.conservationFeePrices.adult_sadc.count,
+    children: reservation.value.conservationFeePrices.child_sadc.count,
+    infants: reservation.value.conservationFeePrices.infant_sadc.count
+  }
+
+  internationals.value = {
+    adults: reservation.value.conservationFeePrices.adult_int.count,
+    children: reservation.value.conservationFeePrices.child_int.count,
+    infants: reservation.value.conservationFeePrices.infant_int.count
+  }
+
+  calculatePricesOfFees()
 })
 
 const southAfricanCitizens: Ref<IAdultsAndChildren> = ref(new AdultsAndChildren())
@@ -241,7 +265,6 @@ const calculatePricesOfFees = () => {
   conservationFeesService
     .calculatePriceOfConservationFees(calculatePriceOfConservationFeesBody)
     .then((response) => {
-      console.log(response)
       conservationFeePrices.value = response
       loading.value = false
 
@@ -289,7 +312,10 @@ const loading = ref(false)
 const wildcardErrorMessages = ref<string[]>([])
 
 const save = () => {
-  reservation.value.conservationFeePrices = conservationFeePrices.value
+  conservationFeePrices.value.arrivalDate = reservation.value.arrivalDate
+  conservationFeePrices.value.departureDate = reservation.value.departureDate
+  reservation.value.conservationFeePrices =
+    conservationFeePricesConverter.convertToConservationFeePrice(conservationFeePrices.value)
   emits('save')
 }
 </script>

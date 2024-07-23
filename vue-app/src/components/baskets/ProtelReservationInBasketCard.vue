@@ -13,13 +13,17 @@ import ProfileSearchCard from '../profiles/ProfileSearchCard.vue'
 import { ProfileService } from '@/services/backend-middleware/ProfileService'
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
 import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
-import ConservationFeesCard from '@/components/baskets/ConservationFeesCard.vue'
 import TicketsCard from '@/components/tickets/TicketsCard.vue'
-import TicketsTable from '@/components/tickets/TicketsTable.vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import ConservationFeeForm from '@/components/conservation-fees/ConservationFeeForm.vue'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
-
+import CartContentTable from '../carts/CartContentTable.vue'
+import type { ICartContentItem } from '@/shared/interfaces/ICartContentItem'
+import { CartContentItemConverter } from '@/shared/converters/CartContentItemConverter'
+import type { IConservationFeePrices } from '@/shared/interfaces/IConservationFeePrices'
+import { ConservationFeePricesHelper } from '@/helpers/ConservationFeePricesHelper'
+const conservationFeePricesHelper = new ConservationFeePricesHelper()
+const cartContentItemConverter = new CartContentItemConverter()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const priceFormatter = new PriceFormatter()
 const emit = defineEmits([
@@ -58,8 +62,6 @@ const removeReservation = (reservation: IProtelReservation) => {
   emit('remove-reservation', reservation)
 }
 
-const conservationFeesDialog = ref(false)
-
 const ticketsCardDialog = ref(false)
 
 const clickOnAddFixedCharges = () => {
@@ -80,6 +82,12 @@ const availableTickets: Ref<ITicket[]> = ref([])
 
 const chargesLabel = computed(() => {
   return reservation.value.tickets.length > 0 ? 'Charges' : 'No Charges'
+})
+
+const conservationFeesLabel = computed(() => {
+  return !conservationFeePricesHelper.isEmpty(reservation.value.conservationFeePrices)
+    ? 'Conservation Fees'
+    : 'No Conservation Fees'
 })
 
 onMounted(() => {
@@ -131,6 +139,16 @@ watch(
 )
 
 const conservationFeeFormDialog = ref(false)
+
+const convertTicketsToCartContentItems = (tickets: ITicket[]): ICartContentItem[] => {
+  return cartContentItemConverter.convertTicketsToCartContentItems(tickets)
+}
+
+const convertConservationFeesToCartContentItems = (
+  conservationFeePrices: IConservationFeePrices
+): ICartContentItem[] => {
+  return cartContentItemConverter.convertConservationFeesToCartContentItems(conservationFeePrices)
+}
 </script>
 
 <template>
@@ -227,18 +245,31 @@ const conservationFeeFormDialog = ref(false)
         </div>
       </div>
       <div class="ms-2 py-3">
-        <div class="pb-3">
-          <strong>{{ chargesLabel }}</strong>
-        </div>
         <v-row>
           <v-col>
-            <TicketsTable
-              :tickets="reservation.tickets"
-              :collapsible="true"
+            <div class="pb-3">
+              <strong>{{ chargesLabel }}</strong>
+            </div>
+            <CartContentTable
+              :cart-content-items="convertTicketsToCartContentItems(reservation.tickets)"
               :collapsed="true"
+              :collapsible="true"
               :show-date="true"
               v-if="reservation.tickets.length > 0"
-            />
+            ></CartContentTable>
+            <div class="my-3">&nbsp;</div>
+            <div class="pb-3">
+              <strong>{{ conservationFeesLabel }}</strong>
+            </div>
+            <CartContentTable
+              :cart-content-items="
+                convertConservationFeesToCartContentItems(reservation.conservationFeePrices)
+              "
+              :collapsed="true"
+              :collapsible="true"
+              :show-date="true"
+              v-if="!conservationFeePricesHelper.isEmpty(reservation.conservationFeePrices)"
+            ></CartContentTable>
           </v-col>
           <v-col class="d-flex align-end justify-end">
             <v-btn class="me-2" @click="conservationFeeFormDialog = true">Conservation Fees</v-btn>
@@ -253,7 +284,9 @@ const conservationFeeFormDialog = ref(false)
             <strong data-cy="total">
               {{
                 priceFormatter.formatPrice(
-                  protelReservationPriceCalculator.getPriceForAllNightsWithTickets(reservation)
+                  protelReservationPriceCalculator.getPriceForAllNightsWithTicketsWithConservationFees(
+                    reservation
+                  )
                 )
               }}</strong
             ></v-col
@@ -266,11 +299,6 @@ const conservationFeeFormDialog = ref(false)
       </div>
     </v-card-text>
   </v-card>
-  <v-dialog v-model="conservationFeesDialog" fullscreen scrollable>
-    <v-card>
-      <ConservationFeesCard v-model="reservation" @close="conservationFeesDialog = false" />
-    </v-card>
-  </v-dialog>
 
   <v-dialog v-model="ticketsCardDialog" fullscreen scrollable>
     <v-card>

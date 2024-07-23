@@ -81,13 +81,6 @@ Cypress.Commands.add('selectDateSelecterValue', (dataCy, options) => {
     .its('body')
     .within(() => {
       cy.getByCy(`${dataCy}_picker`).within(() => {
-        if (options.previousMonth) {
-          cy.get('div.v-date-picker-controls__month').within(() => {
-            cy.get('button').eq(0).click();
-          });
-          // wait for UI loaded days
-          cy.wait(500);
-        }
         cy.get('button.v-date-picker-month__day-btn').contains(options.day).click();
       });
     });

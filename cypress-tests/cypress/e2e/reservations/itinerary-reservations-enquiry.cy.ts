@@ -1,9 +1,9 @@
-import { DateFormatter } from "../../../helpers/DateFormatter";
-import { DateHelper } from "../../../helpers/DateHelper";
-import { PriceFormatter } from "../../../helpers/PriceFormatter";
+import { DateFormatter } from "../../helpers/DateFormatter";
+import { DateHelper } from "../../helpers/DateHelper";
+import { PriceFormatter } from "../../helpers/PriceFormatter";
 
-import { IProtelAvailability } from "../../../interfaces/protel/IProtelAvailability";
-import { ROUTE_PATHS } from "../../../utils/route-paths";
+import { IProtelAvailability } from "../../interfaces/protel/IProtelAvailability";
+import { ROUTE_PATHS } from "../../utils/route-paths";
 
 const calculateTotalRate = (availability: IProtelAvailability) => {
   return availability.rates_data.reduce(
@@ -12,7 +12,7 @@ const calculateTotalRate = (availability: IProtelAvailability) => {
   );
 };
 
-describe("itinerary-reservations-enquiry/add-to-cart", () => {
+describe("itinerary-reservations-enquiry", () => {
   const dateFormatter = new DateFormatter();
   const dateHelper = new DateHelper();
   const priceFormatter = new PriceFormatter();
@@ -51,7 +51,7 @@ describe("itinerary-reservations-enquiry/add-to-cart", () => {
     const numOfAvalabilities = 2;
 
     // select filters
-    cy.selectMultipleSelectValue("camp_autocomplete", { eqs: [5] });
+    cy.selectMultipleSelectValue("camp_autocomplete", { eqs: [0] });
 
     cy.getByCy(`camp_availabilities_container`)
       .eq(0)

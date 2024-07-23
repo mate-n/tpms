@@ -36,7 +36,6 @@ declare global {
       selectDateSelecterValue(
         dataCy: string,
         options: {
-          previousMonth?: boolean;
           day: string;
         }
       ): Chainable<JQuery<HTMLElement>>;
