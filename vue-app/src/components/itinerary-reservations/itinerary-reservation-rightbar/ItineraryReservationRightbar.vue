@@ -96,7 +96,11 @@ onMounted(() => {
       <strong>Placed reservations list</strong>
     </h2>
 
-    <div v-for="{ name, reservations } in campReservations" :key="name">
+    <div
+      v-for="{ name, reservations } in campReservations"
+      :key="name"
+      data-cy="itinerary_reservation_rightbar"
+    >
       <h3 class="my-2 py-2 px-5 bg-lightgray">
         <strong>{{ name }}</strong>
       </h3>

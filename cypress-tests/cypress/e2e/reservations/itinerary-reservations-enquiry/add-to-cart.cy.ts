@@ -16,8 +16,15 @@ describe('itinerary-reservations-enquiry/add-to-cart', () => {
 
   beforeEach(() => {
     cy.intercept(new RegExp(/api\/v1\/camps/)).as('getCampsApi');
-    cy.intercept('POST', new RegExp(/api\/v1\/availabilities/)).as('getAvalabilitiesApi');
+
     cy.intercept(new RegExp(/api\/v1\/cart\/add-item/)).as('cartAddItemApi');
+
+    cy.fixture('availabilities')
+      .then((response) => {
+        cy.intercept('POST', new RegExp(/v1\/availabilities/), (req) => req.reply(response));
+      })
+      .as('getAvalabilitiesApi');
+
     cy.login();
   });
 
