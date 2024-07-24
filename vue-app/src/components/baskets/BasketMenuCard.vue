@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import ProtelReservationInBasketMenuCard from './ProtelReservationInBasketMenuCard.vue'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
@@ -8,6 +8,7 @@ import type { IProtelReservation } from '@/services/reservations/IProtelReservat
 import { IdentityHelper } from '@/helpers/IdentityHelper'
 import type { AxiosStatic } from 'axios'
 import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
+import WaitOverlay from '@/components/WaitOverlay.vue'
 const axios2: AxiosStatic | undefined = inject('axios2')
 const syncCartItemService = new SyncCartItemService(axios2)
 const identityHelper = new IdentityHelper()
@@ -27,18 +28,24 @@ const removeAllReservations = () => {
 }
 
 const synchronizeFrontendCartWithBackendCart = () => {
-  if (!itineraryReservationCartStore.itineraryReservation) {
-    return
-  }
+  return new Promise<void>((resolve) => {
+    const cartNumber = itineraryReservationCartStore.getCartNumber()
+    if (!cartNumber || !itineraryReservationCartStore.itineraryReservation) {
+      resolve()
+    } else {
+      loading.value = true
 
-  const cartNumber = itineraryReservationCartStore.getCartNumber()
-  if (!cartNumber) {
-    return
-  }
-  syncCartItemService.synchronizeFrontendCartWithBackendCart(
-    itineraryReservationCartStore.itineraryReservation,
-    cartNumber
-  )
+      syncCartItemService
+        .synchronizeFrontendCartWithBackendCart(
+          itineraryReservationCartStore.itineraryReservation,
+          cartNumber
+        )
+        .then(() => {
+          loading.value = false
+          resolve()
+        })
+    }
+  })
 }
 
 const removeReservationAndSyncWithBackend = (reservation: IProtelReservation) => {
@@ -71,8 +78,11 @@ const totalPrice = computed(() => {
 const clickOnViewCart = () => {
   emit('clickOnViewCart')
 }
+
+const loading = ref(false)
 </script>
 <template>
+  <WaitOverlay v-if="loading" />
   <v-container class="bg-lightgray pa-1 rounded" data-cy="basket_menu_card">
     <div style="overflow-y: auto; max-height: 90vh">
       <template v-if="itineraryReservationCartStore.itineraryReservation">

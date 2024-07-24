@@ -17,6 +17,7 @@ import { CampService } from '@/services/backend-middleware/CampService'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 import ProcessPayment from '@/components/reservations/ProcessPayment.vue'
 import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
+import WaitOverlay from '../WaitOverlay.vue'
 const itineraryReservationCartManager = new ItineraryReservationCartManager()
 const confirmationNumbers = ref<string[]>([])
 const identityHelper = new IdentityHelper()
@@ -98,18 +99,24 @@ const checkIfBookingIsPossible = () => {
 }
 
 const synchronizeFrontendCartWithBackendCart = () => {
-  if (!itineraryReservationCartStore.itineraryReservation) {
-    return
-  }
+  return new Promise<void>((resolve) => {
+    const cartNumber = itineraryReservationCartStore.getCartNumber()
+    if (!cartNumber || !itineraryReservationCartStore.itineraryReservation) {
+      resolve()
+    } else {
+      loading.value = true
 
-  const cartNumber = itineraryReservationCartStore.getCartNumber()
-  if (!cartNumber) {
-    return
-  }
-  syncCartItemService.synchronizeFrontendCartWithBackendCart(
-    itineraryReservationCartStore.itineraryReservation,
-    cartNumber
-  )
+      syncCartItemService
+        .synchronizeFrontendCartWithBackendCart(
+          itineraryReservationCartStore.itineraryReservation,
+          cartNumber
+        )
+        .then(() => {
+          loading.value = false
+          resolve()
+        })
+    }
+  })
 }
 
 const clickOnSubmitButtonInProcessPayment = (specifiedFirstDepositAmount: number) => {
@@ -128,6 +135,7 @@ const book = (totalPrice: string) => {
   }
   cartNumber.value = cartNumberFromCartStore
 
+  loading.value = true
   /*
     settleAnkerdataCart()
     */
@@ -145,10 +153,11 @@ const book = (totalPrice: string) => {
             confirmationNumbers.value.push(item['confirmation'] + ' - ' + campName)
           }
         }
+        loading.value = false
+        errors.value = []
+        itineraryConfirmedDialog.value = true
       })
     })
-  errors.value = []
-  itineraryConfirmedDialog.value = true
 }
 
 const errors = ref<string[]>([])
@@ -224,9 +233,12 @@ const addTicketsToReservation = () => {
 const addConservationFeesToReservation = () => {
   synchronizeFrontendCartWithBackendCart()
 }
+
+const loading = ref(false)
 </script>
 
 <template>
+  <WaitOverlay v-if="loading" />
   <div class="standard-dialog-card" data-cy="basket_card">
     <v-toolbar class="standard-dialog-card-toolbar fixed-toolbar">
       <v-toolbar-title><span class="text-primary">Basket</span></v-toolbar-title>
