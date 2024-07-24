@@ -20,11 +20,15 @@ const clickOnAdd = () => {
 
 <template>
   <v-toolbar color="primary" title="Profiles">
-    <v-btn class="primary-outline-add-button me-3" @click="clickOnAdd()"
+    <v-btn class="primary-outline-add-button me-3" @click="clickOnAdd()" data-cy="add_profile_button"
       ><v-icon>mdi-plus</v-icon>Add</v-btn
     >
   </v-toolbar>
-  <ProfileSearch @close="newProfileDialog = false" v-model="profileLookUpPostBody"></ProfileSearch>
+  <ProfileSearch
+    @close="newProfileDialog = false"
+    v-model="profileLookUpPostBody"
+    :show-select-button="false"
+  ></ProfileSearch>
   <v-dialog v-model="newProfileDialog" fullscreen scrollable>
     <v-card>
       <NewProfile

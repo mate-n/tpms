@@ -22,7 +22,7 @@ export interface IProfile extends IEntityWithIdentity, IEntityWithErrors {
   dateofbirth: Date | undefined
   gender: string
   roomseekerclientcode: string
-  sAId: string
+  SAId: string
   passportno: string
   countryofbirth: string
   wildcardnumber: string

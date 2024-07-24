@@ -1,5 +1,5 @@
 export interface ITicket {
-  TicketId: number
+  TicketId: string
   Name: string
   Price: number
   MaxPerTransaction: number
@@ -26,4 +26,5 @@ export interface ITicket {
   EventMaxCapacity: number
   EventRemainingCapacity: number
   Date: Date
+  cartITemID: number | undefined
 }

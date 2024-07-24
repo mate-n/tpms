@@ -10,13 +10,13 @@ import TicketsCard from '../tickets/TicketsCard.vue'
 import { DateFormatter } from '@/helpers/DateFormatter'
 const ticketsService = new TicketService()
 const availableTickets: Ref<ITicket[]> = ref([])
-const getTicketByTicketId = (ticketId: number) => {
+const getTicketByTicketId = (ticketId: string) => {
   return availableTickets.value.find((t) => t.TicketId === ticketId)
 }
 const dateFormatter = new DateFormatter()
 
 const ticketsByTicketIDs = computed(() => {
-  return reservation.value.ticketIDs.map((ticketID) => getTicketByTicketId(ticketID))
+  return reservation.value.tickets.map((ticket) => getTicketByTicketId(ticket.TicketId))
 })
 
 const reservation = defineModel({ required: true, type: Object as () => IReservation })
@@ -44,6 +44,11 @@ const availableTableDataHeaders = ref([
 ])
 
 const ticketsCardDialog = ref(false)
+
+const propertyCode = computed(() => {
+  const pc = reservation.value.propertyID?.toString()
+  return pc ? pc : ''
+})
 </script>
 <template>
   <div class="standard-dialog-card">
@@ -103,6 +108,7 @@ const ticketsCardDialog = ref(false)
         :arrival-date="reservation.arrivalDate"
         :departure-date="reservation.departureDate"
         :property-name="reservation.propertyName"
+        :property-code="propertyCode"
         @close="ticketsCardDialog = false"
         @add-tickets-to-reservation="ticketsCardDialog = false"
       />

@@ -8,8 +8,19 @@ import { DateFormatter } from '@/helpers/DateFormatter'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import type { AxiosStatic } from 'axios'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
-import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import RoomDetailsCard from '@/components/rooms/RoomDetailsCard.vue'
+import type { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
+import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
+import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
+import { PriceFormatter } from '@/helpers/PriceFormatter'
+import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
+import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
+import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
+import { AvailabilitiesFiller } from '@/helpers/AvailabilitiesFiller'
+const availabilitiesFiller = new AvailabilitiesFiller()
+const guestsPerRoom: Ref<GuestsPerRoom> = ref(new GuestsPerRoom())
+const priceFormatter = new PriceFormatter()
+const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const availabilityService = new AvailabilityService(axios2)
 const dateHelper = new DateHelper()
@@ -22,7 +33,9 @@ const props = defineProps({
     type: Object as () => Date,
     required: true
   },
-  departureDate: { type: Object as () => Date, required: true }
+  departureDate: { type: Object as () => Date, required: true },
+  roomTypeCodes: { type: Object as () => String[], required: false },
+  itineraryReservation: { type: Object as () => ItineraryReservation, required: true }
 })
 
 const expansionModel = ref<string[] | null>(['availabilities'])
@@ -30,10 +43,20 @@ const selectedAvailabilities: Ref<IProtelAvailability[]> = ref([])
 const availabilities: Ref<IProtelAvailability[]> = ref([])
 
 const nightsOverviewString = computed(() => {
-  const selectedNights = selectedAvailabilities.value.length
+  const selectedNights = getNumberOfSelectedNights()
 
   return `${selectedNights} / ${numberOfNights.value}`
 })
+
+const getNumberOfSelectedNights = () => {
+  let reservationsNights = 0
+  for (const availableDate of availableDates.value) {
+    if (isDateOccupiedInReservation(availableDate)) {
+      reservationsNights++
+    }
+  }
+  return reservationsNights
+}
 
 const numberOfNights = computed(() => {
   return dateHelper.calculateNightsBetweenDates(props.arrivalDate, props.departureDate)
@@ -41,7 +64,7 @@ const numberOfNights = computed(() => {
 
 const availableDates = computed(() => {
   const dates = []
-  for (let i = 0; i < numberOfNights.value + 1; i++) {
+  for (let i = 0; i < numberOfNights.value; i++) {
     dates.push(dateHelper.addDays(props.arrivalDate, i))
   }
   return dates
@@ -57,8 +80,13 @@ const clickOnPlusButtonInAvailability = () => {
 }
 
 const isDateOccupiedInReservation = (date: Date) => {
-  for (const availability of selectedAvailabilities.value) {
-    if (dateHelper.isSameDay(date, availability.availability_start)) {
+  const reservations = props.itineraryReservation.protelReservations.filter(
+    (reservation) => reservation.property_code === props.camp.id.toString()
+  )
+  for (const reservation of reservations) {
+    const nightBeforeDepartureDate = dateHelper.addDays(reservation.departureDate, -1)
+    nightBeforeDepartureDate.setHours(23, 59, 59, 999)
+    if (dateHelper.isDateBetweenDates(date, reservation.arrivalDate, nightBeforeDepartureDate)) {
       return true
     }
   }
@@ -66,7 +94,19 @@ const isDateOccupiedInReservation = (date: Date) => {
 }
 
 const isDateOccupiedByOtherReservations = (date: Date) => {
-  console.log(date, 'date')
+  if (isDateOccupiedInReservation(date)) {
+    return false
+  }
+  const otherReservations = props.itineraryReservation.protelReservations.filter(
+    (reservation) => reservation.property_code !== props.camp.id.toString()
+  )
+  for (const reservation of otherReservations) {
+    const nightBeforeDepartureDate = dateHelper.addDays(reservation.departureDate, -1)
+    nightBeforeDepartureDate.setHours(23, 59, 59, 999)
+    if (dateHelper.isDateBetweenDates(date, reservation.arrivalDate, nightBeforeDepartureDate)) {
+      return true
+    }
+  }
   return false
 }
 
@@ -81,24 +121,32 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
 const roomTypeDialog = ref(false)
 
 const getAvailabilities = () => {
-  const departureDatePlusOne = dateHelper.addDays(props.departureDate, 1)
-
-  const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
-    arrivaldate: dateFormatter.yyyydashmmdashdd(props.arrivalDate),
-    departuredate: dateFormatter.yyyydashmmdashdd(departureDatePlusOne),
-    roomtype: 'null',
-    propertyid: props.camp.id.toString(),
-    detail: '0',
-    accomodation_type: null
-  }
+  const protelAvailabilityPostBody: IProtelAvailabilityPostBody = availabilityHelper.mapPostBody({
+    camp: props.camp,
+    arrivalDate: props.arrivalDate,
+    departureDate: props.departureDate,
+    roomTypeCode: undefined,
+    guestsPerRoom: guestsPerRoom.value
+  })
 
   availabilityService.getAvailabilities(protelAvailabilityPostBody).then((response) => {
-    availabilities.value = response
+    if (props.roomTypeCodes && props.roomTypeCodes.length > 0) {
+      availabilities.value = response.filter((availability) =>
+        props.roomTypeCodes!.includes(availability.room_type_code)
+      )
+    } else {
+      availabilities.value = response
+    }
+    availabilitiesFiller.addAvailabilitiesOnDaysWhereThereAreNone(
+      availabilities.value,
+      props.arrivalDate,
+      props.departureDate
+    )
   })
 }
 
 watch(
-  [() => props.arrivalDate, () => props.departureDate],
+  [() => props.arrivalDate, () => props.departureDate, () => props.roomTypeCodes],
   async () => {
     getAvailabilities()
   },
@@ -108,17 +156,49 @@ watch(
   }
 )
 
-const availabilitiesSelected = (availabilities: IProtelAvailability[]) => {
-  selectedAvailabilities.value = availabilities
-  emits('availabilities-selected', availabilities)
+watch(
+  guestsPerRoom,
+  () => {
+    getAvailabilities()
+  },
+  {
+    deep: true
+  }
+)
+
+const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservationSelectUpdate) => {
+  protelReservationSelectUpdate.guestsPerRoom = guestsPerRoom.value
+  selectedAvailabilities.value = protelReservationSelectUpdate.selectedAvailabilities
+  emits('availabilities-selected', protelReservationSelectUpdate)
 }
+
+const clickOnReset = () => {
+  const protelReservationSelectUpdate: IProtelReservationSelectUpdate = {
+    selectedAvailabilities: [],
+    property_code: props.camp.id.toString(),
+    roomTypeCode: '',
+    guestsPerRoom: guestsPerRoom.value
+  }
+  emits('availabilities-selected', protelReservationSelectUpdate)
+}
+
+const totalPriceForCamp = computed(() => {
+  const reservationsInThisCamp = props.itineraryReservation.protelReservations.filter(
+    (reservation) => reservation.property_code === props.camp.id.toString()
+  )
+  let total = 0
+  for (const reservation of reservationsInThisCamp) {
+    total += protelReservationPriceCalculator.getPriceForAllNights(reservation)
+  }
+  return priceFormatter.formatPrice(total)
+})
 </script>
 <template>
-  <v-container fluid class="bg-white">
+  <v-container fluid class="bg-white" data-cy="camp_availabilities_container">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100">
         <h3>
-          <strong>{{ camp.name }}</strong>
+          <strong data-cy="camp_name">{{ camp.name }}</strong>
         </h3>
       </v-col>
       <v-col>
@@ -129,10 +209,13 @@ const availabilitiesSelected = (availabilities: IProtelAvailability[]) => {
         ></v-text-field>
       </v-col>
       <v-col>
-        <v-btn>Reset</v-btn>
+        <GuestsPerRoomSelecter v-model="guestsPerRoom"></GuestsPerRoomSelecter>
       </v-col>
       <v-col>
-        <v-btn>Total: 0.00</v-btn>
+        <v-btn @click="clickOnReset()">Reset</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn>Total: {{ totalPriceForCamp }}</v-btn>
       </v-col>
     </v-row>
 
@@ -163,7 +246,12 @@ const availabilitiesSelected = (availabilities: IProtelAvailability[]) => {
             <tbody>
               <tr>
                 <td class="d-flex justify-space-between align-center">
-                  <v-btn variant="text" icon @click="clickOnPlusButtonInAvailability()">
+                  <v-btn
+                    variant="text"
+                    icon
+                    @click="clickOnPlusButtonInAvailability()"
+                    data-cy="expand_avalabilities_button"
+                  >
                     <v-icon class="text-primary">
                       {{ availabilityIcon }}
                     </v-icon></v-btn
@@ -202,7 +290,7 @@ const availabilitiesSelected = (availabilities: IProtelAvailability[]) => {
               >
                 <td v-if="showRoomsInProtelAvailabilitiesSelecter">
                   <div class="d-flex justify-space-between">
-                    <div>{{ roomTypeCode }}</div>
+                    <div data-cy="avalibility_room_type_code">{{ roomTypeCode }}</div>
                     <div>
                       <v-btn @click="roomTypeDialog = true" variant="text" icon size="x-small">
                         <v-icon>mdi-information-outline</v-icon>
@@ -212,16 +300,16 @@ const availabilitiesSelected = (availabilities: IProtelAvailability[]) => {
                 </td>
                 <td class="bg-lightgray" v-if="showRoomsInProtelAvailabilitiesSelecter">
                   <AvailabilitiesSelecter
-                    :availabilities="
-                      availabilityHelper.getAvailabilityByRoomTypeCode(availabilities, roomTypeCode)
-                    "
+                    :all-availabilities="availabilities"
                     :room-type-code="roomTypeCode"
+                    :property-code="camp.id.toString()"
                     :arrival-date="props.arrivalDate"
                     :departure-date="props.departureDate"
                     @availabilities-selected="
-                      (availabilities: IProtelAvailability[]) =>
-                        availabilitiesSelected(availabilities)
+                      (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
+                        availabilitiesSelected(protelReservationSelectUpdate)
                     "
+                    :-itinerary-reservation="props.itineraryReservation"
                   ></AvailabilitiesSelecter>
                 </td>
               </tr>

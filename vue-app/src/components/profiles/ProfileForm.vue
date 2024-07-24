@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileContactDetailsCard from './ProfileContactDetailsCard.vue'
-import ProfileAddressCard from './ProfileAddressCard.vue'
 import { CrudOperations } from '@/enums/CrudOperations'
 import { CloneHelper } from '@/helpers/CloneHelper'
 import ProfilePersonalInfoCard from './ProfilePersonalInfoCard.vue'
@@ -25,7 +24,9 @@ import { ProfileCreatePostBodyConverter } from '@/shared/converters/ProfileCreat
 import type { IProfileCreateResponseBody } from '@/shared/interfaces/profiles/IProfileCreateResponseBody'
 import router from '@/router'
 import type { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
-
+import ProfileAddressCard2 from './ProfileAddressCard2.vue'
+import ProfileCreatedSuccessfullyDialog from './ProfileCreatedSuccessfullycard.vue'
+const loading = ref(false)
 const profileCreatePostBodyConverter = new ProfileCreatePostBodyConverter()
 const axios: AxiosStatic | undefined = inject('axios')
 const axios2: AxiosStatic | undefined = inject('axios2')
@@ -61,20 +62,28 @@ watch(props, (newInput) => {
 })
 
 const blurEmail = () => {
-  checkIfProfilesWithSameEmailExist(profileToBeEdited.value.email)
+  if (props.crudOperation === CrudOperations.Create) {
+    checkIfProfilesWithSameEmailExist(profileToBeEdited.value.email)
+  }
 }
 
 const blurSaid = () => {
-  checkIfProfilesWithSAIDExist()
+  if (props.crudOperation === CrudOperations.Create) {
+    checkIfProfilesWithSAIDExist()
+  }
 }
 
 const blurName = () => {
-  checkIfProfilesWithSameFirstAndLastNameExist()
+  if (props.crudOperation === CrudOperations.Create) {
+    checkIfProfilesWithSameFirstAndLastNameExist()
+  }
 }
 
 const validate = () => {
   profileValidator.validate(profileToBeEdited.value)
 }
+
+const profileCreateResponseBodyProfileID = ref<number>(0)
 
 const save = () => {
   validate()
@@ -82,6 +91,18 @@ const save = () => {
     return
   }
   if (props.crudOperation === CrudOperations.Create) {
+    loading.value = true
+    const profileCreatePostBody = profileCreatePostBodyConverter.convertToProfileCreatePostBody(
+      profileToBeEdited.value
+    )
+    profileService
+      .create(profileCreatePostBody)
+      .then((profileCreateResponseBody: IProfileCreateResponseBody) => {
+        profileCreateResponseBodyProfileID.value = profileCreateResponseBody.ProfileID
+        loading.value = false
+        profileCreatedSuccessfullyDialog.value = true
+      })
+  } else if (props.crudOperation === CrudOperations.Update) {
     const profileCreatePostBody = profileCreatePostBodyConverter.convertToProfileCreatePostBody(
       profileToBeEdited.value
     )
@@ -93,8 +114,6 @@ const save = () => {
           params: { profileID: profileCreateResponseBody.ProfileID }
         })
       })
-  } else if (props.crudOperation === CrudOperations.Update) {
-    //profileService.put(profileToBeEdited.value)
   }
   emit('save', profileToBeEdited.value)
 }
@@ -105,6 +124,7 @@ const toggleActive = () => {
 
 const stationeryCardDialog = ref(false)
 const reservationsCardDialog = ref(false)
+const profileCreatedSuccessfullyDialog = ref(false)
 
 const profilesWithSameFirstAndLastName = ref<IProfile[]>([])
 const checkIfProfilesWithSameFirstAndLastNameExist = async () => {
@@ -130,7 +150,7 @@ const checkIfProfilesWithSameFirstAndLastNameExist = async () => {
 
 const profilesWithSameSAID = ref<IProfile[]>([])
 const checkIfProfilesWithSAIDExist = async () => {
-  if (profileToBeEdited.value.sAId.length < 3) {
+  if (profileToBeEdited.value.SAId.length < 3) {
     return
   }
   const profileLookUpPostBody: ProfileLookUpPostBody = {
@@ -138,7 +158,7 @@ const checkIfProfilesWithSAIDExist = async () => {
     surname: undefined,
     name: undefined,
     mobile: undefined,
-    SAId: profileToBeEdited.value.sAId,
+    SAId: profileToBeEdited.value.SAId,
     passportno: undefined,
     roomseekerclientcode: undefined,
     profileID: undefined,
@@ -209,6 +229,7 @@ const goToProfile = (profileID: number | undefined) => {
         v-if="validityHelper.isValid(profileToBeEdited)"
         class="primary-button text-uppercase"
         @click="save()"
+        data-cy="save_profile_button"
         >{{ $t('actions.save') }}</v-btn
       >
     </div>
@@ -251,6 +272,9 @@ const goToProfile = (profileID: number | undefined) => {
       </template>
     </v-tooltip>
   </v-toolbar>
+  <div v-if="loading">
+    <v-progress-linear color="primary" indeterminate></v-progress-linear>
+  </div>
   <div v-if="profilesWithSameEmail.length > 0" class="bg-lightgray">
     <div v-for="profile of profilesWithSameEmail" :key="profile.id">
       <v-alert type="warning" class="mt-2">
@@ -262,7 +286,7 @@ const goToProfile = (profileID: number | undefined) => {
   <div v-if="profilesWithSameSAID.length > 0" class="bg-lightgray">
     <div v-for="profile of profilesWithSameSAID" :key="profile.id">
       <v-alert type="warning" class="mt-2">
-        A profile with {{ profile.sAId }} already exists.
+        A profile with {{ profile.SAId }} already exists.
         <v-btn @click="goToProfile(profile.id)" class="ml-auto text-primary">Go to profile</v-btn>
       </v-alert>
     </div>
@@ -285,7 +309,7 @@ const goToProfile = (profileID: number | undefined) => {
         ></ProfileContactDetailsCard>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
-        <ProfileAddressCard :profile="profileToBeEdited"></ProfileAddressCard>
+        <ProfileAddressCard2 v-model="profileToBeEdited"></ProfileAddressCard2>
       </v-col>
       <v-col class="pr-0 profiles-card-column">
         <ProfilePersonalInfoCard
@@ -316,6 +340,16 @@ const goToProfile = (profileID: number | undefined) => {
   <v-dialog v-model="reservationsCardDialog" scrollable>
     <v-card>
       <ReservationsCard @close="reservationsCardDialog = false" />
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="profileCreatedSuccessfullyDialog" scrollable>
+    <v-card>
+      <ProfileCreatedSuccessfullyDialog
+        @close="profileCreatedSuccessfullyDialog = false"
+        @ok="goToProfile(profileCreateResponseBodyProfileID)"
+        :profile-id="profileCreateResponseBodyProfileID"
+      />
     </v-card>
   </v-dialog>
 </template>

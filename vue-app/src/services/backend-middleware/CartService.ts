@@ -8,6 +8,7 @@ import type { IRemoveItemFromCartBody } from '@/shared/interfaces/cart/IRemoveIt
 import type { IRetrieveCartBody } from '@/shared/interfaces/cart/IRetrieveCartBody'
 import type { ISettleCartBody } from '@/shared/interfaces/cart/ISettleCartBody'
 import type { IUpdateCartBody } from '@/shared/interfaces/cart/IUpdateCartBody'
+import type { IUpdateItemInCartBody } from '@/shared/interfaces/cart/IUpdateItemInCartBody'
 import type { AxiosStatic } from 'axios'
 
 export class CartService implements IService {
@@ -55,6 +56,19 @@ export class CartService implements IService {
     })
   }
 
+  removeItemFromCart(removeItemFromCartBody: IRemoveItemFromCartBody) {
+    return new Promise<any>((resolve, reject) => {
+      this.axiosInstance
+        .post('api/v1/cart/remove-item', removeItemFromCartBody)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
+
   getItemsInCart(retrieveCartBody: IRetrieveCartBody) {
     return new Promise<ICartItem[]>((resolve, reject) => {
       this.axiosInstance
@@ -81,10 +95,38 @@ export class CartService implements IService {
     })
   }
 
+  updateItemInCart(updateItemInCartBody: IUpdateItemInCartBody) {
+    return new Promise<any>((resolve, reject) => {
+      this.axiosInstance
+        .post('api/v1/cart/update-item', updateItemInCartBody)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
+
   settleCart(settleCartBody: ISettleCartBody) {
     return new Promise<any>((resolve, reject) => {
       this.axiosInstance
         .post('api/v1/cart/settle', settleCartBody)
+        .then((response: any) => {
+          resolve(response.data)
+        })
+        .catch((e: any) => {
+          reject(e)
+        })
+    })
+  }
+
+  retrieveCart(cart_number: string) {
+    return new Promise<any>((resolve, reject) => {
+      this.axiosInstance
+        .post('api/v1/cart/retrieve', {
+          cart_number: cart_number
+        })
         .then((response: any) => {
           resolve(response.data)
         })

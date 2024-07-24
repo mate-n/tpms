@@ -1,6 +1,9 @@
+import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
+import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import { DateHelper } from './DateHelper'
 import { DateFormatter } from './DateFormatter'
+import type { IGuestsPerRoom } from '@/shared/interfaces/IGuestsPerRoom'
 
 export class AvailabilityHelper {
   dateFormatter = new DateFormatter()
@@ -16,7 +19,7 @@ export class AvailabilityHelper {
   getUniqueRoomTypeCodes(availabilities: IProtelAvailability[]) {
     const uniqueCodes = new Set<string>()
     availabilities.forEach((availability) => {
-      if (availability.room_type_code) {
+      if (availability && availability.room_type_code) {
         uniqueCodes.add(availability.room_type_code)
       }
     })
@@ -56,8 +59,9 @@ export class AvailabilityHelper {
   }
 
   getAvailabilitiesByDate(availabilities: IProtelAvailability[], date: Date) {
-    return availabilities.filter((availability) =>
-      this.dateHelper.isSameDay(availability.availability_start, date)
+    return availabilities.filter(
+      (availability) =>
+        availability && this.dateHelper.isSameDay(availability.availability_start, date)
     )
   }
 
@@ -65,6 +69,18 @@ export class AvailabilityHelper {
     const groupedAvailabilities: { [key: string]: IProtelAvailability[] } = {}
     availabilities.forEach((availability) => {
       const key = this.dateFormatter.dddotmmdotyyyy(availability.availability_start)
+      if (!groupedAvailabilities[key]) {
+        groupedAvailabilities[key] = []
+      }
+      groupedAvailabilities[key].push(availability)
+    })
+    return groupedAvailabilities
+  }
+
+  groupAvailabilitiesByRoomTypeCode(availabilities: IProtelAvailability[]) {
+    const groupedAvailabilities: { [key: string]: IProtelAvailability[] } = {}
+    availabilities.forEach((availability) => {
+      const key = availability.room_type_code
       if (!groupedAvailabilities[key]) {
         groupedAvailabilities[key] = []
       }
@@ -99,6 +115,45 @@ export class AvailabilityHelper {
       total += +availability.availability_count
     })
     return total
+  }
+
+  sortByAvailabilityStart(availabilitiesInput: IProtelAvailability[]): IProtelAvailability[] {
+    return availabilitiesInput.sort((a, b) => {
+      return new Date(a.availability_start).getTime() - new Date(b.availability_start).getTime()
+    })
+  }
+
+  getAvailabilitiesWithConsecutiveDates(
+    availabilitiesInput: IProtelAvailability[]
+  ): IAvailabilitiesInGroup[] {
+    const consecutiveAvailabilityGroups: IAvailabilitiesInGroup[] = []
+
+    const availabilitiesSortedByAvailabilityStart =
+      this.sortByAvailabilityStart(availabilitiesInput)
+
+    const availabilityGroup: IAvailabilitiesInGroup = {
+      availabilities: [availabilitiesSortedByAvailabilityStart[0]]
+    }
+
+    for (let i = 1; i < availabilitiesSortedByAvailabilityStart.length; i++) {
+      const previousAvailability = availabilitiesInput[i - 1]
+      const currentAvailability = availabilitiesInput[i]
+
+      if (
+        this.dateHelper.isSameDay(
+          this.dateHelper.addDays(previousAvailability.availability_start, 1),
+          currentAvailability.availability_start
+        )
+      ) {
+        availabilityGroup.availabilities.push(currentAvailability)
+      } else {
+        consecutiveAvailabilityGroups.push({ ...availabilityGroup })
+        availabilityGroup.availabilities = [currentAvailability]
+      }
+    }
+    consecutiveAvailabilityGroups.push({ ...availabilityGroup })
+
+    return consecutiveAvailabilityGroups
   }
 
   getConsecutiveAvailabilitiesOnDate(availabilitiesInput: IProtelAvailability[], dateInput: Date) {
@@ -162,4 +217,29 @@ export class AvailabilityHelper {
       this.dateHelper.isSameDay(availability.availability_start, dayAfter)
     )
   }
+
+  mapPostBody = (data: {
+    camp: IProtelCamp
+    departureDate: Date
+    arrivalDate: Date
+    roomTypeCode?: string
+    guestsPerRoom: IGuestsPerRoom
+  }) => {
+    const protelAvailabilityPostBody: IProtelAvailabilityPostBody = {
+      arrivaldate: this.dateFormatter.yyyydashmmdashdd(data.arrivalDate),
+      departuredate: this.dateFormatter.yyyydashmmdashdd(data.departureDate),
+      roomtype: data.roomTypeCode || 'null',
+      propertyid: `${data.camp.id}`,
+      detail: '0',
+      accomodation_type: null,
+      adults: data.guestsPerRoom.numberOfAdults,
+      children: data.guestsPerRoom.numberOfChildren,
+      seniors: data.guestsPerRoom.numberOfSeniors
+    }
+    return protelAvailabilityPostBody
+  }
+}
+
+interface IAvailabilitiesInGroup {
+  availabilities: IProtelAvailability[]
 }

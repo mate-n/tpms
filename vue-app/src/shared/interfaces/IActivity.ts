@@ -1,0 +1,29 @@
+export interface IActivity {
+  id: number
+  TicketId: string
+  Name: string
+  Price: string
+  MaxPerTransaction: number
+  MinPerTransaction: number
+  MaxPerCustomer: number
+  MinPerCustomer: number
+  TotalTickets: number
+  Description: string
+  LongDescription: any
+  AvailableTickets: number
+  TicketEventId: string
+  TicketEventName: string
+  DisplayOrder: number
+  TagType: string
+  AvailableOn: number
+  Status: string
+  TicketType: string
+  MappingId: string
+  ItemCode: string
+  Category: string
+  MaxSales: number
+  RemainingCapacity: number
+  EventMaxCapacity: number
+  EventRemainingCapacity: number
+  date: string
+}

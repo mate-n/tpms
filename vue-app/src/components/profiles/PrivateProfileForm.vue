@@ -35,7 +35,7 @@ const blurFirstName = () => {
 
 <template>
   <div class="d-flex">
-    <div style="flex-grow: 6">
+    <div style="flex-grow: 6" data-cy="private_profile_form">
       <div class="d-flex big-vue-input-field-font-size">
         <v-text-field
           v-model="profileToBeEdited.surname"
@@ -45,6 +45,7 @@ const blurFirstName = () => {
           :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['surname']"
           @update:modelValue="emit('change')"
           @blur="blurLastName()"
+          data-cy="last_name_field"
         ></v-text-field>
         <v-text-field
           v-model="profileToBeEdited.name"
@@ -55,6 +56,7 @@ const blurFirstName = () => {
           @update:modelValue="emit('change')"
           aria-required="true"
           @blur="blurFirstName()"
+          data-cy="first_name_field"
         ></v-text-field>
         <v-text-field
           v-model="profileToBeEdited.middleName"

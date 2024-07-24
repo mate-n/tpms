@@ -7,6 +7,9 @@ export class ProfileCreatePostBodyConverter {
   dateFormatter = new DateFormatter()
   convertToProfileCreatePostBody(profile: IProfile): IProfileCreatePostBody {
     const profileCreatePostBody = new ProfileCreatePostBody()
+    if (profile.id) {
+      profileCreatePostBody.profileID = profile.id.toString()
+    }
     profileCreatePostBody.NamePrefix = ''
     profileCreatePostBody.GivenName = profile.name
     profileCreatePostBody.MiddleName = profile.middleName
@@ -25,7 +28,7 @@ export class ProfileCreatePostBodyConverter {
     profileCreatePostBody.PostalCode = profile.postalCode
     profileCreatePostBody.CountryName = profile.country
     profileCreatePostBody.CitizenCountryName = profile.countryofbirth
-    profileCreatePostBody.SAIdNumber = profile.sAId
+    profileCreatePostBody.SAIdNumber = profile.SAId
     profileCreatePostBody.PassportNumber = profile.passportno
     return profileCreatePostBody
   }

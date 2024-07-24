@@ -58,7 +58,7 @@ onMounted(() => {
             {{ dateFormatter.dddotmmdotyyyy(group[1][0].Date) }}
           </td>
           <td>{{ group[1].length }} x</td>
-          <td>{{ group[1][0].Name }}</td>
+          <td>{{ group[1][0].Description }}</td>
 
           <td>{{ group[1][0].Price }}</td>
           <td>

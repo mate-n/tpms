@@ -5,4 +5,7 @@ export interface IProtelAvailabilityPostBody {
   propertyid: string
   detail: string
   accomodation_type: string | null
+  adults: number
+  children: number
+  seniors: number
 }

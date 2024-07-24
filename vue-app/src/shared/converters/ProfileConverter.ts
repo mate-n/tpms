@@ -15,7 +15,7 @@ export class ProfileConverter {
     profile.dateofbirth = new Date(protelProfile.dateofbirth)
     profile.gender = protelProfile.gender
     profile.roomseekerclientcode = protelProfile.roomseekerclientcode
-    profile.sAId = protelProfile.SAId
+    profile.SAId = protelProfile.SAId
     profile.passportno = protelProfile.passportno
     profile.wildcardMembershipNumber = protelProfile.wildcardnumber
     profile.loyaltyMembershipNumber = protelProfile.loyaltynumber

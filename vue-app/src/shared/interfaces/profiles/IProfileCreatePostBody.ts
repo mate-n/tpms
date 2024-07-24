@@ -1,4 +1,5 @@
 export interface IProfileCreatePostBody {
+  profileID: string | undefined
   NamePrefix: string
   GivenName: string
   MiddleName: string

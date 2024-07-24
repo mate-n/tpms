@@ -1,72 +1,93 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeMount, ref, watch } from 'vue'
 import type { Ref } from 'vue'
-import { ItineraryReservationValidator } from '@/validators/ItineraryReservationValidator'
-import { useBasketItemsStore } from '@/stores/basketItems'
-import { Reservation } from '@/shared/classes/Reservation'
+import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
 import BasketCard from '@/components/baskets/BasketCard.vue'
 import type { IProtelRegion } from '@/shared/interfaces/protel/IProtelRegion'
+import type { AxiosStatic } from 'axios'
 import type { IProtelPark } from '@/shared/interfaces/protel/IProtelPark'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 import DateSelecter from '@/components/dates/DateSelecter.vue'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
-import ProfileSearchField from '@/components/profiles/ProfileSearchField.vue'
 import { RegionService } from '@/services/backend-middleware/RegionService'
 import { ParkService } from '@/services/backend-middleware/ParkService'
 import { CampService } from '@/services/backend-middleware/CampService'
+import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
 import CampWithAvailabilities from './CampWithAvailabilities.vue'
+import ItineraryReservationRightbar from './itinerary-reservation-rightbar/ItineraryReservationRightbar.vue'
+import { type IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
+import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
+import { ProtelAvailabilityConverter } from '@/shared/converters/ProtelAvailabilityConverter'
+import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
+import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
+import { DateHelper } from '@/helpers/DateHelper'
+import { ItineraryReservationCartManager } from '@/helpers/ItineraryReservationCartManager'
+import { CartService } from '@/services/backend-middleware/CartService'
+import type { CreateCartResponseBody } from '@/shared/interfaces/cart/CreateCartResponseBody'
+import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
+import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
+import WaitOverlay from '@/components/WaitOverlay.vue'
+const protelAvailabilityConverter = new ProtelAvailabilityConverter()
+const availabilityHelper = new AvailabilityHelper()
+const dateHelper = new DateHelper()
 const regionsInDropdown: Ref<IProtelRegion[]> = ref([])
 const allParks: Ref<IProtelPark[]> = ref([])
 const parksInDropdown: Ref<IProtelPark[]> = ref([])
 const allCamps: Ref<IProtelCamp[]> = ref([])
 const campsInDropdown: Ref<IProtelCamp[]> = ref([])
-const basketItemsStore = useBasketItemsStore()
-const itineraryReservationValidator = new ItineraryReservationValidator()
-const regionService = new RegionService()
-const parkService = new ParkService()
-const campService = new CampService()
+const roomTypeCodesInDropdown: Ref<string[]> = ref([])
+const autoToggleRightBar = ref(true)
+const showRightBar = ref(false)
+const itineraryReservationCartStore = useItineraryReservationCartStore()
+const axios2: AxiosStatic | undefined = inject('axios2')
+const cartService = new CartService(axios2)
+const syncCartItemService = new SyncCartItemService(axios2)
+const regionService = new RegionService(axios2)
+const parkService = new ParkService(axios2)
+const campService = new CampService(axios2)
+const availabilityService = new AvailabilityService(axios2)
 const itineraryReservation = ref(new ItineraryReservation())
+const arrivalDateNextDay = ref(dateHelper.addDays(itineraryReservation.value.arrivalDate, 1))
+const itineraryReservationCartManager = new ItineraryReservationCartManager()
+const loading = ref(false)
 
-const updateOrderIndexes = () => {
-  itineraryReservation.value.reservations.forEach((reservation, index) => {
-    reservation.orderIndex = index
-  })
-}
-
-const onReservationChanged = () => {
-  updateAllReservations()
-  checkForIssues()
-  updateShowBookButton()
-}
-
-const selectedProfile = computed(() => {
-  if (itineraryReservation.value.reservations.length === 0) return 0
-  return itineraryReservation.value.reservations[0].profileID
-})
-
-const updateAllReservations = () => {
-  for (const reservation of itineraryReservation.value.reservations) {
-    reservation.profileID = selectedProfile.value
-  }
-}
-
-const checkForIssues = () => {
-  itineraryReservationValidator.validate(itineraryReservation.value.reservations)
-}
-
-const updateShowBookButton = () => {
-  const errors = itineraryReservationValidator.getErrors(itineraryReservation.value.reservations)
-  if (errors.length > 0) {
-    showBookButton.value = false
-  } else {
-    showBookButton.value = true
-  }
-}
-
-const clickOnAddToCart = () => {
+const clickOnCreateCartButton = () => {
+  loading.value = true
+  showRightBar.value = false
+  autoToggleRightBar.value = true
   closeExpansionPanels.value++
-  updateOrderIndexes()
-  basketItemsStore.addReservations(itineraryReservation.value.reservations)
+  itineraryReservationCartStore.setItineraryReservation(itineraryReservation.value)
+  itineraryReservationCartManager
+    .createCart('0', cartService)
+    .then((createCartResponseBody: CreateCartResponseBody) => {
+      itineraryReservationCartStore.setCartNumber(createCartResponseBody.cart_number)
+      syncCartItemService
+        .synchronizeFrontendCartWithBackendCart(
+          itineraryReservation.value,
+          createCartResponseBody.cart_number
+        )
+        .then(() => {
+          loading.value = false
+        })
+    })
+}
+
+const clickOnUpdateCartButton = () => {
+  const cartNumber = itineraryReservationCartStore.getCartNumber()
+  if (!cartNumber) {
+    return
+  }
+  loading.value = true
+
+  showRightBar.value = false
+  autoToggleRightBar.value = true
+  closeExpansionPanels.value++
+
+  syncCartItemService
+    .synchronizeFrontendCartWithBackendCart(itineraryReservation.value, cartNumber)
+    .then(() => {
+      loading.value = false
+    })
 }
 
 const closeExpansionPanels = ref(0)
@@ -130,8 +151,31 @@ const getCamps = () => {
     })
   })
 }
+const getRoomTypes = () => {
+  roomTypeCodesInDropdown.value = []
 
-const showBookButton = ref(false)
+  const promises = itineraryReservation.value.selectedCamps.map((camp: IProtelCamp) => {
+    const protelAvailabilityPostBody = availabilityHelper.mapPostBody({
+      camp,
+      arrivalDate: itineraryReservation.value.arrivalDate,
+      departureDate: itineraryReservation.value.departureDate,
+      guestsPerRoom: new GuestsPerRoom()
+    })
+    return availabilityService.getAvailabilities(protelAvailabilityPostBody)
+  })
+
+  Promise.all(promises).then((response: IProtelAvailability[][]) => {
+    const roomTypeCodeSet = new Set<string>()
+    response.forEach((availabilities) => {
+      availabilities.forEach((availability) => {
+        if (availability?.room_type_code) {
+          roomTypeCodeSet.add(availability.room_type_code)
+        }
+      })
+    })
+    roomTypeCodesInDropdown.value = Array.from(roomTypeCodeSet.values())
+  })
+}
 
 const clickOnViewCart = () => {
   basketDialog.value = true
@@ -150,63 +194,52 @@ watch(
 watch(
   [() => itineraryReservation.value.selectedCamps],
   () => {
+    getRoomTypes()
     updateReservations()
   },
   { deep: true }
 )
 
 watch(
-  [() => itineraryReservation.value.arrivalDate, () => itineraryReservation.value.departureDate],
+  [
+    () => itineraryReservation.value.arrivalDate,
+    () => itineraryReservation.value.departureDate,
+    () => itineraryReservation.value.roomTypeCode
+  ],
   () => {
+    arrivalDateNextDay.value = dateHelper.addDays(itineraryReservation.value.arrivalDate, 1)
+
+    const isAfter = dateHelper.isAfter(
+      dateHelper.addDays(itineraryReservation.value.arrivalDate, 1),
+      itineraryReservation.value.departureDate
+    )
+    if (isAfter) {
+      itineraryReservation.value.departureDate = dateHelper.addDays(
+        itineraryReservation.value.arrivalDate,
+        1
+      )
+    }
+
     updateReservations()
   },
   { deep: true }
 )
 
-const updatePropertiesOfReservations = () => {
-  for (const reservation of itineraryReservation.value.reservations) {
-    reservation.arrivalDate = itineraryReservation.value.arrivalDate
-    reservation.departureDate = itineraryReservation.value.departureDate
-  }
-}
-
 const updateReservations = () => {
+  itineraryReservation.value.protelReservations = []
   filterOutLeftOverReservations()
-  addReservationToCamps()
-  updatePropertiesOfReservations()
 }
 
 const filterOutLeftOverReservations = () => {
-  for (const reservation of itineraryReservation.value.reservations) {
+  for (const reservation of itineraryReservation.value.protelReservations) {
     const foundCamp = itineraryReservation.value.selectedCamps.find(
-      (camp) => camp.name === reservation.propertyName
+      (camp) => camp.name === reservation.property_code
     )
     if (!foundCamp) {
-      const index = itineraryReservation.value.reservations.indexOf(reservation)
-      itineraryReservation.value.reservations.splice(index, 1)
+      const index = itineraryReservation.value.protelReservations.indexOf(reservation)
+      itineraryReservation.value.protelReservations.splice(index, 1)
     }
   }
-}
-
-const addReservationToCamps = () => {
-  for (const camp of itineraryReservation.value.selectedCamps) {
-    const foundReservation = itineraryReservation.value.reservations.find(
-      (reservation) => reservation.propertyName === camp.name
-    )
-    if (!foundReservation) {
-      addReservationToCamp(camp)
-    }
-  }
-}
-
-const addReservationToCamp = (camp: IProtelCamp) => {
-  const reservation = new Reservation()
-  reservation.propertyName = camp.name
-  reservation.profileID = selectedProfile.value
-  reservation.propertyID = camp.id
-  reservation.arrivalDate = itineraryReservation.value.arrivalDate
-  reservation.departureDate = itineraryReservation.value.departureDate
-  itineraryReservation.value.reservations.push(reservation)
 }
 
 const travelDistanceShown = ref(false)
@@ -238,9 +271,50 @@ const clearSelectedCamps = () => {
   itineraryReservation.value.selectedCamps = []
   travelDistanceWarningDialog.value = false
 }
+
+const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservationSelectUpdate) => {
+  if (autoToggleRightBar.value) {
+    showRightBar.value = true
+    autoToggleRightBar.value = false
+  }
+
+  const newReservations = protelAvailabilityConverter.convertToReservations(
+    protelReservationSelectUpdate.selectedAvailabilities,
+    protelReservationSelectUpdate.guestsPerRoom
+  )
+
+  itineraryReservation.value.protelReservations =
+    itineraryReservation.value.protelReservations.filter(
+      (reservation) =>
+        !hasReservationPropertyCodeAndRoomTypeCode(
+          reservation,
+          protelReservationSelectUpdate.property_code,
+          protelReservationSelectUpdate.roomTypeCode
+        )
+    )
+
+  itineraryReservation.value.protelReservations.push(...newReservations)
+}
+
+const hasReservationPropertyCodeAndRoomTypeCode = (
+  reservation: IProtelReservation,
+  property_code: string,
+  roomTypeCode: string
+) => {
+  if (roomTypeCode === '') {
+    return reservation.property_code === property_code
+  }
+
+  return reservation.property_code === property_code && reservation.type_code === roomTypeCode
+}
+
+const isCartNumberPresent = computed(() => {
+  return itineraryReservationCartStore.getCartNumber() !== undefined
+})
 </script>
 
 <template>
+  <WaitOverlay v-if="loading" />
   <v-container fluid class="bg-protelblue text-white itinerary-reservation-fixed-div">
     <v-row class="d-flex align-center">
       <v-col class="d-flex align-center h-100" cols="3">
@@ -282,25 +356,44 @@ const clearSelectedCamps = () => {
           return-object
           multiple
           @update:model-value="checkTravelDistance()"
+          data-cy="camp_autocomplete"
         ></v-autocomplete>
       </v-col>
     </v-row>
 
-    <v-row class="d-flex align-center">
-      <v-col class="d-flex align-center h-100">
-        <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
-      </v-col>
-      <v-col class="d-flex align-center h-100">
-        <DateSelecter v-model="itineraryReservation.departureDate" label="Departure"></DateSelecter>
-      </v-col>
-      <v-col>
-        <ProfileSearchField
-          label="Guest"
-          icon-name="mdi-account-circle-outline"
-          v-model="itineraryReservation.guestProfileID"
-        ></ProfileSearchField>
-      </v-col>
-    </v-row>
+    <div class="d-flex align-center ga-4">
+      <v-row class="d-flex align-center">
+        <v-col class="d-flex align-center h-100">
+          <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
+        </v-col>
+        <v-col class="d-flex align-center h-100">
+          <DateSelecter
+            v-model="itineraryReservation.departureDate"
+            label="Departure"
+            :min="arrivalDateNextDay"
+          ></DateSelecter>
+        </v-col>
+        <v-col>
+          <v-autocomplete
+            v-model="itineraryReservation.selectedRoomTypeCodes"
+            clearable
+            closable-chips
+            chips
+            variant="underlined"
+            label="Room types"
+            :items="roomTypeCodesInDropdown"
+            multiple
+          ></v-autocomplete>
+        </v-col>
+      </v-row>
+
+      <ItineraryReservationRightbar
+        :showRightBar="showRightBar"
+        :itinerary-reservation="itineraryReservation"
+        @toggle="(bol) => (showRightBar = bol)"
+        @update="(val) => (itineraryReservation.protelReservations = val)"
+      />
+    </div>
   </v-container>
 
   <template v-for="camp of itineraryReservation.selectedCamps" :key="camp.id">
@@ -308,6 +401,12 @@ const clearSelectedCamps = () => {
       :camp="camp"
       :arrival-date="itineraryReservation.arrivalDate"
       :departure-date="itineraryReservation.departureDate"
+      :room-type-codes="itineraryReservation.selectedRoomTypeCodes"
+      @availabilities-selected="
+        (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
+          availabilitiesSelected(protelReservationSelectUpdate)
+      "
+      :itinerary-reservation="itineraryReservation"
     ></CampWithAvailabilities>
   </template>
 
@@ -316,7 +415,12 @@ const clearSelectedCamps = () => {
       <v-btn class="secondary-button me-2">Cancel</v-btn>
 
       <v-btn class="secondary-button me-2" @click="clickOnViewCart()">View Cart</v-btn>
-      <v-btn class="primary-button" @click="clickOnAddToCart()">Add to Cart</v-btn>
+      <v-btn class="primary-button" @click="clickOnCreateCartButton()" v-if="!isCartNumberPresent">
+        Create Cart
+      </v-btn>
+      <v-btn class="primary-button" @click="clickOnUpdateCartButton()" v-if="isCartNumberPresent">
+        Update Cart
+      </v-btn>
     </div>
   </v-container>
 

@@ -52,7 +52,7 @@ const dateofbirthUpdated = () => {
 const saidChange = () => {
   if (!profileToBeEdited.value.dateofbirth) {
     const newDateOfBirth = sAIDPassportHelper.extractBirthdateFromSAIDNumber(
-      profileToBeEdited.value.sAId
+      profileToBeEdited.value.SAId
     )
     if (newDateOfBirth) {
       profileToBeEdited.value.dateofbirth = newDateOfBirth
@@ -60,7 +60,7 @@ const saidChange = () => {
   }
 
   if (!profileToBeEdited.value.gender) {
-    const newGender = sAIDPassportHelper.extractGenderFromSAIDNumber(profileToBeEdited.value.sAId)
+    const newGender = sAIDPassportHelper.extractGenderFromSAIDNumber(profileToBeEdited.value.SAId)
     if (newGender) {
       profileToBeEdited.value.gender = newGender
     }
@@ -84,6 +84,7 @@ const saidBlur = () => {
     :error-message="profileToBeEdited.errors && profileToBeEdited.errors['dateofbirth']"
     label="Date of Birth"
     @update:model-value="dateofbirthUpdated"
+    data-cy="date_of_birth_field"
   ></DateSelecter>
 
   <v-select
@@ -104,17 +105,19 @@ const saidBlur = () => {
     :items="availableNationalities"
     item-title="value"
     item-value="id"
+    data-cy="nationality_field"
   ></v-select>
 
   <v-row>
     <v-col>
       <v-text-field
         label="SA ID Number"
-        v-model="profileToBeEdited.sAId"
+        v-model="profileToBeEdited.SAId"
         variant="underlined"
         :error-messages="profileToBeEdited.errors && profileToBeEdited.errors['sAId']"
         @update:modelValue="saidChange()"
         @blur="saidBlur()"
+        data-cy="sa_id_number_field"
       ></v-text-field>
     </v-col>
     <v-col>

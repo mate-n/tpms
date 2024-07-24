@@ -1,3 +1,4 @@
+name: tpms-frontend-cypress-tests
 services:
   vue:
     build:
@@ -6,12 +7,36 @@ services:
       target: development-stage
       args:
         VITE_API_BASE_URL: "${API_BASE_URL}"
+        VITE_API_BASE_URL2: "${API_BASE_URL2}"
+        VITE_SHOW_API_STATUS: "${SHOW_API_STATUS}"
+        VITE_SHOW_API_SWITCHER: "${SHOW_API_SWITCHER}"
     volumes:
       - ../vue-app/src:/app/src
     env_file:
       - .env
     ports:
       - "${PORT_FRONTEND}:8080"
+    depends_on:
+      - nest
+      - backend-middleware
+  backend-middleware-mongodb:
+    image: "mongo"
+    volumes:
+      - mongodata:/data/db
+    env_file:
+      - .env
+  backend-middleware:
+    build:
+      context: ../backend-middleware
+      dockerfile: Dockerfile
+    volumes:
+      - ../backend-middleware/src:/app/src
+    env_file:
+      - .env
+    ports:
+      - "${PORT_MIDDLEWARE}:8080"
+    depends_on:
+      - backend-middleware-mongodb
   nest:
     build:
       context: ../nest-app
@@ -23,16 +48,13 @@ services:
       - .env
     ports:
       - "${PORT_BACKEND}:3001"
-  cypress-tests:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  npm:
+    build: ../tools/npm
     volumes:
-      - .:/app
-    env_file:
-      - .env
-    depends_on:
-      - vue
-      - nest
-    stdin_open: true
-    tty: true
+      - ../:/app
+    profiles:
+      - development
+    user: "${UID}:${GID}"
+
+volumes:
+  mongodata:

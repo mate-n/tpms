@@ -10,7 +10,13 @@ const guestsPerRoom = defineModel({
   type: Object as () => GuestsPerRoom
 })
 
+const emit = defineEmits(['update:modelValue'])
+
 defineProps({
+  readonly: {
+    type: Boolean,
+    required: false
+  },
   errors: {
     type: Object as () => Record<string, string> | undefined,
     required: false
@@ -22,6 +28,10 @@ const totalGuests = computed(() => {
 })
 
 const guestsPerRoomMenu = ref(false)
+
+const handleUpdate = (values: Partial<GuestsPerRoom>) => {
+  emit('update:modelValue', { ...guestsPerRoom.value, ...values })
+}
 </script>
 <template>
   <v-menu v-model="guestsPerRoomMenu" :close-on-content-click="false">
@@ -29,7 +39,9 @@ const guestsPerRoomMenu = ref(false)
       <v-text-field
         v-model="totalGuests"
         label="Guests per Room"
+        variant="underlined"
         :error-messages="errors && errors['guestsPerRoom']"
+        :readonly="readonly"
         v-bind="props"
       ></v-text-field>
     </template>
@@ -42,6 +54,8 @@ const guestsPerRoomMenu = ref(false)
           label="Adult"
           :inset="true"
           :min="0"
+          :readonly="readonly"
+          @update:model-value="(val) => handleUpdate({ numberOfAdults: val })"
         ></v-number-input>
         <v-number-input
           v-model="guestsPerRoom.numberOfInfants"
@@ -50,6 +64,8 @@ const guestsPerRoomMenu = ref(false)
           controlVariant="stacked"
           variant="underlined"
           :min="0"
+          :readonly="readonly"
+          @update:model-value="(val) => handleUpdate({ numberOfInfants: val })"
         ></v-number-input>
 
         <v-number-input
@@ -59,6 +75,8 @@ const guestsPerRoomMenu = ref(false)
           controlVariant="stacked"
           variant="underlined"
           :min="0"
+          :readonly="readonly"
+          @update:model-value="(val) => handleUpdate({ numberOfChildren: val })"
         ></v-number-input>
 
         <v-number-input
@@ -68,6 +86,8 @@ const guestsPerRoomMenu = ref(false)
           controlVariant="stacked"
           variant="underlined"
           :min="0"
+          :readonly="readonly"
+          @update:model-value="(val) => handleUpdate({ numberOfSeniors: val })"
         ></v-number-input>
       </v-card-text>
     </v-card>

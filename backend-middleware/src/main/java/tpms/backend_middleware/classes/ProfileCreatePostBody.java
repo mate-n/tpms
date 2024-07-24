@@ -1,6 +1,7 @@
 package tpms.backend_middleware.classes;
 
 public class ProfileCreatePostBody {
+    public String profileID;
     public String NamePrefix;
     public String GivenName;
     public String MiddleName;
