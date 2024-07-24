@@ -1,0 +1,259 @@
+{
+  "data": {
+    "status": "success",
+    "availability_data": [
+      {
+        "id": "37922",
+        "transaction_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "unique_message_id": "a26c0284-2879-4a8a-bda2-e605484391a1",
+        "request_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "date_time": "2024-07-08 13:35:02",
+        "pms_type": "SaaS",
+        "property_code": "19199",
+        "type": "FullExport",
+        "room_type_code": "Chalet CH2/4S",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-07-24 00:00:00",
+        "availability_end": "2024-07-24 00:00:00",
+        "availability_count": "11",
+        "park_name": "Golden Gate Highlands National Park ",
+        "property_name": "Golden Gate Hotel and Chalets",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "4",
+            "room_rate": "2251.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      },
+      {
+        "id": "37946",
+        "transaction_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "unique_message_id": "984aeed9-6a48-4a52-b8ac-4b3795ae650f",
+        "request_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "date_time": "2024-07-08 13:35:02",
+        "pms_type": "SaaS",
+        "property_code": "19199",
+        "type": "FullExport",
+        "room_type_code": "Chalet CH2/4Z",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-07-24 00:00:00",
+        "availability_end": "2024-07-24 00:00:00",
+        "availability_count": "2",
+        "park_name": "Golden Gate Highlands National Park ",
+        "property_name": "Golden Gate Hotel and Chalets",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "4",
+            "room_rate": "2251.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      },
+      {
+        "id": "37970",
+        "transaction_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "unique_message_id": "0b2ba51c-afd5-48ce-a26d-bfa530ce7add",
+        "request_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "date_time": "2024-07-08 13:35:03",
+        "pms_type": "SaaS",
+        "property_code": "19199",
+        "type": "FullExport",
+        "room_type_code": "Honeymoon Suite with View NHBS",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-07-24 00:00:00",
+        "availability_end": "2024-07-24 00:00:00",
+        "availability_count": "10",
+        "park_name": "Golden Gate Highlands National Park ",
+        "property_name": "Golden Gate Hotel and Chalets",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "2",
+            "room_rate": "3086.000",
+            "add_on_child1": "3086.000"
+          }
+        ]
+      },
+      {
+        "id": "37994",
+        "transaction_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "unique_message_id": "c98e3870-0ce7-42b9-a7ca-189becde929d",
+        "request_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "date_time": "2024-07-08 13:35:03",
+        "pms_type": "SaaS",
+        "property_code": "19199",
+        "type": "FullExport",
+        "room_type_code": "Luxury Standard NSL",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-07-24 00:00:00",
+        "availability_end": "2024-07-24 00:00:00",
+        "availability_count": "26",
+        "park_name": "Golden Gate Highlands National Park ",
+        "property_name": "Golden Gate Hotel and Chalets",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "2",
+            "room_rate": "1934.000",
+            "add_on_child1": "1934.000"
+          }
+        ]
+      },
+      {
+        "id": "38018",
+        "transaction_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "unique_message_id": "c8ca1475-3164-4bb6-b261-8dfc018268f9",
+        "request_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "date_time": "2024-07-08 13:35:04",
+        "pms_type": "SaaS",
+        "property_code": "19199",
+        "type": "FullExport",
+        "room_type_code": "Premier Luxury Suite with View NPBS",
+        "default_occupancy": "3",
+        "max_occupancy": "6",
+        "availability_start": "2024-07-24 00:00:00",
+        "availability_end": "2024-07-24 00:00:00",
+        "availability_count": "1",
+        "park_name": "Golden Gate Highlands National Park ",
+        "property_name": "Golden Gate Hotel and Chalets",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "2",
+            "room_rate": "5750.000",
+            "add_on_child1": "5750.000"
+          }
+        ]
+      },
+      {
+        "id": "38042",
+        "transaction_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "unique_message_id": "26b438e5-2288-4f54-9656-18ba7acacbb3",
+        "request_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "date_time": "2024-07-08 13:35:04",
+        "pms_type": "SaaS",
+        "property_code": "19199",
+        "type": "FullExport",
+        "room_type_code": "Standard Room Single Beds SSS",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-07-24 00:00:00",
+        "availability_end": "2024-07-24 00:00:00",
+        "availability_count": "2",
+        "park_name": "Golden Gate Highlands National Park ",
+        "property_name": "Golden Gate Hotel and Chalets",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "2",
+            "room_rate": "1712.000",
+            "add_on_child1": "1712.000"
+          }
+        ]
+      },
+      {
+        "id": "38066",
+        "transaction_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "unique_message_id": "75bde7f5-76a2-4885-94d8-f6dc3545896e",
+        "request_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "date_time": "2024-07-08 13:35:05",
+        "pms_type": "SaaS",
+        "property_code": "19199",
+        "type": "FullExport",
+        "room_type_code": "Standard Room SSL",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-07-24 00:00:00",
+        "availability_end": "2024-07-24 00:00:00",
+        "availability_count": "9",
+        "park_name": "Golden Gate Highlands National Park ",
+        "property_name": "Golden Gate Hotel and Chalets",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "2",
+            "room_rate": "1712.000",
+            "add_on_child1": "1712.000"
+          }
+        ]
+      },
+      {
+        "id": "38090",
+        "transaction_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "unique_message_id": "1e4a58ac-e26e-4a9c-ad12-1b086a34abe0",
+        "request_id": "eb376897-1221-4c82-af1b-be33fb937430",
+        "date_time": "2024-07-08 13:35:05",
+        "pms_type": "SaaS",
+        "property_code": "19199",
+        "type": "FullExport",
+        "room_type_code": "Standard Room with View NSS",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-07-24 00:00:00",
+        "availability_end": "2024-07-24 00:00:00",
+        "availability_count": "13",
+        "park_name": "Golden Gate Highlands National Park ",
+        "property_name": "Golden Gate Hotel and Chalets",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "2",
+            "room_rate": "1712.000",
+            "add_on_child1": "1712.000"
+          }
+        ]
+      },
+      {
+        "id": "143338",
+        "transaction_id": "921544e2-b027-4485-96dd-d1fb21c6c3dd",
+        "unique_message_id": "5ddfb384-af53-47a4-9ac3-b24df9481f20",
+        "request_id": "921544e2-b027-4485-96dd-d1fb21c6c3dd",
+        "date_time": "2024-07-20 10:55:31",
+        "pms_type": "SaaS",
+        "property_code": "19199",
+        "type": "FullExport",
+        "room_type_code": "Chalet CH2/4B",
+        "default_occupancy": "2",
+        "max_occupancy": "",
+        "availability_start": "2024-07-24 00:00:00",
+        "availability_end": "2024-07-24 00:00:00",
+        "availability_count": "2",
+        "park_name": "",
+        "property_name": "",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "4",
+            "room_rate": "2251.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      }
+    ]
+  }
+}
