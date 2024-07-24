@@ -13,7 +13,7 @@ const axios: AxiosStatic | undefined = inject('axios')
 const axios2: AxiosStatic | undefined = inject('axios2')
 const cartService = new CartService(axios2)
 const profileService = new ProfileService(axios2)
-const campService = new CampService(axios2)
+const campService = new CampService()
 
 const itineraryReservationService = new ItineraryReservationService(axios)
 const itineraryReservations: Ref<IItineraryReservation[]> = ref([])

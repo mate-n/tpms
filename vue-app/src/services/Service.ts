@@ -1,9 +1,9 @@
-import axios, { type AxiosStatic } from 'axios'
+import axios from 'axios'
 import { AuthenticationHelper } from '@/authentication/AuthenticationHelper'
 
 export class Service {
-  axiosInstance: AxiosStatic
-  oldAxiosInstance: AxiosStatic
+  axiosInstance = axios.create()
+  oldAxiosInstance = axios.create()
 
   constructor() {
     this.initAxiosInstance()
