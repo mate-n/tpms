@@ -7,8 +7,10 @@ import DateSelecter from '@/components/dates/DateSelecter.vue'
 import GuestsPerRoomSelecter from '@/components/selecters/GuestsPerRoomSelecter.vue'
 import type { IRate } from '@/shared/interfaces/IRate'
 import { ProtelReservation } from '@/shared/classes/ProtelReservation'
+import { RoomHelper } from '@/helpers/RoomHelper'
 
 const dateHelper = new DateHelper()
+const roomHelper = new RoomHelper()
 
 const emit = defineEmits(['update', 'delete'])
 
@@ -51,7 +53,7 @@ watch(
     <div class="d-flex justify-space-between align-center py-3">
       <div class="d-flex ga-2">
         <v-icon>mdi-bed-outline</v-icon>
-        <p>{{ reservation.roomTypeCode }}</p>
+        <p>{{ roomHelper.removeCloneRoomTypeCodeSuffix(reservation.roomTypeCode) }}</p>
       </div>
       <v-btn
         class="text-grey-darken-1"

@@ -133,18 +133,6 @@ const handleMouseUp = ({ selectable }: IProtelAvailabilitySelectable) => {
   startSelectingAt.value = null
 }
 
-watch(
-  [() => props.allAvailabilities, () => props.roomTypeCode],
-  async () => {
-    resetProtelAvailabilitySelectables()
-    await nextTick()
-  },
-  {
-    immediate: true,
-    deep: true
-  }
-)
-
 const setSelectedAvailabilities = () => {
   for (const selectable of protelAvailabilitySelectables.value) {
     selectable.selected = false
@@ -174,8 +162,13 @@ const setSelectedAvailabilities = () => {
 }
 
 watch(
-  [() => props.itineraryReservation.protelReservations],
+  [
+    () => props.allAvailabilities,
+    () => props.roomTypeCode,
+    () => props.itineraryReservation.protelReservations
+  ],
   async () => {
+    resetProtelAvailabilitySelectables()
     setSelectedAvailabilities()
     await nextTick()
   },

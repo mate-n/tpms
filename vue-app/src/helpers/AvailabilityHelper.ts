@@ -4,10 +4,12 @@ import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IPr
 import { DateHelper } from './DateHelper'
 import { DateFormatter } from './DateFormatter'
 import type { IGuestsPerRoom } from '@/shared/interfaces/IGuestsPerRoom'
+import { RoomHelper } from './RoomHelper'
 
 export class AvailabilityHelper {
   dateFormatter = new DateFormatter()
   dateHelper = new DateHelper()
+  roomHelper = new RoomHelper()
   getUniqueRoomTypeNames(availabilities: IProtelAvailability[]) {
     const uniqueRooms = new Set<string>()
     availabilities.forEach((availability) => {
@@ -19,8 +21,10 @@ export class AvailabilityHelper {
   getUniqueRoomTypeCodes(availabilities: IProtelAvailability[]) {
     const uniqueCodes = new Set<string>()
     availabilities.forEach((availability) => {
-      if (availability && availability.room_type_code) {
-        uniqueCodes.add(availability.room_type_code)
+      if (!this.roomHelper.checkCloneRoomTypeCode(availability.room_type_code)) {
+        if (availability && availability.room_type_code) {
+          uniqueCodes.add(availability.room_type_code)
+        }
       }
     })
     return uniqueCodes

@@ -6,7 +6,9 @@ import type { IProtelReservation } from '@/services/reservations/IProtelReservat
 import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import { DateHelper } from '@/helpers/DateHelper'
+import { RoomHelper } from '@/helpers/RoomHelper'
 const priceFormatter = new PriceFormatter()
+const roomHelper = new RoomHelper()
 const dateHelper = new DateHelper()
 const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const props = defineProps({
@@ -43,7 +45,9 @@ const numberOfNights = computed(() => {
           <v-icon>mdi-chevron-double-right</v-icon>
           <strong data-cy="property_name">{{ reservation.property_name }}</strong
           ><br />
-          <span class="text-black" data-cy="room_type_code">{{ reservation.roomTypeCode }}</span>
+          <span class="text-black" data-cy="room_type_code">{{
+            roomHelper.removeCloneRoomTypeCodeSuffix(reservation.roomTypeCode)
+          }}</span>
         </div>
       </div>
       <v-row class="pb-0">
