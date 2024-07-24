@@ -364,13 +364,18 @@ const isCartNumberPresent = computed(() => {
     <div class="d-flex align-center ga-4">
       <v-row class="d-flex align-center">
         <v-col class="d-flex align-center h-100">
-          <DateSelecter v-model="itineraryReservation.arrivalDate" label="Arrival"></DateSelecter>
+          <DateSelecter
+            v-model="itineraryReservation.arrivalDate"
+            label="Arrival"
+            data-cy="arrival_date_selector"
+          ></DateSelecter>
         </v-col>
         <v-col class="d-flex align-center h-100">
           <DateSelecter
             v-model="itineraryReservation.departureDate"
             label="Departure"
             :min="arrivalDateNextDay"
+            data-cy="departure_date_selector"
           ></DateSelecter>
         </v-col>
         <v-col>
@@ -415,10 +420,20 @@ const isCartNumberPresent = computed(() => {
       <v-btn class="secondary-button me-2">Cancel</v-btn>
 
       <v-btn class="secondary-button me-2" @click="clickOnViewCart()">View Cart</v-btn>
-      <v-btn class="primary-button" @click="clickOnCreateCartButton()" v-if="!isCartNumberPresent">
+      <v-btn
+        class="primary-button"
+        @click="clickOnCreateCartButton()"
+        v-if="!isCartNumberPresent"
+        data-cy="create_cart_button"
+      >
         Create Cart
       </v-btn>
-      <v-btn class="primary-button" @click="clickOnUpdateCartButton()" v-if="isCartNumberPresent">
+      <v-btn
+        class="primary-button"
+        @click="clickOnUpdateCartButton()"
+        v-if="isCartNumberPresent"
+        data-cy="update_cart_button"
+      >
         Update Cart
       </v-btn>
     </div>
