@@ -12,9 +12,17 @@ scp docker-compose.remote.yml tpms-user@41.76.108.121:/home/tpms-user/tpms-front
 
 scp .env tpms-user@41.76.108.121:/home/tpms-user/tpms-frontend-south-africa-production
 
+scp update_version.sh tpms-user@41.76.108.121:/home/tpms-user/tpms-frontend-south-africa-production
+
 ssh tpms-user@41.76.108.121 << EOF
     cd /home/tpms-user/tpms-frontend-south-africa-production
     docker compose --file docker-compose.remote.yml down
     docker compose --file docker-compose.remote.yml up -d
     docker system prune -f
+EOF
+
+gitsha=$(git log -1 --format="%H")
+ssh tpms-user@41.76.108.121 << EOF
+    cd /home/tpms-user/tpms-frontend-south-africa-production
+    ./update_version.sh $gitsha
 EOF
