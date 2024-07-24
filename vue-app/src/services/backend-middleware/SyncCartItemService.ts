@@ -163,7 +163,7 @@ export class SyncCartItemService implements IService {
           newItem.adults = 0
           newItem.children = 0
           newItem.units = reservation.numberOfRooms
-          newItem.item_type = 1
+          newItem.item_type = 3
           if (reservation.cartITemID) {
             newItem.parent = reservation.cartITemID
           }

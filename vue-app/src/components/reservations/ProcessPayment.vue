@@ -132,7 +132,7 @@ onMounted(() => {
 
 const amountSpecifiedByUser = ref(0)
 const clickOnSubmitButton = () => {
-  emit('clickOnSubmitButton', totalPrice)
+  emit('clickOnSubmitButton', totalPriceToSubmit.value)
 }
 
 const firstDepositSelected = ref(false)
