@@ -21,7 +21,7 @@ const props = defineProps({
   allAvailabilities: { type: Array as () => IProtelAvailability[], required: true },
   arrivalDate: { type: Object as () => Date, required: true },
   departureDate: { type: Object as () => Date, required: true },
-  ItineraryReservation: { type: Object as () => IItineraryReservation, required: true }
+  itineraryReservation: { type: Object as () => IItineraryReservation, required: true }
 })
 
 const emits = defineEmits(['availabilities-selected'])
@@ -152,7 +152,7 @@ const setSelectedAvailabilities = () => {
 
   for (const selectable of protelAvailabilitySelectables.value) {
     selectable.selected = false
-    const reservations = props.ItineraryReservation.protelReservations.filter(
+    const reservations = props.itineraryReservation.protelReservations.filter(
       (reservation) =>
         reservation.roomTypeCode === props.roomTypeCode &&
         reservation.property_code === props.propertyCode
@@ -174,7 +174,7 @@ const setSelectedAvailabilities = () => {
 }
 
 watch(
-  [() => props.ItineraryReservation.protelReservations],
+  [() => props.itineraryReservation.protelReservations],
   async () => {
     setSelectedAvailabilities()
     await nextTick()

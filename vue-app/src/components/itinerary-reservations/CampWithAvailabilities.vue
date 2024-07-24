@@ -309,7 +309,7 @@ const totalPriceForCamp = computed(() => {
                       (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
                         availabilitiesSelected(protelReservationSelectUpdate)
                     "
-                    :-itinerary-reservation="props.itineraryReservation"
+                    :itinerary-reservation="props.itineraryReservation"
                   ></AvailabilitiesSelecter>
                 </td>
               </tr>
