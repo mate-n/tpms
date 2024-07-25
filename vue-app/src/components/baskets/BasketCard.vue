@@ -18,6 +18,9 @@ import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 import ProcessPayment from '@/components/reservations/ProcessPayment.vue'
 import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
 import WaitOverlay from '../WaitOverlay.vue'
+import { useErrorsStore } from '@/stores/errors'
+import type { ISynchronizeFrontendCartWithBackendCartResult } from '@/shared/interfaces/ISynchronizeFrontendCartWithBackendCartResult'
+import { SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator } from '@/shared/classes/SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator'
 const itineraryReservationCartManager = new ItineraryReservationCartManager()
 const confirmationNumbers = ref<string[]>([])
 const identityHelper = new IdentityHelper()
@@ -29,6 +32,10 @@ const priceFormatter = new PriceFormatter()
 const campService = new CampService(axios2)
 const syncCartItemService = new SyncCartItemService(axios2)
 const itineraryReservationCartStore = useItineraryReservationCartStore()
+const errorsStore = useErrorsStore()
+const synchronizeFrontendCartWithBackendCartResultErrorMessageGenerator =
+  new SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator()
+
 const emits = defineEmits(['close'])
 const camps = ref<IProtelCamp[]>([])
 
@@ -111,7 +118,8 @@ const synchronizeFrontendCartWithBackendCart = () => {
           itineraryReservationCartStore.itineraryReservation,
           cartNumber
         )
-        .then(() => {
+        .then((results) => {
+          triggerErrorDialogIfFailed(results)
           loading.value = false
           resolve()
         })
@@ -235,6 +243,16 @@ const addConservationFeesToReservation = () => {
 }
 
 const loading = ref(false)
+
+const triggerErrorDialogIfFailed = (results: ISynchronizeFrontendCartWithBackendCartResult[]) => {
+  if (results.some((result) => result.status === 'failed')) {
+    const errorMessage =
+      synchronizeFrontendCartWithBackendCartResultErrorMessageGenerator.generateErrorMessage(
+        results
+      )
+    errorsStore.triggerDialog(errorMessage)
+  }
+}
 </script>
 
 <template>

@@ -12,6 +12,7 @@ import { ProtelApiStatusService } from './services/protel/ProtelApiStatusService
 import type { AxiosStatic } from 'axios'
 import { AxiosHelper } from './helpers/AxiosHelper'
 import { useItineraryReservationCartStore } from './stores/itineraryReservationCart'
+import ErrorDialog from './components/ErrorDialog.vue'
 const showApiStatus = import.meta.env.VITE_SHOW_API_STATUS === 'true'
 const showApiSwitcher = import.meta.env.VITE_SHOW_API_SWITCHER === 'true'
 const axiosHelper = new AxiosHelper()
@@ -216,7 +217,11 @@ const showBadge = computed(() => {
         />
       </v-menu>
     </v-app-bar>
-    <v-main> <RouterView /></v-main>
+    <v-main>
+      <RouterView />
+
+      <ErrorDialog></ErrorDialog>
+    </v-main>
 
     <v-dialog v-model="basketDialog" scrollable auto>
       <v-card>
