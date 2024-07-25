@@ -16,7 +16,9 @@ import WildcardPopUpCard from '../profiles/WildcardPopUpCard.vue'
 import { WildcardService } from '@/services/backend-middleware/WildcardService'
 import { AdultsAndChildren } from '@/shared/classes/AdultsAndChildren'
 import { ConservationFeePricesConverter } from '@/shared/converters/ConservationFeePricesConverter'
+import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
 const conservationFeePricesConverter = new ConservationFeePricesConverter()
+const protelReservationPriceCalculator = new ProtelReservationPriceCalculator()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const conservationFeesService = new ConservationFeeService(axios2)
 const wildcardService = new WildcardService(axios2)
@@ -290,6 +292,13 @@ const totalConservationFeePricesForChildren = computed(() => {
   )
 })
 
+const isTotalPriceOverPriceAllNights = computed(() => {
+  return (
+    protelReservationPriceCalculator.getPriceForAllNights(reservation.value) <
+    totalConservationFeePricesForAdults.value + totalConservationFeePricesForChildren.value
+  )
+})
+
 const wouldWildcardBeCheaper = () => {
   if (reservation.value.guestsPerRoom.numberOfAdults === 1) {
     return (
@@ -336,7 +345,11 @@ const save = () => {
 <template>
   <v-toolbar class="standard-dialog-card-toolbar">
     <v-toolbar-title><span class="text-primary">Conservation Fees</span></v-toolbar-title>
-    <div class="profiles-card-toolbar-button text-primary" @click="save()">
+    <div
+      v-if="!isTotalPriceOverPriceAllNights"
+      class="profiles-card-toolbar-button text-primary"
+      @click="save()"
+    >
       <v-icon size="large">mdi-content-save-outline</v-icon>
     </div>
     <div class="profiles-card-toolbar-button rounded-te" @click="emits('close')">
@@ -346,6 +359,9 @@ const save = () => {
   <v-divider class="standard-dialog-card-divider"></v-divider>
   <div v-if="loading">
     <v-progress-linear color="primary" indeterminate></v-progress-linear>
+  </div>
+  <div v-if="isTotalPriceOverPriceAllNights" class="px-4 py-2 text-red-darken-1">
+    You cannot add more conservation fees than booked nights.
   </div>
   <v-container fluid>
     <v-row class="conservation-fee-cell-background2 font-size-rem-12 conservation-fee-cell">
