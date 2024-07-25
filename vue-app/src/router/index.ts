@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
 import ItineraryReservationEnquiryView from '@/views/ItineraryReservationEnquiryView.vue'
 import NewProfileView from '@/views/NewProfileView.vue'
 import ApiTestView from '@/views/ApiTestView.vue'
@@ -15,6 +15,7 @@ import AuthenticationService from '@/services/AuthenticationService'
 import ProfilesView from '@/views/ProfilesView.vue'
 import ProfileSearchView from '@/views/ProfileSearchView.vue'
 import CartTestView from '@/views/CartTestView.vue'
+import { useCurrentUserStore } from '@/stores/currentUserStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -101,11 +102,20 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
-  const axios: AxiosStatic | undefined = inject('axios')
-  const authentificationService = new AuthenticationService(axios)
+  const currentUserStore = useCurrentUserStore()
+  if (!currentUserStore.pmsId) {
+    const pmsId = getPmsId(to.fullPath)
+    if (pmsId) {
+      currentUserStore.pmsId = pmsId
+      return '/'
+    } else {
+      const axios: AxiosStatic | undefined = inject('axios')
+      const authentificationService = new AuthenticationService(axios)
 
-  const canAccess = await canUserAccess(authentificationService)
-  if (to.name !== 'login' && !canAccess) return '/login'
+      const canAccess = await canUserAccess(authentificationService)
+      if (to.name !== 'login' && !canAccess) return '/login'
+    }
+  }
 })
 
 async function canUserAccess(authentificationService: AuthenticationService) {
@@ -115,6 +125,13 @@ async function canUserAccess(authentificationService: AuthenticationService) {
   } catch (error) {
     return false
   }
+}
+
+function getPmsId(url: string): string | undefined {
+  const isPmsPresentInUrl = url.includes('pms=')
+  if (!isPmsPresentInUrl) return undefined
+  const pmsId = url.split('pms=')[1]
+  return pmsId
 }
 
 export default router
