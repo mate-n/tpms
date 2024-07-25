@@ -27,6 +27,7 @@ import type { CreateCartResponseBody } from '@/shared/interfaces/cart/CreateCart
 import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
 import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
 import WaitOverlay from '@/components/WaitOverlay.vue'
+import type { ProtelAvailability } from '@/shared/classes/ProtelAvailability'
 const protelAvailabilityConverter = new ProtelAvailabilityConverter()
 const availabilityHelper = new AvailabilityHelper()
 const dateHelper = new DateHelper()
@@ -36,6 +37,7 @@ const parksInDropdown: Ref<IProtelPark[]> = ref([])
 const allCamps: Ref<IProtelCamp[]> = ref([])
 const campsInDropdown: Ref<IProtelCamp[]> = ref([])
 const roomTypeCodesInDropdown: Ref<string[]> = ref([])
+const allAvailabilities: Ref<ProtelAvailability[]> = ref([])
 const autoToggleRightBar = ref(true)
 const showRightBar = ref(false)
 const itineraryReservationCartStore = useItineraryReservationCartStore()
@@ -147,34 +149,41 @@ const getCamps = () => {
     campService.findAll().then((res) => {
       allCamps.value = res
       campsInDropdown.value = res
+      getRoomTypes()
       resolve()
     })
   })
 }
+
 const getRoomTypes = () => {
   roomTypeCodesInDropdown.value = []
 
-  const promises = itineraryReservation.value.selectedCamps.map((camp: IProtelCamp) => {
-    const protelAvailabilityPostBody = availabilityHelper.mapPostBody({
-      camp,
-      arrivalDate: itineraryReservation.value.arrivalDate,
-      departureDate: itineraryReservation.value.departureDate,
-      guestsPerRoom: new GuestsPerRoom()
-    })
-    return availabilityService.getAvailabilities(protelAvailabilityPostBody)
+  const protelAvailabilityPostBody = availabilityHelper.mapPostBody({
+    camp: { id: 0, parkName: '', name: '', parkID: '' },
+    arrivalDate: itineraryReservation.value.arrivalDate,
+    departureDate: itineraryReservation.value.departureDate,
+    guestsPerRoom: new GuestsPerRoom()
   })
+  availabilityService
+    .getAvailabilities({
+      ...protelAvailabilityPostBody,
+      // send "propertyid" null to load all availabilities
+      propertyid: null as unknown as string
+    })
+    .then((availabilities: IProtelAvailability[]) => {
+      allAvailabilities.value = availabilities
 
-  Promise.all(promises).then((response: IProtelAvailability[][]) => {
-    const roomTypeCodeSet = new Set<string>()
-    response.forEach((availabilities) => {
+      const roomTypeCodeSet = new Set<string>()
       availabilities.forEach((availability) => {
-        if (availability?.room_type_code) {
-          roomTypeCodeSet.add(availability.room_type_code)
+        // check if camp id is in the "Camps" list
+        if (campsInDropdown.value.some(({ id }) => String(id) === availability.property_code)) {
+          if (availability?.room_type_code) {
+            roomTypeCodeSet.add(availability.room_type_code)
+          }
         }
       })
+      roomTypeCodesInDropdown.value = Array.from(roomTypeCodeSet.values())
     })
-    roomTypeCodesInDropdown.value = Array.from(roomTypeCodeSet.values())
-  })
 }
 
 const clickOnViewCart = () => {
@@ -194,8 +203,33 @@ watch(
 watch(
   [() => itineraryReservation.value.selectedCamps],
   () => {
-    getRoomTypes()
     updateReservations()
+  },
+  { deep: true }
+)
+
+watch(
+  [() => itineraryReservation.value.arrivalDate, () => itineraryReservation.value.departureDate],
+  () => {
+    getRoomTypes()
+  },
+  { deep: true }
+)
+
+watch(
+  [() => itineraryReservation.value.selectedRoomTypeCodes],
+  () => {
+    if (!itineraryReservation.value.selectedRoomTypeCodes.length) {
+      return
+    }
+
+    const availabilitiesInRoom = allAvailabilities.value.filter(({ room_type_code }) =>
+      itineraryReservation.value.selectedRoomTypeCodes.includes(room_type_code)
+    )
+    const campIds = availabilitiesInRoom.map(({ property_code }) => property_code)
+    itineraryReservation.value.selectedCamps = campsInDropdown.value.filter(({ id }) =>
+      campIds.includes(String(id))
+    )
   },
   { deep: true }
 )
