@@ -183,7 +183,11 @@ export class SyncCartItemService implements IService {
         synchronizeFrontendCartWithBackendCartResult.cart_item_id = response.cart_item_id
         synchronizeFrontendCartWithBackendCartResult.crs = response.crs
         synchronizeFrontendCartWithBackendCartResult.confirmation = response.confirmation
-        synchronizeFrontendCartWithBackendCartResult.status = response.sourcestatus.toLowerCase()
+        if (response.sourcestatus) {
+          synchronizeFrontendCartWithBackendCartResult.status = response.sourcestatus.toLowerCase()
+        } else {
+          synchronizeFrontendCartWithBackendCartResult.status = 'failed'
+        }
         synchronizeFrontendCartWithBackendCartResult.interfaceName = 'IProtelReservation'
         synchronizeFrontendCartWithBackendCartResult.datum = reservation
         resolve(synchronizeFrontendCartWithBackendCartResult)
