@@ -8,7 +8,6 @@ import { DateFormatter } from '@/helpers/DateFormatter'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import type { AxiosStatic } from 'axios'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
-import RoomDetailsCard from '@/components/rooms/RoomDetailsCard.vue'
 import type { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
 import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
@@ -117,8 +116,6 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
   )
   return availabilityHelper.getTotalOfAvailabilityCount(availabilitiesOnDate)
 }
-
-const roomTypeDialog = ref(false)
 
 const getAvailabilities = () => {
   const protelAvailabilityPostBody: IProtelAvailabilityPostBody = availabilityHelper.mapPostBody({
@@ -291,11 +288,6 @@ const totalPriceForCamp = computed(() => {
                 <td v-if="showRoomsInProtelAvailabilitiesSelecter">
                   <div class="d-flex justify-space-between">
                     <div data-cy="avalibility_room_type_code">{{ roomTypeCode }}</div>
-                    <div>
-                      <v-btn @click="roomTypeDialog = true" variant="text" icon size="x-small">
-                        <v-icon>mdi-information-outline</v-icon>
-                      </v-btn>
-                    </div>
                   </div>
                 </td>
                 <td class="bg-lightgray" v-if="showRoomsInProtelAvailabilitiesSelecter">
@@ -318,7 +310,4 @@ const totalPriceForCamp = computed(() => {
       </v-expansion-panel>
     </v-expansion-panels>
   </v-container>
-  <v-dialog v-model="roomTypeDialog" width="600" scrollable>
-    <RoomDetailsCard @close="roomTypeDialog = false"> </RoomDetailsCard>
-  </v-dialog>
 </template>
