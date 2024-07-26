@@ -1,7 +1,6 @@
-import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import ItineraryReservationEnquiryView from '@/views/ItineraryReservationEnquiryView.vue'
 import NewProfileView from '@/views/NewProfileView.vue'
-import ApiTestView from '@/views/ApiTestView.vue'
 import ReservationsView from '@/views/ReservationsView.vue'
 import EditReservationView from '@/views/EditReservationView.vue'
 import DashboardView from '@/views/DashboardView.vue'
@@ -34,11 +33,6 @@ const router = createRouter({
       path: '/new-profile',
       name: 'new profile',
       component: NewProfileView
-    },
-    {
-      path: '/api-test',
-      name: 'api test',
-      component: ApiTestView
     },
     {
       path: '/reservations',
