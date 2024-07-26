@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import ItineraryReservationEnquiryView from '@/views/ItineraryReservationEnquiryView.vue'
 import NewProfileView from '@/views/NewProfileView.vue'
 import ApiTestView from '@/views/ApiTestView.vue'
@@ -103,19 +103,24 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const currentUserStore = useCurrentUserStore()
-  if (!currentUserStore.pmsId) {
-    const pmsId = getPmsId(to.fullPath)
-    if (pmsId) {
-      currentUserStore.pmsId = pmsId
-      return '/'
-    } else {
-      const axios: AxiosStatic | undefined = inject('axios')
-      const authentificationService = new AuthenticationService(axios)
+  const { specialQuery, correctPath } = extractSpecialQueryFromPath(to.path)
 
-      const canAccess = await canUserAccess(authentificationService)
-      if (to.name !== 'login' && !canAccess) return '/login'
-    }
+  if (!currentUserStore.systemUser && specialQuery.systemuser) {
+    currentUserStore.systemUser = specialQuery.systemuser
   }
+  if (!currentUserStore.pmsId && specialQuery.pms) {
+    currentUserStore.pmsId = specialQuery.pms
+  }
+
+  if (Object.keys(specialQuery).length) {
+    return { ...to, path: correctPath }
+  }
+
+  const axios: AxiosStatic | undefined = inject('axios')
+  const authentificationService = new AuthenticationService(axios)
+
+  const canAccess = await canUserAccess(authentificationService)
+  if (to.name !== 'login' && !canAccess) return '/login'
 })
 
 async function canUserAccess(authentificationService: AuthenticationService) {
@@ -127,11 +132,29 @@ async function canUserAccess(authentificationService: AuthenticationService) {
   }
 }
 
-function getPmsId(url: string): string | undefined {
-  const isPmsPresentInUrl = url.includes('pms=')
-  if (!isPmsPresentInUrl) return undefined
-  const pmsId = url.split('pms=')[1]
-  return pmsId
+type SpecialQueryKey = 'systemuser' | 'pms'
+const specialQueryKeys: SpecialQueryKey[] = ['systemuser', 'pms']
+
+function extractSpecialQueryFromPath(path = '') {
+  const allSubPaths = path.split('/')
+  const validSubPaths: string[] = []
+  const specialQuery: Partial<Record<SpecialQueryKey, string>> = {}
+
+  allSubPaths.forEach((subPath) => {
+    const hasSpecialQuery = specialQueryKeys.some((key) => subPath.startsWith(`${key}=`))
+
+    if (hasSpecialQuery) {
+      const [queryKey, ...queryValues] = subPath.split('=')
+      specialQuery[queryKey as SpecialQueryKey] = queryValues.join('=')
+    } else {
+      validSubPaths.push(subPath)
+    }
+  })
+
+  return {
+    correctPath: validSubPaths.join('/'),
+    specialQuery
+  }
 }
 
 export default router
