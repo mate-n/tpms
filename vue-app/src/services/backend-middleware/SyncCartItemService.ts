@@ -15,6 +15,8 @@ import type { IUpdateItemInCartBody } from '@/shared/interfaces/cart/IUpdateItem
 import { UpdateItemInCartBody } from '@/shared/classes/UpdateItemInCartBody'
 import type { IConservationFeePrice } from '@/shared/interfaces/IConservationFeePrices'
 import { RoomHelper } from '@/helpers/RoomHelper'
+import type { ISynchronizeFrontendCartWithBackendCartResult } from '@/shared/interfaces/ISynchronizeFrontendCartWithBackendCartResult'
+import { SynchronizeFrontendCartWithBackendCartResult } from '@/shared/classes/SynchronizeFrontendCartWithBackendCartResult'
 
 export class SyncCartItemService implements IService {
   axiosInstance: any
@@ -31,29 +33,55 @@ export class SyncCartItemService implements IService {
     itineraryReservation: IItineraryReservation,
     cartNumber: string
   ) {
-    return new Promise<any>((resolve) => {
+    return new Promise<ISynchronizeFrontendCartWithBackendCartResult[]>((resolve) => {
       this.removeItemsThatOnlyExistInBackendCart(itineraryReservation, cartNumber)
         .then(() => this.addOrUpdateItemsToCart(itineraryReservation, cartNumber))
         .then((responses) => {
+          this.removeFailedReservationsFromItineraryReservation(itineraryReservation, responses)
           resolve(responses)
         })
     })
   }
 
+  removeFailedReservationsFromItineraryReservation(
+    itineraryReservation: IItineraryReservation,
+    responses: ISynchronizeFrontendCartWithBackendCartResult[]
+  ) {
+    const responsesThatHaveFailed = responses.filter(
+      (response) => response.status === 'failed' && response.interfaceName === 'IProtelReservation'
+    )
+    for (const failedResponse of responsesThatHaveFailed) {
+      const reservation = itineraryReservation.protelReservations.find(
+        (reservation) => reservation.localID === failedResponse.localID
+      )
+      if (reservation) {
+        const index = itineraryReservation.protelReservations.indexOf(reservation)
+        itineraryReservation.protelReservations.splice(index, 1)
+      }
+    }
+  }
+
   addOrUpdateItemsToCart(itineraryReservation: IItineraryReservation, cartNumber: string) {
-    return new Promise<any>((resolve) => {
+    return new Promise<ISynchronizeFrontendCartWithBackendCartResult[]>((resolve) => {
+      let synchronizeFrontendCartWithBackendCartResults: ISynchronizeFrontendCartWithBackendCartResult[] =
+        []
+
       this.addOrUpdateReservationsToCart(itineraryReservation, cartNumber)
-        .then(() => this.addTicketsToCart(itineraryReservation, cartNumber))
+        .then((responses) => {
+          synchronizeFrontendCartWithBackendCartResults = responses
+
+          return this.addTicketsToCart(itineraryReservation, cartNumber)
+        })
         .then(() =>
           this.addConservationFeesToCart(itineraryReservation.protelReservations, cartNumber)
         )
-        .then(() => resolve(''))
+        .then(() => resolve(synchronizeFrontendCartWithBackendCartResults))
     })
   }
 
   addOrUpdateReservationsToCart(itineraryReservation: IItineraryReservation, cartNumber: string) {
-    return new Promise((resolve) => {
-      const addOrUpdatePromises: Promise<void>[] = []
+    return new Promise<ISynchronizeFrontendCartWithBackendCartResult[]>((resolve) => {
+      const addOrUpdatePromises: Promise<ISynchronizeFrontendCartWithBackendCartResult[]>[] = []
 
       const reservationsWithoutCartItemId = itineraryReservation.protelReservations.filter(
         (reservation) => !reservation.cartITemID
@@ -73,14 +101,14 @@ export class SyncCartItemService implements IService {
       }
 
       Promise.all(addOrUpdatePromises).then((responses) => {
-        resolve(responses)
+        resolve(responses.flat())
       })
     })
   }
 
   addReservationsToCart(reservations: IProtelReservation[], cartNumber: string) {
-    return new Promise<any>((resolve) => {
-      const addItemToCartPromises: Promise<void>[] = []
+    return new Promise<ISynchronizeFrontendCartWithBackendCartResult[]>((resolve) => {
+      const addItemToCartPromises: Promise<ISynchronizeFrontendCartWithBackendCartResult>[] = []
       for (const reservation of reservations) {
         const newItem: IAddItemToCartBody = new AddItemToCartBody()
         newItem.action = 'add'
@@ -104,7 +132,7 @@ export class SyncCartItemService implements IService {
       }
 
       Promise.all(addItemToCartPromises).then((responses) => {
-        resolve(responses)
+        resolve(responses.flat())
       })
     })
   }
@@ -147,11 +175,25 @@ export class SyncCartItemService implements IService {
     reservation: IProtelReservation,
     addItemToCartBody: IAddItemToCartBody
   ) {
-    return new Promise<any>((resolve) => {
+    return new Promise<ISynchronizeFrontendCartWithBackendCartResult>((resolve) => {
       this.cartService.addItemToCart(addItemToCartBody).then((response) => {
         reservation.id = response.confirmation
         reservation.cartITemID = response.cart_item_id
-        resolve(response)
+
+        const synchronizeFrontendCartWithBackendCartResult =
+          new SynchronizeFrontendCartWithBackendCartResult()
+        synchronizeFrontendCartWithBackendCartResult.localID = reservation.localID
+        synchronizeFrontendCartWithBackendCartResult.cart_item_id = response.cart_item_id
+        synchronizeFrontendCartWithBackendCartResult.crs = response.crs
+        synchronizeFrontendCartWithBackendCartResult.confirmation = response.confirmation
+        if (response.sourcestatus) {
+          synchronizeFrontendCartWithBackendCartResult.status = response.sourcestatus.toLowerCase()
+        } else {
+          synchronizeFrontendCartWithBackendCartResult.status = 'failed'
+        }
+        synchronizeFrontendCartWithBackendCartResult.interfaceName = 'IProtelReservation'
+        synchronizeFrontendCartWithBackendCartResult.datum = reservation
+        resolve(synchronizeFrontendCartWithBackendCartResult)
       })
     })
   }

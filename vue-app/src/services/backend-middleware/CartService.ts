@@ -6,6 +6,7 @@ import type { ICartBody } from '@/shared/interfaces/cart/ICartBody'
 import type { ICartItem } from '@/shared/interfaces/cart/ICartItem'
 import type { IRemoveItemFromCartBody } from '@/shared/interfaces/cart/IRemoveItemFromCartBody'
 import type { IRetrieveCartBody } from '@/shared/interfaces/cart/IRetrieveCartBody'
+import type { IRetrieveCartResponseBody } from '@/shared/interfaces/cart/IRetrieveCartResponseBody'
 import type { ISettleCartBody } from '@/shared/interfaces/cart/ISettleCartBody'
 import type { IUpdateCartBody } from '@/shared/interfaces/cart/IUpdateCartBody'
 import type { IUpdateItemInCartBody } from '@/shared/interfaces/cart/IUpdateItemInCartBody'
@@ -122,13 +123,17 @@ export class CartService implements IService {
   }
 
   retrieveCart(cart_number: string) {
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<IRetrieveCartResponseBody | undefined>((resolve, reject) => {
       this.axiosInstance
         .post('api/v1/cart/retrieve', {
           cart_number: cart_number
         })
         .then((response: any) => {
-          resolve(response.data)
+          if (response.data['error']) {
+            resolve(undefined)
+          } else {
+            resolve(response.data)
+          }
         })
         .catch((e: any) => {
           reject(e)

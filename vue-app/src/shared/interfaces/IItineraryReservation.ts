@@ -5,14 +5,17 @@ import type { IProtelPark } from './protel/IProtelPark'
 import type { IProtelRegion } from './protel/IProtelRegion'
 
 export interface IItineraryReservation extends IEntityWithIdentity {
+  protelReservations: IProtelReservation[]
   startPropertyName: string
   endPropertyName: string
+  id?: number
   arrivalDate: Date
   departureDate: Date
+  roomTypeCode: string | undefined
+  selectedRoomTypeCodes: string[]
   selectedRegions: IProtelRegion[]
   selectedParks: IProtelPark[]
   selectedCamps: IProtelCamp[]
-  selectedRoomTypeCodes: string[]
   guestProfileID: number | undefined
-  protelReservations: IProtelReservation[]
+  cart_number: string
 }

@@ -145,9 +145,9 @@ const setSelectedAvailabilities = () => {
         reservation.roomTypeCode === props.roomTypeCode &&
         reservation.property_code === props.propertyCode
     )
-
     for (const reservation of reservations) {
       const dayBeforeDeparture = dateHelper.addDays(new Date(reservation.departureDate), -1)
+
       if (
         dateHelper.isDateBetweenDates(
           selectable.availability.availability_start,

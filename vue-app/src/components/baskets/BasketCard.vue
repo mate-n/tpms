@@ -17,6 +17,10 @@ import { CampService } from '@/services/backend-middleware/CampService'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 import ProcessPayment from '@/components/reservations/ProcessPayment.vue'
 import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
+import WaitOverlay from '../WaitOverlay.vue'
+import { useErrorsStore } from '@/stores/errors'
+import type { ISynchronizeFrontendCartWithBackendCartResult } from '@/shared/interfaces/ISynchronizeFrontendCartWithBackendCartResult'
+import { SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator } from '@/shared/classes/SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator'
 const itineraryReservationCartManager = new ItineraryReservationCartManager()
 const confirmationNumbers = ref<string[]>([])
 const identityHelper = new IdentityHelper()
@@ -28,6 +32,10 @@ const priceFormatter = new PriceFormatter()
 const campService = new CampService(axios2)
 const syncCartItemService = new SyncCartItemService(axios2)
 const itineraryReservationCartStore = useItineraryReservationCartStore()
+const errorsStore = useErrorsStore()
+const synchronizeFrontendCartWithBackendCartResultErrorMessageGenerator =
+  new SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator()
+
 const emits = defineEmits(['close'])
 const camps = ref<IProtelCamp[]>([])
 
@@ -98,18 +106,25 @@ const checkIfBookingIsPossible = () => {
 }
 
 const synchronizeFrontendCartWithBackendCart = () => {
-  if (!itineraryReservationCartStore.itineraryReservation) {
-    return
-  }
+  return new Promise<void>((resolve) => {
+    const cartNumber = itineraryReservationCartStore.getCartNumber()
+    if (!cartNumber || !itineraryReservationCartStore.itineraryReservation) {
+      resolve()
+    } else {
+      loading.value = true
 
-  const cartNumber = itineraryReservationCartStore.getCartNumber()
-  if (!cartNumber) {
-    return
-  }
-  syncCartItemService.synchronizeFrontendCartWithBackendCart(
-    itineraryReservationCartStore.itineraryReservation,
-    cartNumber
-  )
+      syncCartItemService
+        .synchronizeFrontendCartWithBackendCart(
+          itineraryReservationCartStore.itineraryReservation,
+          cartNumber
+        )
+        .then((results) => {
+          triggerErrorDialogIfFailed(results)
+          loading.value = false
+          resolve()
+        })
+    }
+  })
 }
 
 const clickOnSubmitButtonInProcessPayment = (specifiedFirstDepositAmount: number) => {
@@ -128,6 +143,7 @@ const book = (totalPrice: string) => {
   }
   cartNumber.value = cartNumberFromCartStore
 
+  loading.value = true
   /*
     settleAnkerdataCart()
     */
@@ -135,20 +151,23 @@ const book = (totalPrice: string) => {
     .settleCart(cartNumberFromCartStore, totalPrice, cartService)
     .then(() => {
       cartService.retrieveCart(cartNumberFromCartStore).then((data) => {
-        console.log('retrieve Cart data', data)
         confirmationNumbers.value = []
-        for (const item of data['cart_items']) {
-          let campName = ''
-          const foundCamp = camps.value.find((camp) => camp.id == parseInt(item['camp_id']))
-          if (foundCamp) {
-            campName = foundCamp.name
-            confirmationNumbers.value.push(item['confirmation'] + ' - ' + campName)
+        if (data) {
+          for (const item of data['cart_items']) {
+            let campName = ''
+            const foundCamp = camps.value.find((camp) => camp.id == item.camp_id)
+            if (foundCamp) {
+              campName = foundCamp.name
+              confirmationNumbers.value.push(item['confirmation'] + ' - ' + campName)
+            }
           }
         }
+
+        loading.value = false
+        errors.value = []
+        itineraryConfirmedDialog.value = true
       })
     })
-  errors.value = []
-  itineraryConfirmedDialog.value = true
 }
 
 const errors = ref<string[]>([])
@@ -164,6 +183,7 @@ const clickOnOkInConfirmedDialog = () => {
 const itineraryReservationProfile: Ref<IProfile> = ref(new Profile())
 
 onMounted(() => {
+  sortProtelReservationsByArrivalDate()
   getProfileOfItineraryReservation()
   campService.findAll().then((response: IProtelCamp[]) => {
     camps.value = response
@@ -224,9 +244,31 @@ const addTicketsToReservation = () => {
 const addConservationFeesToReservation = () => {
   synchronizeFrontendCartWithBackendCart()
 }
+
+const loading = ref(false)
+
+const triggerErrorDialogIfFailed = (results: ISynchronizeFrontendCartWithBackendCartResult[]) => {
+  if (results.some((result) => result.status === 'failed')) {
+    const errorMessage =
+      synchronizeFrontendCartWithBackendCartResultErrorMessageGenerator.generateErrorMessage(
+        results
+      )
+    errorsStore.triggerDialog(errorMessage)
+  }
+}
+
+const sortProtelReservationsByArrivalDate = () => {
+  if (itineraryReservationCartStore.itineraryReservation) {
+    itineraryReservationCartStore.itineraryReservation.protelReservations =
+      itineraryReservationCartStore.itineraryReservation.protelReservations.sort(
+        (a, b) => a.arrivalDate.getTime() - b.arrivalDate.getTime()
+      )
+  }
+}
 </script>
 
 <template>
+  <WaitOverlay v-if="loading" />
   <div class="standard-dialog-card" data-cy="basket_card">
     <v-toolbar class="standard-dialog-card-toolbar fixed-toolbar">
       <v-toolbar-title><span class="text-primary">Basket</span></v-toolbar-title>

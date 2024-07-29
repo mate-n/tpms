@@ -370,6 +370,7 @@ const save = () => {
           label="Adults"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
       <v-col>
@@ -382,6 +383,7 @@ const save = () => {
           label="Children"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input
       ></v-col>
       <v-col>
@@ -394,6 +396,7 @@ const save = () => {
           label="Infants"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input
       ></v-col>
     </v-row>
@@ -406,6 +409,7 @@ const save = () => {
           label="Adults"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
       <v-col class="conservation-fee-cell-background2 conservation-fee-cell">
@@ -418,6 +422,7 @@ const save = () => {
           label="Children"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
       <v-col class="conservation-fee-cell-background2 conservation-fee-cell">
@@ -430,6 +435,7 @@ const save = () => {
           label="Infants"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
     </v-row>
@@ -444,6 +450,7 @@ const save = () => {
           label="Adults"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
       <v-col>
@@ -457,6 +464,7 @@ const save = () => {
           label="Children"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
       <v-col>
@@ -469,6 +477,7 @@ const save = () => {
           label="Infants"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
     </v-row>
@@ -530,6 +539,7 @@ const save = () => {
           label="Adults"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
       <v-col :class="getBackGroundClassForCell(index)" class="conservation-fee-cell">
@@ -540,6 +550,7 @@ const save = () => {
           label="Children"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
       <v-col :class="getBackGroundClassForCell(index)" class="conservation-fee-cell">
@@ -550,6 +561,7 @@ const save = () => {
           label="Infants"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
     </v-row>
@@ -595,6 +607,7 @@ const save = () => {
           label="Adults"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
       <v-col :class="getBackGroundClassForCell(index)" class="conservation-fee-cell">
@@ -605,6 +618,7 @@ const save = () => {
           label="Children"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
 
@@ -616,6 +630,7 @@ const save = () => {
           label="Infants"
           variant="underlined"
           density="compact"
+          :min="0"
         ></v-number-input>
       </v-col>
     </v-row>

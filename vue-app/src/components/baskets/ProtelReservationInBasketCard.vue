@@ -276,7 +276,15 @@ const convertConservationFeesToCartContentItems = (
             ></CartContentTable>
           </v-col>
           <v-col class="d-flex align-end justify-end">
-            <v-btn class="me-2" @click="conservationFeeFormDialog = true">Conservation Fees</v-btn>
+            <v-btn class="position-relative me-2" @click="conservationFeeFormDialog = true">
+              Conservation Fees
+              <v-icon
+                v-if="!conservationFeePricesHelper.isEmpty(reservation.conservationFeePrices)"
+                class="position-absolute text-light-green-darken-1 text-h4"
+                style="top: -12px; right: -12px"
+                >mdi-check</v-icon
+              >
+            </v-btn>
             <v-btn @click="clickOnAddFixedCharges()" class="me-2"> Add Additional </v-btn></v-col
           >
         </v-row>

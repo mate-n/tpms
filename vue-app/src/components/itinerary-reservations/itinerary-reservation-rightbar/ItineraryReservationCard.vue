@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
 import { DateHelper } from '@/helpers/DateHelper'
@@ -9,6 +9,8 @@ import type { IRate } from '@/shared/interfaces/IRate'
 import { ProtelReservation } from '@/shared/classes/ProtelReservation'
 import { RoomHelper } from '@/helpers/RoomHelper'
 
+import { PriceFormatter } from '@/helpers/PriceFormatter'
+const priceFormatter = new PriceFormatter()
 const dateHelper = new DateHelper()
 const roomHelper = new RoomHelper()
 
@@ -46,6 +48,10 @@ watch(
   () => (reservation.value = props.protelReservation),
   { immediate: true, deep: true }
 )
+
+const formattedRate = computed(() => {
+  return priceFormatter.formatPriceString(props.protelReservation.rate.value)
+})
 </script>
 
 <template>
@@ -115,8 +121,7 @@ watch(
           label="Average Price"
           variant="underlined"
           item-title="value"
-          :items="availableRates"
-          v-model="reservation.rate"
+          v-model="formattedRate"
           @update:model-value="handleUpdate"
         ></v-select>
       </v-col>

@@ -126,7 +126,6 @@ onMounted(() => {
         thirdDepositAmount.value = getSumOfDepositDeadline3amount(res)
       }
     }
-    console.log(res)
   })
 })
 
@@ -178,69 +177,75 @@ const totalPriceToSubmit = computed(() => {
   <v-card class="rounded-t-0">
     <v-card-text>
       <v-row>
-        <v-col class="font-weight-bold">Itinerary Number</v-col>
-        <v-col class="font-weight-bold">Reservation Total</v-col>
+        <v-col class="font-weight-bold pb-0">Itinerary Number</v-col>
+        <v-col class="font-weight-bold pb-0">Reservation Total</v-col>
       </v-row>
       <v-row>
-        <v-col>{{ itineraryReservationCartStore.getCartNumber() }}</v-col>
-        <v-col>{{ priceFormatter.formatPrice(totalPrice) }}</v-col>
+        <v-col class="pt-1">{{ itineraryReservationCartStore.getCartNumber() }}</v-col>
+        <v-col class="pt-1">{{ priceFormatter.formatPrice(totalPrice) }}</v-col>
       </v-row>
       <v-row>
-        <v-col class="font-weight-bold">Reservation Number</v-col>
-        <v-col class="font-weight-bold">Last Name, First Name</v-col>
+        <v-col class="font-weight-bold pb-0">Reservation Number</v-col>
+        <v-col class="font-weight-bold pb-0">Last Name, First Name</v-col>
       </v-row>
       <v-row>
-        <v-col
-          >#<span v-for="(id, index) of reservationCartItemIDs" :key="id"
+        <v-col class="pt-1">
+          #<span v-for="(id, index) of reservationCartItemIDs" :key="id"
             >{{ id }}<span v-if="index + 1 != reservationCartItemIDs.length">, </span></span
           >
         </v-col>
-        <v-col>{{ profile?.surname }}, {{ profile?.name }} </v-col>
+        <v-col class="pt-1">{{ profile?.surname }}, {{ profile?.name }} </v-col>
       </v-row>
 
       <v-divider class="my-5"></v-divider>
       <template v-if="firstDepositDate">
         <v-row>
-          <v-col class="font-weight-bold"></v-col>
-          <v-col class="font-weight-bold">Due Date</v-col>
-          <v-col class="font-weight-bold">Amount</v-col>
-          <v-col></v-col>
+          <v-col class="font-weight-bold pb-0"></v-col>
+          <v-col class="font-weight-bold pb-0">Due Date</v-col>
+          <v-col class="font-weight-bold pb-0">Amount</v-col>
+          <v-col class="pb-0"></v-col>
         </v-row>
         <v-row>
-          <v-col>First Deposit</v-col>
-          <v-col>{{ dateFormatter.dddotmmdotyyyy(firstDepositDate) }}</v-col>
-          <v-col> {{ priceFormatter.formatPrice(firstDepositAmount) }}</v-col>
-          <v-col><v-checkbox v-model="firstDepositSelected" label="Select"></v-checkbox></v-col>
+          <v-col class="pt-1">First Deposit</v-col>
+          <v-col class="pt-1">{{ dateFormatter.dddotmmdotyyyy(firstDepositDate) }}</v-col>
+          <v-col class="pt-1"> {{ priceFormatter.formatPrice(firstDepositAmount) }}</v-col>
+          <v-col class="pt-0">
+            <v-checkbox v-model="firstDepositSelected" label="Select"></v-checkbox>
+          </v-col>
         </v-row>
         <v-divider class="mb-2"></v-divider>
       </template>
       <template v-if="secondDepositDate">
         <v-row>
-          <v-col class="font-weight-bold"></v-col>
-          <v-col class="font-weight-bold">Due Date</v-col>
-          <v-col class="font-weight-bold">Amount</v-col>
-          <v-col></v-col>
+          <v-col class="font-weight-bold pb-0"></v-col>
+          <v-col class="font-weight-bold pb-0">Due Date</v-col>
+          <v-col class="font-weight-bold pb-0">Amount</v-col>
+          <v-col class="pb-0"></v-col>
         </v-row>
         <v-row>
-          <v-col>Second Deposit</v-col>
-          <v-col>{{ dateFormatter.dddotmmdotyyyy(secondDepositDate) }}</v-col>
-          <v-col>{{ priceFormatter.formatPrice(secondDepositAmount) }}</v-col>
-          <v-col><v-checkbox v-model="secondDepositSelected" label="Select"></v-checkbox></v-col>
+          <v-col class="pt-1">Second Deposit</v-col>
+          <v-col class="pt-1">{{ dateFormatter.dddotmmdotyyyy(secondDepositDate) }}</v-col>
+          <v-col class="pt-1">{{ priceFormatter.formatPrice(secondDepositAmount) }}</v-col>
+          <v-col class="pt-0">
+            <v-checkbox v-model="secondDepositSelected" label="Select"></v-checkbox>
+          </v-col>
         </v-row>
         <v-divider class="mb-2"></v-divider>
       </template>
       <template v-if="thirdDepositDate">
         <v-row>
-          <v-col class="font-weight-bold"></v-col>
-          <v-col class="font-weight-bold">Due Date</v-col>
-          <v-col class="font-weight-bold">Amount</v-col>
-          <v-col></v-col>
+          <v-col class="font-weight-bold pb-0"></v-col>
+          <v-col class="font-weight-bold pb-0">Due Date</v-col>
+          <v-col class="font-weight-bold pb-0">Amount</v-col>
+          <v-col class="pb-0"></v-col>
         </v-row>
         <v-row>
-          <v-col>Third Deposit</v-col>
-          <v-col>{{ dateFormatter.dddotmmdotyyyy(thirdDepositDate) }}</v-col>
-          <v-col>{{ priceFormatter.formatPrice(thirdDepositAmount) }}</v-col>
-          <v-col><v-checkbox v-model="thirdDepositSelected" label="Select"></v-checkbox></v-col>
+          <v-col class="pt-1">Third Deposit</v-col>
+          <v-col class="pt-1">{{ dateFormatter.dddotmmdotyyyy(thirdDepositDate) }}</v-col>
+          <v-col class="pt-1">{{ priceFormatter.formatPrice(thirdDepositAmount) }}</v-col>
+          <v-col class="pt-0">
+            <v-checkbox v-model="thirdDepositSelected" label="Select"></v-checkbox>
+          </v-col>
         </v-row>
         <v-divider class="mb-2"></v-divider>
       </template>

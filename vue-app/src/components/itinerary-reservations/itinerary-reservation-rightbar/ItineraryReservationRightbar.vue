@@ -3,12 +3,12 @@ import { inject, onMounted, ref, watch } from 'vue'
 import type { AxiosStatic } from 'axios'
 
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
-import type { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
 import type { IRate } from '@/shared/interfaces/IRate'
 import { RateService } from '@/services/RateService'
 import { DateHelper } from '@/helpers/DateHelper'
 
 import ItineraryReservationCard from './ItineraryReservationCard.vue'
+import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 
 const axios: AxiosStatic | undefined = inject('axios')
 const rateService = new RateService(axios)
@@ -23,7 +23,7 @@ const campReservations = ref<{ name: string; reservations: IProtelReservation[] 
 
 const props = defineProps({
   showRightBar: { type: Boolean, required: true },
-  itineraryReservation: { type: Object as () => ItineraryReservation, required: true }
+  itineraryReservation: { type: Object as () => IItineraryReservation, required: true }
 })
 
 const handleUpdate = (data: IProtelReservation) => {

@@ -39,7 +39,14 @@ export class DateHelper {
     )
   }
 
+  isDateBetweenDatesOld(date: Date, startDate: Date, endDate: Date) {
+    return date >= startDate && date <= endDate
+  }
+
   isDateBetweenDates(date: Date, startDate: Date, endDate: Date) {
+    if (this.isSameDay(date, startDate) || this.isSameDay(date, endDate)) {
+      return true
+    }
     return date >= startDate && date <= endDate
   }
 

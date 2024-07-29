@@ -20,7 +20,6 @@ const dateFormatter = new DateFormatter()
 
 const removeReservation = (reservation: IProtelReservation) => {
   //basketItemsStore.removeReservation(reservation)
-  console.log(reservation)
   emits('removeReservation')
 }
 
@@ -73,8 +72,7 @@ const numberOfNights = computed(() => {
         <v-col></v-col>
         <v-col class="">
           <div class="mb-1 text-end">
-            {{ numberOfNights }} x
-            {{ reservation.numberOfRooms }} x
+            {{ numberOfNights }} x {{ reservation.numberOfRooms }} x
             {{ priceFormatter.formatPrice(parseInt(reservation.rate.value)) }}
           </div>
           <v-divider></v-divider>
