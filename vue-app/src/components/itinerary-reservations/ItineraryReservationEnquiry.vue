@@ -28,6 +28,12 @@ import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
 import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
 import WaitOverlay from '@/components/WaitOverlay.vue'
 import type { ProtelAvailability } from '@/shared/classes/ProtelAvailability'
+import { useErrorsStore } from '@/stores/errors'
+import { SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator } from '@/shared/classes/SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator'
+import type { ISynchronizeFrontendCartWithBackendCartResult } from '@/shared/interfaces/ISynchronizeFrontendCartWithBackendCartResult'
+const synchronizeFrontendCartWithBackendCartResultErrorMessageGenerator =
+  new SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator()
+const errorsStore = useErrorsStore()
 const protelAvailabilityConverter = new ProtelAvailabilityConverter()
 const availabilityHelper = new AvailabilityHelper()
 const dateHelper = new DateHelper()
@@ -68,10 +74,21 @@ const clickOnCreateCartButton = () => {
           itineraryReservation.value,
           createCartResponseBody.cart_number
         )
-        .then(() => {
+        .then((results) => {
+          triggerErrorDialogIfFailed(results)
           loading.value = false
         })
     })
+}
+
+const triggerErrorDialogIfFailed = (results: ISynchronizeFrontendCartWithBackendCartResult[]) => {
+  if (results.some((result) => result.status === 'failed')) {
+    const errorMessage =
+      synchronizeFrontendCartWithBackendCartResultErrorMessageGenerator.generateErrorMessage(
+        results
+      )
+    errorsStore.triggerDialog(errorMessage)
+  }
 }
 
 const clickOnUpdateCartButton = () => {
@@ -87,7 +104,8 @@ const clickOnUpdateCartButton = () => {
 
   syncCartItemService
     .synchronizeFrontendCartWithBackendCart(itineraryReservation.value, cartNumber)
-    .then(() => {
+    .then((results) => {
+      triggerErrorDialogIfFailed(results)
       loading.value = false
     })
 }

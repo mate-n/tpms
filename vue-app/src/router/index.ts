@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ItineraryReservationEnquiryView from '@/views/ItineraryReservationEnquiryView.vue'
 import NewProfileView from '@/views/NewProfileView.vue'
-import ApiTestView from '@/views/ApiTestView.vue'
 import ReservationsView from '@/views/ReservationsView.vue'
 import EditReservationView from '@/views/EditReservationView.vue'
 import DashboardView from '@/views/DashboardView.vue'
@@ -15,6 +14,7 @@ import AuthenticationService from '@/services/AuthenticationService'
 import ProfilesView from '@/views/ProfilesView.vue'
 import ProfileSearchView from '@/views/ProfileSearchView.vue'
 import CartTestView from '@/views/CartTestView.vue'
+import { useCurrentUserStore } from '@/stores/currentUserStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,11 +33,6 @@ const router = createRouter({
       path: '/new-profile',
       name: 'new profile',
       component: NewProfileView
-    },
-    {
-      path: '/api-test',
-      name: 'api test',
-      component: ApiTestView
     },
     {
       path: '/reservations',
@@ -101,6 +96,20 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
+  const currentUserStore = useCurrentUserStore()
+  const { specialQuery, correctPath } = extractSpecialQueryFromPath(to.path)
+
+  if (!currentUserStore.systemUser && specialQuery.systemuser) {
+    currentUserStore.systemUser = specialQuery.systemuser
+  }
+  if (!currentUserStore.pmsId && specialQuery.pms) {
+    currentUserStore.pmsId = specialQuery.pms
+  }
+
+  if (Object.keys(specialQuery).length) {
+    return { ...to, path: correctPath }
+  }
+
   const axios: AxiosStatic | undefined = inject('axios')
   const authentificationService = new AuthenticationService(axios)
 
@@ -114,6 +123,31 @@ async function canUserAccess(authentificationService: AuthenticationService) {
     return response
   } catch (error) {
     return false
+  }
+}
+
+type SpecialQueryKey = 'systemuser' | 'pms'
+const specialQueryKeys: SpecialQueryKey[] = ['systemuser', 'pms']
+
+function extractSpecialQueryFromPath(path = '') {
+  const allSubPaths = path.split('/')
+  const validSubPaths: string[] = []
+  const specialQuery: Partial<Record<SpecialQueryKey, string>> = {}
+
+  allSubPaths.forEach((subPath) => {
+    const hasSpecialQuery = specialQueryKeys.some((key) => subPath.startsWith(`${key}=`))
+
+    if (hasSpecialQuery) {
+      const [queryKey, ...queryValues] = subPath.split('=')
+      specialQuery[queryKey as SpecialQueryKey] = queryValues.join('=')
+    } else {
+      validSubPaths.push(subPath)
+    }
+  })
+
+  return {
+    correctPath: validSubPaths.join('/'),
+    specialQuery
   }
 }
 
