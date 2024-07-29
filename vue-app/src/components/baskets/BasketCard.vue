@@ -183,6 +183,7 @@ const clickOnOkInConfirmedDialog = () => {
 const itineraryReservationProfile: Ref<IProfile> = ref(new Profile())
 
 onMounted(() => {
+  sortProtelReservationsByArrivalDate()
   getProfileOfItineraryReservation()
   campService.findAll().then((response: IProtelCamp[]) => {
     camps.value = response
@@ -253,6 +254,15 @@ const triggerErrorDialogIfFailed = (results: ISynchronizeFrontendCartWithBackend
         results
       )
     errorsStore.triggerDialog(errorMessage)
+  }
+}
+
+const sortProtelReservationsByArrivalDate = () => {
+  if (itineraryReservationCartStore.itineraryReservation) {
+    itineraryReservationCartStore.itineraryReservation.protelReservations =
+      itineraryReservationCartStore.itineraryReservation.protelReservations.sort(
+        (a, b) => a.arrivalDate.getTime() - b.arrivalDate.getTime()
+      )
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, ref } from 'vue'
+import { computed, inject, onMounted, ref } from 'vue'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 import ProtelReservationInBasketMenuCard from './ProtelReservationInBasketMenuCard.vue'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
@@ -80,6 +80,19 @@ const clickOnViewCart = () => {
 }
 
 const loading = ref(false)
+
+onMounted(() => {
+  sortProtelReservationsByArrivalDate()
+})
+
+const sortProtelReservationsByArrivalDate = () => {
+  if (itineraryReservationCartStore.itineraryReservation) {
+    itineraryReservationCartStore.itineraryReservation.protelReservations =
+      itineraryReservationCartStore.itineraryReservation.protelReservations.sort(
+        (a, b) => a.arrivalDate.getTime() - b.arrivalDate.getTime()
+      )
+  }
+}
 </script>
 <template>
   <WaitOverlay v-if="loading" />
@@ -93,7 +106,7 @@ const loading = ref(false)
           :reservation="reservation"
           @removeReservation="
             (protelReservation: IProtelReservation) =>
-              removeReservationAndSyncWithBackend(reservation)
+              removeReservationAndSyncWithBackend(protelReservation)
           "
         ></ProtelReservationInBasketMenuCard>
       </template>
