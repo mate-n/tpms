@@ -9,6 +9,7 @@ import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import type { AxiosStatic } from 'axios'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
 import type { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
+import RoomDetailsCard from '@/components/rooms/RoomDetailsCard.vue'
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
 import { ProtelReservationPriceCalculator } from '@/helpers/ProtelReservationPriceCalculator'
 import { PriceFormatter } from '@/helpers/PriceFormatter'
@@ -16,6 +17,7 @@ import GuestsPerRoomSelecter from '../selecters/GuestsPerRoomSelecter.vue'
 import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
 import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import { AvailabilitiesFiller } from '@/helpers/AvailabilitiesFiller'
+import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 const availabilitiesFiller = new AvailabilitiesFiller()
 const guestsPerRoom: Ref<GuestsPerRoom> = ref(new GuestsPerRoom())
 const priceFormatter = new PriceFormatter()
@@ -34,7 +36,7 @@ const props = defineProps({
   },
   departureDate: { type: Object as () => Date, required: true },
   roomTypeCodes: { type: Object as () => String[], required: false },
-  itineraryReservation: { type: Object as () => ItineraryReservation, required: true }
+  itineraryReservation: { type: Object as () => IItineraryReservation, required: true }
 })
 
 const expansionModel = ref<string[] | null>(['availabilities'])

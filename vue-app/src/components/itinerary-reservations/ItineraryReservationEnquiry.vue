@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeMount, ref, watch } from 'vue'
+import { computed, inject, onBeforeMount, onMounted, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
 import BasketCard from '@/components/baskets/BasketCard.vue'
@@ -31,6 +31,9 @@ import type { ProtelAvailability } from '@/shared/classes/ProtelAvailability'
 import { useErrorsStore } from '@/stores/errors'
 import { SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator } from '@/shared/classes/SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator'
 import type { ISynchronizeFrontendCartWithBackendCartResult } from '@/shared/interfaces/ISynchronizeFrontendCartWithBackendCartResult'
+import { CartConverter } from '@/shared/converters/CartConverter'
+import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
+import { ItineraryReservationHelper } from '@/helpers/ItineraryReservationHelper'
 const synchronizeFrontendCartWithBackendCartResultErrorMessageGenerator =
   new SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator()
 const errorsStore = useErrorsStore()
@@ -54,10 +57,12 @@ const regionService = new RegionService(axios2)
 const parkService = new ParkService(axios2)
 const campService = new CampService(axios2)
 const availabilityService = new AvailabilityService(axios2)
-const itineraryReservation = ref(new ItineraryReservation())
+const itineraryReservation: Ref<IItineraryReservation> = ref(new ItineraryReservation())
 const arrivalDateNextDay = ref(dateHelper.addDays(itineraryReservation.value.arrivalDate, 1))
 const itineraryReservationCartManager = new ItineraryReservationCartManager()
 const loading = ref(false)
+const cartConverter = new CartConverter(campService)
+const itineraryReservationHelper = new ItineraryReservationHelper()
 
 const clickOnCreateCartButton = () => {
   loading.value = true
@@ -132,8 +137,8 @@ const getParks = () => {
 }
 
 const updateParks = () => {
-  itineraryReservation.value.selectedParks = []
-  itineraryReservation.value.selectedCamps = []
+  //itineraryReservation.value.selectedParks = []
+  //itineraryReservation.value.selectedCamps = []
   const selectedRegions = itineraryReservation.value.selectedRegions
   if (selectedRegions.length === 0) {
     parksInDropdown.value = allParks.value
@@ -210,6 +215,41 @@ const clickOnViewCart = () => {
 
 const basketDialog = ref(false)
 
+const props = defineProps({
+  itineraryReservationId: String
+})
+
+onMounted(() => {
+  if (props.itineraryReservationId) {
+    cartService.retrieveCart(props.itineraryReservationId).then((res) => {
+      if (res) {
+        cartConverter.convertToItineraryReservation(res).then((newItineraryReservation) => {
+          itineraryReservation.value = newItineraryReservation
+          itineraryReservationCartStore.setCartNumber(newItineraryReservation.cart_number)
+          const campIDsInItineraryReservation =
+            itineraryReservationHelper.getCampIDsFromAllProtelReservations(newItineraryReservation)
+          for (const campID of campIDsInItineraryReservation) {
+            const foundCamp = campsInDropdown.value.find((camp) => camp.id.toString() == campID)
+            if (foundCamp) {
+              itineraryReservation.value.selectedCamps.push(foundCamp)
+            }
+          }
+          const newArrivalDate = itineraryReservationHelper.getStartDate(itineraryReservation.value)
+          if (newArrivalDate) {
+            itineraryReservation.value.arrivalDate = newArrivalDate
+          }
+          const newDepartureDate = itineraryReservationHelper.getEndDate(itineraryReservation.value)
+          if (newDepartureDate) {
+            itineraryReservation.value.departureDate = newDepartureDate
+          }
+        })
+      }
+    })
+  } else {
+    getRoomTypes()
+  }
+})
+
 watch(
   [() => itineraryReservation.value.selectedRegions],
   () => {
@@ -278,20 +318,16 @@ watch(
 )
 
 const updateReservations = () => {
-  itineraryReservation.value.protelReservations = []
   filterOutLeftOverReservations()
 }
 
 const filterOutLeftOverReservations = () => {
-  for (const reservation of itineraryReservation.value.protelReservations) {
-    const foundCamp = itineraryReservation.value.selectedCamps.find(
-      (camp) => camp.name === reservation.property_code
+  itineraryReservation.value.protelReservations =
+    itineraryReservation.value.protelReservations.filter((reservation) =>
+      itineraryReservation.value.selectedCamps.some(
+        (camp) => reservation.property_code === camp.id.toString()
+      )
     )
-    if (!foundCamp) {
-      const index = itineraryReservation.value.protelReservations.indexOf(reservation)
-      itineraryReservation.value.protelReservations.splice(index, 1)
-    }
-  }
 }
 
 const travelDistanceShown = ref(false)

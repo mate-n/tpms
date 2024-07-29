@@ -26,8 +26,14 @@ const router = createRouter({
     },
     {
       path: '/itinerary-reservation-enquiry',
-      name: 'itinerary reservation enquiry',
+      name: 'new itinerary reservation enquiry',
       component: ItineraryReservationEnquiryView
+    },
+    {
+      path: '/itinerary-reservation-enquiry/:itineraryReservationId',
+      name: 'itinerary reservation enquiry',
+      component: ItineraryReservationEnquiryView,
+      props: true
     },
     {
       path: '/new-profile',

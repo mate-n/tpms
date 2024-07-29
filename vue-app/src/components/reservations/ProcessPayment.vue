@@ -126,7 +126,6 @@ onMounted(() => {
         thirdDepositAmount.value = getSumOfDepositDeadline3amount(res)
       }
     }
-    console.log(res)
   })
 })
 

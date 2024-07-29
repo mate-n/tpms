@@ -19,6 +19,7 @@ export class ItineraryReservation implements IItineraryReservation {
   selectedParks: IProtelPark[]
   selectedCamps: IProtelCamp[]
   guestProfileID: number | undefined
+  cart_number: string
 
   constructor() {
     this.protelReservations = []
@@ -30,5 +31,6 @@ export class ItineraryReservation implements IItineraryReservation {
     this.selectedParks = []
     this.selectedCamps = []
     this.selectedRoomTypeCodes = []
+    this.cart_number = ''
   }
 }

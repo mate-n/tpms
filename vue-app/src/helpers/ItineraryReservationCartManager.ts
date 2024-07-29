@@ -199,7 +199,6 @@ export class ItineraryReservationCartManager {
       }
 
       Promise.all(addConservationFeesToCartPromises).then((responses) => {
-        console.log('addConservationFeesToCartPromises', responses)
         resolve(responses)
       })
     })

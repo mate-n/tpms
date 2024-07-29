@@ -48,13 +48,10 @@ export class SyncCartItemService implements IService {
     const responsesThatHaveFailed = responses.filter(
       (response) => response.status === 'failed' && response.interfaceName === 'IProtelReservation'
     )
-    console.log('failedReservations', responsesThatHaveFailed)
     for (const failedResponse of responsesThatHaveFailed) {
-      console.log('failedResponse', failedResponse)
       const reservation = itineraryReservation.protelReservations.find(
         (reservation) => reservation.localID === failedResponse.localID
       )
-      console.log('reservation', reservation)
       if (reservation) {
         const index = itineraryReservation.protelReservations.indexOf(reservation)
         itineraryReservation.protelReservations.splice(index, 1)
@@ -322,11 +319,9 @@ export class SyncCartItemService implements IService {
     cartNumber: string
   ) {
     return new Promise<any>((resolve) => {
-      console.log('removeItemsThatOnlyExistInBackendCart')
       this.cartService
         .getItemsInCart({ cart_number: cartNumber })
         .then((backendCartItems: ICartItem[]) => {
-          console.log('backendCartItems', backendCartItems)
           const removeItemsFromBackendPromises: Promise<any>[] = []
           const reservationsCartItemIDs = itineraryReservation.protelReservations.map(
             (reservation) => reservation.cartITemID

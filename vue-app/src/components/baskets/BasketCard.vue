@@ -151,16 +151,18 @@ const book = (totalPrice: string) => {
     .settleCart(cartNumberFromCartStore, totalPrice, cartService)
     .then(() => {
       cartService.retrieveCart(cartNumberFromCartStore).then((data) => {
-        console.log('retrieve Cart data', data)
         confirmationNumbers.value = []
-        for (const item of data['cart_items']) {
-          let campName = ''
-          const foundCamp = camps.value.find((camp) => camp.id == parseInt(item['camp_id']))
-          if (foundCamp) {
-            campName = foundCamp.name
-            confirmationNumbers.value.push(item['confirmation'] + ' - ' + campName)
+        if (data) {
+          for (const item of data['cart_items']) {
+            let campName = ''
+            const foundCamp = camps.value.find((camp) => camp.id == item.camp_id)
+            if (foundCamp) {
+              campName = foundCamp.name
+              confirmationNumbers.value.push(item['confirmation'] + ' - ' + campName)
+            }
           }
         }
+
         loading.value = false
         errors.value = []
         itineraryConfirmedDialog.value = true

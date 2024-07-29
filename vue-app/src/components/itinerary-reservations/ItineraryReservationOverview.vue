@@ -29,23 +29,25 @@ const clickOnSearch = async () => {
 
   const campsFromAPI = await campService.findAll()
   const dataFromAPI = await cartService.retrieveCart(searchField.value)
+  if (!dataFromAPI) {
+    return
+  }
   const profileNumberString = dataFromAPI['cart']['profile_number']
     ? dataFromAPI['cart']['profile_number']
     : '1'
   const profileFromAPI = await profileService.get(parseInt(profileNumberString))
 
-  console.log(dataFromAPI)
-  for (const item of dataFromAPI['cart_items']) {
-    const campId = parseInt(item['camp_id'])
+  for (const item of dataFromAPI.cart_items) {
+    const campId = item.camp_id
     const camp = campsFromAPI.find((camp) => camp.id == campId)
     const campName = camp?.name
 
     const newReservation = new Reservation()
     newReservation.profileID = parseInt(profileNumberOfCart.value)
     newReservation.guestName = profileFromAPI?.name + ' ' + profileFromAPI?.surname
-    newReservation.arrivalDate = new Date(item['arrival_date'])
-    newReservation.departureDate = new Date(item['departure_date'])
-    newReservation.roomID = item['unit_id']
+    newReservation.arrivalDate = new Date(item.arrival_date)
+    newReservation.departureDate = new Date(item.departure_date)
+    newReservation.roomID = parseInt(item.unit_id)
     newReservation.propertyID = campId
     if (campName) {
       newReservation.propertyName = campName
