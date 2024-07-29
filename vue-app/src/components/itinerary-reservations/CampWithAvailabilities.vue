@@ -118,8 +118,6 @@ const getTotalOfAvailabilityCountOnDate = (date: Date) => {
   return availabilityHelper.getTotalOfAvailabilityCount(availabilitiesOnDate)
 }
 
-const roomTypeDialog = ref(false)
-
 const getAvailabilities = () => {
   const protelAvailabilityPostBody: IProtelAvailabilityPostBody = availabilityHelper.mapPostBody({
     camp: props.camp,
@@ -330,9 +328,6 @@ const totalPriceForCamp = computed(() => {
                   <div class="d-flex align-center justify-space-between py-5">
                     <div data-cy="avalibility_room_type_code">{{ roomTypeCode }}</div>
                     <div class="d-flex align-center flex-shrink-0">
-                      <v-btn @click="roomTypeDialog = true" variant="text" icon size="x-small">
-                        <v-icon>mdi-information-outline</v-icon>
-                      </v-btn>
                       <v-btn
                         @click="addCloneRoom(roomTypeCode)"
                         icon="mdi-plus"

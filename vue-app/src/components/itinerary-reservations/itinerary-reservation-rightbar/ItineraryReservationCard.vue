@@ -8,7 +8,6 @@ import GuestsPerRoomSelecter from '@/components/selecters/GuestsPerRoomSelecter.
 import type { IRate } from '@/shared/interfaces/IRate'
 import { ProtelReservation } from '@/shared/classes/ProtelReservation'
 import { RoomHelper } from '@/helpers/RoomHelper'
-
 import { PriceFormatter } from '@/helpers/PriceFormatter'
 const priceFormatter = new PriceFormatter()
 const dateHelper = new DateHelper()
