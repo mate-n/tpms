@@ -22,7 +22,9 @@ import type { ICartContentItem } from '@/shared/interfaces/ICartContentItem'
 import { CartContentItemConverter } from '@/shared/converters/CartContentItemConverter'
 import type { IConservationFeePrices } from '@/shared/interfaces/IConservationFeePrices'
 import { ConservationFeePricesHelper } from '@/helpers/ConservationFeePricesHelper'
+import { RoomHelper } from '@/helpers/RoomHelper'
 const conservationFeePricesHelper = new ConservationFeePricesHelper()
+const roomHelper = new RoomHelper()
 const cartContentItemConverter = new CartContentItemConverter()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const priceFormatter = new PriceFormatter()
@@ -159,7 +161,9 @@ const convertConservationFeesToCartContentItems = (
           <v-icon>mdi-chevron-double-right</v-icon>
           <strong data-cy="property_name">{{ reservation.property_name }}</strong
           ><br />
-          <span class="text-black" data-cy="room_type_code">{{ reservation.roomTypeCode }}</span>
+          <span class="text-black" data-cy="room_type_code">{{
+            roomHelper.removeCloneRoomTypeCodeSuffix(reservation.roomTypeCode)
+          }}</span>
         </div>
         <div class="d-flex align-center" style="min-width: 50%">
           <v-autocomplete

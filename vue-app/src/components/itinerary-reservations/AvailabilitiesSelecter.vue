@@ -162,21 +162,13 @@ const setSelectedAvailabilities = () => {
 }
 
 watch(
-  [() => props.allAvailabilities, () => props.roomTypeCode],
+  [
+    () => props.allAvailabilities,
+    () => props.roomTypeCode,
+    () => props.itineraryReservation.protelReservations
+  ],
   async () => {
     resetProtelAvailabilitySelectables()
-    setSelectedAvailabilities()
-    await nextTick()
-  },
-  {
-    immediate: true,
-    deep: true
-  }
-)
-
-watch(
-  [() => props.itineraryReservation.protelReservations],
-  async () => {
     setSelectedAvailabilities()
     await nextTick()
   },
