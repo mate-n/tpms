@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import realmsLogo from '@/assets/images/realms-icon.webp'
-import { computed, inject, onMounted, ref, watch, type Ref } from 'vue'
+import { computed, inject, onMounted, ref, type Ref } from 'vue'
 import { RouterView } from 'vue-router'
 import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
 import { useUserStore } from './stores/user'
@@ -10,13 +10,9 @@ import BasketCard from './components/baskets/BasketCard.vue'
 import { useRouter as UseRouter } from 'vue-router'
 import { ProtelApiStatusService } from './services/protel/ProtelApiStatusService'
 import type { AxiosStatic } from 'axios'
-import { AxiosHelper } from './helpers/AxiosHelper'
 import { useItineraryReservationCartStore } from './stores/itineraryReservationCart'
 import ErrorDialog from './components/ErrorDialog.vue'
 const showApiStatus = import.meta.env.VITE_SHOW_API_STATUS === 'true'
-const showApiSwitcher = import.meta.env.VITE_SHOW_API_SWITCHER === 'true'
-const axiosHelper = new AxiosHelper()
-const axios2: AxiosStatic | undefined = inject('axios2')
 const axios: AxiosStatic | undefined = inject('axios')
 const protelApiStatusService = new ProtelApiStatusService(axios)
 const protelApiStatus = ref('waiting...')
@@ -66,21 +62,6 @@ onMounted(() => {
   protelApiStatusService.getStatus().then((response) => {
     protelApiStatus.value = response
   })
-  if (axios2) {
-    apiSwitch.value = !axiosHelper.isFakeApi(axios2)
-  }
-})
-
-const apiSwitch = ref(false)
-
-const apiSwitchLabel = computed(() => {
-  return apiSwitch.value ? 'Real' : 'Fake'
-})
-
-watch(apiSwitch, (newValue) => {
-  if (axios2) {
-    axiosHelper.switchBaseUrl(axios2, newValue)
-  }
 })
 
 const showBadge = computed(() => {
@@ -173,13 +154,6 @@ const showBadge = computed(() => {
               title="Protel API Status"
               :subtitle="protelApiStatus"
             ></v-list-item>
-
-            <v-divider v-if="showApiSwitcher"></v-divider>
-            <v-list-item v-if="showApiSwitcher" class="mt-2">
-              <v-list-item-title>API Switcher</v-list-item-title>
-              <v-list-item-subtitle>Switch between Real and Fake API</v-list-item-subtitle>
-              <v-switch v-model="apiSwitch" color="primary" :label="apiSwitchLabel"></v-switch>
-            </v-list-item>
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
