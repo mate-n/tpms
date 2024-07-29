@@ -393,7 +393,7 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
     return reservation.property_code === property_code
   }
 
-  return reservation.property_code === property_code && reservation.type_code === roomTypeCode
+  return reservation.property_code === property_code && reservation.roomTypeCode === roomTypeCode
 }
 
 const isCartNumberPresent = computed(() => {
