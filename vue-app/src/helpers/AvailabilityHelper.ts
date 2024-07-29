@@ -223,7 +223,8 @@ export class AvailabilityHelper {
   }
 
   mapPostBody = (data: {
-    camp: IProtelCamp
+    camp?: IProtelCamp
+    propertyId?: number
     departureDate: Date
     arrivalDate: Date
     roomTypeCode?: string
@@ -233,7 +234,7 @@ export class AvailabilityHelper {
       arrivaldate: this.dateFormatter.yyyydashmmdashdd(data.arrivalDate),
       departuredate: this.dateFormatter.yyyydashmmdashdd(data.departureDate),
       roomtype: data.roomTypeCode || 'null',
-      propertyid: `${data.camp.id}`,
+      propertyid: `${data.camp?.id || data.propertyId}`,
       detail: '0',
       accomodation_type: null,
       adults: data.guestsPerRoom.numberOfAdults,

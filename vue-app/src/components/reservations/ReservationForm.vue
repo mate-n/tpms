@@ -18,6 +18,10 @@ import { Profile } from '@/shared/classes/Profile'
 import ProfileGeneralForm from '../profiles/ProfileGeneralForm.vue'
 import ReservationCards from './ReservationCards.vue'
 import { ProfileService } from '@/services/backend-middleware/ProfileService'
+import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
+import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
+import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
+import { ProtelAvailabilitiesValidator } from '@/shared/validators/ProtelAvailabilitiesValidator'
 const reservationClass = new Reservation()
 const axios: AxiosStatic | undefined = inject('axios')
 const axios2: AxiosStatic | undefined = inject('axios2')
@@ -27,10 +31,14 @@ const reservationValidator = new ReservationValidator()
 const languageService = new LanguageService(axios)
 const salutationService = new SalutationService(axios)
 const validityHelper = new ValidityHelper()
+const availabilityHelper = new AvailabilityHelper()
+const availabilityService = new AvailabilityService(axios2)
+const availabilityValidator = new ProtelAvailabilitiesValidator()
 const props = defineProps({
   reservationInput: { type: Object as () => IReservation, required: true },
   crudOperation: { type: Number, required: true }
 })
+const isValidReservation = ref(true)
 const reservationToBeEdited = ref<IReservation>(new Reservation())
 const profileAssociatedWithReservation = ref<IProfile>(new Profile())
 const emit = defineEmits(['save'])
@@ -63,6 +71,33 @@ const getReservationWithProfilePromise = () => {
     }
   })
 }
+
+const checkReservationAvailable = () => {
+  const protelAvailabilityPostBody: IProtelAvailabilityPostBody = availabilityHelper.mapPostBody({
+    // propertyId: reservationToBeEdited.value.propertyID,
+    propertyId: 19197,
+    arrivalDate: reservationToBeEdited.value.arrivalDate,
+    departureDate: reservationToBeEdited.value.departureDate,
+    // roomTypeCode: reservationToBeEdited.value.roomTypeCode,
+    roomTypeCode: 'Family Cottage FA4S',
+    guestsPerRoom: reservationToBeEdited.value.guestsPerRoom
+  })
+
+  availabilityService.getAvailabilities(protelAvailabilityPostBody).then((availabilities) => {
+    const hasInvalidAvailabilities = availabilities.some(
+      (avalability) => !!availabilityValidator.validate(avalability)
+    )
+    isValidReservation.value = !hasInvalidAvailabilities
+  })
+}
+
+watch(
+  [() => reservationToBeEdited],
+  () => {
+    checkReservationAvailable()
+  },
+  { deep: true }
+)
 
 watch(props, () => {
   getReservationWithProfilePromise()
@@ -109,7 +144,7 @@ const reservationsCardDialog = ref(false)
         reservationToBeEdited.id
       }}
     </div>
-    <div class="h-100 d-flex px-5 align-center">
+    <div v-if="isValidReservation" class="h-100 d-flex px-5 align-center">
       <v-btn
         v-if="validityHelper.isValid(reservationToBeEdited)"
         class="primary-button text-uppercase"
@@ -180,6 +215,10 @@ const reservationsCardDialog = ref(false)
       <v-icon>mdi-dots-vertical</v-icon>
     </v-btn>
   </v-toolbar>
+
+  <div v-if="!isValidReservation" class="px-4 py-2 mb-4 text-red-darken-1 text-h6">
+    Invalid reservation
+  </div>
 
   <ReservationCards v-model="reservationToBeEdited"></ReservationCards>
 
