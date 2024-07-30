@@ -185,7 +185,7 @@ const itineraryReservationProfile: Ref<IProfile> = ref(new Profile())
 onMounted(() => {
   sortProtelReservationsByArrivalDate()
   getProfileOfItineraryReservation()
-  campService.findAll().then((response: IProtelCamp[]) => {
+  campService.findAllFilteredByProtelUserEmail(undefined).then((response: IProtelCamp[]) => {
     camps.value = response
   })
 })

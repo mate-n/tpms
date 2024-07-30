@@ -15,6 +15,7 @@ import ProfilesView from '@/views/ProfilesView.vue'
 import ProfileSearchView from '@/views/ProfileSearchView.vue'
 import CartTestView from '@/views/CartTestView.vue'
 import { useCurrentUserStore } from '@/stores/currentUserStore'
+import ProtelUsersView from '@/views/ProtelUsersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,7 +23,8 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: DashboardView
+      component: ItineraryReservationEnquiryView,
+      alias: '/itinerary-reservation-enquiry'
     },
     {
       path: '/itinerary-reservation-enquiry',
@@ -97,6 +99,11 @@ const router = createRouter({
       path: '/cart-test-view',
       name: 'cart test view',
       component: CartTestView
+    },
+    {
+      path: '/protel-users',
+      name: 'protel users',
+      component: ProtelUsersView
     }
   ]
 })

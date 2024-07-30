@@ -57,7 +57,7 @@ const thirdDepositDate: Ref<Date | undefined> = ref(undefined)
 
 const firstDepositAmount = ref(0)
 const secondDepositAmount = ref(0)
-const thirdDepositAmount = ref(0)
+const totalAmountFromCartAKAThirdDepositAmount = ref(0)
 
 const getSumOfDepositDeadline1amount = (
   reservationLookUpResponseBodies: IReservationLookUpResponseBody[]
@@ -122,9 +122,14 @@ onMounted(() => {
       if (res[0].depositDeadline2amount) {
         secondDepositAmount.value = getSumOfDepositDeadline2amount(res)
       }
+      console.log('res[0].depositDeadline3amount', res[0].depositDeadline3amount)
       if (res[0].depositDeadline3amount) {
-        thirdDepositAmount.value = getSumOfDepositDeadline3amount(res)
+        totalAmountFromCartAKAThirdDepositAmount.value = getSumOfDepositDeadline3amount(res)
+      } else {
+        totalAmountFromCartAKAThirdDepositAmount.value = totalPrice.value
       }
+    } else {
+      totalAmountFromCartAKAThirdDepositAmount.value = totalPrice.value
     }
   })
 })
@@ -153,7 +158,7 @@ const totalPriceToSubmit = computed(() => {
       total += secondDepositAmount.value
     }
     if (thirdDepositSelected.value) {
-      total += thirdDepositAmount.value
+      total += totalAmountFromCartAKAThirdDepositAmount.value
     }
   } else {
     total = amountSpecifiedByUser.value
@@ -161,6 +166,24 @@ const totalPriceToSubmit = computed(() => {
 
   return total
 })
+
+const checkboxClick = (checkboxIdentifier: string) => {
+  firstDepositSelected.value = false
+  secondDepositSelected.value = false
+  thirdDepositSelected.value = false
+
+  if (checkboxIdentifier === 'checkboxForFirstDeposit') {
+    firstDepositSelected.value = true
+  }
+
+  if (checkboxIdentifier === 'checkboxForSecondDeposit') {
+    secondDepositSelected.value = true
+  }
+
+  if (checkboxIdentifier === 'checkboxForThirdDeposit') {
+    thirdDepositSelected.value = true
+  }
+}
 </script>
 
 <template>
@@ -182,7 +205,9 @@ const totalPriceToSubmit = computed(() => {
       </v-row>
       <v-row>
         <v-col class="pt-1">{{ itineraryReservationCartStore.getCartNumber() }}</v-col>
-        <v-col class="pt-1">{{ priceFormatter.formatPrice(totalPrice) }}</v-col>
+        <v-col class="pt-1">{{
+          priceFormatter.formatPrice(totalAmountFromCartAKAThirdDepositAmount)
+        }}</v-col>
       </v-row>
       <v-row>
         <v-col class="font-weight-bold pb-0">Reservation Number</v-col>
@@ -210,7 +235,11 @@ const totalPriceToSubmit = computed(() => {
           <v-col class="pt-1">{{ dateFormatter.dddotmmdotyyyy(firstDepositDate) }}</v-col>
           <v-col class="pt-1"> {{ priceFormatter.formatPrice(firstDepositAmount) }}</v-col>
           <v-col class="pt-0">
-            <v-checkbox v-model="firstDepositSelected" label="Select"></v-checkbox>
+            <v-checkbox
+              v-model="firstDepositSelected"
+              label="Select"
+              @click="checkboxClick('checkboxForFirstDeposit')"
+            ></v-checkbox>
           </v-col>
         </v-row>
         <v-divider class="mb-2"></v-divider>
@@ -227,7 +256,11 @@ const totalPriceToSubmit = computed(() => {
           <v-col class="pt-1">{{ dateFormatter.dddotmmdotyyyy(secondDepositDate) }}</v-col>
           <v-col class="pt-1">{{ priceFormatter.formatPrice(secondDepositAmount) }}</v-col>
           <v-col class="pt-0">
-            <v-checkbox v-model="secondDepositSelected" label="Select"></v-checkbox>
+            <v-checkbox
+              v-model="secondDepositSelected"
+              label="Select"
+              @click="checkboxClick('checkboxForSecondDeposit')"
+            ></v-checkbox>
           </v-col>
         </v-row>
         <v-divider class="mb-2"></v-divider>
@@ -240,11 +273,17 @@ const totalPriceToSubmit = computed(() => {
           <v-col class="pb-0"></v-col>
         </v-row>
         <v-row>
-          <v-col class="pt-1">Third Deposit</v-col>
-          <v-col class="pt-1">{{ dateFormatter.dddotmmdotyyyy(thirdDepositDate) }}</v-col>
-          <v-col class="pt-1">{{ priceFormatter.formatPrice(thirdDepositAmount) }}</v-col>
+          <v-col class="pt-1">Total</v-col>
+          <v-col class="pt-1"></v-col>
+          <v-col class="pt-1">{{
+            priceFormatter.formatPrice(totalAmountFromCartAKAThirdDepositAmount)
+          }}</v-col>
           <v-col class="pt-0">
-            <v-checkbox v-model="thirdDepositSelected" label="Select"></v-checkbox>
+            <v-checkbox
+              v-model="thirdDepositSelected"
+              label="Select"
+              @click="checkboxClick('checkboxForThirdDeposit')"
+            ></v-checkbox>
           </v-col>
         </v-row>
         <v-divider class="mb-2"></v-divider>
