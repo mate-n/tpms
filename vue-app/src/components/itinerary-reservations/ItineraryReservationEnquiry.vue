@@ -34,6 +34,7 @@ import type { ISynchronizeFrontendCartWithBackendCartResult } from '@/shared/int
 import { CartConverter } from '@/shared/converters/CartConverter'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import { ItineraryReservationHelper } from '@/helpers/ItineraryReservationHelper'
+import { useCurrentUserStore } from '@/stores/currentUserStore'
 const synchronizeFrontendCartWithBackendCartResultErrorMessageGenerator =
   new SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator()
 const errorsStore = useErrorsStore()
@@ -63,6 +64,7 @@ const itineraryReservationCartManager = new ItineraryReservationCartManager()
 const loading = ref(false)
 const cartConverter = new CartConverter(campService)
 const itineraryReservationHelper = new ItineraryReservationHelper()
+const currentUserStore = useCurrentUserStore()
 
 const clickOnCreateCartButton = () => {
   loading.value = true
@@ -137,8 +139,6 @@ const getParks = () => {
 }
 
 const updateParks = () => {
-  //itineraryReservation.value.selectedParks = []
-  //itineraryReservation.value.selectedCamps = []
   const selectedRegions = itineraryReservation.value.selectedRegions
   if (selectedRegions.length === 0) {
     parksInDropdown.value = allParks.value
@@ -169,7 +169,7 @@ const selectAllCampsInDropdown = () => {
 
 const getCamps = () => {
   return new Promise<void>((resolve) => {
-    campService.findAll().then((res) => {
+    campService.findAllFilteredByProtelUserEmail(currentUserStore.systemUser).then((res) => {
       allCamps.value = res
       campsInDropdown.value = res
       getRoomTypes()

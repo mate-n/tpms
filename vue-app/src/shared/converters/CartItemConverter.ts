@@ -35,7 +35,7 @@ export class CartItemConverter {
     protelReservations: IProtelReservation[]
   ): Promise<IProtelReservation> {
     return new Promise((resolve) => {
-      this.campService.findAll().then((camps) => {
+      this.campService.findAllFilteredByProtelUserEmail(undefined).then((camps) => {
         const camp = camps.find((camp) => camp.id == cartItem.camp_id)
         const protelReservation: IProtelReservation = new ProtelReservation()
         protelReservation.cartITemID = cartItem.id

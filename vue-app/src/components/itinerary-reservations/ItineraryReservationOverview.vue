@@ -27,7 +27,7 @@ const searchField = ref<string>('')
 const clickOnSearch = async () => {
   reservations.value = []
 
-  const campsFromAPI = await campService.findAll()
+  const campsFromAPI = await campService.findAllFilteredByProtelUserEmail(undefined)
   const dataFromAPI = await cartService.retrieveCart(searchField.value)
   if (!dataFromAPI) {
     return
