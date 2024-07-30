@@ -16,6 +16,7 @@ import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
 import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import { AvailabilitiesFiller } from '@/helpers/AvailabilitiesFiller'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
+import { RoomHelper } from '@/helpers/RoomHelper'
 const availabilitiesFiller = new AvailabilitiesFiller()
 const guestsPerRoom: Ref<GuestsPerRoom> = ref(new GuestsPerRoom())
 const priceFormatter = new PriceFormatter()
@@ -25,6 +26,7 @@ const availabilityService = new AvailabilityService(axios2)
 const dateHelper = new DateHelper()
 const dateFormatter = new DateFormatter()
 const availabilityHelper = new AvailabilityHelper()
+const roomHelper = new RoomHelper()
 const emits = defineEmits(['availabilities-selected'])
 const props = defineProps({
   camp: { type: Object as () => IProtelCamp, required: true },
@@ -140,6 +142,8 @@ const getAvailabilities = () => {
       props.arrivalDate,
       props.departureDate
     )
+
+    syncCloneAvailabilitiesWithCloneRooms()
   })
 }
 
@@ -180,22 +184,47 @@ const clickOnReset = () => {
   emits('availabilities-selected', protelReservationSelectUpdate)
 }
 
+const syncCloneAvailabilitiesWithCloneRooms = () => {
+  // remove clone availabilities has cloneRoomTypeCode was removed
+  let allCloneRoomTypeCodes: string[] = []
+  Object.values(cloneRoomTypeCodes.value).forEach((cloneRoomTypeCode) => {
+    allCloneRoomTypeCodes.push(...cloneRoomTypeCode)
+  })
+  availabilities.value = availabilities.value.filter((availability) => {
+    return (
+      !roomHelper.isCloneRoomTypeCode(availability.room_type_code) ||
+      allCloneRoomTypeCodes.includes(availability.room_type_code)
+    )
+  })
+
+  // add missing clone availabilities
+  const newCloneAvailabilities: IProtelAvailability[] = []
+  Object.entries(cloneRoomTypeCodes.value).forEach(([roomTypeCode, cloneRoomTypeCodes]) => {
+    cloneRoomTypeCodes.forEach((cloneRoomTypeCode) => {
+      const isAdded = availabilities.value.some((item) => item.room_type_code === cloneRoomTypeCode)
+      if (isAdded) return
+
+      const realRoomAvalabilities = availabilities.value.filter(
+        (item) => item.room_type_code === roomTypeCode
+      )
+      const cloneRoomAvailabilities = realRoomAvalabilities.map((availability) => ({
+        ...availability,
+        room_type_code: cloneRoomTypeCode
+      }))
+
+      newCloneAvailabilities.push(...cloneRoomAvailabilities)
+    })
+  })
+  availabilities.value = [...availabilities.value, ...newCloneAvailabilities]
+}
+
 const addCloneRoom = (roomTypeCode: string) => {
   const cloneRoomTypeCode = `${roomTypeCode}_${String(Date.now())}`
   cloneRoomTypeCodes.value = {
     ...cloneRoomTypeCodes.value,
     [roomTypeCode]: [...(cloneRoomTypeCodes.value[roomTypeCode] || []), cloneRoomTypeCode]
   }
-  const roomAvalabilities = availabilities.value.filter(
-    ({ room_type_code }) => room_type_code === roomTypeCode
-  )
-  availabilities.value = [
-    ...availabilities.value,
-    ...roomAvalabilities.map((availability) => ({
-      ...availability,
-      room_type_code: cloneRoomTypeCode
-    }))
-  ]
+  syncCloneAvailabilitiesWithCloneRooms()
 }
 
 const removeCloneRoom = (roomTypeCode: string, cloneRoomTypeCode: string) => {
@@ -205,10 +234,9 @@ const removeCloneRoom = (roomTypeCode: string, cloneRoomTypeCode: string) => {
       (code) => code !== cloneRoomTypeCode
     )
   }
-  availabilities.value = availabilities.value.filter(
-    ({ room_type_code }) => room_type_code !== cloneRoomTypeCode
-  )
+  syncCloneAvailabilitiesWithCloneRooms()
 
+  // remove selected availabilities which in "clone Room"
   const protelReservationSelectUpdate: IProtelReservationSelectUpdate = {
     selectedAvailabilities: [],
     property_code: props.camp.id.toString(),

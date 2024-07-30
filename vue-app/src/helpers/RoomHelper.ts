@@ -3,7 +3,7 @@ export class RoomHelper {
     if (!roomTypeCode) return ''
     return `${roomTypeCode}_${String(Date.now())}`
   }
-  checkCloneRoomTypeCode(roomTypeCode?: string) {
+  isCloneRoomTypeCode(roomTypeCode?: string) {
     if (!roomTypeCode) return false
     return /_[0-9]+$/.test(roomTypeCode)
   }

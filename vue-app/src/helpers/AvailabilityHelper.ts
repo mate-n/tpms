@@ -21,7 +21,7 @@ export class AvailabilityHelper {
   getUniqueRoomTypeCodes(availabilities: IProtelAvailability[]) {
     const uniqueCodes = new Set<string>()
     availabilities.forEach((availability) => {
-      if (!this.roomHelper.checkCloneRoomTypeCode(availability.room_type_code)) {
+      if (!this.roomHelper.isCloneRoomTypeCode(availability.room_type_code)) {
         if (availability && availability.room_type_code) {
           uniqueCodes.add(availability.room_type_code)
         }
