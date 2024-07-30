@@ -1,0 +1,45 @@
+name: tpms-frontend-release
+services:
+  vue:
+    container_name: tpms-frontend-release-vue
+    build:
+      context: ../../../vue-app
+      dockerfile: Dockerfile
+      target: production-stage
+      args:
+        VITE_API_BASE_URL: "${API_BASE_URL}"
+        VITE_API_BASE_URL2: "${API_BASE_URL2}"
+    env_file:
+      - .env
+    ports:
+      - "${PORT_FRONTEND}:80"
+  backend-middleware-mongodb:
+    image: "mongo"
+    volumes:
+      - mongodata:/data/db
+    env_file:
+      - .env
+  backend-middleware:
+    container_name: tpms-frontend-release-backend-middleware
+    build:
+      context: ../../../backend-middleware
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${PORT_MIDDLEWARE}:8080"
+    depends_on:
+      - backend-middleware-mongodb
+  nest:
+    container_name: tpms-frontend-release-nest
+    build:
+      context: ../../../nest-app
+      dockerfile: Dockerfile
+      target: development-stage
+    env_file:
+      - .env
+    ports:
+      - "${PORT_BACKEND}:3001"
+
+volumes:
+  mongodata:
