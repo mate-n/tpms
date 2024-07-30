@@ -230,7 +230,10 @@ onMounted(() => {
             itineraryReservationHelper.getCampIDsFromAllProtelReservations(newItineraryReservation)
           for (const campID of campIDsInItineraryReservation) {
             const foundCamp = campsInDropdown.value.find((camp) => camp.id.toString() == campID)
-            if (foundCamp) {
+            const isSelected = itineraryReservation.value.selectedCamps.some(
+              (camp) => camp.id.toString() == campID
+            )
+            if (foundCamp && !isSelected) {
               itineraryReservation.value.selectedCamps.push(foundCamp)
             }
           }

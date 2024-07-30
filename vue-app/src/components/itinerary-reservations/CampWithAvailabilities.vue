@@ -218,8 +218,20 @@ const syncCloneAvailabilitiesWithCloneRooms = () => {
   availabilities.value = [...availabilities.value, ...newCloneAvailabilities]
 }
 
-const addCloneRoom = (roomTypeCode: string) => {
-  const cloneRoomTypeCode = `${roomTypeCode}_${String(Date.now())}`
+const addCloneRoomIfNotExist = (params: { roomTypeCode: string; cloneRoomTypeCode?: string }) => {
+  const { roomTypeCode } = params
+  let cloneRoomTypeCode = roomHelper.generateCloneRoomTypeCode(roomTypeCode)
+
+  if (params.cloneRoomTypeCode) {
+    cloneRoomTypeCode = params.cloneRoomTypeCode
+
+    // do NOT add new clone room if existing
+    const isExisting = cloneRoomTypeCodes.value[roomTypeCode]?.some(
+      (cloneCode) => cloneCode === cloneRoomTypeCode
+    )
+    if (isExisting) return
+  }
+
   cloneRoomTypeCodes.value = {
     ...cloneRoomTypeCodes.value,
     [roomTypeCode]: [...(cloneRoomTypeCodes.value[roomTypeCode] || []), cloneRoomTypeCode]
@@ -245,6 +257,24 @@ const removeCloneRoom = (roomTypeCode: string, cloneRoomTypeCode: string) => {
   }
   emits('availabilities-selected', protelReservationSelectUpdate)
 }
+
+watch(
+  [() => props.itineraryReservation.protelReservations],
+  () => {
+    // check if a clone "protelReservation" exisiting in "itineraryReservation"
+    //    but not in "cloneRoomTypeCodes"
+    // This case will happen when we load reservations from "cart":
+    //    page: `/itinerary-reservation-enquiry/{cart_id}`
+    props.itineraryReservation.protelReservations.forEach((reservation) => {
+      if (!roomHelper.isCloneRoomTypeCode(reservation.roomTypeCode)) return
+      addCloneRoomIfNotExist({
+        roomTypeCode: roomHelper.removeCloneRoomTypeCodeSuffix(reservation.roomTypeCode),
+        cloneRoomTypeCode: reservation.roomTypeCode
+      })
+    })
+  },
+  { deep: true, immediate: true }
+)
 
 const totalPriceForCamp = computed(() => {
   const reservationsInThisCamp = props.itineraryReservation.protelReservations.filter(
@@ -357,7 +387,7 @@ const totalPriceForCamp = computed(() => {
                     <div data-cy="avalibility_room_type_code">{{ roomTypeCode }}</div>
                     <div class="d-flex align-center flex-shrink-0">
                       <v-btn
-                        @click="addCloneRoom(roomTypeCode)"
+                        @click="addCloneRoomIfNotExist({ roomTypeCode })"
                         icon="mdi-plus"
                         density="comfortable"
                         size="small"
