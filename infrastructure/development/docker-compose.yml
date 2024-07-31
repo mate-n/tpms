@@ -24,6 +24,8 @@ services:
       - mongodata:/data/db
     env_file:
       - .env
+    ports:
+      - "27017:27017"
   backend-middleware:
     build:
       context: ../../backend-middleware

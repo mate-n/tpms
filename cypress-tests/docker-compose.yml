@@ -18,8 +18,8 @@ services:
     depends_on:
       - nest
       - backend-middleware
-  backend-middleware-mongodb:
-    image: "mongo"
+  backend-middleware-db:
+    image: ""
     volumes:
       - mongodata:/data/db
     env_file:
