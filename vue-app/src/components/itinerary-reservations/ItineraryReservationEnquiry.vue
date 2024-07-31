@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeMount, onMounted, ref, watch } from 'vue'
+import { computed, inject, onMounted, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useItineraryReservationCartStore } from '@/stores/itineraryReservationCart'
 import BasketCard from '@/components/baskets/BasketCard.vue'
@@ -119,22 +119,82 @@ const clickOnUpdateCartButton = () => {
 
 const closeExpansionPanels = ref(0)
 
-onBeforeMount(() => {
-  getRegions()
-  getParks()
-  getCamps()
-})
+const getRegionsParksAndCamps = () => {
+  return new Promise<void>((resolve) => {
+    loading.value = true
+    getCamps()
+      .then(() => getRegionsAndParks())
+      .then(() => removeEmptyRegionsAndParks())
+      .then(() => selectCampsIfProtelUserIsPresent())
+      .then(() => {
+        loading.value = false
+        resolve()
+      })
+  })
+}
+
+const selectCampsIfProtelUserIsPresent = () => {
+  return new Promise<void>((resolve) => {
+    if (currentUserStore.systemUser) {
+      itineraryReservation.value.selectedCamps = campsInDropdown.value
+      itineraryReservation.value.selectedRegions = regionsInDropdown.value
+      itineraryReservation.value.selectedParks = parksInDropdown.value
+      resolve()
+    } else {
+      resolve()
+    }
+  })
+}
+
+const removeEmptyRegionsAndParks = () => {
+  return new Promise<void>((resolve) => {
+    parksInDropdown.value = parksInDropdown.value.filter((park) =>
+      campsInDropdown.value.map((camp) => camp.parkID).includes(park.id)
+    )
+
+    regionsInDropdown.value = regionsInDropdown.value.filter((region) =>
+      parksInDropdown.value.map((park) => park.regionName).includes(region.name)
+    )
+
+    resolve()
+  })
+}
+
+const getRegionsAndParks = () => {
+  return new Promise<void>((resolve) => {
+    Promise.all([getRegions(), getParks()]).then(() => {
+      resolve()
+    })
+  })
+}
 
 const getRegions = () => {
-  regionService.findAll().then((res) => {
-    regionsInDropdown.value = res
+  return new Promise<void>((resolve) => {
+    regionService.findAll().then((res) => {
+      regionsInDropdown.value = res
+      resolve()
+    })
   })
 }
 
 const getParks = () => {
-  parkService.findAll().then((res) => {
-    allParks.value = res
-    parksInDropdown.value = res
+  return new Promise<void>((resolve) => {
+    parkService.findAll().then((res) => {
+      allParks.value = res
+      parksInDropdown.value = res
+      resolve()
+    })
+  })
+}
+
+const getCamps = () => {
+  return new Promise<void>((resolve) => {
+    campService.findAllFilteredByProtelUserEmail(currentUserStore.systemUser).then((res) => {
+      allCamps.value = res
+      campsInDropdown.value = res
+      getRoomTypes()
+      resolve()
+    })
   })
 }
 
@@ -165,17 +225,6 @@ const updateCamps = () => {
 const selectAllCampsInDropdown = () => {
   updateCamps()
   itineraryReservation.value.selectedCamps = campsInDropdown.value
-}
-
-const getCamps = () => {
-  return new Promise<void>((resolve) => {
-    campService.findAllFilteredByProtelUserEmail(currentUserStore.systemUser).then((res) => {
-      allCamps.value = res
-      campsInDropdown.value = res
-      getRoomTypes()
-      resolve()
-    })
-  })
 }
 
 const getRoomTypes = () => {
@@ -220,34 +269,42 @@ const props = defineProps({
 })
 
 onMounted(() => {
-  if (props.itineraryReservationId) {
-    cartService.retrieveCart(props.itineraryReservationId).then((res) => {
-      if (res) {
-        cartConverter.convertToItineraryReservation(res).then((newItineraryReservation) => {
-          itineraryReservation.value = newItineraryReservation
-          itineraryReservationCartStore.setCartNumber(newItineraryReservation.cart_number)
-          const campIDsInItineraryReservation =
-            itineraryReservationHelper.getCampIDsFromAllProtelReservations(newItineraryReservation)
-          for (const campID of campIDsInItineraryReservation) {
-            const foundCamp = campsInDropdown.value.find((camp) => camp.id.toString() == campID)
-            if (foundCamp) {
-              itineraryReservation.value.selectedCamps.push(foundCamp)
+  getRegionsParksAndCamps().then(() => {
+    if (props.itineraryReservationId) {
+      cartService.retrieveCart(props.itineraryReservationId).then((res) => {
+        if (res) {
+          cartConverter.convertToItineraryReservation(res).then((newItineraryReservation) => {
+            itineraryReservation.value = newItineraryReservation
+            itineraryReservationCartStore.setCartNumber(newItineraryReservation.cart_number)
+            const campIDsInItineraryReservation =
+              itineraryReservationHelper.getCampIDsFromAllProtelReservations(
+                newItineraryReservation
+              )
+            for (const campID of campIDsInItineraryReservation) {
+              const foundCamp = campsInDropdown.value.find((camp) => camp.id.toString() == campID)
+              if (foundCamp) {
+                itineraryReservation.value.selectedCamps.push(foundCamp)
+              }
             }
-          }
-          const newArrivalDate = itineraryReservationHelper.getStartDate(itineraryReservation.value)
-          if (newArrivalDate) {
-            itineraryReservation.value.arrivalDate = newArrivalDate
-          }
-          const newDepartureDate = itineraryReservationHelper.getEndDate(itineraryReservation.value)
-          if (newDepartureDate) {
-            itineraryReservation.value.departureDate = newDepartureDate
-          }
-        })
-      }
-    })
-  } else {
-    getRoomTypes()
-  }
+            const newArrivalDate = itineraryReservationHelper.getStartDate(
+              itineraryReservation.value
+            )
+            if (newArrivalDate) {
+              itineraryReservation.value.arrivalDate = newArrivalDate
+            }
+            const newDepartureDate = itineraryReservationHelper.getEndDate(
+              itineraryReservation.value
+            )
+            if (newDepartureDate) {
+              itineraryReservation.value.departureDate = newDepartureDate
+            }
+          })
+        }
+      })
+    } else {
+      getRoomTypes()
+    }
+  })
 })
 
 watch(

@@ -26,3 +26,7 @@ ssh ubuntu@13.244.68.102 << EOF
     cd /home/ubuntu/tpms-frontend
     ./update_version.sh $gitsha
 EOF
+
+current_version=$(ssh ubuntu@13.244.68.102 "cd /home/ubuntu/tpms-frontend && head -n 1 versions.production | tail -n 1")
+git branch release/$current_version
+git push origin release/$current_version
