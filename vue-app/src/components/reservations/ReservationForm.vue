@@ -23,13 +23,12 @@ import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import { AvailabilityService } from '@/services/backend-middleware/AvailabilityService'
 import { ProtelAvailabilitiesValidator } from '@/shared/validators/ProtelAvailabilitiesValidator'
 const reservationClass = new Reservation()
-const axios: AxiosStatic | undefined = inject('axios')
 const axios2: AxiosStatic | undefined = inject('axios2')
-const reservationService = new ReservationService(axios)
+const reservationService = new ReservationService(axios2)
 const profileService = new ProfileService(axios2)
 const reservationValidator = new ReservationValidator()
-const languageService = new LanguageService(axios)
-const salutationService = new SalutationService(axios)
+const languageService = new LanguageService(axios2)
+const salutationService = new SalutationService(axios2)
 const validityHelper = new ValidityHelper()
 const availabilityHelper = new AvailabilityHelper()
 const availabilityService = new AvailabilityService(axios2)

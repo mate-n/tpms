@@ -8,9 +8,9 @@ import type { IFeature } from '@/shared/interfaces/IFeature'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
-const axios: AxiosStatic | undefined = inject('axios')
-const featureService = new FeatureService(axios)
-const bookableObjectService = new BookableObjectService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const featureService = new FeatureService(axios2)
+const bookableObjectService = new BookableObjectService(axios2)
 const availableFeatures = ref<IFeature[]>([])
 const availableBookableObjects = ref<IBookableObject[]>([])
 const profileToBeEdited = defineModel({

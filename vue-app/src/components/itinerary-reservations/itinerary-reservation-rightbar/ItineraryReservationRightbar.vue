@@ -10,8 +10,8 @@ import { DateHelper } from '@/helpers/DateHelper'
 import ItineraryReservationCard from './ItineraryReservationCard.vue'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 
-const axios: AxiosStatic | undefined = inject('axios')
-const rateService = new RateService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const rateService = new RateService(axios2)
 const dateHelper = new DateHelper()
 
 const emit = defineEmits(['update', 'toggle'])
