@@ -4,12 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import tpms.backend_middleware.models.User;
-import tpms.backend_middleware.repositories.UserRepository;
 import tpms.backend_middleware.requests.AuthenticationRequest;
 import tpms.backend_middleware.responses.AuthenticationResponse;
 import tpms.backend_middleware.services.UserService;
@@ -17,7 +14,6 @@ import tpms.backend_middleware.helpers.JWTUtil;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 @RestController
@@ -33,19 +29,10 @@ public class AuthenticationController {
     private UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private JWTUtil jwtUtil;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        // Demo
-        createDemoUserIfNotExists();
-
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
@@ -58,17 +45,6 @@ public class AuthenticationController {
         final String jwt = jwtUtil.generateToken(userDetails.getUsername());
 
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
-    }
-
-    private void createDemoUserIfNotExists() {
-        Optional<User> existingUser = userRepository.findByUsername("demo");
-        if (existingUser.isEmpty()) {
-            User demoUser = new User();
-            demoUser.setUsername("demo");
-            demoUser.setPassword(passwordEncoder.encode("demo"));
-            userRepository.save(demoUser);
-            logger.info("Created demo user with username: demo and password: demo");
-        }
     }
 
     @GetMapping("/check-login")

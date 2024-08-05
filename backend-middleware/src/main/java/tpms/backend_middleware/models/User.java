@@ -17,4 +17,5 @@ public class User implements IModel {
     private Date updatedAt = new Date();
     private String username;
     private String password;
+    private Integer roleId;
 }
