@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Component
-public class JWTUtil {
+public class JWTService {
 
     @Value("${app.jwt-secret}")
     private String jwtSecret;

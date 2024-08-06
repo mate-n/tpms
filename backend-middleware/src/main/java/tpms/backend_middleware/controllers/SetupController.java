@@ -1,5 +1,9 @@
 package tpms.backend_middleware.controllers;
 
+import java.util.Optional;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,10 +13,12 @@ import tpms.backend_middleware.models.Camp;
 import tpms.backend_middleware.models.Park;
 import tpms.backend_middleware.models.Profile;
 import tpms.backend_middleware.models.Region;
+import tpms.backend_middleware.models.User;
 import tpms.backend_middleware.repositories.CampRepository;
 import tpms.backend_middleware.repositories.ParkRepository;
 import tpms.backend_middleware.repositories.ProfileRepository;
 import tpms.backend_middleware.repositories.RegionRepository;
+import tpms.backend_middleware.repositories.UserRepository;
 
 @RestController()
 @RequestMapping(path = "/api/setup", produces = "application/json")
@@ -22,15 +28,21 @@ public class SetupController {
     private final ParkRepository parksRepository;
     private final CampRepository campRepository;
     private final ProfileRepository profileRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public SetupController(RegionRepository regionRepository, ParkRepository parksRepository,
-            CampRepository campRepository, ProfileRepository profileRepository) {
+                           CampRepository campRepository, ProfileRepository profileRepository,
+                           UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.regionRepository = regionRepository;
         this.parksRepository = parksRepository;
         this.campRepository = campRepository;
         this.profileRepository = profileRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(path = "/seed")
     public void seed() {
         Region region1 = new Region();
@@ -197,4 +209,20 @@ public class SetupController {
 
     }
 
+    @GetMapping(path = "/create-users")
+    public String createDemoAndAdminUsers() {
+        createDemoUserIfNotExists();
+
+        return "Demo user created successfully";
+    }
+
+    private void createDemoUserIfNotExists() {
+        Optional<User> user = userRepository.findByUsername("demo");
+        if (user.isEmpty()) {
+            User newUser = new User();
+            newUser.setUsername("demo");
+            newUser.setPassword(passwordEncoder.encode("demo"));
+            userRepository.save(newUser);
+        }
+    }
 }
