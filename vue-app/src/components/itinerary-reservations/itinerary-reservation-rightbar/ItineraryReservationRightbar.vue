@@ -19,7 +19,6 @@ const emit = defineEmits(['update', 'toggle'])
 const showDrawer = ref(true)
 const availableRates = ref<IRate[]>([])
 const minDate = ref<Date | undefined>()
-const campReservations = ref<{ name: string; reservations: IProtelReservation[] }[]>([])
 
 const props = defineProps({
   showRightBar: { type: Boolean, required: true },
@@ -39,35 +38,6 @@ const handleDelete = (data: IProtelReservation) => {
   )
   emit('update', newProtelReservations)
 }
-
-watch(
-  () => props.itineraryReservation,
-  () => {
-    // group "reservations" by "camp"
-    const groupSet: Record<string, IProtelReservation[]> = {}
-    props.itineraryReservation.protelReservations.forEach((reservation) => {
-      const campId = reservation.property_code
-      if (!groupSet[campId]) groupSet[campId] = []
-      groupSet[campId].push({ ...reservation })
-    })
-
-    const campReservationList: {
-      name: string
-      reservations: IProtelReservation[]
-    }[] = []
-    // loop in "selectedCamps" to keep the correct order
-    props.itineraryReservation.selectedCamps.forEach((camp) => {
-      if (groupSet[camp.id]) {
-        campReservationList.push({
-          name: camp.name.trim(),
-          reservations: groupSet[camp.id]
-        })
-      }
-    })
-    campReservations.value = campReservationList
-  },
-  { immediate: true, deep: true }
-)
 
 watch(
   () => props.itineraryReservation.arrivalDate,
@@ -92,33 +62,22 @@ onMounted(() => {
   <v-btn variant="text" icon="mdi-menu" @click="emit('toggle', !props.showRightBar)"></v-btn>
 
   <v-navigation-drawer v-model="showDrawer" :width="450" location="right">
-    <h2 v-if="campReservations.length" class="pa-2">
+    <h2 v-if="props.itineraryReservation.protelReservations.length" class="pa-2">
       <strong>Placed reservations list</strong>
     </h2>
-
     <div
-      v-for="{ name, reservations } in campReservations"
-      :key="name"
-      data-cy="itinerary_reservation_rightbar"
+      class="flex flex-col px-2 py-2"
+      v-for="protelReservation in props.itineraryReservation.protelReservations"
+      :key="protelReservation.roomTypeCode"
     >
-      <h3 class="my-2 py-2 px-5 bg-lightgray">
-        <strong>{{ name }}</strong>
-      </h3>
-
-      <div
-        class="flex flex-col px-2 py-2"
-        v-for="protelReservation in reservations"
-        :key="protelReservation.roomTypeCode"
-      >
-        <ItineraryReservationCard
-          :min-date="minDate"
-          :max-date="props.itineraryReservation.departureDate"
-          :available-rates="availableRates"
-          :protel-reservation="protelReservation"
-          @update="handleUpdate"
-          @delete="handleDelete"
-        />
-      </div>
+      <ItineraryReservationCard
+        :min-date="minDate"
+        :max-date="props.itineraryReservation.departureDate"
+        :available-rates="availableRates"
+        :protel-reservation="protelReservation"
+        @update="handleUpdate"
+        @delete="handleDelete"
+      />
     </div>
   </v-navigation-drawer>
 </template>
