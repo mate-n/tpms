@@ -8,16 +8,22 @@ type AvailabilityResponse = {
   };
 };
 
-export const updateAvalabilitiesResponse = (
-  response: AvailabilityResponse,
-  index: number,
-  data: Partial<IProtelAvailability>
-): AvailabilityResponse => {
+export const updateAvalabilitiesResponse = ({
+  response,
+  index,
+  all,
+  data,
+}: {
+  response: AvailabilityResponse;
+  index?: number;
+  all?: boolean;
+  data: Partial<IProtelAvailability>;
+}): AvailabilityResponse => {
   return {
     data: {
       ...response.data,
       availability_data: response.data.availability_data.map((avalability, itemIndex) => {
-        if (index !== itemIndex) return avalability;
+        if (!all && index !== itemIndex) return avalability;
         return {
           ...avalability,
           ...data,
@@ -29,9 +35,25 @@ export const updateAvalabilitiesResponse = (
 
 const post = (data?: Partial<IProtelAvailability>, index?: number) => {
   cy.fixture('api/availabilities/post').then((response) => {
-    cy.intercept('POST', new RegExp(/v1\/availabilities/), (req) =>
-      req.reply({ body: updateAvalabilitiesResponse(response, index || 0, data), delay: 500 })
-    ).as(POST_ALIAS);
+    cy.intercept('POST', new RegExp(/v1\/availabilities/), (req) => {
+      const tomorrow = new Date();
+      tomorrow.setDate(new Date().getDate() + 1);
+      tomorrow.setHours(23, 59, 0, 0);
+      const body = updateAvalabilitiesResponse({
+        response,
+        all: true,
+        data: {
+          availability_start: tomorrow,
+          availability_end: tomorrow,
+          ...data,
+        },
+      });
+
+      return req.reply({
+        body: updateAvalabilitiesResponse({ response: body, index, data }),
+        delay: 500,
+      });
+    }).as(POST_ALIAS);
   });
 };
 
