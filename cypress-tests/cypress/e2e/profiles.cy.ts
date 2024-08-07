@@ -1,7 +1,13 @@
+import interceptDropdowns from '../utils/intercept/dropdowns';
 import { ROUTE_PATHS } from '../utils/route-paths';
+
+Cypress.on('uncaught:exception', () => {
+  return false;
+});
 
 describe('profiles', () => {
   beforeEach(() => {
+    interceptDropdowns.nationalities.get();
     cy.login();
   });
 
