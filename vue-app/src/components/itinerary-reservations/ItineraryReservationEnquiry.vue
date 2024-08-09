@@ -437,7 +437,8 @@ const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservatio
         !hasReservationPropertyCodeAndRoomTypeCode(
           reservation,
           protelReservationSelectUpdate.property_code,
-          protelReservationSelectUpdate.roomTypeCode
+          protelReservationSelectUpdate.roomTypeCode,
+          protelReservationSelectUpdate.roomTypeCodeClone
         )
     )
 
@@ -452,13 +453,24 @@ const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservatio
 const hasReservationPropertyCodeAndRoomTypeCode = (
   reservation: IProtelReservation,
   property_code: string,
-  roomTypeCode: string
+  roomTypeCode: string,
+  roomTypeCodeClone?: string
 ) => {
-  if (roomTypeCode === '') {
-    return reservation.property_code === property_code
+  const isSameProperty = reservation.property_code === property_code
+  const isSameRoom = reservation.roomTypeCode === roomTypeCode
+  const isSameRoomClone = reservation.roomTypeCodeClone === roomTypeCodeClone
+
+  // check for clone
+  if (roomTypeCodeClone) {
+    return isSameProperty && isSameRoomClone && !!reservation.roomTypeCodeClone
   }
 
-  return reservation.property_code === property_code && reservation.roomTypeCode === roomTypeCode
+  // check for real
+  if (roomTypeCode === '') {
+    return isSameProperty
+  }
+
+  return isSameProperty && isSameRoom && !reservation.roomTypeCodeClone
 }
 
 const isCartNumberPresent = computed(() => {

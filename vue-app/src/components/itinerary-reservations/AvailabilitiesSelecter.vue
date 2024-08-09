@@ -17,6 +17,7 @@ const startSelectingAt = ref<IProtelAvailabilitySelectable | null>(null)
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
 const props = defineProps({
   roomTypeCode: { type: String, required: true },
+  roomTypeCodeClone: { type: String, required: false },
   propertyCode: { type: String, required: true },
   allAvailabilities: { type: Array as () => IProtelAvailability[], required: true },
   arrivalDate: { type: Object as () => Date, required: true },
@@ -31,7 +32,8 @@ const resetProtelAvailabilitySelectables = () => {
 
   const availabilities = availabilityHelper.getAvailabilityByRoomTypeCode(
     props.allAvailabilities,
-    props.roomTypeCode
+    props.roomTypeCode,
+    props.roomTypeCodeClone
   )
 
   for (const protelAvailability of availabilities) {
@@ -62,6 +64,7 @@ const updateAvailabilitySelectables = (availability: IProtelAvailability, select
   const protelReservationSelectUpdate: IProtelReservationSelectUpdate = {
     selectedAvailabilities: selectedAvailabilities,
     roomTypeCode: props.roomTypeCode,
+    roomTypeCodeClone: props.roomTypeCodeClone,
     property_code: props.allAvailabilities[0].property_code,
     guestsPerRoom: undefined
   }
@@ -140,14 +143,19 @@ const setSelectedAvailabilities = () => {
 
   for (const selectable of protelAvailabilitySelectables.value) {
     selectable.selected = false
-    const reservations = props.itineraryReservation.protelReservations.filter(
-      (reservation) =>
-        reservation.roomTypeCode === props.roomTypeCode &&
-        reservation.property_code === props.propertyCode
-    )
+    const reservations = props.itineraryReservation.protelReservations.filter((reservation) => {
+      const isSameProperty = reservation.property_code === props.propertyCode
+      const isSameRoom = reservation.roomTypeCode === props.roomTypeCode
+
+      if (props.roomTypeCodeClone) {
+        const isSameRoomClone = reservation.roomTypeCodeClone === props.roomTypeCodeClone
+        return isSameRoom && isSameProperty && isSameRoomClone
+      }
+
+      return isSameRoom && isSameProperty && !reservation.roomTypeCodeClone
+    })
     for (const reservation of reservations) {
       const dayBeforeDeparture = dateHelper.addDays(new Date(reservation.departureDate), -1)
-
       if (
         dateHelper.isDateBetweenDates(
           selectable.availability.availability_start,

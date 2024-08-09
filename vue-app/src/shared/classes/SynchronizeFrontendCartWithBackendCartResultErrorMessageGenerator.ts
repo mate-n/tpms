@@ -14,13 +14,7 @@ export class SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator {
         .map((result) => result.datum) as IProtelReservation[]
 
       const failedReservationErrorMessage = failedReservations
-        .map(
-          (reservation) =>
-            ' - ' +
-            reservation.property_name +
-            ': ' +
-            this.roomHelper.removeCloneRoomTypeCodeSuffix(reservation.roomTypeCode)
-        )
+        .map((reservation) => ' - ' + reservation.property_name + ': ' + reservation.roomTypeCode)
         .join('\n')
 
       errorMessage = errorMessage.concat(' ', failedReservationErrorMessage)

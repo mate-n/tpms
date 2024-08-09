@@ -10,6 +10,7 @@ export interface IProtelAvailability {
   property_code: string
   type: string
   room_type_code: string
+  room_type_code_clone?: string
   default_occupancy: string
   max_occupancy: number
   availability_start: Date

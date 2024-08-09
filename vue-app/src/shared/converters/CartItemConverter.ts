@@ -56,7 +56,7 @@ export class CartItemConverter {
 
         // convert this "protelReservation" to a "clone protelReservation" when it is overlapping another one
         if (this.isProtelReservationOverlapping(protelReservation, protelReservations)) {
-          protelReservation.roomTypeCode = this.roomHelper.generateCloneRoomTypeCode(
+          protelReservation.roomTypeCodeClone = this.roomHelper.generateCloneRoomTypeCode(
             protelReservation.roomTypeCode
           )
         }

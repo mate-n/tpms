@@ -21,7 +21,7 @@ export class AvailabilityHelper {
   getUniqueRoomTypeCodes(availabilities: IProtelAvailability[]) {
     const uniqueCodes = new Set<string>()
     availabilities.forEach((availability) => {
-      if (!this.roomHelper.isCloneRoomTypeCode(availability.room_type_code)) {
+      if (!availability.room_type_code_clone) {
         if (availability && availability.room_type_code) {
           uniqueCodes.add(availability.room_type_code)
         }
@@ -30,8 +30,18 @@ export class AvailabilityHelper {
     return uniqueCodes
   }
 
-  getAvailabilityByRoomTypeCode(availabilities: IProtelAvailability[], roomTypeCode: string) {
-    return availabilities.filter((availability) => availability.room_type_code === roomTypeCode)
+  getAvailabilityByRoomTypeCode(
+    availabilities: IProtelAvailability[],
+    roomTypeCode: string,
+    roomTypeCodeClone?: string
+  ) {
+    return availabilities.filter((availability) => {
+      if (roomTypeCodeClone) {
+        return availability.room_type_code_clone === roomTypeCodeClone
+      } else {
+        return availability.room_type_code === roomTypeCode && !availability.room_type_code_clone
+      }
+    })
   }
 
   getAvailabilityByRoomTypeCodeAndByDate(
