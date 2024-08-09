@@ -13,10 +13,10 @@ import DateSelecter from '../dates/DateSelecter.vue'
 import { ProfileValidator } from '@/shared/validators/ProfileValidator'
 import { SAIDPassportHelper } from '@/helpers/SAIDPassportHelper'
 const profileValidator = new ProfileValidator()
-const axios: AxiosStatic | undefined = inject('axios')
-const genderService = new GenderService(axios)
-const nationalityService = new NationalityService(axios)
-const countryService = new CountryService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const genderService = new GenderService(axios2)
+const nationalityService = new NationalityService(axios2)
+const countryService = new CountryService(axios2)
 const availableGenders = ref<IGender[]>([])
 const availableNationalities = ref<INationality[]>([])
 const availableCountries = ref<ICountry[]>([])

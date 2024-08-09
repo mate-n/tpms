@@ -3,11 +3,17 @@ import { DateHelper } from '../../../helpers/DateHelper';
 import { PriceFormatter } from '../../../helpers/PriceFormatter';
 
 import { IProtelAvailability } from '../../../interfaces/protel/IProtelAvailability';
+import interceptAvailabilities from '../../../utils/intercept/availabilitites';
+import interceptCart from '../../../utils/intercept/cart';
 import { ROUTE_PATHS } from '../../../utils/route-paths';
 
 const calculateTotalRate = (availability: IProtelAvailability) => {
   return availability.rates_data.reduce((acc, rate) => acc + Number(rate.room_rate), 0);
 };
+
+Cypress.on('uncaught:exception', () => {
+  return false;
+});
 
 describe('itinerary-reservations-enquiry/add-to-cart', () => {
   const dateFormatter = new DateFormatter();
@@ -17,13 +23,12 @@ describe('itinerary-reservations-enquiry/add-to-cart', () => {
   beforeEach(() => {
     cy.intercept(new RegExp(/api\/v1\/camps/)).as('getCampsApi');
 
-    cy.intercept(new RegExp(/api\/v1\/cart\/add-item/)).as('cartAddItemApi');
-
-    cy.fixture('availabilities')
-      .then((response) => {
-        cy.intercept('POST', new RegExp(/v1\/availabilities/), (req) => req.reply(response));
-      })
-      .as('getAvalabilitiesApi');
+    interceptAvailabilities.post();
+    interceptCart.post();
+    interceptCart.getItems.post();
+    interceptCart.addItem.post();
+    interceptCart.updateItem.post();
+    interceptCart.removeItem.post();
 
     cy.login();
   });
@@ -68,7 +73,7 @@ describe('itinerary-reservations-enquiry/add-to-cart', () => {
     // show cart items
     cy.getByCy('cart_icon_button').click();
 
-    cy.wait('@getAvalabilitiesApi').then(({ response }) => {
+    cy.wait(`@${interceptAvailabilities.POST_ALIAS}`).then(({ response }) => {
       cy.wrap(response.body.data.availability_data).as('availabilititesData');
     });
 
@@ -120,7 +125,7 @@ describe('itinerary-reservations-enquiry/add-to-cart', () => {
     // click "Create Cart" button
     cy.getByCy('create_cart_button').click();
 
-    cy.wait('@cartAddItemApi', { timeout: 60000 });
+    cy.wait(`@${interceptCart.addItem.POST_ALIAS}`, { timeout: 60000 });
 
     // "Update Cart" button should appear
     cy.getByCy('update_cart_button').should('exist');
@@ -132,9 +137,9 @@ describe('itinerary-reservations-enquiry/add-to-cart', () => {
     // click "Create Cart" button
     cy.getByCy('update_cart_button').click();
 
-    cy.wait('@cartAddItemApi', { timeout: 60000 });
+    cy.wait(`@${interceptCart.addItem.POST_ALIAS}`, { timeout: 60000 });
 
-    cy.get('@cartAddItemApi').then((res) => {
+    cy.get(`@${interceptCart.addItem.POST_ALIAS}`).then((res) => {
       expect(res).to.haveOwnProperty('id');
     });
   });

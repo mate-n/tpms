@@ -20,6 +20,12 @@ import tpms.backend_middleware.classes.cart.SettleCartBody;
 import tpms.backend_middleware.classes.cart.UpdateCartBody;
 
 public class CartService {
+        String ankerdataApiUrl;
+
+        public CartService(String ankerdataApiUrl) {
+                this.ankerdataApiUrl = ankerdataApiUrl;
+        }
+
         public CreateCartResponseBody createCart(CartBody cartBody) throws IOException {
                 ObjectMapper objectMapper = new ObjectMapper();
                 String cartBodyAsString = objectMapper.writeValueAsString(cartBody);
@@ -30,7 +36,7 @@ public class CartService {
                 OkHttpClient client = new OkHttpClient().newBuilder()
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/web_basket_it/v1/index.php")
+                                .url(ankerdataApiUrl + "web_basket_it/v1/index.php")
                                 .addHeader("Authorization", "Bearer abcdef123456")
                                 .post(body)
                                 .build();
@@ -56,7 +62,7 @@ public class CartService {
                 OkHttpClient client = new OkHttpClient().newBuilder()
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/web_basket_it/v1/index.php")
+                                .url(ankerdataApiUrl + "web_basket_it/v1/index.php")
                                 .addHeader("Authorization", "Bearer abcdef123456")
                                 .post(body)
                                 .build();
@@ -77,7 +83,7 @@ public class CartService {
                 OkHttpClient client = new OkHttpClient().newBuilder()
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/web_basket_it/v1/index.php")
+                                .url(ankerdataApiUrl + "web_basket_it/v1/index.php")
                                 .addHeader("Authorization", "Bearer abcdef123456")
                                 .post(body)
                                 .build();
@@ -98,7 +104,7 @@ public class CartService {
                 OkHttpClient client = new OkHttpClient().newBuilder()
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/web_basket_it/v1/items/index.php")
+                                .url(ankerdataApiUrl + "web_basket_it/v1/items/index.php")
                                 .addHeader("Authorization", "Bearer abcdef123456")
                                 .post(body)
                                 .build();
@@ -116,7 +122,7 @@ public class CartService {
                 OkHttpClient client = new OkHttpClient().newBuilder()
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/web_basket_it/v1/items/index.php")
+                                .url(ankerdataApiUrl + "web_basket_it/v1/items/index.php")
                                 .addHeader("Authorization", "Bearer abcdef123456")
                                 .post(body)
                                 .build();
@@ -134,7 +140,7 @@ public class CartService {
                 OkHttpClient client = new OkHttpClient().newBuilder()
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/web_basket_it/v1/items/index.php")
+                                .url(ankerdataApiUrl + "web_basket_it/v1/items/index.php")
                                 .addHeader("Authorization", "Bearer abcdef123456")
                                 .post(body)
                                 .build();
@@ -155,7 +161,7 @@ public class CartService {
                 OkHttpClient client = new OkHttpClient().newBuilder()
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/web_basket_it/v1/items/index.php")
+                                .url(ankerdataApiUrl + "web_basket_it/v1/items/index.php")
                                 .addHeader("Authorization", "Bearer abcdef123456")
                                 .post(body)
                                 .build();
@@ -176,7 +182,7 @@ public class CartService {
                 OkHttpClient client = new OkHttpClient().newBuilder()
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/web_basket_it/v1/retrieve_cart/index.php")
+                                .url(ankerdataApiUrl + "web_basket_it/v1/retrieve_cart/index.php")
                                 .addHeader("Authorization", "Bearer abcdef123456")
                                 .post(body)
                                 .build();
@@ -197,7 +203,7 @@ public class CartService {
                 OkHttpClient client = new OkHttpClient().newBuilder()
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/web_basket_it/v1/index.php")
+                                .url(ankerdataApiUrl + "web_basket_it/v1/index.php")
                                 .addHeader("Authorization", "Bearer abcdef123456")
                                 .post(body)
                                 .build();
@@ -216,7 +222,7 @@ public class CartService {
                 OkHttpClient client = new OkHttpClient().newBuilder()
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/web_basket_it/v1/retrieve_cart/index.php")
+                                .url(ankerdataApiUrl + "web_basket_it/v1/retrieve_cart/index.php")
                                 .addHeader("Authorization", "Bearer abcdef123456")
                                 .post(body)
                                 .build();

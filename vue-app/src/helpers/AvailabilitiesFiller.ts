@@ -35,6 +35,10 @@ export class AvailabilitiesFiller {
         }
         currentDate = this.dateHelper.addDays(currentDate, 1)
       }
+
+      availabilities.sort((a, b) => {
+        return a.availability_start.getTime() - b.availability_start.getTime()
+      })
     }
   }
 }

@@ -423,7 +423,7 @@ const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservatio
     autoToggleRightBar.value = false
   }
 
-  const newReservations = protelAvailabilityConverter.convertToReservations(
+  let newReservations = protelAvailabilityConverter.convertToReservations(
     protelReservationSelectUpdate.selectedAvailabilities,
     protelReservationSelectUpdate.guestsPerRoom
   )
@@ -439,6 +439,11 @@ const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservatio
     )
 
   itineraryReservation.value.protelReservations.push(...newReservations)
+
+  itineraryReservation.value.protelReservations =
+    itineraryReservation.value.protelReservations.sort(
+      (a, b) => a.arrivalDate.getTime() - b.arrivalDate.getTime()
+    )
 }
 
 const hasReservationPropertyCodeAndRoomTypeCode = (

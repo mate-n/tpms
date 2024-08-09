@@ -7,9 +7,9 @@ import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
 import { onMounted, ref, type Ref } from 'vue'
 import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
-const axios: AxiosStatic | undefined = inject('axios')
-const languageService = new LanguageService(axios)
-const salutationService = new SalutationService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const languageService = new LanguageService(axios2)
+const salutationService = new SalutationService(axios2)
 const profileToBeEdited = defineModel({ required: true, type: Object as () => IProfile })
 const languages: Ref<ILanguage[]> = ref([])
 const salutations: Ref<ISalutation[]> = ref([])

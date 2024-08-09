@@ -1,0 +1,287 @@
+{
+  "status": "success",
+  "data": {
+    "availability_data": [
+      {
+        "id": "15122",
+        "transaction_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "unique_message_id": "3c693c5b-b727-4e5b-ad4c-450c8ae40ab7",
+        "request_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "date_time": "2024-07-08 12:14:56",
+        "pms_type": "SaaS",
+        "property_code": "19197",
+        "type": "FullExport",
+        "room_type_code": "Family Cottage FA4S",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-08-07 00:00:00",
+        "availability_end": "2024-08-07 00:00:00",
+        "availability_count": "3",
+        "park_name": "Augrabies Falls National Park ",
+        "property_name": "Augrabies National Park",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "6",
+            "room_rate": "3177.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      },
+      {
+        "id": "14392",
+        "transaction_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "unique_message_id": "4a1d3c14-e653-4bf9-9e44-7b3d1a714eb4",
+        "request_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "date_time": "2024-07-08 12:14:55",
+        "pms_type": "SaaS",
+        "property_code": "19197",
+        "type": "FullExport",
+        "room_type_code": "Chalet CH2Z",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-08-07 00:00:00",
+        "availability_end": "2024-08-07 00:00:00",
+        "availability_count": "2",
+        "park_name": "Augrabies Falls National Park ",
+        "property_name": "Augrabies National Park",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "2",
+            "room_rate": "1550.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      },
+      {
+        "id": "15944",
+        "transaction_id": "738877a8-9680-4fc0-a271-a10993ae249c",
+        "unique_message_id": "aa54b4b6-504a-41ee-9ceb-de51f0418904",
+        "request_id": "738877a8-9680-4fc0-a271-a10993ae249c",
+        "date_time": "2024-07-08 12:28:00",
+        "pms_type": "SaaS",
+        "property_code": "19197",
+        "type": "FullExport",
+        "room_type_code": "Chalet CH2",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-08-07 00:00:00",
+        "availability_end": "2024-08-07 00:00:00",
+        "availability_count": "16",
+        "park_name": "Augrabies Falls National Park ",
+        "property_name": "Augrabies National Park",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "2",
+            "room_rate": "1550.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      },
+      {
+        "id": "13662",
+        "transaction_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "unique_message_id": "f1bba1bb-2386-4aba-a188-fd0ab8f4782a",
+        "request_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "date_time": "2024-07-08 12:14:53",
+        "pms_type": "SaaS",
+        "property_code": "19197",
+        "type": "FullExport",
+        "room_type_code": "Chalet CH2/4V",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-08-07 00:00:00",
+        "availability_end": "2024-08-07 00:00:00",
+        "availability_count": "6",
+        "park_name": "Augrabies Falls National Park ",
+        "property_name": "Augrabies National Park",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "4",
+            "room_rate": "2476.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      },
+      {
+        "id": "12908",
+        "transaction_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "unique_message_id": "1ac498b4-e4ea-4f7c-a7c4-18c1d6e8a614",
+        "request_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "date_time": "2024-07-08 12:14:51",
+        "pms_type": "SaaS",
+        "property_code": "19197",
+        "type": "FullExport",
+        "room_type_code": "Campsite CK6P",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-08-07 00:00:00",
+        "availability_end": "2024-08-07 00:00:00",
+        "availability_count": "40",
+        "park_name": "Augrabies Falls National Park ",
+        "property_name": "Augrabies National Park",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "6",
+            "room_rate": "794.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      },
+      {
+        "id": "15487",
+        "transaction_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "unique_message_id": "0efd3eb4-0577-4aad-91f4-015839894904",
+        "request_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "date_time": "2024-07-08 12:14:57",
+        "pms_type": "SaaS",
+        "property_code": "19197",
+        "type": "FullExport",
+        "room_type_code": "Gorge Cottage CO2",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-08-07 00:00:00",
+        "availability_end": "2024-08-07 00:00:00",
+        "availability_count": "1",
+        "park_name": "Augrabies Falls National Park ",
+        "property_name": "Augrabies National Park",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "2",
+            "room_rate": "2341.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      },
+      {
+        "id": "14757",
+        "transaction_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "unique_message_id": "4cc9521c-358b-4caa-b1aa-94641cc0afbf",
+        "request_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "date_time": "2024-07-08 12:14:55",
+        "pms_type": "SaaS",
+        "property_code": "19197",
+        "type": "FullExport",
+        "room_type_code": "Family Cottage FA4D",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-08-07 00:00:00",
+        "availability_end": "2024-08-07 00:00:00",
+        "availability_count": "6",
+        "park_name": "Augrabies Falls National Park ",
+        "property_name": "Augrabies National Park",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "6",
+            "room_rate": "3782.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      },
+      {
+        "id": "14027",
+        "transaction_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "unique_message_id": "c0d72975-5b3f-4af9-9e53-d3665e977d1e",
+        "request_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "date_time": "2024-07-08 12:14:54",
+        "pms_type": "SaaS",
+        "property_code": "19197",
+        "type": "FullExport",
+        "room_type_code": "Chalet CH2/4VD",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-08-07 00:00:00",
+        "availability_end": "2024-08-07 00:00:00",
+        "availability_count": "10",
+        "park_name": "Augrabies Falls National Park ",
+        "property_name": "Augrabies National Park",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "4",
+            "room_rate": "2476.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      },
+      {
+        "id": "13297",
+        "transaction_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "unique_message_id": "a671dfac-73a8-42de-8346-ddfb5f51f914",
+        "request_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "date_time": "2024-07-08 12:14:52",
+        "pms_type": "SaaS",
+        "property_code": "19197",
+        "type": "FullExport",
+        "room_type_code": "Chalet CH2/4",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-08-07 00:00:00",
+        "availability_end": "2024-08-07 00:00:00",
+        "availability_count": "14",
+        "park_name": "Augrabies Falls National Park ",
+        "property_name": "Augrabies National Park",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "4",
+            "room_rate": "2001.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      },
+      {
+        "id": "12543",
+        "transaction_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "unique_message_id": "555c7635-1f65-4e7a-83de-055d21c0f90a",
+        "request_id": "2625edd0-a290-4b0c-bad6-f0410996c8d5",
+        "date_time": "2024-07-08 12:14:50",
+        "pms_type": "SaaS",
+        "property_code": "19197",
+        "type": "FullExport",
+        "room_type_code": "Campsite CK6",
+        "default_occupancy": "2",
+        "max_occupancy": "6",
+        "availability_start": "2024-08-07 00:00:00",
+        "availability_end": "2024-08-07 00:00:00",
+        "availability_count": "10",
+        "park_name": "Augrabies Falls National Park ",
+        "property_name": "Augrabies National Park",
+        "room_type_name": "",
+        "features": "",
+        "rates_data": [
+          {
+            "rates_code": "RACK",
+            "occupancy": "6",
+            "room_rate": "794.000",
+            "add_on_child1": "0.000"
+          }
+        ]
+      }
+    ]
+  }
+}

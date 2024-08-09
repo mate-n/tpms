@@ -20,9 +20,11 @@ public class WildcardController {
     public WildcardController() {
     }
 
+    @Autowired
+    public WildcardService wildcardService;
+
     @GetMapping(path = "/check/{wildcardString}")
     public String check(@PathVariable("wildcardString") String wildcardString) throws IOException {
-        WildcardService wildcardService = new WildcardService();
         return wildcardService.checkWildcard(wildcardString);
     }
 

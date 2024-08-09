@@ -1,6 +1,7 @@
 package tpms.backend_middleware.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,8 @@ import tpms.backend_middleware.services.AvailabilityService;
 @RequestMapping(path = "/api/v1/availabilities", produces = "application/json", consumes = "application/json")
 @CrossOrigin("*")
 public class AvailabilityController {
+    @Autowired
+    private Environment environment;
 
     @Autowired
     AvailabilityController() {
@@ -21,7 +24,8 @@ public class AvailabilityController {
 
     @PostMapping
     public String index(@RequestBody String json) {
-        AvailabilityService availabilityService = new AvailabilityService();
+        AvailabilityService availabilityService = new AvailabilityService(
+                environment.getProperty("tpms.ankerdata.api.url"));
         try {
             return availabilityService.getAvailabilities(json);
         } catch (Exception e) {
