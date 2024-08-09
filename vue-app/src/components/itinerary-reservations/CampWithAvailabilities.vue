@@ -16,6 +16,7 @@ import { GuestsPerRoom } from '@/shared/classes/GuestsPerRoom'
 import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IProtelAvailabilityPostBody'
 import { AvailabilitiesFiller } from '@/helpers/AvailabilitiesFiller'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
+import { RoomHelper } from '@/helpers/RoomHelper'
 import type { IProtelPark } from '@/shared/interfaces/protel/IProtelPark'
 const availabilitiesFiller = new AvailabilitiesFiller()
 const guestsPerRoom: Ref<GuestsPerRoom> = ref(new GuestsPerRoom())
@@ -26,6 +27,7 @@ const availabilityService = new AvailabilityService(axios2)
 const dateHelper = new DateHelper()
 const dateFormatter = new DateFormatter()
 const availabilityHelper = new AvailabilityHelper()
+const roomHelper = new RoomHelper()
 const emits = defineEmits(['availabilities-selected'])
 const props = defineProps({
   park: { type: Object as () => IProtelPark, required: true },
@@ -142,6 +144,8 @@ const getAvailabilities = () => {
       props.arrivalDate,
       props.departureDate
     )
+
+    syncCloneAvailabilitiesWithCloneRooms()
   })
 }
 
@@ -183,44 +187,89 @@ const clickOnReset = () => {
   emits('availabilities-selected', protelReservationSelectUpdate)
 }
 
-const addCloneRoom = (roomTypeCode: string) => {
-  const cloneRoomTypeCode = `${roomTypeCode}_${String(Date.now())}`
+const syncCloneAvailabilitiesWithCloneRooms = () => {
+  // remove all clone availabilities
+  availabilities.value = availabilities.value.filter((availability) => {
+    return !availability.room_type_code_clone
+  })
+
+  // add missing clone availabilities
+  const newCloneAvailabilities: IProtelAvailability[] = []
+  Object.entries(cloneRoomTypeCodes.value).forEach(([roomTypeCode, cloneRoomTypeCodes]) => {
+    cloneRoomTypeCodes.forEach((cloneRoomTypeCode) => {
+      const realRoomAvalabilities = availabilities.value.filter(
+        (item) => item.room_type_code === roomTypeCode
+      )
+      const cloneRoomAvailabilities = realRoomAvalabilities.map((availability) => ({
+        ...availability,
+        room_type_code_clone: cloneRoomTypeCode
+      }))
+
+      newCloneAvailabilities.push(...cloneRoomAvailabilities)
+    })
+  })
+  availabilities.value = [...availabilities.value, ...newCloneAvailabilities]
+}
+
+const addCloneRoomIfNotExist = (params: { roomTypeCode: string; cloneRoomTypeCode?: string }) => {
+  const { roomTypeCode } = params
+  let cloneRoomTypeCode = roomHelper.generateCloneRoomTypeCode(roomTypeCode)
+
+  if (params.cloneRoomTypeCode) {
+    cloneRoomTypeCode = params.cloneRoomTypeCode
+
+    // do NOT add new clone room if existing
+    const isExisting = cloneRoomTypeCodes.value[roomTypeCode]?.some(
+      (cloneCode) => cloneCode === cloneRoomTypeCode
+    )
+    if (isExisting) return
+  }
+
   cloneRoomTypeCodes.value = {
     ...cloneRoomTypeCodes.value,
     [roomTypeCode]: [...(cloneRoomTypeCodes.value[roomTypeCode] || []), cloneRoomTypeCode]
   }
-  const roomAvalabilities = availabilities.value.filter(
-    ({ room_type_code }) => room_type_code === roomTypeCode
-  )
-  availabilities.value = [
-    ...availabilities.value,
-    ...roomAvalabilities.map((availability) => ({
-      ...availability,
-      room_type_code: cloneRoomTypeCode
-    }))
-  ]
+  syncCloneAvailabilitiesWithCloneRooms()
 }
 
-const removeCloneRoom = (roomTypeCode: string, cloneRoomTypeCode: string) => {
+const removeCloneRoom = (roomTypeCode: string, roomTypeCodeClone: string) => {
   cloneRoomTypeCodes.value = {
     ...cloneRoomTypeCodes.value,
     [roomTypeCode]: (cloneRoomTypeCodes.value[roomTypeCode] || []).filter(
-      (code) => code !== cloneRoomTypeCode
+      (code) => code !== roomTypeCodeClone
     )
   }
-  availabilities.value = availabilities.value.filter(
-    ({ room_type_code }) => room_type_code !== cloneRoomTypeCode
-  )
+  syncCloneAvailabilitiesWithCloneRooms()
 
+  // remove selected availabilities which in "clone Room"
   const protelReservationSelectUpdate: IProtelReservationSelectUpdate = {
     selectedAvailabilities: [],
     property_code: props.camp.id.toString(),
-    roomTypeCode: cloneRoomTypeCode,
+    roomTypeCode,
+    roomTypeCodeClone,
     guestsPerRoom: guestsPerRoom.value,
     park: props.park
   }
   emits('availabilities-selected', protelReservationSelectUpdate)
 }
+
+watch(
+  [() => props.itineraryReservation.protelReservations],
+  () => {
+    // check if a clone "protelReservation" exisiting in "itineraryReservation"
+    //    but not in "cloneRoomTypeCodes"
+    // This case will happen when we load reservations from "cart":
+    //    page: `/itinerary-reservation-enquiry/{cart_id}`
+    props.itineraryReservation.protelReservations.forEach((reservation) => {
+      if (!reservation.roomTypeCodeClone) return
+      addCloneRoomIfNotExist({
+        roomTypeCode: reservation.roomTypeCode,
+        cloneRoomTypeCode: reservation.roomTypeCodeClone
+      })
+    })
+  },
+  { deep: true, immediate: true }
+)
 
 const totalPriceForCamp = computed(() => {
   const reservationsInThisCamp = props.itineraryReservation.protelReservations.filter(
@@ -333,7 +382,7 @@ const totalPriceForCamp = computed(() => {
                     <div data-cy="avalibility_room_type_code">{{ roomTypeCode }}</div>
                     <div class="d-flex align-center flex-shrink-0">
                       <v-btn
-                        @click="addCloneRoom(roomTypeCode)"
+                        @click="addCloneRoomIfNotExist({ roomTypeCode })"
                         icon="mdi-plus"
                         density="comfortable"
                         size="small"
@@ -359,8 +408,8 @@ const totalPriceForCamp = computed(() => {
                     ></AvailabilitiesSelecter>
 
                     <div
-                      v-for="cloneRoomTypeCode of cloneRoomTypeCodes[roomTypeCode] || []"
-                      :key="cloneRoomTypeCode"
+                      v-for="roomTypeCodeClone of cloneRoomTypeCodes[roomTypeCode] || []"
+                      :key="roomTypeCodeClone"
                       class="position-relative"
                     >
                       <v-btn
@@ -370,12 +419,13 @@ const totalPriceForCamp = computed(() => {
                         icon="mdi-delete-outline"
                         size="small"
                         style="left: -25px; top: calc(50% - 10px)"
-                        @click="removeCloneRoom(roomTypeCode, cloneRoomTypeCode)"
+                        @click="removeCloneRoom(roomTypeCode, roomTypeCodeClone)"
                       ></v-btn>
 
                       <AvailabilitiesSelecter
                         :all-availabilities="availabilities"
-                        :room-type-code="cloneRoomTypeCode"
+                        :room-type-code="roomTypeCode"
+                        :room-type-code-clone="roomTypeCodeClone"
                         :property-code="camp.id.toString()"
                         :arrival-date="props.arrivalDate"
                         :departure-date="props.departureDate"

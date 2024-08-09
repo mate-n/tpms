@@ -13,6 +13,7 @@ export interface IProtelReservation
   guestsPerRoom: IGuestsPerRoom
   rate: IRate
   roomTypeCode: string
+  roomTypeCodeClone?: string
   guestID: number
   isBookerGuest: boolean
   property_code: string

@@ -10,11 +10,9 @@ import type { ISettleCartBody } from '@/shared/interfaces/cart/ISettleCartBody'
 import type { IUpdateItemInCartBody } from '@/shared/interfaces/cart/IUpdateItemInCartBody'
 import { UpdateItemInCartBody } from '@/shared/classes/UpdateItemInCartBody'
 import type { IConservationFeePrice } from '@/shared/interfaces/IConservationFeePrices'
-import { RoomHelper } from './RoomHelper'
 
 export class ItineraryReservationCartManager {
   dateFormatter = new DateFormatter()
-  roomHelper = new RoomHelper()
   createCart(profile_number: string, cartService: CartService) {
     return new Promise<CreateCartResponseBody>((resolve) => {
       const cartBody: ICartBody = {
@@ -58,9 +56,7 @@ export class ItineraryReservationCartManager {
         newItem.item_type = 1
         newItem.pricing.base_pricing = parseInt(reservation.rate.value)
         if (reservation.roomTypeCode) {
-          newItem.type_code = this.roomHelper.removeCloneRoomTypeCodeSuffix(
-            reservation.roomTypeCode
-          )
+          newItem.type_code = reservation.roomTypeCode
         }
         if (reservation.property_code) {
           newItem.property_code = parseInt(reservation.property_code)
@@ -230,9 +226,7 @@ export class ItineraryReservationCartManager {
         newItem.item_type = 1
         newItem.pricing.base_pricing = parseInt(reservation.rate.value)
         if (reservation.roomTypeCode) {
-          newItem.type_code = this.roomHelper.removeCloneRoomTypeCodeSuffix(
-            reservation.roomTypeCode
-          )
+          newItem.type_code = reservation.roomTypeCode
         }
         if (reservation.property_code) {
           newItem.property_code = parseInt(reservation.property_code)

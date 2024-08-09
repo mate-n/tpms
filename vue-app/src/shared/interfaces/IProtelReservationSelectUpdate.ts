@@ -6,6 +6,7 @@ export interface IProtelReservationSelectUpdate {
   selectedAvailabilities: IProtelAvailability[]
   property_code: string
   roomTypeCode: string
+  roomTypeCodeClone?: string
   guestsPerRoom: IGuestsPerRoom | undefined
   park: IProtelPark
 }

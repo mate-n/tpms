@@ -4,13 +4,36 @@ import { ProtelReservation } from '../classes/ProtelReservation'
 import { GuestsPerRoom } from '../classes/GuestsPerRoom'
 import { CampService } from '@/services/backend-middleware/CampService'
 import { Rate } from '../classes/Rate'
+import { RoomHelper } from '@/helpers/RoomHelper'
+import { DateHelper } from '@/helpers/DateHelper'
 
 export class CartItemConverter {
   campService = new CampService(undefined)
+  roomHelper = new RoomHelper()
+  dateHelper = new DateHelper()
   constructor(campServiceInput: CampService) {
     this.campService = campServiceInput
   }
-  convertToProtelReservation(cartItem: ICartItem): Promise<IProtelReservation> {
+
+  isProtelReservationOverlapping(
+    checkingProtelReservation: IProtelReservation,
+    protelReservations: IProtelReservation[]
+  ): Boolean {
+    return protelReservations.some(({ arrivalDate, departureDate }) => {
+      if (!this.dateHelper.isAfter(checkingProtelReservation.arrivalDate, departureDate)) {
+        return true
+      }
+      if (!this.dateHelper.isAfter(arrivalDate, checkingProtelReservation.departureDate)) {
+        return true
+      }
+      return false
+    })
+  }
+
+  convertToProtelReservation(
+    cartItem: ICartItem,
+    protelReservations: IProtelReservation[]
+  ): Promise<IProtelReservation> {
     return new Promise((resolve) => {
       this.campService.findAllFilteredByProtelUserEmail(undefined).then((camps) => {
         const camp = camps.find((camp) => camp.id == cartItem.camp_id)
@@ -30,6 +53,14 @@ export class CartItemConverter {
         if (camp) {
           protelReservation.property_name = camp.name
         }
+
+        // convert this "protelReservation" to a "clone protelReservation" when it is overlapping another one
+        if (this.isProtelReservationOverlapping(protelReservation, protelReservations)) {
+          protelReservation.roomTypeCodeClone = this.roomHelper.generateCloneRoomTypeCode(
+            protelReservation.roomTypeCode
+          )
+        }
+
         resolve(protelReservation)
       })
     })
@@ -39,9 +70,23 @@ export class CartItemConverter {
     return new Promise((resolve) => {
       const protelReservations: IProtelReservation[] = []
       const promises = cartItems.map((cartItem) => {
-        return this.convertToProtelReservation(cartItem).then((protelReservation) => {
-          protelReservations.push(protelReservation)
-        })
+        const cartItemData: ICartItem = { ...cartItem }
+
+        // TODO: remove these lines of code
+        // Because: `/cart/retrieve` return "cart_items" with "unit_id" value is "0", "1",...
+        // set "unit_id" by subling's "unit_id" when it is a string of number
+        if (!isNaN(Number(cartItem?.unit_id))) {
+          const validUnitId = cartItems.find((item) => isNaN(Number(item?.unit_id)))?.unit_id
+          if (validUnitId) {
+            cartItemData.unit_id = validUnitId
+          }
+        }
+
+        return this.convertToProtelReservation(cartItemData, protelReservations).then(
+          (protelReservation) => {
+            protelReservations.push(protelReservation)
+          }
+        )
       })
       Promise.all(promises).then(() => {
         resolve(protelReservations)

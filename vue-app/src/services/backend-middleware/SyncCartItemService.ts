@@ -14,7 +14,6 @@ import { AddItemToCartBody } from '@/shared/classes/AddItemToCartBody'
 import type { IUpdateItemInCartBody } from '@/shared/interfaces/cart/IUpdateItemInCartBody'
 import { UpdateItemInCartBody } from '@/shared/classes/UpdateItemInCartBody'
 import type { IConservationFeePrice } from '@/shared/interfaces/IConservationFeePrices'
-import { RoomHelper } from '@/helpers/RoomHelper'
 import type { ISynchronizeFrontendCartWithBackendCartResult } from '@/shared/interfaces/ISynchronizeFrontendCartWithBackendCartResult'
 import { SynchronizeFrontendCartWithBackendCartResult } from '@/shared/classes/SynchronizeFrontendCartWithBackendCartResult'
 
@@ -23,7 +22,6 @@ export class SyncCartItemService implements IService {
   dateFormatter = new DateFormatter()
   cartItemService = new CartItemService()
   cartService = new CartService(undefined)
-  roomHelper = new RoomHelper()
   constructor(axios: AxiosStatic | undefined) {
     this.axiosInstance = AxiosInstanceFactory2.createAxiosInstance(axios)
     this.cartService = new CartService(axios)
@@ -121,9 +119,7 @@ export class SyncCartItemService implements IService {
         newItem.item_type = 1
         newItem.pricing.base_pricing = parseInt(reservation.rate.value)
         if (reservation.roomTypeCode) {
-          newItem.type_code = this.roomHelper.removeCloneRoomTypeCodeSuffix(
-            reservation.roomTypeCode
-          )
+          newItem.type_code = reservation.roomTypeCode
         }
         if (reservation.property_code) {
           newItem.property_code = parseInt(reservation.property_code)
@@ -155,9 +151,7 @@ export class SyncCartItemService implements IService {
         newItem.item_type = 1
         newItem.pricing.base_pricing = parseInt(reservation.rate.value)
         if (reservation.roomTypeCode) {
-          newItem.type_code = this.roomHelper.removeCloneRoomTypeCodeSuffix(
-            reservation.roomTypeCode
-          )
+          newItem.type_code = reservation.roomTypeCode
         }
         if (reservation.property_code) {
           newItem.property_code = parseInt(reservation.property_code)
