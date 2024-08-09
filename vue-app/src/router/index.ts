@@ -123,7 +123,14 @@ router.beforeEach(async (to) => {
     return { ...to, path: correctPath }
   }
 
+  const authenticationHelper = new AuthenticationHelper()
+  const token = authenticationHelper.getAccessToken()
+
   const axios2: AxiosStatic | undefined = inject('axios2')
+  if (axios2) {
+    axios2.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  }
+
   const authentificationService = new AuthenticationService(axios2)
   const protelUserService = new ProtelUserService(axios2)
 
