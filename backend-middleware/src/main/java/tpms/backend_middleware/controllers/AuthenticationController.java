@@ -47,18 +47,8 @@ public class AuthenticationController {
     }
 
     @GetMapping("/check-login")
-    public ResponseEntity<Map<String, String>> checkLogin(@RequestHeader("Authorization") String token) {
-        Map<String, String> response = new HashMap<>();
-        try {
-            token = token.substring(7);
-            if (jwtService.isTokenExpired(token)) {
-                response.put("status", "Token expired");
-            } else {
-                response.put("status", "Token valid");
-            }
-        } catch (Exception e) {
-            response.put("status", "Invalid token");
-        }
+    public ResponseEntity<Map<String, Object>> checkLogin(@RequestHeader("Authorization") String token) {
+        Map<String, Object> response = userService.checkLogin(token);
         return ResponseEntity.ok(response);
     }
 }
