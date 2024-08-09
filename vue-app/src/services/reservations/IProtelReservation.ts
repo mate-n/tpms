@@ -20,4 +20,5 @@ export interface IProtelReservation
   property_name: string
   type_code: string
   cartITemID: number | undefined
+  parkID: string
 }

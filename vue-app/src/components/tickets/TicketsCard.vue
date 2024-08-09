@@ -9,9 +9,8 @@ import TicketsTable from '@/components/tickets/TicketsTable.vue'
 import type { IEntityWithTickets } from '@/shared/interfaces/IEntityWithTickets'
 import type { AxiosStatic } from 'axios'
 import { ActivityService } from '@/services/backend-middleware/ActivityService'
-import type { IActivityGetRequestBody } from '@/shared/interfaces/IActivityGetRequestBody'
 import { TicketsConverter } from '@/shared/converters/TicketsConverter'
-import type { IActivity } from '@/shared/interfaces/IActivity'
+import type { IActivitiesRequestBody } from '@/shared/interfaces/IActivitiesRequestBody'
 const ticketConverter = new TicketsConverter()
 const axios2: AxiosStatic | undefined = inject('axios2')
 const activitiesService = new ActivityService(axios2)
@@ -46,22 +45,30 @@ const getActivities = () => {
   if (!selectedDate.value) {
     return
   }
+  loading.value = true
   ankerdataTickets.value = []
-  const activityGetRequestBody: IActivityGetRequestBody = {
-    property_code: props.propertyCode,
-    type: 2,
-    date_from: dateFormatter.yyyydashmmdashdd(selectedDate.value),
-    date_to: dateFormatter.yyyydashmmdashdd(selectedDate.value)
+
+  const activitiesRequestBody: IActivitiesRequestBody = {
+    park_id: props.parkId,
+    date_event: dateFormatter.yyyydashmmdashdd(selectedDate.value),
+    type: 'Activity',
+    property_Id: props.propertyCode
   }
 
-  activitiesService.getActivities(activityGetRequestBody).then((data) => {
-    for (const [key, value] of Object.entries(data)) {
-      ankerdataTickets.value.push(ticketConverter.convertToTicket(value as IActivity))
+  activitiesService.getActivitiesByRequestBody(activitiesRequestBody).then((data) => {
+    console.log('getActivitiesByRequestBody')
+    console.log(data)
+    for (const activity of data) {
+      ankerdataTickets.value.push(ticketConverter.convertToTicket(activity))
     }
+    console.log('ankerdataTickets')
+    console.log(ankerdataTickets.value)
+    loading.value = false
   })
 }
 
 const props = defineProps({
+  parkId: { type: String, required: true },
   arrivalDate: { type: Object as () => Date, required: true },
   departureDate: { type: Object as () => Date, required: true },
   propertyName: { type: String, required: true },
@@ -108,6 +115,7 @@ const addTicketsToReservation = () => {
 }
 
 const showSaveButton = ref(false)
+const loading = ref(false)
 </script>
 
 <template>
@@ -151,12 +159,14 @@ const showSaveButton = ref(false)
           </v-col>
           <v-col class="border-e"
             ><h2 class="mb-2 text-center">Choose Activities</h2>
+            <v-progress-linear v-if="loading" color="primary" indeterminate></v-progress-linear>
 
             <div v-if="selectedDate">
               <div v-for="ticket of ankerdataTickets" :key="ticket.TicketId">
                 <div v-if="ticket.AvailableTickets > 0">
-                  <v-btn class="w-100 mb-3 secondary-button" @click="addTicket(ticket)">
+                  <v-btn class="w-100 mb-3 secondary-button text-none" @click="addTicket(ticket)">
                     {{ ticket.Description }}
+                    ({{ ticket.AvailableTickets }} available)
                   </v-btn>
                 </div>
               </div>

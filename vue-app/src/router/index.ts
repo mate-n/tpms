@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ItineraryReservationEnquiryView from '@/views/ItineraryReservationEnquiryView.vue'
 import NewProfileView from '@/views/NewProfileView.vue'
-import ReservationsView from '@/views/ReservationsView.vue'
-import EditReservationView from '@/views/EditReservationView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import ItineraryReservationsView from '@/views/ItineraryReservationsView.vue'
 import EditItineraryReservationView from '@/views/EditItineraryReservationView.vue'
@@ -43,17 +41,6 @@ const router = createRouter({
       path: '/new-profile',
       name: 'new profile',
       component: NewProfileView
-    },
-    {
-      path: '/reservations',
-      name: 'reservations',
-      component: ReservationsView
-    },
-    {
-      path: '/reservations/:reservationId',
-      name: 'edit reservation',
-      component: EditReservationView,
-      props: true
     },
     {
       path: '/itinerary-reservations/:itineraryReservationId',
@@ -126,9 +113,8 @@ router.beforeEach(async (to) => {
     return { ...to, path: correctPath }
   }
 
-  const axios: AxiosStatic | undefined = inject('axios')
-  const authentificationService = new AuthenticationService(axios)
   const axios2: AxiosStatic | undefined = inject('axios2')
+  const authentificationService = new AuthenticationService(axios2)
   const protelUserService = new ProtelUserService(axios2)
 
   const canAccess = await handleLogin(
@@ -137,9 +123,7 @@ router.beforeEach(async (to) => {
     protelUserService,
     authentificationService
   )
-  console.log('canAccess', canAccess)
   if (to.name !== 'login' && !canAccess) {
-    console.log('redirecting to /login')
     return '/login'
   }
 })
@@ -152,7 +136,6 @@ function handleLogin(
 ) {
   return new Promise((resolve) => {
     shouldUserBeRedirected(currentUserStore, protelUserService).then((shouldRedirect) => {
-      console.log('shouldRedirect', shouldRedirect)
       if (shouldRedirect) {
         const redirectUrl = import.meta.env.VITE_REDIRECT_TO_DEMO_URL
           ? import.meta.env.VITE_REDIRECT_TO_DEMO_URL
@@ -173,7 +156,6 @@ function handleLogin(
 }
 
 async function canUserAccess(authentificationService: AuthenticationService) {
-  console.log('canUserAccess')
   try {
     const response = await authentificationService.isLoggedIn()
     return response
@@ -191,22 +173,18 @@ function shouldUserBeRedirected(
       ? import.meta.env.VITE_ENVIRONMENT_NAME
       : 'development'
 
-    console.log('environmentName', environmentName)
     if (environmentName === 'development') resolve(false)
 
     if (!currentUserStore.systemUser) resolve(true)
     if (!currentUserStore.pmsId) resolve(true)
-    console.log('currentUserStore.systemUser', currentUserStore.systemUser)
 
     protelUserService.findByEmail(currentUserStore.systemUser).then((protelUsers) => {
-      console.log('protelUsers', protelUsers)
       if (protelUsers.length > 0) {
         const protelUserHelper = new ProtelUserHelper()
         const doesProtelUserHaveAllowedIDResult = protelUserHelper.doesProtelUserHaveAllowedID(
           protelUsers[0],
           parseInt(currentUserStore.pmsId)
         )
-        console.log('doesProtelUserHaveAllowedIDResult', doesProtelUserHaveAllowedIDResult)
         if (doesProtelUserHaveAllowedIDResult) {
           resolve(false)
         } else {

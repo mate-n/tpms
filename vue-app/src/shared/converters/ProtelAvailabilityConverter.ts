@@ -6,6 +6,7 @@ import { DateHelper } from '@/helpers/DateHelper'
 import { Rate } from '../classes/Rate'
 import type { IGuestsPerRoom } from '../interfaces/IGuestsPerRoom'
 import { GuestsPerRoom } from '../classes/GuestsPerRoom'
+import type { IProtelPark } from '../interfaces/protel/IProtelPark'
 
 export class ProtelAvailabilityConverter {
   availabilityHelper = new AvailabilityHelper()
@@ -13,7 +14,8 @@ export class ProtelAvailabilityConverter {
 
   convertToReservations(
     protelAvailabilities: IProtelAvailability[],
-    guestsPerRoom: IGuestsPerRoom | undefined
+    guestsPerRoom: IGuestsPerRoom | undefined,
+    park: IProtelPark
   ): IProtelReservation[] {
     const protelReservations: IProtelReservation[] = []
 
@@ -44,6 +46,7 @@ export class ProtelAvailabilityConverter {
           endProtelAvailability,
           guestsPerRoom
         )
+        protelReservation.parkID = park.id
         protelReservations.push(protelReservation)
       }
     }

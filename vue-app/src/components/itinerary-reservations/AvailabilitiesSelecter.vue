@@ -6,6 +6,7 @@ import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReserv
 import type { IProtelReservationSelectUpdate } from '@/shared/interfaces/IProtelReservationSelectUpdate'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
 import type { IProtelAvailabilitySelectable } from '@/shared/interfaces/protel/IProtelAvailabilitySelectable'
+import type { IProtelPark } from '@/shared/interfaces/protel/IProtelPark'
 import { ProtelAvailabilitiesSelecterValidator } from '@/shared/validators/ProtelAvailabilitiesSelecterValidator'
 import { nextTick, ref, watch } from 'vue'
 const priceFormatter = new PriceFormatter()
@@ -16,6 +17,7 @@ const isSelecting = ref<boolean>(false)
 const startSelectingAt = ref<IProtelAvailabilitySelectable | null>(null)
 const protelAvailabilitySelectables = ref<IProtelAvailabilitySelectable[]>([])
 const props = defineProps({
+  park: { type: Object as () => IProtelPark, required: true },
   roomTypeCode: { type: String, required: true },
   roomTypeCodeClone: { type: String, required: false },
   propertyCode: { type: String, required: true },
@@ -66,7 +68,8 @@ const updateAvailabilitySelectables = (availability: IProtelAvailability, select
     roomTypeCode: props.roomTypeCode,
     roomTypeCodeClone: props.roomTypeCodeClone,
     property_code: props.allAvailabilities[0].property_code,
-    guestsPerRoom: undefined
+    guestsPerRoom: undefined,
+    park: props.park
   }
 
   emits('availabilities-selected', protelReservationSelectUpdate)

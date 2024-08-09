@@ -17,6 +17,7 @@ import type { IProtelAvailabilityPostBody } from '@/shared/interfaces/protel/IPr
 import { AvailabilitiesFiller } from '@/helpers/AvailabilitiesFiller'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import { RoomHelper } from '@/helpers/RoomHelper'
+import type { IProtelPark } from '@/shared/interfaces/protel/IProtelPark'
 const availabilitiesFiller = new AvailabilitiesFiller()
 const guestsPerRoom: Ref<GuestsPerRoom> = ref(new GuestsPerRoom())
 const priceFormatter = new PriceFormatter()
@@ -29,6 +30,7 @@ const availabilityHelper = new AvailabilityHelper()
 const roomHelper = new RoomHelper()
 const emits = defineEmits(['availabilities-selected'])
 const props = defineProps({
+  park: { type: Object as () => IProtelPark, required: true },
   camp: { type: Object as () => IProtelCamp, required: true },
   arrivalDate: {
     type: Object as () => Date,
@@ -179,7 +181,8 @@ const clickOnReset = () => {
     selectedAvailabilities: [],
     property_code: props.camp.id.toString(),
     roomTypeCode: '',
-    guestsPerRoom: guestsPerRoom.value
+    guestsPerRoom: guestsPerRoom.value,
+    park: props.park
   }
   emits('availabilities-selected', protelReservationSelectUpdate)
 }
@@ -244,7 +247,8 @@ const removeCloneRoom = (roomTypeCode: string, roomTypeCodeClone: string) => {
     property_code: props.camp.id.toString(),
     roomTypeCode,
     roomTypeCodeClone,
-    guestsPerRoom: guestsPerRoom.value
+    guestsPerRoom: guestsPerRoom.value,
+    park: props.park
   }
   emits('availabilities-selected', protelReservationSelectUpdate)
 }
@@ -395,6 +399,7 @@ const totalPriceForCamp = computed(() => {
                       :property-code="camp.id.toString()"
                       :arrival-date="props.arrivalDate"
                       :departure-date="props.departureDate"
+                      :park="props.park"
                       @availabilities-selected="
                         (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
                           availabilitiesSelected(protelReservationSelectUpdate)
@@ -424,6 +429,7 @@ const totalPriceForCamp = computed(() => {
                         :property-code="camp.id.toString()"
                         :arrival-date="props.arrivalDate"
                         :departure-date="props.departureDate"
+                        :park="props.park"
                         @availabilities-selected="
                           (protelReservationSelectUpdate: IProtelReservationSelectUpdate) =>
                             availabilitiesSelected(protelReservationSelectUpdate)

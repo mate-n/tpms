@@ -1,15 +1,42 @@
 export interface IActivity {
-  id: number
+  EventId: string
+  Name: string
+  ParentEventId: string
+  EventType: string
+  EventDate: string
+  Venue: string
+  Province: any
+  CreatedOn: string
+  Description: string
+  Status: string
+  VoluntaryRefundFee: number
+  RefundFee: number
+  MaxCapacity: number
+  RemainingCapacity: number
+  VenueId: string
+  RestCamp: string
+  PropertyId: string
+  Notes: any
+  ResortCode: string
+  Timeslots: boolean
+  ImgHeader: string
+  ImgSquare: string
+  ImgePoster: string
+  ImgThumb: string
+  tickets: Ticket[]
+}
+
+export interface Ticket {
   TicketId: string
   Name: string
-  Price: string
+  Price: number
   MaxPerTransaction: number
   MinPerTransaction: number
   MaxPerCustomer: number
   MinPerCustomer: number
   TotalTickets: number
   Description: string
-  LongDescription: any
+  LongDescription: string
   AvailableTickets: number
   TicketEventId: string
   TicketEventName: string
@@ -25,5 +52,15 @@ export interface IActivity {
   RemainingCapacity: number
   EventMaxCapacity: number
   EventRemainingCapacity: number
-  date: string
+  AccomodationRequirement: string
+  PackageContent: PackageContent[]
+  LedgerCode: string
+}
+
+export interface PackageContent {
+  TicketId: string
+  TicketName: string
+  Price: number
+  ItemCode: string
+  IgnoreCapacity: boolean
 }

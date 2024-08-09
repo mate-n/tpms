@@ -1,11 +1,11 @@
-import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
 import type { IService } from '@/interfaces/IService'
 import type { AxiosStatic } from 'axios'
 import type { ICamp } from '@/shared/interfaces/ICamp'
+import { AxiosInstanceFactory2 } from '@/factories/AxiosInstanceFactory2'
 export class CampService implements IService {
-  axiosInstance: AxiosStatic
+  axiosInstance: any
   constructor(axios: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
+    this.axiosInstance = AxiosInstanceFactory2.createAxiosInstance(axios)
   }
 
   findAll() {

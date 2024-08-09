@@ -315,6 +315,7 @@ const convertConservationFeesToCartContentItems = (
         :departure-date="reservation.departureDate"
         :property-name="reservation.property_name"
         :property-code="reservation.property_code"
+        :park-id="reservation.parkID"
         v-model="reservation"
         @close="ticketsCardDialog = false"
         @add-tickets-to-reservation="addTicketsToReservation()"

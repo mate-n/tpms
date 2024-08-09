@@ -1,9 +1,9 @@
 export class AuthenticationHelper {
   setAccessToken(jwt: string) {
-    localStorage.setItem('access_token', jwt)
+    localStorage.setItem('jwt', jwt)
   }
 
   getAccessToken() {
-    return localStorage.getItem('access_token')
+    return localStorage.getItem('jwt')
   }
 }

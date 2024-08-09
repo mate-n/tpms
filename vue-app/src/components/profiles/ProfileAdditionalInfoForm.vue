@@ -7,10 +7,9 @@ import ProfileSearch from './ProfileSearch.vue'
 import type { AxiosStatic } from 'axios'
 import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
 import { ProfileService } from '@/services/backend-middleware/ProfileService'
-const axios: AxiosStatic | undefined = inject('axios')
 const axios2: AxiosStatic | undefined = inject('axios2')
 const profileService = new ProfileService(axios2)
-const rateService = new RateService(axios)
+const rateService = new RateService(axios2)
 const availableRates = ref<IRate[]>([])
 const profileToBeEdited = defineModel({
   required: true,

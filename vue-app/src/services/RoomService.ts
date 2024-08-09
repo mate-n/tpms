@@ -1,12 +1,12 @@
-import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
+import { AxiosInstanceFactory2 } from '@/factories/AxiosInstanceFactory2'
 import type { IService } from '@/interfaces/IService'
 import type { IRoom } from '@/shared/interfaces/IRoom'
 import type { AxiosStatic } from 'axios'
 
 export class RoomService implements IService {
-  axiosInstance: AxiosStatic
+  axiosInstance: any
   constructor(axios: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
+    this.axiosInstance = AxiosInstanceFactory2.createAxiosInstance(axios)
   }
 
   get(id: number) {
