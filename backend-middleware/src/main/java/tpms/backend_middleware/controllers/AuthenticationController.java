@@ -14,7 +14,6 @@ import tpms.backend_middleware.helpers.JWTService;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -33,7 +32,6 @@ public class AuthenticationController {
     @PostMapping(path = "/authenticate", consumes = "application/json", produces = "application/json")
     public ResponseEntity<AuthenticationResponse> createAuthenticationToken(
             @RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
@@ -49,18 +47,8 @@ public class AuthenticationController {
     }
 
     @GetMapping("/check-login")
-    public ResponseEntity<Map<String, String>> checkLogin(@RequestHeader("Authorization") String token) {
-        Map<String, String> response = new HashMap<>();
-        try {
-            token = token.substring(7);
-            if (jwtService.isTokenExpired(token)) {
-                response.put("status", "Token expired");
-            } else {
-                response.put("status", "Token valid");
-            }
-        } catch (Exception e) {
-            response.put("status", "Invalid token");
-        }
+    public ResponseEntity<Map<String, Object>> checkLogin(@RequestHeader("Authorization") String token) {
+        Map<String, Object> response = userService.checkLogin(token);
         return ResponseEntity.ok(response);
     }
 }

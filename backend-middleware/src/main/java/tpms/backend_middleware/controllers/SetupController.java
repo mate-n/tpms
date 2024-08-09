@@ -212,8 +212,9 @@ public class SetupController {
     @GetMapping(path = "/create-users")
     public String createDemoAndAdminUsers() {
         createDemoUserIfNotExists();
+        createAdminUserIfNotExists();
 
-        return "Demo user created successfully";
+        return "Demo and Admin users created successfully";
     }
 
     private void createDemoUserIfNotExists() {
@@ -221,7 +222,19 @@ public class SetupController {
         if (user.isEmpty()) {
             User newUser = new User();
             newUser.setUsername("demo");
-            newUser.setPassword(passwordEncoder.encode("demo"));
+            newUser.setPassword(passwordEncoder.encode("password"));
+            newUser.setRoleId(2); // User role
+            userRepository.save(newUser);
+        }
+    }
+
+    private void createAdminUserIfNotExists() {
+        Optional<User> user = userRepository.findByUsername("admin");
+        if (user.isEmpty()) {
+            User newUser = new User();
+            newUser.setUsername("admin");
+            newUser.setPassword(passwordEncoder.encode("admin"));
+            newUser.setRoleId(1); // Admin role
             userRepository.save(newUser);
         }
     }
