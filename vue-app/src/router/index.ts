@@ -16,6 +16,13 @@ import { useCurrentUserStore } from '@/stores/currentUserStore'
 import ProtelUsersView from '@/views/ProtelUsersView.vue'
 import { ProtelUserService } from '@/services/backend-middleware/ProtelUserService'
 import { ProtelUserHelper } from '@/helpers/ProtelUserHelper'
+import { AuthenticationHelper } from '@/authentication/AuthenticationHelper'
+import { Role } from '@/enums/Role'
+
+interface IRouteMeta {
+  roles?: Role[]
+  redirect?: string
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -92,13 +99,16 @@ const router = createRouter({
     {
       path: '/protel-users',
       name: 'protel users',
-      component: ProtelUsersView
+      component: ProtelUsersView,
+      meta: {
+        roles: [Role.Admin],
+        redirect: '/'
+      }
     }
   ]
 })
 
 router.beforeEach(async (to) => {
-  if (to.name == 'protel users') return
   const currentUserStore = useCurrentUserStore()
   const { specialQuery, correctPath } = extractSpecialQueryFromPath(to.path)
 
@@ -117,14 +127,21 @@ router.beforeEach(async (to) => {
   const authentificationService = new AuthenticationService(axios2)
   const protelUserService = new ProtelUserService(axios2)
 
-  const canAccess = await handleLogin(
+  const response = await handleLogin(
     to,
     currentUserStore,
     protelUserService,
     authentificationService
   )
-  if (to.name !== 'login' && !canAccess) {
+  if (to.name !== 'login' && !response) {
     return '/login'
+  }
+
+  const meta = to.meta as IRouteMeta | undefined
+  if (meta?.roles?.length) {
+    if (!currentUserStore.user?.role || !meta.roles.includes(currentUserStore.user?.role)) {
+      return meta.redirect || '/'
+    }
   }
 })
 
@@ -146,8 +163,8 @@ function handleLogin(
         if (currentUserStore.systemUser && currentUserStore.pmsId) {
           resolve(true)
         } else {
-          canUserAccess(authentificationService).then((canAccess) => {
-            resolve(canAccess)
+          canUserAccess(authentificationService).then((user) => {
+            resolve(user)
           })
         }
       }
@@ -157,10 +174,12 @@ function handleLogin(
 
 async function canUserAccess(authentificationService: AuthenticationService) {
   try {
-    const response = await authentificationService.isLoggedIn()
-    return response
+    const currentUserStore = useCurrentUserStore()
+    const user = await authentificationService.isLoggedIn()
+    currentUserStore.user = user
+    return user
   } catch (error) {
-    return false
+    return
   }
 }
 

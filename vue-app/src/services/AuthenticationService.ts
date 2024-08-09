@@ -1,6 +1,7 @@
 import { AxiosInstanceFactory2 } from '@/factories/AxiosInstanceFactory2'
 import type { IService } from '@/interfaces/IService'
 import type { IAccessToken } from '@/shared/interfaces/IAccessToken'
+import type { IUser } from '@/shared/interfaces/IUser'
 import type { AxiosStatic } from 'axios'
 
 class AuthenticationService implements IService {
@@ -25,12 +26,12 @@ class AuthenticationService implements IService {
     })
   }
 
-  isLoggedIn() {
+  isLoggedIn(): Promise<IUser> {
     return new Promise((resolve, reject) => {
       this.axiosInstance
         .get('api/v1/check-login')
-        .then((response: any) => {
-          resolve(response.data)
+        .then((response: { data: { user: IUser } }) => {
+          resolve(response.data.user)
         })
         .catch((error: any) => {
           reject(error)
