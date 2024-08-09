@@ -1,9 +1,7 @@
 import type { IProtelReservation } from '@/services/reservations/IProtelReservation'
 import type { ISynchronizeFrontendCartWithBackendCartResult } from '../interfaces/ISynchronizeFrontendCartWithBackendCartResult'
-import { RoomHelper } from '@/helpers/RoomHelper'
 
 export class SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator {
-  roomHelper = new RoomHelper()
   generateErrorMessage(results: ISynchronizeFrontendCartWithBackendCartResult[]): string {
     let errorMessage = 'Following reservations failed: \n'
     const failedResults = results.filter((result) => result.status === 'failed')
