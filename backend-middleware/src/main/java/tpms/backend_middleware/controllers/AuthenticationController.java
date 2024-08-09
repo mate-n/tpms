@@ -14,7 +14,6 @@ import tpms.backend_middleware.helpers.JWTService;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -28,7 +27,7 @@ public class AuthenticationController {
     private UserService userService;
 
     @Autowired
-    private JWTUtil jwtUtil;
+    private JWTService jwtService;
 
     @PostMapping(path = "/authenticate", consumes = "application/json", produces = "application/json")
     public ResponseEntity<AuthenticationResponse> createAuthenticationToken(

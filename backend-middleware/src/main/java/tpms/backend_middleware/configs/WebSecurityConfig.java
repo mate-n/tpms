@@ -16,6 +16,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import tpms.backend_middleware.middlewares.JwtRequestFilter;
 import tpms.backend_middleware.services.UserService;
 
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
@@ -29,20 +32,31 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOriginPattern("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/authenticate").permitAll()
-                .requestMatchers("/api/setup/create-users").permitAll()
-                .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/authenticate").permitAll()
+                        .requestMatchers("/api/setup/create-users").permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
