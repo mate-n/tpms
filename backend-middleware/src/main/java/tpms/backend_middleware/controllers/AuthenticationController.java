@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import tpms.backend_middleware.requests.AuthenticationRequest;
 import tpms.backend_middleware.responses.AuthenticationResponse;
 import tpms.backend_middleware.services.UserService;
-import tpms.backend_middleware.helpers.JWTUtil;
+import tpms.backend_middleware.helpers.JWTService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,9 +18,8 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/v1")
+@CrossOrigin("*")
 public class AuthenticationController {
-
-    private static final Logger logger = Logger.getLogger(AuthenticationController.class.getName());
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -31,18 +30,19 @@ public class AuthenticationController {
     @Autowired
     private JWTUtil jwtUtil;
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    @PostMapping(path = "/authenticate", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<AuthenticationResponse> createAuthenticationToken(
+            @RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
-            );
+                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
+                            authenticationRequest.getPassword()));
         } catch (Exception e) {
             return ResponseEntity.status(401).body(new AuthenticationResponse("Incorrect username or password"));
         }
 
         final UserDetails userDetails = userService.loadUserByUsername(authenticationRequest.getUsername());
-        final String jwt = jwtUtil.generateToken(userDetails.getUsername());
+        final String jwt = jwtService.generateToken(userDetails.getUsername());
 
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
@@ -52,7 +52,7 @@ public class AuthenticationController {
         Map<String, String> response = new HashMap<>();
         try {
             token = token.substring(7);
-            if (jwtUtil.isTokenExpired(token)) {
+            if (jwtService.isTokenExpired(token)) {
                 response.put("status", "Token expired");
             } else {
                 response.put("status", "Token valid");

@@ -26,6 +26,8 @@ export class ProtelReservation implements IProtelReservation {
   cartITemID: number | undefined
   conservationFeePrices: IConservationFeePrices
   id?: number | undefined
+  parkID: string
+
   constructor() {
     this.localID = LocalIDFactory.createLocalID()
     this.arrivalDate = new Date()
@@ -41,5 +43,6 @@ export class ProtelReservation implements IProtelReservation {
     this.type_code = ''
     this.tickets = []
     this.conservationFeePrices = new ConservationFeePrices()
+    this.parkID = ''
   }
 }

@@ -2,6 +2,7 @@ package tpms.backend_middleware.services;
 
 import com.fasterxml.jackson.databind.*;
 import java.util.Scanner;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,13 +15,19 @@ import tpms.backend_middleware.models.Park;
 import tpms.backend_middleware.models.Region;
 
 public class ParksAndCampsService {
+    String ankerdataApiUrl;
+
+    public ParksAndCampsService(String ankerdataApiUrl) {
+        this.ankerdataApiUrl = ankerdataApiUrl;
+    }
 
     public String getParksAndCamps() throws IOException {
-
+        System.out.println("ParksAndCampsService.getParksAndCamps");
+        System.out.println(ankerdataApiUrl);
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         Request request = new Request.Builder()
-                .url("https://ankerws.ankerdata.co.za/getparksandcamps/v1/index.php?")
+                .url(ankerdataApiUrl + "getparksandcamps/v1/index.php?")
                 .addHeader("Authorization", "Bearer 1234567890")
                 .build();
         Response response = client.newCall(request).execute();

@@ -35,6 +35,7 @@ import { CartConverter } from '@/shared/converters/CartConverter'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import { ItineraryReservationHelper } from '@/helpers/ItineraryReservationHelper'
 import { useCurrentUserStore } from '@/stores/currentUserStore'
+import { ProtelPark } from '@/shared/classes/ProtelPark'
 const synchronizeFrontendCartWithBackendCartResultErrorMessageGenerator =
   new SynchronizeFrontendCartWithBackendCartResultErrorMessageGenerator()
 const errorsStore = useErrorsStore()
@@ -423,9 +424,10 @@ const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservatio
     autoToggleRightBar.value = false
   }
 
-  const newReservations = protelAvailabilityConverter.convertToReservations(
+  let newReservations = protelAvailabilityConverter.convertToReservations(
     protelReservationSelectUpdate.selectedAvailabilities,
-    protelReservationSelectUpdate.guestsPerRoom
+    protelReservationSelectUpdate.guestsPerRoom,
+    protelReservationSelectUpdate.park
   )
 
   itineraryReservation.value.protelReservations =
@@ -439,6 +441,11 @@ const availabilitiesSelected = (protelReservationSelectUpdate: IProtelReservatio
     )
 
   itineraryReservation.value.protelReservations.push(...newReservations)
+
+  itineraryReservation.value.protelReservations =
+    itineraryReservation.value.protelReservations.sort(
+      (a, b) => a.arrivalDate.getTime() - b.arrivalDate.getTime()
+    )
 }
 
 const hasReservationPropertyCodeAndRoomTypeCode = (
@@ -456,6 +463,14 @@ const hasReservationPropertyCodeAndRoomTypeCode = (
 const isCartNumberPresent = computed(() => {
   return itineraryReservationCartStore.getCartNumber() !== undefined
 })
+
+const getParkByParkID = (parkID: string) => {
+  const foundPark = parksInDropdown.value.find((park) => park.id === parkID)
+  if (foundPark) {
+    return foundPark
+  }
+  return new ProtelPark()
+}
 </script>
 
 <template>
@@ -548,6 +563,7 @@ const isCartNumberPresent = computed(() => {
 
   <template v-for="camp of itineraryReservation.selectedCamps" :key="camp.id">
     <CampWithAvailabilities
+      :park="getParkByParkID(camp.parkID)"
       :camp="camp"
       :arrival-date="itineraryReservation.arrivalDate"
       :departure-date="itineraryReservation.departureDate"

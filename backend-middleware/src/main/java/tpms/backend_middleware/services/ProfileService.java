@@ -17,6 +17,12 @@ import tpms.backend_middleware.classes.ProfileLookUpPostBody;
 import tpms.backend_middleware.models.Profile;
 
 public class ProfileService {
+        String ankerdataApiUrl;
+
+        public ProfileService(String ankerdataApiUrl) {
+                this.ankerdataApiUrl = ankerdataApiUrl;
+        }
+
         public ArrayList<Profile> lookup(ProfileLookUpPostBody profileLookUpPostBody) throws IOException {
                 ObjectMapper objectMapper = new ObjectMapper().configure(
                                 DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
@@ -30,7 +36,7 @@ public class ProfileService {
                                 .pingInterval(3, TimeUnit.SECONDS)
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/tpmsprofileservice/v1/lookup.php")
+                                .url(ankerdataApiUrl + "tpmsprofileservice/v1/lookup.php")
                                 .addHeader("Authorization", "Bearer 58f91294890fd5e64ba85dacfc5f00ce4b187a9f")
                                 .post(body)
                                 .build();
@@ -59,7 +65,7 @@ public class ProfileService {
                                 .readTimeout(5, TimeUnit.MINUTES)
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/IProfileService/create/v1/index.php")
+                                .url(ankerdataApiUrl + "IProfileService/create/v1/index.php")
                                 .addHeader("Authorization", "Bearer 7cca0f181183802bec0e3434c00041afe870d516")
                                 .post(body)
                                 .build();

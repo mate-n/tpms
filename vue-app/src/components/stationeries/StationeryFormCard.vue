@@ -8,9 +8,9 @@ import type { AxiosStatic } from 'axios'
 import { StationeryService } from '@/services/StationeryService'
 import { useUserStore } from '@/stores/user'
 const userStore = useUserStore()
-const axios: AxiosStatic | undefined = inject('axios')
-const languageService = new LanguageService(axios)
-const stationeryService = new StationeryService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const languageService = new LanguageService(axios2)
+const stationeryService = new StationeryService(axios2)
 const stationeryToBeEdited: Ref<Stationery> = ref(new Stationery())
 const emits = defineEmits(['close', 'stationeryAdded'])
 const languages: Ref<ILanguage[]> = ref([])

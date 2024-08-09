@@ -9,21 +9,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import tpms.backend_middleware.classes.ActivitiesRequestBody;
 import tpms.backend_middleware.services.ActivitiesService;
 
 @RestController()
-@RequestMapping(path = "/api/v1/activities", produces = "application/json", consumes = "application/json")
+@RequestMapping(path = "/api/v1/activities", produces = "application/json")
 @CrossOrigin("*")
 public class ActivitiesController {
+        @Autowired
+        private ActivitiesService activitiesService;
 
         @Autowired
         ActivitiesController() {
 
         }
 
+        @PostMapping(path = "/get")
+        public String get(@RequestBody ActivitiesRequestBody activitiesRequestBody) throws IOException {
+                return activitiesService.getActivitiesWithRequestBody(activitiesRequestBody);
+        }
+
         @PostMapping
-        public String settleCart(@RequestBody String json) throws IOException {
-                ActivitiesService activitiesService = new ActivitiesService();
+        public String getActivities(@RequestBody String json) throws IOException {
                 return activitiesService.getActivities(json);
         }
 

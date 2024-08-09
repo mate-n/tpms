@@ -1,13 +1,13 @@
-import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
 import type { IProfileAddress } from '@/shared/interfaces/profiles/IProfileAddress'
 import type { IProfileAddressSearch } from '@/shared/interfaces/profiles/IProfileAddressSearch'
 import type { IProfilesService } from '@/interfaces/IProfilesService'
 import type { AxiosStatic } from 'axios'
+import { AxiosInstanceFactory2 } from '@/factories/AxiosInstanceFactory2'
 
 export class ProfileAddressService implements IProfilesService {
-  axiosInstance: AxiosStatic
+  axiosInstance: any
   constructor(axios: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
+    this.axiosInstance = AxiosInstanceFactory2.createAxiosInstance(axios)
   }
   create(profileAddress: IProfileAddress) {
     return new Promise((resolve, reject) => {

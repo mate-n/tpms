@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import realmsLogo from '@/assets/images/realms-icon.webp'
-import { computed, inject, onMounted, ref, type Ref } from 'vue'
+import { computed, onMounted, ref, type Ref } from 'vue'
 import { RouterView } from 'vue-router'
 import BasketMenuCard from './components/baskets/BasketMenuCard.vue'
 import { useUserStore } from './stores/user'
@@ -8,32 +8,10 @@ import { Profile } from './shared/classes/Profile'
 import router from './router'
 import BasketCard from './components/baskets/BasketCard.vue'
 import { useRouter as UseRouter } from 'vue-router'
-import { ProtelApiStatusService } from './services/protel/ProtelApiStatusService'
-import type { AxiosStatic } from 'axios'
 import { useItineraryReservationCartStore } from './stores/itineraryReservationCart'
 import ErrorDialog from './components/ErrorDialog.vue'
 const showApiStatus = import.meta.env.VITE_SHOW_API_STATUS === 'true'
-const axios: AxiosStatic | undefined = inject('axios')
-const protelApiStatusService = new ProtelApiStatusService(axios)
-const protelApiStatus = ref('waiting...')
-const protelApiStatusIcon = computed(() => {
-  if (protelApiStatus.value === 'waiting...') {
-    return 'mdi-clock-outline'
-  } else if (protelApiStatus.value === 'success') {
-    return 'mdi-check-circle-outline'
-  } else {
-    return 'mdi-alert-circle-outline'
-  }
-})
-const protelApiStatusColor = computed(() => {
-  if (protelApiStatus.value === 'waiting...') {
-    return 'grey'
-  } else if (protelApiStatus.value === 'success') {
-    return 'green'
-  } else {
-    return 'red'
-  }
-})
+const version = import.meta.env.VITE_VERSION
 
 const useRouter = UseRouter()
 
@@ -56,12 +34,6 @@ const clickOnViewCart = () => {
 }
 const showNavigationDrawer = computed(() => {
   return useRouter.currentRoute.value.name !== 'login'
-})
-
-onMounted(() => {
-  protelApiStatusService.getStatus().then((response) => {
-    protelApiStatus.value = response
-  })
 })
 
 const showBadge = computed(() => {
@@ -146,14 +118,6 @@ const showBadge = computed(() => {
               link
               to="/itinerary-reservations"
             ></v-list-item>
-            <v-divider v-if="showApiStatus"></v-divider>
-            <v-list-item
-              v-if="showApiStatus"
-              :base-color="protelApiStatusColor"
-              :prepend-icon="protelApiStatusIcon"
-              title="Protel API Status"
-              :subtitle="protelApiStatus"
-            ></v-list-item>
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -196,11 +160,14 @@ const showBadge = computed(() => {
 
       <ErrorDialog></ErrorDialog>
     </v-main>
-
-    <v-dialog v-model="basketDialog" scrollable auto>
-      <v-card>
-        <BasketCard @close="basketDialog = false"></BasketCard>
-      </v-card>
-    </v-dialog>
+    <v-footer border app absolute class="bg-lightgray font-size-rem-6" height="25" v-if="version">
+      <v-col class="text-end"> <strong>Version:</strong> {{ version }}</v-col>
+    </v-footer>
   </v-app>
+
+  <v-dialog v-model="basketDialog" scrollable auto>
+    <v-card>
+      <BasketCard @close="basketDialog = false"></BasketCard>
+    </v-card>
+  </v-dialog>
 </template>

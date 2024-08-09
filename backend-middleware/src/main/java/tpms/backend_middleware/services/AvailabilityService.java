@@ -9,6 +9,12 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class AvailabilityService {
+        String ankerdataApiUrl;
+
+        public AvailabilityService(String ankerdataApiUrl) {
+                this.ankerdataApiUrl = ankerdataApiUrl;
+        }
+
         public String getAvailabilities(String json) throws IOException {
 
                 RequestBody body = RequestBody.create(json,
@@ -17,7 +23,7 @@ public class AvailabilityService {
                 OkHttpClient client = new OkHttpClient().newBuilder()
                                 .build();
                 Request request = new Request.Builder()
-                                .url("https://ankerws.ankerdata.co.za/availability/index.php?getavailability")
+                                .url(ankerdataApiUrl + "availability/index.php?getavailability")
                                 .addHeader("Authorization", "Bearer 1234567890")
                                 .post(body)
                                 .build();

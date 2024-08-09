@@ -9,21 +9,27 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ReservationService {
-    public String lookup(String json) throws IOException {
+        String ankerdataApiUrl;
 
-        RequestBody body = RequestBody.create(json,
-                MediaType.parse("application/json"));
+        public ReservationService(String ankerdataApiUrl) {
+                this.ankerdataApiUrl = ankerdataApiUrl;
+        }
 
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        Request request = new Request.Builder()
-                .url("https://ankerws.ankerdata.co.za/tpmsreservationservice/lookup.php")
-                .addHeader("Authorization", "Bearer 1234567890")
-                .post(body)
-                .build();
+        public String lookup(String json) throws IOException {
 
-        Response response = client.newCall(request).execute();
-        var reponseString = response.body().string();
-        return reponseString;
-    }
+                RequestBody body = RequestBody.create(json,
+                                MediaType.parse("application/json"));
+
+                OkHttpClient client = new OkHttpClient().newBuilder()
+                                .build();
+                Request request = new Request.Builder()
+                                .url(ankerdataApiUrl + "tpmsreservationservice/lookup.php")
+                                .addHeader("Authorization", "Bearer 1234567890")
+                                .post(body)
+                                .build();
+
+                Response response = client.newCall(request).execute();
+                var reponseString = response.body().string();
+                return reponseString;
+        }
 }

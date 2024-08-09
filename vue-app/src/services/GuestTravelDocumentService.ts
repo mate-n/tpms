@@ -1,14 +1,14 @@
-import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
+import { AxiosInstanceFactory2 } from '@/factories/AxiosInstanceFactory2'
 import type { IService } from '@/interfaces/IService'
 import type { IGuestTravelDocument } from '@/shared/interfaces/IGuestTravelDocument'
 import type { AxiosStatic } from 'axios'
 import { inject } from 'vue'
-const axios: AxiosStatic | undefined = inject('axios')
+const axios2: AxiosStatic | undefined = inject('axios2')
 
 export class GuestTravelDocumentService implements IService {
-  axiosInstance: AxiosStatic
+  axiosInstance: any
   constructor() {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
+    this.axiosInstance = AxiosInstanceFactory2.createAxiosInstance(axios2)
   }
 
   getAvailableGuestTravelDocuments() {

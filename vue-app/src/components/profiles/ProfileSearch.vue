@@ -10,11 +10,10 @@ import ProfileDataTable from './ProfileDataTable.vue'
 import { ProfileService } from '@/services/backend-middleware/ProfileService'
 import type { IProfileLookUpPostBody } from '@/shared/interfaces/profiles/IProfileLookUpPostBody'
 import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
-const axios: AxiosStatic | undefined = inject('axios')
 const axios2: AxiosStatic | undefined = inject('axios2')
 const profileService = new ProfileService(axios2)
 const guestTypes: Ref<IGuestType[]> = ref([])
-const guestTypeService = new GuestTypeService(axios)
+const guestTypeService = new GuestTypeService(axios2)
 const profileFromInputFields = ref<IProfile>(new Profile())
 const newProfileDialog = ref(false)
 const editProfileDialog = ref(false)

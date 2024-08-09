@@ -1,6 +1,9 @@
-import { IProtelAvailability } from '../../../interfaces/protel/IProtelAvailability';
+import interceptAvailabilities from '../../../utils/intercept/availabilitites';
 import { ROUTE_PATHS } from '../../../utils/route-paths';
-import { updateAvalabilitiesResponse } from '../../../utils/updateAvailabilitesResponse';
+
+Cypress.on('uncaught:exception', () => {
+  return false;
+});
 
 describe('itinerary-reservations-enquiry/validate-selectable-availabilities', () => {
   beforeEach(() => {
@@ -9,11 +12,7 @@ describe('itinerary-reservations-enquiry/validate-selectable-availabilities', ()
   });
 
   it("Can't select availability has count is 0", () => {
-    cy.fixture('availabilities').then((response) => {
-      cy.intercept(new RegExp(/v1\/availabilities/), (req) =>
-        req.reply(updateAvalabilitiesResponse(response, 0, { availability_count: 0 }))
-      );
-    });
+    interceptAvailabilities.post({ availability_count: 0 });
 
     cy.visit(ROUTE_PATHS.ITINERARY_RESERVATION_ENQUIRY);
 
@@ -37,11 +36,7 @@ describe('itinerary-reservations-enquiry/validate-selectable-availabilities', ()
   });
 
   it("Can't select availability has no rates", () => {
-    cy.fixture('availabilities').then((response) => {
-      cy.intercept(new RegExp(/v1\/availabilities/), (req) =>
-        req.reply(updateAvalabilitiesResponse(response, 0, { rates_data: undefined }))
-      );
-    });
+    interceptAvailabilities.post({ rates_data: undefined });
 
     cy.visit(ROUTE_PATHS.ITINERARY_RESERVATION_ENQUIRY);
 

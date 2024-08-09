@@ -3,6 +3,7 @@ package tpms.backend_middleware.controllers;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,66 +25,69 @@ import tpms.backend_middleware.services.CartService;
 @CrossOrigin("*")
 public class CartController {
     @Autowired
+    private Environment environment;
+
+    @Autowired
     CartController() {
     }
 
     @PostMapping
     public CreateCartResponseBody createCart(@RequestBody CartBody cartBody) throws IOException {
-        CartService cartService = new CartService();
+        CartService cartService = new CartService(environment.getProperty("tpms.ankerdata.api.url"));
         return cartService.createCart(cartBody);
     }
 
     @PutMapping
     public String updateCart(@RequestBody UpdateCartBody cartBody) throws IOException {
-        CartService cartService = new CartService();
+        CartService cartService = new CartService(environment.getProperty("tpms.ankerdata.api.url"));
         return cartService.updateCart(cartBody);
     }
 
     @PostMapping(path = "/delete")
     public String deleteCart(@RequestBody CartBody cartBody) throws IOException {
-        CartService cartService = new CartService();
+        CartService cartService = new CartService(environment.getProperty("tpms.ankerdata.api.url"));
         return cartService.deleteCart(cartBody);
     }
 
     @PostMapping(path = "/add-item")
     public String addItemToCart(@RequestBody AddItemToCartBody addItemToCartBody) throws IOException {
-        CartService cartService = new CartService();
+        CartService cartService = new CartService(environment.getProperty("tpms.ankerdata.api.url"));
         return cartService.addItemToCart(addItemToCartBody);
     }
 
     @PostMapping(path = "/remove-item")
     public String removeItemFromCart(@RequestBody String json) throws IOException {
-        CartService cartService = new CartService();
+        CartService cartService = new CartService(environment.getProperty("tpms.ankerdata.api.url"));
         return cartService.removeItemFromCart(json);
     }
 
     @PostMapping(path = "/get-items")
     public String getItems(@RequestBody RetrieveCartBody retrieveCartBody) throws IOException {
-        CartService cartService = new CartService();
+        CartService cartService = new CartService(environment.getProperty("tpms.ankerdata.api.url"));
         return cartService.getItems(retrieveCartBody);
     }
 
     @PostMapping(path = "/delete-item")
     public String deleteItemFromCart(@RequestBody RemoveItemFromCartBody removeItemFromCartBody) throws IOException {
-        CartService cartService = new CartService();
+        CartService cartService = new CartService(environment.getProperty("tpms.ankerdata.api.url"));
         return cartService.deleteItemFromCart(removeItemFromCartBody);
     }
 
     @PostMapping(path = "/update-item")
     public String updateItemInCart(@RequestBody String json) throws IOException {
-        CartService cartService = new CartService();
+        CartService cartService = new CartService(environment.getProperty("tpms.ankerdata.api.url"));
         return cartService.updateItemInCart(json);
     }
 
     @PostMapping(path = "/settle")
     public String settleCart(@RequestBody SettleCartBody settleCartBody) throws IOException {
-        CartService cartService = new CartService();
+        CartService cartService = new CartService(environment.getProperty("tpms.ankerdata.api.url"));
         return cartService.settleCart(settleCartBody);
     }
 
     @PostMapping(path = "/retrieve")
     public String settleCart(@RequestBody String json) throws IOException {
-        CartService cartService = new CartService();
+        CartService cartService = new CartService(environment.getProperty("tpms.ankerdata.api.url"));
         return cartService.retrieveCart(json);
     }
 }
