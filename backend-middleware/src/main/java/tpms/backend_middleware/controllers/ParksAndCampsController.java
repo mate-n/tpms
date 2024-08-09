@@ -1,6 +1,7 @@
 package tpms.backend_middleware.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,8 @@ import tpms.backend_middleware.services.ParksAndCampsService;
 @RequestMapping(path = "/api/v1/parksandcamps", produces = "application/json")
 @CrossOrigin("*")
 public class ParksAndCampsController {
+    @Autowired
+    private Environment environment;
 
     @Autowired
     public ParksAndCampsController() {
@@ -27,7 +30,8 @@ public class ParksAndCampsController {
 
     @GetMapping(path = "/getparksandcamps")
     public String index() {
-        ParksAndCampsService parksAndCampsService = new ParksAndCampsService();
+        ParksAndCampsService parksAndCampsService = new ParksAndCampsService(
+                environment.getProperty("tpms.ankerdata.api.url"));
         try {
             return parksAndCampsService.getParksAndCamps();
         } catch (Exception e) {
@@ -37,7 +41,8 @@ public class ParksAndCampsController {
 
     @GetMapping(path = "/getregions")
     public Iterable<Region> getRegions() {
-        ParksAndCampsService parksAndCampsService = new ParksAndCampsService();
+        ParksAndCampsService parksAndCampsService = new ParksAndCampsService(
+                environment.getProperty("tpms.ankerdata.api.url"));
         try {
             return parksAndCampsService.getRegions();
         } catch (Exception e) {
@@ -47,7 +52,8 @@ public class ParksAndCampsController {
 
     @GetMapping(path = "/getparks")
     public Iterable<Park> getParks() {
-        ParksAndCampsService parksAndCampsService = new ParksAndCampsService();
+        ParksAndCampsService parksAndCampsService = new ParksAndCampsService(
+                environment.getProperty("tpms.ankerdata.api.url"));
         try {
             return parksAndCampsService.getParks();
         } catch (Exception e) {
@@ -57,7 +63,8 @@ public class ParksAndCampsController {
 
     @GetMapping(path = "/getcamps")
     public Iterable<Camp> getCamps() {
-        ParksAndCampsService parksAndCampsService = new ParksAndCampsService();
+        ParksAndCampsService parksAndCampsService = new ParksAndCampsService(
+                environment.getProperty("tpms.ankerdata.api.url"));
         try {
             return parksAndCampsService.getCamps();
         } catch (Exception e) {

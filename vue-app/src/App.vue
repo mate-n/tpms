@@ -13,6 +13,7 @@ import type { AxiosStatic } from 'axios'
 import { useItineraryReservationCartStore } from './stores/itineraryReservationCart'
 import ErrorDialog from './components/ErrorDialog.vue'
 const showApiStatus = import.meta.env.VITE_SHOW_API_STATUS === 'true'
+const version = import.meta.env.VITE_VERSION
 const axios: AxiosStatic | undefined = inject('axios')
 const protelApiStatusService = new ProtelApiStatusService(axios)
 const protelApiStatus = ref('waiting...')
@@ -196,11 +197,14 @@ const showBadge = computed(() => {
 
       <ErrorDialog></ErrorDialog>
     </v-main>
-
-    <v-dialog v-model="basketDialog" scrollable auto>
-      <v-card>
-        <BasketCard @close="basketDialog = false"></BasketCard>
-      </v-card>
-    </v-dialog>
+    <v-footer border app absolute class="bg-lightgray font-size-rem-6" height="25" v-if="version">
+      <v-col class="text-end"> <strong>Version:</strong> {{ version }}</v-col>
+    </v-footer>
   </v-app>
+
+  <v-dialog v-model="basketDialog" scrollable auto>
+    <v-card>
+      <BasketCard @close="basketDialog = false"></BasketCard>
+    </v-card>
+  </v-dialog>
 </template>

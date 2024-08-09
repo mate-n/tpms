@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Profile } from '@/shared/classes/Profile'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import { computed, inject, ref, watch, type Ref } from 'vue'
+import { computed, inject, onMounted, ref, watch, type Ref } from 'vue'
 import ProfileGeneralForm from '@/components/profiles/ProfileGeneralForm.vue'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
@@ -19,6 +19,7 @@ import { ItineraryReservationMover } from '@/helpers/ItineraryReservationMover'
 import { SyncCartItemService } from '@/services/backend-middleware/SyncCartItemService'
 import ProtelReservationsTable from '../reservations/ProtelReservationsTable.vue'
 import router from '@/router'
+import DateSelecter from '@/components/dates/DateSelecter.vue'
 const itineraryReservationMover = new ItineraryReservationMover()
 const dateHelper = new DateHelper()
 const dateFormatter = new DateFormatter()
@@ -155,6 +156,29 @@ const save = () => {
 const goToEnquiryView = () => {
   router.push('/itinerary-reservation-enquiry/' + itineraryReservationToBeEdited.value.cart_number)
 }
+
+const daysToMoveDateSelect = ref(new Date())
+
+onMounted(() => {
+  const newDaysToMoveDateSelect = itineraryReservationHelper.getStartDate(
+    itineraryReservationToBeEdited.value
+  )
+
+  if (newDaysToMoveDateSelect) {
+    daysToMoveDateSelect.value = newDaysToMoveDateSelect
+  }
+})
+
+const daysToMoveUpdated = () => {
+  daysToMoveDateSelect.value = newWouldBeStartDate.value
+}
+
+const daysToMoveDateSelectUpdated = () => {
+  const oldStartDate = itineraryReservationHelper.getStartDate(itineraryReservationToBeEdited.value)
+  if (oldStartDate) {
+    daysToMove.value = dateHelper.daysBetweenDates(daysToMoveDateSelect.value, oldStartDate)
+  }
+}
 </script>
 <template>
   <v-toolbar class="bg-primary">
@@ -191,7 +215,20 @@ const goToEnquiryView = () => {
           >Move entire Itinerary Reservation by number of days</v-btn
         >
       </v-col>
-      <v-col> <v-number-input label="Days" v-model="daysToMove"></v-number-input> </v-col>
+      <v-col>
+        <v-number-input
+          label="Days"
+          v-model="daysToMove"
+          @update:model-value="daysToMoveUpdated()"
+        ></v-number-input>
+      </v-col>
+      <v-col
+        ><DateSelecter
+          label="Date"
+          v-model="daysToMoveDateSelect"
+          @update:model-value="daysToMoveDateSelectUpdated()"
+        ></DateSelecter
+      ></v-col>
       <v-col>
         New Start Date would be:
         <br />

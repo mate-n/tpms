@@ -9,22 +9,28 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ActivitiesService {
-    public String getActivities(String json) throws IOException {
+        String ankerdataApiUrl;
 
-        RequestBody body = RequestBody.create(json,
-                MediaType.parse("application/json"));
+        public ActivitiesService(String ankerdataApiUrl) {
+                this.ankerdataApiUrl = ankerdataApiUrl;
+        }
 
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        Request request = new Request.Builder()
-                .url("https://ankerws.ankerdata.co.za/gms/get_activities.php")
-                .addHeader("Authorization", "Bearer asdfghjklpo8192")
-                .post(body)
-                .build();
+        public String getActivities(String json) throws IOException {
 
-        Response response = client.newCall(request).execute();
-        var reponseString = response.body().string();
+                RequestBody body = RequestBody.create(json,
+                                MediaType.parse("application/json"));
 
-        return reponseString;
-    }
+                OkHttpClient client = new OkHttpClient().newBuilder()
+                                .build();
+                Request request = new Request.Builder()
+                                .url(ankerdataApiUrl + "gms/get_activities.php")
+                                .addHeader("Authorization", "Bearer asdfghjklpo8192")
+                                .post(body)
+                                .build();
+
+                Response response = client.newCall(request).execute();
+                var reponseString = response.body().string();
+
+                return reponseString;
+        }
 }

@@ -36,17 +36,19 @@ export class CampService implements IService {
             .findByEmail(email)
             .then((protelUsers: ProtelUser[]) => {
               const protelUser = protelUsers[0]
-
               if (!protelUser) {
                 resolve(camps)
               }
-              const allowedCampIDs = protelUser.allowedCampIDs
-                .split(',')
-                .map((id) => parseInt(id.trim()))
+              const allowedCampIDs = protelUser.allowedCampIDs.split(',')
 
-              const filteredCamps = camps.filter((camp: IProtelCamp) =>
-                allowedCampIDs.includes(camp.id)
-              )
+              const filteredCamps = []
+              for (const camp of camps) {
+                for (const allowedCampID of allowedCampIDs) {
+                  if (camp.id == parseInt(allowedCampID)) {
+                    filteredCamps.push(camp)
+                  }
+                }
+              }
 
               resolve(filteredCamps)
             })

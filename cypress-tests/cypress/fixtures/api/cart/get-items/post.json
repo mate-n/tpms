@@ -1,0 +1,43 @@
+{
+  "cart": {
+    "cart_id": 1660,
+    "unique_number": "it_66b2082dd16a3",
+    "creation_datetime": "2024-08-06 11:25:33",
+    "profile_number": null,
+    "cart_type": 2,
+    "status": "pending",
+    "payment_ref": null,
+    "payment_amount": null,
+    "payment_method": null
+  },
+  "cart_items": [
+    {
+      "id": 4214,
+      "cart_id": "it_66b2082dd16a3",
+      "arrival_date": "2024-08-07",
+      "departure_date": "2024-08-08",
+      "adults": 1,
+      "children": 0,
+      "units": 1,
+      "conservation_fees": 0,
+      "southafrican_adults": 0,
+      "sadc_adults": 0,
+      "international_adults": 0,
+      "southafrican_children": 0,
+      "sadc_children": 0,
+      "international_children": 0,
+      "base_pricing": "3177",
+      "discount_web": null,
+      "community_levy": null,
+      "conservation_fees_amount": null,
+      "camp_id": 19197,
+      "unit_id": "Family Cottage FA4S",
+      "item_type": 1,
+      "crs": "it_66b2082dd16a3_4214-1",
+      "confirmation": "9779",
+      "sourcestatus": "Success",
+      "parent": 0,
+      "gmsTimeSlotId": 0
+    }
+  ]
+}

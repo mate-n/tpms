@@ -76,4 +76,9 @@ export class DateHelper {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     return days[date.getDay()]
   }
+
+  daysBetweenDates(date1: Date, date2: Date): number {
+    const oneDay = 24 * 60 * 60 * 1000
+    return Math.round((date1.getTime() - date2.getTime()) / oneDay)
+  }
 }

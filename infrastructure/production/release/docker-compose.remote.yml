@@ -1,0 +1,31 @@
+name: tpms-frontend-release
+services:
+  vue:
+    image: tpms-frontend-release-vue
+    env_file:
+      - .env
+    ports:
+      - "${PORT_FRONTEND}:80"
+  backend-middleware-mongodb:
+    image: "mongo"
+    volumes:
+      - mongodata:/data/db
+    env_file:
+      - .env
+  backend-middleware:
+    image: tpms-frontend-release-backend-middleware
+    env_file:
+      - .env
+    ports:
+      - "${PORT_MIDDLEWARE}:8080"
+    depends_on:
+      - backend-middleware-mongodb
+  nest:
+    image: tpms-frontend-release-nest
+    env_file:
+      - .env
+    ports:
+      - "${PORT_BACKEND}:3001"
+
+volumes:
+  mongodata:
