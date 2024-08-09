@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { Profile } from '@/shared/classes/Profile'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
-import { computed, inject, onMounted, ref, watch, type Ref } from 'vue'
+import { computed, inject, onMounted, ref, watch } from 'vue'
 import ProfileGeneralForm from '@/components/profiles/ProfileGeneralForm.vue'
 import type { IItineraryReservation } from '@/shared/interfaces/IItineraryReservation'
 import { ItineraryReservation } from '@/shared/classes/ItineraryReservation'
-import ReservationSlice from './ReservationSlice.vue'
-import type { IReservationSelectable } from '@/shared/interfaces/reservations/IReservationSelectable'
-import ReservationCards from '@/components/reservations/ReservationCards.vue'
 import { ProfileService } from '@/services/backend-middleware/ProfileService'
 import type { AxiosStatic } from 'axios'
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
@@ -29,7 +26,10 @@ const profileService = new ProfileService(axios2)
 const syncCartItemService = new SyncCartItemService(axios2)
 const itineraryReservationCloner = new ItineraryReservationCloner()
 const props = defineProps({
-  itineraryReservationInput: { type: Object as () => IItineraryReservation, required: true }
+  itineraryReservationInput: {
+    type: Object as () => IItineraryReservation,
+    required: true
+  }
 })
 const itineraryReservationToBeEdited = ref<IItineraryReservation>(new ItineraryReservation())
 
@@ -49,21 +49,7 @@ watch(
   { immediate: true, deep: true }
 )
 
-const reservationSelectables: Ref<IReservationSelectable[]> = ref([])
 const profileAssociatedWithItineraryReservation = ref<IProfile>(new Profile())
-
-const selectReservation = (reservationSelectable: IReservationSelectable) => {
-  reservationSelectables.value.forEach((reservationSelectable) => {
-    reservationSelectable.selected = false
-  })
-  reservationSelectable.selected = true
-}
-
-const selectedReservation = computed(() => {
-  return reservationSelectables.value.find(
-    (reservationSelectable) => reservationSelectable.selected
-  )
-})
 
 const startDate = computed(() => {
   const startDateFromItinerary = itineraryReservationHelper.getStartDate(
@@ -287,37 +273,5 @@ const daysToMoveDateSelectUpdated = () => {
     <ProtelReservationsTable
       :reservations="itineraryReservationToBeEdited.protelReservations"
     ></ProtelReservationsTable>
-
-    <v-row>
-      <v-col class="pr-0 standard-card-column">
-        <div class="standard-card">
-          <v-divider class="standard-card-divider"></v-divider>
-          <v-container fluid>
-            <div class="d-flex justify-space-between">
-              <template
-                v-for="(reservationSelectable, index) of reservationSelectables"
-                :key="reservationSelectable.reservation.id"
-              >
-                <ReservationSlice
-                  :reservationSelectable="reservationSelectable"
-                  @selectReservation="
-                    (reservationSelectable) => selectReservation(reservationSelectable)
-                  "
-                ></ReservationSlice>
-                <div
-                  class="d-flex align-center justify-center"
-                  v-if="index !== reservationSelectables.length - 1"
-                >
-                  <v-icon size="x-large">mdi-arrow-right</v-icon>
-                </div>
-              </template>
-            </div>
-          </v-container>
-        </div></v-col
-      >
-    </v-row>
-  </v-container>
-  <v-container fluid class="bg-lightgray pt-0" v-if="selectedReservation">
-    <ReservationCards v-model="selectedReservation.reservation"></ReservationCards>
   </v-container>
 </template>

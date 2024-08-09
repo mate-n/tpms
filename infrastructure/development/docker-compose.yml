@@ -18,7 +18,6 @@ services:
     ports:
       - "${PORT_FRONTEND}:8080"
     depends_on:
-      - nest
       - backend-middleware
   backend-middleware-mongodb:
     image: "mongo"
@@ -40,17 +39,6 @@ services:
       - "${PORT_MIDDLEWARE}:8080"
     depends_on:
       - backend-middleware-mongodb
-  nest:
-    build:
-      context: ../../nest-app
-      dockerfile: Dockerfile
-      target: development-stage
-    volumes:
-      - ../../nest-app/src:/app/src
-    env_file:
-      - .env
-    ports:
-      - "${PORT_BACKEND}:3001"
   npm:
     build: ../../tools/npm
     volumes:

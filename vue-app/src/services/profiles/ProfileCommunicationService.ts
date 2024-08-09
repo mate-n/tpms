@@ -1,13 +1,13 @@
 import { type AxiosStatic } from 'axios'
-import { AxiosInstanceFactory } from '../../factories/AxiosInstanceFactory'
 import type { IProfileCommunication } from '@/shared/interfaces/profiles/IProfileCommunication'
 import type { IProfileCommunicationSearch } from '@/shared/interfaces/profiles/IProfileCommunicationSearch'
 import type { IProfilesService } from '@/interfaces/IProfilesService'
+import { AxiosInstanceFactory2 } from '@/factories/AxiosInstanceFactory2'
 
 export class ProfileCommunicationService implements IProfilesService {
-  axiosInstance: AxiosStatic
+  axiosInstance: any
   constructor(axios: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
+    this.axiosInstance = AxiosInstanceFactory2.createAxiosInstance(axios)
   }
   get(profileID: number, id: number) {
     return new Promise((resolve, reject) => {

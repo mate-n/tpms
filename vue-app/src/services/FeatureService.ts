@@ -1,12 +1,12 @@
-import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
+import { AxiosInstanceFactory2 } from '@/factories/AxiosInstanceFactory2'
 import type { IService } from '@/interfaces/IService'
 import type { IFeature } from '@/shared/interfaces/IFeature'
 import type { AxiosStatic } from 'axios'
 
 export class FeatureService implements IService {
-  axiosInstance: AxiosStatic
+  axiosInstance: any
   constructor(axios: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
+    this.axiosInstance = AxiosInstanceFactory2.createAxiosInstance(axios)
   }
 
   getAvailableFeatures() {

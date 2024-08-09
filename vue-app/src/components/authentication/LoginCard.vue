@@ -6,13 +6,15 @@ import type { IAccessToken } from '@/shared/interfaces/IAccessToken'
 import type { AxiosStatic } from 'axios'
 import { inject, ref } from 'vue'
 const authenticationHelper = new AuthenticationHelper()
-const axios: AxiosStatic | undefined = inject('axios')
-const authentificationService = new AuthenticationService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const authentificationService = new AuthenticationService(axios2)
 const clickOnLogin = async () => {
   authentificationService.login(login.value, password.value).then((response: IAccessToken) => {
-    authenticationHelper.setAccessToken(response.access_token)
-    if (axios) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.access_token}`
+    console.log('response ' + response)
+    console.log('response.jwt ' + response.jwt)
+    authenticationHelper.setAccessToken(response.jwt)
+    if (axios2) {
+      axios2.defaults.headers.common['Authorization'] = `Bearer ${response.jwt}`
       router.push('/')
     }
   })

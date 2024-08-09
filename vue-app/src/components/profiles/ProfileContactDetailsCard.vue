@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
-import ProfileCommunicationsForm from './ProfileCommunicationsForm.vue'
 import { CommunicationMethodService } from '@/services/CommunicationMethodService'
 import type { ICommunicationMethod } from '@/shared/interfaces/ICommunicationMethod'
 import type { IProfile } from '@/shared/interfaces/profiles/IProfile'
@@ -8,10 +7,9 @@ import { inject } from 'vue'
 import type { AxiosStatic } from 'axios'
 import { ProfileValidator } from '@/shared/validators/ProfileValidator'
 const profileValidator = new ProfileValidator()
-const axios: AxiosStatic | undefined = inject('axios')
-const communicationMethodService = new CommunicationMethodService(axios)
+const axios2: AxiosStatic | undefined = inject('axios2')
+const communicationMethodService = new CommunicationMethodService(axios2)
 const communicationMethods = ref<ICommunicationMethod[]>([])
-const editProfileContactDetailsDialog = ref(false)
 const profile = defineModel({ required: true, type: Object as () => IProfile })
 const emit = defineEmits(['blur-email'])
 
@@ -40,9 +38,6 @@ const blurEmail = () => {
   <div class="profiles-card" data-cy="profile_contact_detail_form">
     <v-toolbar class="profiles-card-toolbar">
       <v-toolbar-title><span class="text-primary">Contact details</span></v-toolbar-title>
-      <v-btn icon @click="editProfileContactDetailsDialog = true">
-        <v-icon class="text-gray">mdi-pencil-outline</v-icon>
-      </v-btn>
     </v-toolbar>
     <v-divider class="profiles-card-divider"></v-divider>
     <v-container>
@@ -75,13 +70,5 @@ const blurEmail = () => {
         </div>
       </div>
     </v-container>
-    <v-dialog v-model="editProfileContactDetailsDialog" scrollable auto>
-      <v-card>
-        <ProfileCommunicationsForm
-          v-model="profile"
-          @close="editProfileContactDetailsDialog = false"
-        ></ProfileCommunicationsForm>
-      </v-card>
-    </v-dialog>
   </div>
 </template>

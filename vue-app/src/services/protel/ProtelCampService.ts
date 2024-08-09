@@ -1,13 +1,13 @@
-import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
+import { AxiosInstanceFactory2 } from '@/factories/AxiosInstanceFactory2'
 import type { IService } from '@/interfaces/IService'
 import type { IProtelCamp } from '@/shared/interfaces/protel/IProtelCamp'
 import type { IProtelCampSearch } from '@/shared/interfaces/protel/IProtelCampSearch'
 import type { AxiosStatic } from 'axios'
 
 export class ProtelCampService implements IService {
-  axiosInstance: AxiosStatic
+  axiosInstance: any
   constructor(axios: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
+    this.axiosInstance = AxiosInstanceFactory2.createAxiosInstance(axios)
   }
 
   findAll() {

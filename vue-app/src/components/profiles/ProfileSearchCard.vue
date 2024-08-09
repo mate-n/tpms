@@ -12,11 +12,10 @@ import ProfileSearchVue from './ProfileSearch.vue'
 import type { IProfileLookUpPostBody } from '@/shared/interfaces/profiles/IProfileLookUpPostBody'
 import { ProfileLookUpPostBody } from '@/shared/classes/ProfileLookUpPostBody'
 import { ProfileService } from '@/services/backend-middleware/ProfileService'
-const axios: AxiosStatic | undefined = inject('axios')
 const axios2: AxiosStatic | undefined = inject('axios2')
 const profileService = new ProfileService(axios2)
 const guestTypes: Ref<IGuestType[]> = ref([])
-const guestTypeService = new GuestTypeService(axios)
+const guestTypeService = new GuestTypeService(axios2)
 const emit = defineEmits(['close', 'profileSelected'])
 const close = () => emit('close')
 const profileLookUpPostBody: Ref<IProfileLookUpPostBody> = ref(new ProfileLookUpPostBody())

@@ -1,4 +1,4 @@
-import { AxiosInstanceFactory } from '@/factories/AxiosInstanceFactory'
+import { AxiosInstanceFactory2 } from '@/factories/AxiosInstanceFactory2'
 import { AvailabilityHelper } from '@/helpers/AvailabilityHelper'
 import type { IService } from '@/interfaces/IService'
 import type { IProtelAvailability } from '@/shared/interfaces/protel/IProtelAvailability'
@@ -7,9 +7,9 @@ import { type AxiosStatic } from 'axios'
 
 export class AvailabilityService implements IService {
   availabilityHelper: AvailabilityHelper = new AvailabilityHelper()
-  axiosInstance: AxiosStatic
+  axiosInstance: any
   constructor(axios: AxiosStatic | undefined) {
-    this.axiosInstance = AxiosInstanceFactory.createAxiosInstance(axios)
+    this.axiosInstance = AxiosInstanceFactory2.createAxiosInstance(axios)
   }
 
   search(protelAvailabilityPostBody: IProtelAvailabilityPostBody): Promise<IProtelAvailability[]> {

@@ -18,9 +18,8 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/v1")
+@CrossOrigin("*")
 public class AuthenticationController {
-
-    private static final Logger logger = Logger.getLogger(AuthenticationController.class.getName());
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -31,12 +30,14 @@ public class AuthenticationController {
     @Autowired
     private JWTService jwtService;
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    @PostMapping(path = "/authenticate", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<AuthenticationResponse> createAuthenticationToken(
+            @RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
-            );
+                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
+                            authenticationRequest.getPassword()));
         } catch (Exception e) {
             return ResponseEntity.status(401).body(new AuthenticationResponse("Incorrect username or password"));
         }
